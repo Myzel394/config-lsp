@@ -27,6 +27,7 @@ func main() {
 		Initialized: initialized,
 		Shutdown:    shutdown,
 		SetTrace:    setTrace,
+		TextDocumentCompletion: TextDocumentCompletion,
 	}
 
 	server := server.NewServer(&handler, lsName, false)
@@ -59,3 +60,19 @@ func setTrace(context *glsp.Context, params *protocol.SetTraceParams) error {
 	protocol.SetTraceValue(params.Value)
 	return nil
 }
+
+func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionParams) (interface{}, error) {
+	var completions []protocol.CompletionItem
+
+	Label := "happyface"
+	text := "Hello World!"
+
+	completions = append(completions, protocol.CompletionItem{
+		Label: Label,
+		Detail: &text,
+		InsertText: &text,
+	})
+
+	return completions, nil
+}
+
