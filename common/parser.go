@@ -1,7 +1,6 @@
 package common
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 )
@@ -34,29 +33,6 @@ type SimpleConfigParser struct {
 	Options SimpleConfigOptions
 }
 
-type OptionAlreadyExistsError struct {
-	Option string
-}
-func (e OptionAlreadyExistsError) Error() string {
-	return fmt.Sprintf("Option %s already exists", e.Option)
-}
-type OptionUnknownError struct {
-	Option string
-}
-func (e OptionUnknownError) Error() string {
-	return fmt.Sprintf("Option '%s' does not exist", e.Option)
-}
-type MalformedLineError struct {
-	Line string
-}
-func (e MalformedLineError) Error() string {
-	return fmt.Sprintf("Malformed line: %s", e.Line)
-}
-type LineNotFoundError struct {}
-func (e LineNotFoundError) Error() string {
-	return "Line not found"
-}
-
 func (p *SimpleConfigParser) AddLine(line string, lineNumber int) error {
 	parts := strings.SplitN(line, p.Options.Separator, 2)
 
@@ -83,6 +59,7 @@ func (p *SimpleConfigParser) AddLine(line string, lineNumber int) error {
 	if _, exists := p.Lines[option]; exists {
 		return OptionAlreadyExistsError{
 			Option: option,
+			FoundOnLine: uint32(lineNumber),
 		}
 	}
 
@@ -118,6 +95,22 @@ func (p *SimpleConfigParser) UpsertOption(option string, value string) {
 	}
 }
 
+func (p *SimpleConfigParser) GetOption(option string) (SimpleConfigLine, error) {
+	if _, exists := p.Lines[option]; exists {
+		return p.Lines[option], nil
+	}
+
+	return SimpleConfigLine{
+			Value: "",
+			Position: SimpleConfigPosition{
+				Line: 0,
+			},
+		}, 
+		OptionUnknownError{
+			Option: option,
+		}
+}
+
 func (p *SimpleConfigParser) ParseFromFile(content string) []error {
 	lines := strings.Split(content, "\n")
 	errors := make([]error, 0)
@@ -142,7 +135,7 @@ func (p *SimpleConfigParser) Clear() {
 }
 
 // TODO: Use better approach: Store an extra array of lines in order; with references to the SimpleConfigLine
-func (p SimpleConfigParser) FindByLineNumber(lineNumber int) (string, SimpleConfigLine, error) {
+func (p *SimpleConfigParser) FindByLineNumber(lineNumber int) (string, SimpleConfigLine, error) {
 	for option, line := range p.Lines {
 		if line.Position.Line == lineNumber {
 			return option, line, nil

@@ -7,10 +7,17 @@ import (
 
 // Todo: Implement incremental parsing
 func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeTextDocumentParams) error {
-		content := params.ContentChanges[0].(protocol.TextDocumentContentChangeEventWhole).Text
+	content := params.ContentChanges[0].(protocol.TextDocumentContentChangeEventWhole).Text
 
-		Parser.Clear()
-		Parser.ParseFromFile(content)
+	Parser.Clear()
+	errors := Parser.ParseFromFile(content)
 
-		return nil
+	if len(errors) > 0 {
+		SendDiagnosticsFromParserErrors(context, params.TextDocument.URI, errors)
+	} else {
+		ClearDiagnostics(context, params.TextDocument.URI)
+	}
+
+
+	return nil
 }

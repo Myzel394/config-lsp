@@ -17,7 +17,7 @@ func TextDocumentDidOpen(context *glsp.Context, params *protocol.DidOpenTextDocu
 	errors := Parser.ParseFromFile(string(readBytes))
 
 	if len(errors) > 0 {
-		return errors[0]
+		SendDiagnosticsFromParserErrors(context, params.TextDocument.URI, errors)
 	}
 
 	return nil
