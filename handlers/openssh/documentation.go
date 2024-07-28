@@ -116,16 +116,42 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
  The program should produce on standard output zero or more lines of AuthorizedPrincipalsFile output. If either AuthorizedPrincipalsCommand or AuthorizedPrincipalsFile is specified, then certificates offered by the client for authentication must contain a principal that is listed. By default, no AuthorizedPrincipalsCommand is run.`,
 	common.StringValue{},
 ),
- //    "AuthorizedPrincipalsCommandUser": `Specifies the user under whose account the AuthorizedPrincipalsCommand is run. It is recommended to use a dedicated user that has no other role on the host than running authorized principals commands. If AuthorizedPrincipalsCommand is specified but AuthorizedPrincipalsCommandUser is not, then sshd(8) will refuse to start.`,
- //    "AuthorizedPrincipalsFile": `Specifies a file that lists principal names that are accepted for certificate authentication. When using certificates signed by a key listed in TrustedUserCAKeys, this file lists names, one of which must appear in the certificate for it to be accepted for authentication. Names are listed one per line preceded by key options (as described in “AUTHORIZED_KEYS FILE FORMAT” in sshd(8)). Empty lines and comments starting with ‘#’ are ignored.
- // Arguments to AuthorizedPrincipalsFile accept the tokens described in the “TOKENS” section. After expansion, AuthorizedPrincipalsFile is taken to be an absolute path or one relative to the user's home directory. The default is none, i.e. not to use a principals file – in this case, the username of the user must appear in a certificate's principals list for it to be accepted.
- // Note that AuthorizedPrincipalsFile is only used when authentication proceeds using a CA listed in TrustedUserCAKeys and is not consulted for certification authorities trusted via ~/.ssh/authorized_keys, though the principals= key option offers a similar facility (see sshd(8) for details).
- //
- // Banner The contents of the specified file are sent to the remote user before authentication is allowed. If the argument is none then no banner is displayed. By default, no banner is displayed.`,
- //    "CASignatureAlgorithms": `Specifies which algorithms are allowed for signing of certificates by certificate authorities (CAs). The default is:
- // ssh-ed25519,ecdsa-sha2-nistp256, ecdsa-sha2-nistp384,ecdsa-sha2-nistp521, sk-ssh-ed25519@openssh.com, sk-ecdsa-sha2-nistp256@openssh.com, rsa-sha2-512,rsa-sha2-256
- // If the specified list begins with a ‘+’ character, then the specified algorithms will be appended to the default set instead of replacing them. If the specified list begins with a ‘-’ character, then the specified algorithms (including wildcards) will be removed from the default set instead of replacing them.
- // Certificates signed using other algorithms will not be accepted for public key or host-based authentication.`,
+    "AuthorizedPrincipalsCommandUser": common.NewOption(
+	    `Specifies the user under whose account the AuthorizedPrincipalsCommand is run. It is recommended to use a dedicated user that has no other role on the host than running authorized principals commands. If AuthorizedPrincipalsCommand is specified but AuthorizedPrincipalsCommandUser is not, then sshd(8) will refuse to start.`,
+	    common.UserValue(""),
+    ),
+    "AuthorizedPrincipalsFile": common.NewOption(
+	    `Specifies a file that lists principal names that are accepted for certificate authentication. When using certificates signed by a key listed in TrustedUserCAKeys, this file lists names, one of which must appear in the certificate for it to be accepted for authentication. Names are listed one per line preceded by key options (as described in “AUTHORIZED_KEYS FILE FORMAT” in sshd(8)). Empty lines and comments starting with ‘#’ are ignored.
+ Arguments to AuthorizedPrincipalsFile accept the tokens described in the “TOKENS” section. After expansion, AuthorizedPrincipalsFile is taken to be an absolute path or one relative to the user's home directory. The default is none, i.e. not to use a principals file – in this case, the username of the user must appear in a certificate's principals list for it to be accepted.
+ Note that AuthorizedPrincipalsFile is only used when authentication proceeds using a CA listed in TrustedUserCAKeys and is not consulted for certification authorities trusted via ~/.ssh/authorized_keys, though the principals= key option offers a similar facility (see sshd(8) for details).`,
+	    common.StringValue{},
+    ),
+    "Banner": common.NewOption(`The contents of the specified file are sent to the remote user before authentication is allowed. If the argument is none then no banner is displayed. By default, no banner is displayed.`,
+	common.StringValue{},
+),
+    "CASignatureAlgorithms": common.NewOption(
+	    `Specifies which algorithms are allowed for signing of certificates by certificate authorities (CAs). The default is:
+ ssh-ed25519,ecdsa-sha2-nistp256, ecdsa-sha2-nistp384,ecdsa-sha2-nistp521, sk-ssh-ed25519@openssh.com, sk-ecdsa-sha2-nistp256@openssh.com, rsa-sha2-512,rsa-sha2-256
+ If the specified list begins with a ‘+’ character, then the specified algorithms will be appended to the default set instead of replacing them. If the specified list begins with a ‘-’ character, then the specified algorithms (including wildcards) will be removed from the default set instead of replacing them.
+ Certificates signed using other algorithms will not be accepted for public key or host-based authentication.`,
+	common.PrefixWithMeaningValue{
+		Prefixes: []common.Prefix{
+			{
+				Prefix: "+",
+				Meaning: "Appende to the default set",
+			},
+			{
+				Prefix: "-",
+				Meaning: "Remove from the default set",
+			},
+		},
+		SubValue: common.ArrayValue{
+			Separator: ",",
+			AllowDuplicates: false,
+			SubValue: common.StringValue{},
+		},
+	},
+),
  //    "ChannelTimeout": `Specifies whether and how quickly sshd(8) should close inactive channels. Timeouts are specified as one or more “type=interval” pairs separated by whitespace, where the “type” must be the special keyword “global” or a channel type name from the list below, optionally containing wildcard characters.
  // The timeout value “interval” is specified in seconds or may use any of the units documented in the “TIME FORMATS” section. For example, “session=5m” would cause interactive sessions to terminate after five minutes of inactivity. Specifying a zero value disables the inactivity timeout.
  // The special timeout “global” applies to all active channels, taken together. Traffic on any active channel will reset the timeout, but when the timeout expires then all open channels will be closed. Note that this global timeout is not matched by wildcards and must be specified explicitly.
@@ -141,16 +167,53 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
  // Note that in all the above cases, terminating an inactive session does not guarantee to remove all resources associated with the session, e.g. shell processes or X11 clients relating to the session may continue to execute.
  // Moreover, terminating an inactive channel or session does not necessarily close the SSH connection, nor does it prevent a client from requesting another channel of the same type. In particular, expiring an inactive forwarding session does not prevent another identical forwarding from being subsequently created.
  // The default is not to expire channels of any type for inactivity.`,
- //    "ChrootDirectory": `Specifies the pathname of a directory to chroot(2) to after authentication. At session startup sshd(8) checks that all components of the pathname are root-owned directories which are not writable by group or others. After the chroot, sshd(8) changes the working directory to the user's home directory. Arguments to ChrootDirectory accept the tokens described in the “TOKENS” section.
- // The ChrootDirectory must contain the necessary files and directories to support the user's session. For an interactive session this requires at least a shell, typically sh(1), and basic /dev nodes such as null(4), zero(4), stdin(4), stdout(4), stderr(4), and tty(4) devices. For file transfer sessions using SFTP no additional configuration of the environment is necessary if the in-process sftp-server is used, though sessions which use logging may require /dev/log inside the chroot directory on some operating systems (see sftp-server(8) for details).
- // For safety, it is very important that the directory hierarchy be prevented from modification by other processes on the system (especially those outside the jail). Misconfiguration can lead to unsafe environments which sshd(8) cannot detect.
- // The default is none, indicating not to chroot(2).`,
- //    "Ciphers": `Specifies the ciphers allowed. Multiple ciphers must be comma-separated. If the specified list begins with a ‘+’ character, then the specified ciphers will be appended to the default set instead of replacing them. If the specified list begins with a ‘-’ character, then the specified ciphers (including wildcards) will be removed from the default set instead of replacing them. If the specified list begins with a ‘^’ character, then the specified ciphers will be placed at the head of the default set.
- // The supported ciphers are:
- // 3des-cbc aes128-cbc aes192-cbc aes256-cbc aes128-ctr aes192-ctr aes256-ctr aes128-gcm@openssh.com aes256-gcm@openssh.com chacha20-poly1305@openssh.com
- // The default is:
- // chacha20-poly1305@openssh.com, aes128-ctr,aes192-ctr,aes256-ctr, aes128-gcm@openssh.com,aes256-gcm@openssh.com
- // The list of available ciphers may also be obtained using "ssh -Q cipher".`,
+    "ChrootDirectory": common.NewOption(`Specifies the pathname of a directory to chroot(2) to after authentication. At session startup sshd(8) checks that all components of the pathname are root-owned directories which are not writable by group or others. After the chroot, sshd(8) changes the working directory to the user's home directory. Arguments to ChrootDirectory accept the tokens described in the “TOKENS” section.
+ The ChrootDirectory must contain the necessary files and directories to support the user's session. For an interactive session this requires at least a shell, typically sh(1), and basic /dev nodes such as null(4), zero(4), stdin(4), stdout(4), stderr(4), and tty(4) devices. For file transfer sessions using SFTP no additional configuration of the environment is necessary if the in-process sftp-server is used, though sessions which use logging may require /dev/log inside the chroot directory on some operating systems (see sftp-server(8) for details).
+ For safety, it is very important that the directory hierarchy be prevented from modification by other processes on the system (especially those outside the jail). Misconfiguration can lead to unsafe environments which sshd(8) cannot detect.
+ The default is none, indicating not to chroot(2).`,
+	common.StringValue{},
+),
+    "Ciphers": common.NewOption(`Specifies the ciphers allowed. Multiple ciphers must be comma-separated. If the specified list begins with a ‘+’ character, then the specified ciphers will be appended to the default set instead of replacing them. If the specified list begins with a ‘-’ character, then the specified ciphers (including wildcards) will be removed from the default set instead of replacing them. If the specified list begins with a ‘^’ character, then the specified ciphers will be placed at the head of the default set.
+ The supported ciphers are:
+ 3des-cbc aes128-cbc aes192-cbc aes256-cbc aes128-ctr aes192-ctr aes256-ctr aes128-gcm@openssh.com aes256-gcm@openssh.com chacha20-poly1305@openssh.com
+ The default is:
+ chacha20-poly1305@openssh.com, aes128-ctr,aes192-ctr,aes256-ctr, aes128-gcm@openssh.com,aes256-gcm@openssh.com
+ The list of available ciphers may also be obtained using "ssh -Q cipher".`,
+	common.PrefixWithMeaningValue{
+		Prefixes: []common.Prefix{
+			{
+				Prefix: "+",
+				Meaning: "Append to the default set",
+			},
+			{
+				Prefix: "-",
+				Meaning: "Remove from the default set",
+			},
+			{
+				Prefix: "^",
+				Meaning: "Place at the head of the default set",
+			},
+		},
+		SubValue: common.ArrayValue{
+			Separator: ",",
+			AllowDuplicates: false,
+			SubValue: common.EnumValue{
+				Values: []string{
+					"3des-cbc",
+					"aes128-cbc",
+					"aes192-cbc",
+					"aes256-cbc",
+					"aes128-ctr",
+					"aes192-ctr",
+					"aes256-ctr",
+					"aes128-gcm@openssh.com",
+					"aes256-gcm@openssh.com",
+					"chacha20-poly1305@openssh.com",
+				},
+			},
+		},
+	},
+ ),
  //    "ClientAliveCountMax": `Sets the number of client alive messages which may be sent without sshd(8) receiving any messages back from the client. If this threshold is reached while client alive messages are being sent, sshd will disconnect the client, terminating the session. It is important to note that the use of client alive messages is very different from TCPKeepAlive. The client alive messages are sent through the encrypted channel and therefore will not be spoofable. The TCP keepalive option enabled by TCPKeepAlive is spoofable. The client alive mechanism is valuable when the client or server depend on knowing when a connection has become unresponsive.
  // The default value is 3. If ClientAliveInterval is set to 15, and ClientAliveCountMax is left at the default, unresponsive SSH clients will be disconnected after approximately 45 seconds. Setting a zero ClientAliveCountMax disables connection termination.`,
  //    "ClientAliveInterval": `Sets a timeout interval in seconds after which if no data has been received from the client, sshd(8) will send a message through the encrypted channel to request a response from the client. The default is 0, indicating that these messages will not be sent to the client.`,

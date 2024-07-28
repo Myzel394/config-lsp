@@ -84,6 +84,10 @@ func getCompletionsFromValue(value common.Value) []protocol.CompletionItem {
 		}
 
 		return completions
+	case common.PrefixWithMeaningValue:
+		prefixWithMeaningValue := value.(common.PrefixWithMeaningValue)
+
+		return getCompletionsFromValue(prefixWithMeaningValue.SubValue)
 	}
 
 	return []protocol.CompletionItem{}

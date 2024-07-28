@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -80,6 +81,29 @@ type CustomValue struct {
 }
 func (v CustomValue) getTypeDescription() []string {
 	return []string{ "Custom" }
+}
+
+type Prefix struct {
+	Prefix string
+	Meaning string
+}
+type PrefixWithMeaningValue struct {
+	Prefixes []Prefix
+	SubValue Value
+}
+func (v PrefixWithMeaningValue) getTypeDescription() []string {
+	subDescription := v.SubValue.getTypeDescription()
+
+	prefixDescription := Map(v.Prefixes, func(prefix Prefix) string {
+		return fmt.Sprintf("_%s_ -> %s", prefix.Prefix, prefix.Meaning)
+	})
+
+	return append(subDescription,
+		append(
+			[]string{ "The following prefixes are allowed:" },
+			prefixDescription...,
+		)...,
+	)
 }
 
 

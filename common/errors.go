@@ -36,8 +36,9 @@ func (e LineNotFoundError) Error() string {
 
 type ValueNotInEnumError struct {
 	availableValues []string
+	providedValue string
 }
 func (e ValueNotInEnumError) Error() string {
-	return fmt.Sprint("'%s' is not valid. Select one from: %v", strings.Join(e.availableValues, ","))
+	return fmt.Sprint("'%s' is not valid. Select one from: %s", e.providedValue, strings.Join(e.availableValues, ","))
 }
 
