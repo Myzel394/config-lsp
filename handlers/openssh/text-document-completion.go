@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"config-lsp/common"
-	"strings"
+	"errors"
 
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -12,20 +12,19 @@ import (
 )
 
 func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionParams) (interface{}, error) {
-	line, err := common.GetLine(params.TextDocument.URI, int(params.Position.Line))
+	option, line, err := Parser.FindByLineNumber(int(params.Position.Line))
 
-	if err != nil {
-		return [...]protocol.CompletionItem{}, err
-	}
-
-	rootOption := getCurrentOption(line, int(params.Position.Character))
-
-	if (rootOption == "") {
+	if err == nil {
+		if line.IsCursorAtRootOption(int(params.Position.Character)) {
+			return getRootCompletions(), nil
+		} else {
+			return getOptionCompletions(option), nil
+		}
+	} else if errors.Is(err, common.LineNotFoundError{}) {
 		return getRootCompletions(), nil
-	} else {
-		return getOptionCompletions(rootOption), nil
 	}
 
+	return nil, err
 }
 
 func getRootCompletions() []protocol.CompletionItem {
@@ -71,19 +70,5 @@ func getOptionCompletions(optionName string) []protocol.CompletionItem {
 	}
 
 	return []protocol.CompletionItem{}
-}
-
-func getCurrentOption(line string, position int) string {
-	words := strings.Split(line, " ")
-
-	if len(words) == 0 {
-		return ""
-	}
-
-	if (position <= len(words[0])) {
-		return ""
-	}
-
-	return words[0]
 }
 

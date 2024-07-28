@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	openssh "config-lsp/handlers/openssh"
 
 	"github.com/tliron/commonlog"
@@ -27,10 +25,12 @@ func main() {
 	commonlog.Configure(1, nil)
 
 	handler = protocol.Handler{
-		Initialize:  initialize,
+		Initialize: initialize,
 		Initialized: initialized,
-		Shutdown:    shutdown,
-		SetTrace:    setTrace,
+		Shutdown: shutdown,
+		SetTrace: setTrace,
+		TextDocumentDidOpen: openssh.TextDocumentDidOpen,
+		TextDocumentDidChange: openssh.TextDocumentDidChange,
 		TextDocumentCompletion: openssh.TextDocumentCompletion,
 	}
 
@@ -41,6 +41,7 @@ func main() {
 
 func initialize(context *glsp.Context, params *protocol.InitializeParams) (any, error) {
 	capabilities := handler.CreateServerCapabilities()
+	capabilities.TextDocumentSync = protocol.TextDocumentSyncKindFull
 
 	return protocol.InitializeResult{
 		Capabilities: capabilities,
