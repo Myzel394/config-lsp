@@ -12,7 +12,7 @@ import (
 )
 
 func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionParams) (interface{}, error) {
-	option, line, err := Parser.FindByLineNumber(int(params.Position.Line))
+	option, line, err := Parser.FindByLineNumber(uint32(params.Position.Line))
 
 	if err == nil {
 		if line.IsCursorAtRootOption(int(params.Position.Character)) {

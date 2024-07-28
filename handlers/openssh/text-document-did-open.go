@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"config-lsp/common"
 	"os"
 
 	"github.com/tliron/glsp"
@@ -14,10 +15,30 @@ func TextDocumentDidOpen(context *glsp.Context, params *protocol.DidOpenTextDocu
 		return err
 	}
 
-	errors := Parser.ParseFromFile(string(readBytes))
+	diagnostics := make([]protocol.Diagnostic, 0)
 
-	if len(errors) > 0 {
-		SendDiagnosticsFromParserErrors(context, params.TextDocument.URI, errors)
+	diagnostics = append(
+		diagnostics,
+		common.Map(
+			Parser.ParseFromFile(string(readBytes)),
+			func (err common.OptionError) protocol.Diagnostic {
+				return err.GetPublishDiagnosticsParams()
+			},
+		)...,
+	)
+
+	diagnostics = append(
+		diagnostics,
+		common.Map(
+			common.AnalyzeValues(Parser, Options),
+			func (err common.ValueError) protocol.Diagnostic {
+				return err.GetPublishDiagnosticsParams()
+			},
+		)...,
+	)
+
+	if len(diagnostics) > 0 {
+		common.SendDiagnostics(context, params.TextDocument.URI, diagnostics)
 	}
 
 	return nil

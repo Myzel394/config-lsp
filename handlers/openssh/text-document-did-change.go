@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"config-lsp/common"
+
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -10,16 +12,33 @@ func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeText
 	content := params.ContentChanges[0].(protocol.TextDocumentContentChangeEventWhole).Text
 
 	Parser.Clear()
-	errors := Parser.ParseFromFile(content)
+	diagnostics := make([]protocol.Diagnostic, 0)
 
-	if len(errors) > 0 {
-		SendDiagnosticsFromParserErrors(context, params.TextDocument.URI, errors)
+	diagnostics = append(
+		diagnostics,
+		common.Map(
+			Parser.ParseFromFile(content),
+			func (err common.OptionError) protocol.Diagnostic {
+				return err.GetPublishDiagnosticsParams()
+			},
+		)...,
+	)
+
+	diagnostics = append(
+		diagnostics,
+		common.Map(
+			common.AnalyzeValues(Parser, Options),
+			func (err common.ValueError) protocol.Diagnostic {
+				return err.GetPublishDiagnosticsParams()
+			},
+		)...,
+	)
+
+	if len(diagnostics) > 0 {
+		common.SendDiagnostics(context, params.TextDocument.URI, diagnostics)
 	} else {
-		ClearDiagnostics(context, params.TextDocument.URI)
+		common.ClearDiagnostics(context, params.TextDocument.URI)
 	}
-
-	analyzeErrors := AnalyzeValue()
-	SendDiagnosticsFromAnalyzerErrors(context, params.TextDocument.URI, analyzeErrors)
 
 	return nil
 }

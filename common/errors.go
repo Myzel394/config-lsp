@@ -3,33 +3,90 @@ package common
 import (
 	"fmt"
 	"strings"
+	"unicode/utf8"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-type ParserError interface{}
+type DiagnosticableError interface {
+	GetDiagnostic(uri protocol.DocumentUri) protocol.Diagnostic
+}
+
+type OptionError struct {
+	Line uint32
+	ProvidedOption string
+	DocError error
+}
+func (e OptionError) GetPublishDiagnosticsParams() protocol.Diagnostic {
+	severity := protocol.DiagnosticSeverityError
+
+	return protocol.Diagnostic{
+		Message: e.DocError.Error(),
+		Range: protocol.Range{
+			Start: protocol.Position{
+				Line: e.Line,
+				Character: 0,
+			},
+			End: protocol.Position{
+				Line: e.Line,
+				Character: uint32(utf8.RuneCountInString(e.ProvidedOption)),
+			},
+		},
+		Severity: &severity,
+	}
+}
+func (e OptionError) Error() string {
+	return "Option error"
+}
+
+type ValueError struct {
+	Line uint32
+	Option string
+	Value string
+
+	DocError error
+}
+func (e ValueError) GetPublishDiagnosticsParams() protocol.Diagnostic {
+	severity := protocol.DiagnosticSeverityError
+	start := uint32(utf8.RuneCountInString(e.Option) + utf8.RuneCountInString(" "))
+
+	return protocol.Diagnostic{
+		Message: e.DocError.Error(),
+		Range: protocol.Range{
+			Start: protocol.Position{
+				Line: e.Line,
+				Character: start,
+			},
+			End: protocol.Position{
+				Line: e.Line,
+				Character: start + uint32(utf8.RuneCountInString(e.Value)),
+			},
+		},
+		Severity: &severity,
+	}
+}
+func (e ValueError) Error() string {
+	return "Value error"
+}
 
 type OptionAlreadyExistsError struct {
-	Option      string
-	FoundOnLine uint32
+	AlreadyLine uint32
 }
 
 func (e OptionAlreadyExistsError) Error() string {
-	return fmt.Sprintf("Option %s already exists", e.Option)
+	return fmt.Sprintf("This option is already defined on line %d", e.AlreadyLine)
 }
 
-type OptionUnknownError struct {
-	Option string
-}
+type OptionUnknownError struct {}
 
 func (e OptionUnknownError) Error() string {
-	return fmt.Sprintf("Option '%s' does not exist", e.Option)
+	return "This option does not exist"
 }
 
-type MalformedLineError struct {
-	Line string
-}
+type MalformedLineError struct {}
 
 func (e MalformedLineError) Error() string {
-	return fmt.Sprintf("Malformed line: %s", e.Line)
+	return "Malformed line"
 }
 
 type LineNotFoundError struct{}
@@ -38,21 +95,26 @@ func (e LineNotFoundError) Error() string {
 	return "Line not found"
 }
 
+// Value errors
 type ValueNotInEnumError struct {
 	AvailableValues []string
 	ProvidedValue   string
 }
 
+func (e ValueNotInEnumError) Error() string {
+	return fmt.Sprintf("This value is not valid. Select one from: %s", strings.Join(e.AvailableValues, ","))
+}
+
 type NotANumberError struct{}
 
 func (e NotANumberError) Error() string {
-	return "This is not a number"
+	return "This must be number"
 }
 
 type NumberIsNotPositiveError struct{}
 
 func (e NumberIsNotPositiveError) Error() string {
-	return "This number is not positive"
+	return "This number must be positive for this setting"
 }
 
 type EmptyStringError struct{}
@@ -64,9 +126,8 @@ func (e EmptyStringError) Error() string {
 type ArrayContainsDuplicatesError struct {
 	Duplicates []string
 }
-
 func (e ArrayContainsDuplicatesError) Error() string {
-	return fmt.Sprintf("Array contains the following duplicate values: %s", strings.Join(e.Duplicates, ","))
+	return fmt.Sprintf("Remove the following duplicate values: %s", strings.Join(e.Duplicates, ","))
 }
 
 type PathDoesNotExistError struct{}
@@ -81,13 +142,3 @@ func (e PathInvalidError) Error() string {
 	return "This path is invalid"
 }
 
-type ValueError struct {
-	Line  int
-	Start int
-	End   int
-	Error error
-}
-
-func (e ValueNotInEnumError) Error() string {
-	return fmt.Sprintf("'%s' is not valid. Select one from: %s", e.ProvidedValue, strings.Join(e.AvailableValues, ","))
-}

@@ -6,7 +6,7 @@ import (
 )
 
 type SimpleConfigPosition struct {
-	Line int
+	Line uint32
 }
 
 type SimpleConfigLine struct {
@@ -33,21 +33,17 @@ type SimpleConfigParser struct {
 	Options SimpleConfigOptions
 }
 
-func (p *SimpleConfigParser) AddLine(line string, lineNumber int) error {
+func (p *SimpleConfigParser) AddLine(line string, lineNumber uint32) (string, error) {
 	parts := strings.SplitN(line, p.Options.Separator, 2)
 
 	if len(parts) == 0 {
-		return MalformedLineError{
-			Line: line,
-		}
+		return "", MalformedLineError{}
 	}
 
 	option := parts[0]
 
 	if _, exists := (*p.Options.AvailableOptions)[option]; !exists {
-		return OptionUnknownError{
-			Option: option,
-		}
+		return option, OptionUnknownError{}
 	}
 
 	value := ""
@@ -57,9 +53,8 @@ func (p *SimpleConfigParser) AddLine(line string, lineNumber int) error {
 	}
 
 	if _, exists := p.Lines[option]; exists {
-		return OptionAlreadyExistsError{
-			Option:      option,
-			FoundOnLine: uint32(lineNumber),
+		return option, OptionAlreadyExistsError{
+			AlreadyLine: p.Lines[option].Position.Line,
 		}
 	}
 
@@ -70,7 +65,7 @@ func (p *SimpleConfigParser) AddLine(line string, lineNumber int) error {
 		},
 	}
 
-	return nil
+	return option, nil
 
 }
 
@@ -91,7 +86,7 @@ func (p *SimpleConfigParser) UpsertOption(option string, value string) {
 	if _, exists := p.Lines[option]; exists {
 		p.ReplaceOption(option, value)
 	} else {
-		p.AddLine(option+p.Options.Separator+value, len(p.Lines))
+		p.AddLine(option+p.Options.Separator+value, uint32(len(p.Lines)))
 	}
 }
 
@@ -106,24 +101,26 @@ func (p *SimpleConfigParser) GetOption(option string) (SimpleConfigLine, error) 
 				Line: 0,
 			},
 		},
-		OptionUnknownError{
-			Option: option,
-		}
+		OptionUnknownError{}
 }
 
-func (p *SimpleConfigParser) ParseFromFile(content string) []ParserError {
+func (p *SimpleConfigParser) ParseFromFile(content string) []OptionError {
 	lines := strings.Split(content, "\n")
-	errors := make([]ParserError, 0)
+	errors := make([]OptionError, 0)
 
 	for index, line := range lines {
 		if p.Options.IgnorePattern.MatchString(line) {
 			continue
 		}
 
-		err := p.AddLine(line, index)
+		option, err := p.AddLine(line, uint32(index))
 
 		if err != nil {
-			errors = append(errors, err)
+			errors = append(errors, OptionError{
+				Line: uint32(index),
+				ProvidedOption: option,
+				DocError: err,
+			})
 		}
 	}
 
@@ -135,7 +132,7 @@ func (p *SimpleConfigParser) Clear() {
 }
 
 // TODO: Use better approach: Store an extra array of lines in order; with references to the SimpleConfigLine
-func (p *SimpleConfigParser) FindByLineNumber(lineNumber int) (string, SimpleConfigLine, error) {
+func (p *SimpleConfigParser) FindByLineNumber(lineNumber uint32) (string, SimpleConfigLine, error) {
 	for option, line := range p.Lines {
 		if line.Position.Line == lineNumber {
 			return option, line, nil
