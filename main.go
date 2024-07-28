@@ -1,6 +1,10 @@
 package main
 
 import (
+	"fmt"
+
+	openssh "config-lsp/handlers/openssh"
+
 	"github.com/tliron/commonlog"
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -11,7 +15,7 @@ import (
 	_ "github.com/tliron/commonlog/simple"
 )
 
-const lsName = "my language"
+const lsName = "config-lsp"
 
 var (
 	version string = "0.0.1"
@@ -27,7 +31,7 @@ func main() {
 		Initialized: initialized,
 		Shutdown:    shutdown,
 		SetTrace:    setTrace,
-		TextDocumentCompletion: TextDocumentCompletion,
+		TextDocumentCompletion: openssh.TextDocumentCompletion,
 	}
 
 	server := server.NewServer(&handler, lsName, false)
@@ -59,20 +63,5 @@ func shutdown(context *glsp.Context) error {
 func setTrace(context *glsp.Context, params *protocol.SetTraceParams) error {
 	protocol.SetTraceValue(params.Value)
 	return nil
-}
-
-func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionParams) (interface{}, error) {
-	var completions []protocol.CompletionItem
-
-	Label := "happyface"
-	text := "Hello World!"
-
-	completions = append(completions, protocol.CompletionItem{
-		Label: Label,
-		Detail: &text,
-		InsertText: &text,
-	})
-
-	return completions, nil
 }
 
