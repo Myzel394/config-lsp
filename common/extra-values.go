@@ -52,7 +52,7 @@ func fetchPasswdInfo() ([]passwdInfo, error) {
 
 // UserValue returns a Value that fetches user names from /etc/passwd
 // if `separatorForMultiple` is not empty, it will return an ArrayValue
-func UserValue(separatorForMultiple string) Value {
+func UserValue(separatorForMultiple string, enforceValues bool) Value {
 	return CustomValue{
 		FetchValue: func() Value {
 			infos, err := fetchPasswdInfo()
@@ -62,6 +62,7 @@ func UserValue(separatorForMultiple string) Value {
 			}
 
 			enumValues := EnumValue{
+				EnforceValues: enforceValues,
 				Values: Map(infos, func(info passwdInfo) string {
 					return info.Name
 				}),

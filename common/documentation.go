@@ -13,6 +13,10 @@ type Value interface {
 
 type EnumValue struct {
 	Values []string
+	// If `true`, the value MUST be one of the values in the Values array
+	// Otherwise an error is shown
+	// If `false`, the value is just a hint
+	EnforceValues bool
 }
 
 func (v EnumValue) getTypeDescription() []string {
@@ -111,6 +115,34 @@ func (v PrefixWithMeaningValue) getTypeDescription() []string {
 			prefixDescription...,
 		)...,
 	)
+}
+
+type PathType uint8
+
+const (
+	PathTypeExistenceOptional PathType = 0
+	PathTypeFile PathType = 1
+	PathTypeDirectory PathType = 2
+)
+
+type PathValue struct {
+	RequiredType PathType
+}
+
+func (v PathValue) getTypeDescription() []string {
+	hints := make([]string, 0)
+
+	switch v.RequiredType {
+	case PathTypeExistenceOptional:
+		hints = append(hints, "Optional")
+		break;
+	case PathTypeFile:
+		hints = append(hints, "File")
+	case PathTypeDirectory:
+		hints = append(hints, "Directory")
+	}
+
+	return []string{strings.Join(hints, ", ")}
 }
 
 type Option struct {
