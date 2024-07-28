@@ -22,5 +22,3 @@ func TextDocumentDidOpen(context *glsp.Context, params *protocol.DidOpenTextDocu
 
 	return nil
 }
-
-

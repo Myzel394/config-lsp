@@ -10,7 +10,7 @@ type SimpleConfigPosition struct {
 }
 
 type SimpleConfigLine struct {
-	Value string
+	Value    string
 	Position SimpleConfigPosition
 }
 
@@ -23,13 +23,13 @@ func (l SimpleConfigLine) IsCursorAtRootOption(cursor int) bool {
 }
 
 type SimpleConfigOptions struct {
-	Separator string
-	IgnorePattern regexp.Regexp
+	Separator        string
+	IgnorePattern    regexp.Regexp
 	AvailableOptions *map[string]Option
 }
 
 type SimpleConfigParser struct {
-	Lines map[string]SimpleConfigLine
+	Lines   map[string]SimpleConfigLine
 	Options SimpleConfigOptions
 }
 
@@ -58,7 +58,7 @@ func (p *SimpleConfigParser) AddLine(line string, lineNumber int) error {
 
 	if _, exists := p.Lines[option]; exists {
 		return OptionAlreadyExistsError{
-			Option: option,
+			Option:      option,
 			FoundOnLine: uint32(lineNumber),
 		}
 	}
@@ -71,7 +71,7 @@ func (p *SimpleConfigParser) AddLine(line string, lineNumber int) error {
 	}
 
 	return nil
-	
+
 }
 
 func (p *SimpleConfigParser) ReplaceOption(option string, value string) {
@@ -91,7 +91,7 @@ func (p *SimpleConfigParser) UpsertOption(option string, value string) {
 	if _, exists := p.Lines[option]; exists {
 		p.ReplaceOption(option, value)
 	} else {
-		p.AddLine(option + p.Options.Separator + value, len(p.Lines))
+		p.AddLine(option+p.Options.Separator+value, len(p.Lines))
 	}
 }
 
@@ -105,7 +105,7 @@ func (p *SimpleConfigParser) GetOption(option string) (SimpleConfigLine, error) 
 			Position: SimpleConfigPosition{
 				Line: 0,
 			},
-		}, 
+		},
 		OptionUnknownError{
 			Option: option,
 		}
@@ -144,4 +144,3 @@ func (p *SimpleConfigParser) FindByLineNumber(lineNumber int) (string, SimpleCon
 
 	return "", SimpleConfigLine{Value: "", Position: SimpleConfigPosition{Line: 0}}, LineNotFoundError{}
 }
-

@@ -28,4 +28,3 @@ func Map[T any, O any](values []T, f func(T) O) []O {
 
 	return result
 }
-

@@ -18,6 +18,5 @@ func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeText
 		ClearDiagnostics(context, params.TextDocument.URI)
 	}
 
-
 	return nil
 }

@@ -25,12 +25,12 @@ func main() {
 	commonlog.Configure(1, nil)
 
 	handler = protocol.Handler{
-		Initialize: initialize,
-		Initialized: initialized,
-		Shutdown: shutdown,
-		SetTrace: setTrace,
-		TextDocumentDidOpen: openssh.TextDocumentDidOpen,
-		TextDocumentDidChange: openssh.TextDocumentDidChange,
+		Initialize:             initialize,
+		Initialized:            initialized,
+		Shutdown:               shutdown,
+		SetTrace:               setTrace,
+		TextDocumentDidOpen:    openssh.TextDocumentDidOpen,
+		TextDocumentDidChange:  openssh.TextDocumentDidChange,
 		TextDocumentCompletion: openssh.TextDocumentCompletion,
 	}
 
@@ -65,4 +65,3 @@ func setTrace(context *glsp.Context, params *protocol.SetTraceParams) error {
 	protocol.SetTraceValue(params.Value)
 	return nil
 }
-

@@ -39,9 +39,9 @@ func getRootCompletions() []protocol.CompletionItem {
 		format := protocol.InsertTextFormatSnippet
 
 		completions[index] = protocol.CompletionItem{
-			Label: label,
-			Documentation: common.GetDocumentation(&option),
-			InsertText: &insertText,
+			Label:            label,
+			Documentation:    common.GetDocumentation(&option),
+			InsertText:       &insertText,
 			InsertTextFormat: &format,
 		}
 	}
@@ -59,7 +59,7 @@ func getCompletionsFromValue(value common.Value) []protocol.CompletionItem {
 			textFormat := protocol.InsertTextFormatPlainText
 
 			completions[index] = protocol.CompletionItem{
-				Label: value,
+				Label:            value,
 				InsertTextFormat: &textFormat,
 			}
 		}
@@ -100,4 +100,3 @@ func getOptionCompletions(optionName string) []protocol.CompletionItem {
 
 	return completions
 }
-

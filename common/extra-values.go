@@ -6,9 +6,9 @@ import (
 )
 
 type passwdInfo struct {
-	Name string
-	UID string
-	GID string
+	Name     string
+	UID      string
+	GID      string
 	HomePath string
 }
 
@@ -36,9 +36,9 @@ func fetchPasswdInfo() ([]passwdInfo, error) {
 		}
 
 		info := passwdInfo{
-			Name: splitted[0],
-			UID: splitted[2],
-			GID: splitted[3],
+			Name:     splitted[0],
+			UID:      splitted[2],
+			GID:      splitted[3],
 			HomePath: splitted[5],
 		}
 
@@ -49,7 +49,6 @@ func fetchPasswdInfo() ([]passwdInfo, error) {
 
 	return infos, nil
 }
-
 
 // UserValue returns a Value that fetches user names from /etc/passwd
 // if `separatorForMultiple` is not empty, it will return an ArrayValue
@@ -73,11 +72,10 @@ func UserValue(separatorForMultiple string) Value {
 			} else {
 				return ArrayValue{
 					AllowDuplicates: false,
-					SubValue: enumValues,
-					Separator: separatorForMultiple,
+					SubValue:        enumValues,
+					Separator:       separatorForMultiple,
 				}
 			}
 		},
 	}
 }
-
