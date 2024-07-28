@@ -52,15 +52,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
     "AllowUsers": common.NewOption(
 		`This keyword can be followed by a list of user name patterns, separated by spaces. If specified, login is allowed only for user names that match one of the patterns. Only user names are valid; a numerical user ID is not recognized. By default, login is allowed for all users. If the pattern takes the form USER@HOST then USER and HOST are separately checked, restricting logins to particular users from particular hosts. HOST criteria may additionally contain addresses to match in CIDR address/masklen format. The allow/deny users directives are processed in the following order: DenyUsers, AllowUsers.
  See PATTERNS in ssh_config(5) for more information on patterns. This keyword may appear multiple times in sshd_config with each instance appending to the list.`,
-	common.CustomValue{
-		FetchValue: func() common.Value {
-			return common.ArrayValue{
-				AllowDuplicates: false,
-				SubValue: common.StringValue{},
-				Separator: " ",
-			}
-		},
-	},
+ common.UserValue(" "),
  ),
     "AuthenticationMethods": common.NewOption(
 		`Specifies the authentication methods that must be successfully completed for a user to be granted access. This option must be followed by one or more lists of comma-separated authentication method names, or by the single string any to indicate the default behaviour of accepting any single authentication method. If the default is overridden, then successful authentication requires completion of every method in at least one of these lists.
@@ -107,10 +99,23 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	common.StringValue{},
 ),
 	
- //    "AuthorizedKeysCommandUser": `Specifies the user under whose account the AuthorizedKeysCommand is run. It is recommended to use a dedicated user that has no other role on the host than running authorized keys commands. If AuthorizedKeysCommand is specified but AuthorizedKeysCommandUser is not, then sshd(8) will refuse to start.`,
- //    "AuthorizedKeysFile": `Specifies the file that contains the public keys used for user authentication. The format is described in the AUTHORIZED_KEYS FILE FORMAT section of sshd(8). Arguments to AuthorizedKeysFile accept the tokens described in the “TOKENS” section. After expansion, AuthorizedKeysFile is taken to be an absolute path or one relative to the user's home directory. Multiple files may be listed, separated by whitespace. Alternately this option may be set to none to skip checking for user keys in files. The default is ".ssh/authorized_keys .ssh/authorized_keys2".`,
- //    "AuthorizedPrincipalsCommand": `Specifies a program to be used to generate the list of allowed certificate principals as per AuthorizedPrincipalsFile. The program must be owned by root, not writable by group or others and specified by an absolute path. Arguments to AuthorizedPrincipalsCommand accept the tokens described in the “TOKENS” section. If no arguments are specified then the username of the target user is used.
- // The program should produce on standard output zero or more lines of AuthorizedPrincipalsFile output. If either AuthorizedPrincipalsCommand or AuthorizedPrincipalsFile is specified, then certificates offered by the client for authentication must contain a principal that is listed. By default, no AuthorizedPrincipalsCommand is run.`,
+    "AuthorizedKeysCommandUser": common.NewOption(
+	    `Specifies the user under whose account the AuthorizedKeysCommand is run. It is recommended to use a dedicated user that has no other role on the host than running authorized keys commands. If AuthorizedKeysCommand is specified but AuthorizedKeysCommandUser is not, then sshd(8) will refuse to start.`,
+	    common.UserValue(""),
+    ),
+    "AuthorizedKeysFile": common.NewOption(
+	    `Specifies the file that contains the public keys used for user authentication. The format is described in the AUTHORIZED_KEYS FILE FORMAT section of sshd(8). Arguments to AuthorizedKeysFile accept the tokens described in the “TOKENS” section. After expansion, AuthorizedKeysFile is taken to be an absolute path or one relative to the user's home directory. Multiple files may be listed, separated by whitespace. Alternately this option may be set to none to skip checking for user keys in files. The default is ".ssh/authorized_keys .ssh/authorized_keys2".`,
+	    common.ArrayValue{
+		SubValue: common.StringValue{},
+		Separator: " ",
+		AllowDuplicates: false,
+	    },
+    ),
+    "AuthorizedPrincipalsCommand": common.NewOption(
+	    `Specifies a program to be used to generate the list of allowed certificate principals as per AuthorizedPrincipalsFile. The program must be owned by root, not writable by group or others and specified by an absolute path. Arguments to AuthorizedPrincipalsCommand accept the tokens described in the “TOKENS” section. If no arguments are specified then the username of the target user is used.
+ The program should produce on standard output zero or more lines of AuthorizedPrincipalsFile output. If either AuthorizedPrincipalsCommand or AuthorizedPrincipalsFile is specified, then certificates offered by the client for authentication must contain a principal that is listed. By default, no AuthorizedPrincipalsCommand is run.`,
+	common.StringValue{},
+),
  //    "AuthorizedPrincipalsCommandUser": `Specifies the user under whose account the AuthorizedPrincipalsCommand is run. It is recommended to use a dedicated user that has no other role on the host than running authorized principals commands. If AuthorizedPrincipalsCommand is specified but AuthorizedPrincipalsCommandUser is not, then sshd(8) will refuse to start.`,
  //    "AuthorizedPrincipalsFile": `Specifies a file that lists principal names that are accepted for certificate authentication. When using certificates signed by a key listed in TrustedUserCAKeys, this file lists names, one of which must appear in the certificate for it to be accepted for authentication. Names are listed one per line preceded by key options (as described in “AUTHORIZED_KEYS FILE FORMAT” in sshd(8)). Empty lines and comments starting with ‘#’ are ignored.
  // Arguments to AuthorizedPrincipalsFile accept the tokens described in the “TOKENS” section. After expansion, AuthorizedPrincipalsFile is taken to be an absolute path or one relative to the user's home directory. The default is none, i.e. not to use a principals file – in this case, the username of the user must appear in a certificate's principals list for it to be accepted.

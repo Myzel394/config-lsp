@@ -19,7 +19,7 @@ func ClearDiagnostics(context *glsp.Context, uri protocol.DocumentUri) {
     )
 }
 
-func SendDiagnosticsFromParserErrors(context *glsp.Context, uri protocol.DocumentUri, parserErrors []error) {
+func SendDiagnosticsFromParserErrors(context *glsp.Context, uri protocol.DocumentUri, parserErrors []common.ParserError) {
     diagnosticErrors := make([]protocol.Diagnostic, 0)
 
     for _, parserError := range parserErrors {

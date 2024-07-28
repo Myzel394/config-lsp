@@ -111,9 +111,9 @@ func (p *SimpleConfigParser) GetOption(option string) (SimpleConfigLine, error) 
 		}
 }
 
-func (p *SimpleConfigParser) ParseFromFile(content string) []error {
+func (p *SimpleConfigParser) ParseFromFile(content string) []ParserError {
 	lines := strings.Split(content, "\n")
-	errors := make([]error, 0)
+	errors := make([]ParserError, 0)
 
 	for index, line := range lines {
 		if p.Options.IgnorePattern.MatchString(line) {

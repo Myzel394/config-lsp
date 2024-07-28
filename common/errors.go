@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"strings"
 )
 
 type ParserError interface {}
@@ -31,5 +32,12 @@ func (e MalformedLineError) Error() string {
 type LineNotFoundError struct {}
 func (e LineNotFoundError) Error() string {
 	return "Line not found"
+}
+
+type ValueNotInEnumError struct {
+	availableValues []string
+}
+func (e ValueNotInEnumError) Error() string {
+	return fmt.Sprint("'%s' is not valid. Select one from: %v", strings.Join(e.availableValues, ","))
 }
 
