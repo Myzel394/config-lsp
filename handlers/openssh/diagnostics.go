@@ -54,3 +54,31 @@ func SendDiagnosticsFromParserErrors(context *glsp.Context, uri protocol.Documen
 		},
 	)
 }
+
+func SendDiagnosticsFromAnalyzerErrors(context *glsp.Context, uri protocol.DocumentUri, errors []common.ValueError) {
+	diagnosticErrors := make([]protocol.Diagnostic, 0)
+
+	for _, err := range errors {
+		diagnosticErrors = append(diagnosticErrors, protocol.Diagnostic{
+			Range: protocol.Range{
+				Start: protocol.Position{
+					Line:      uint32(err.Line),
+					Character: uint32(err.Start),
+				},
+				End: protocol.Position{
+					Line:      uint32(err.Line),
+					Character: uint32(err.End),
+				},
+			},
+			Message: err.Error.Error(),
+		})
+	}
+
+	context.Notify(
+		"textDocument/publishDiagnostics",
+		protocol.PublishDiagnosticsParams{
+			URI:         uri,
+			Diagnostics: diagnosticErrors,
+		},
+	)
+}

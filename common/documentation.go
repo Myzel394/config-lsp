@@ -2,13 +2,15 @@ package common
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 type Value interface {
-	getTypeDescription() []string
+	GetTypeDescription() []string
+	CheckIsValid(value string) error
 }
 
 type EnumValue struct {
@@ -19,7 +21,7 @@ type EnumValue struct {
 	EnforceValues bool
 }
 
-func (v EnumValue) getTypeDescription() []string {
+func (v EnumValue) GetTypeDescription() []string {
 	lines := make([]string, len(v.Values)+1)
 	lines[0] = "Enum of:"
 
@@ -29,11 +31,41 @@ func (v EnumValue) getTypeDescription() []string {
 
 	return lines
 }
+func (v EnumValue) CheckIsValid(value string) error {
+	if !v.EnforceValues {
+		return nil
+	}
+
+	for _, validValue := range v.Values {
+		if validValue == value {
+			return nil
+		}
+
+	}
+
+	return ValueNotInEnumError{
+		ProvidedValue:   value,
+		AvailableValues: v.Values,
+	}
+}
 
 type PositiveNumberValue struct{}
 
-func (v PositiveNumberValue) getTypeDescription() []string {
+func (v PositiveNumberValue) GetTypeDescription() []string {
 	return []string{"Positive number"}
+}
+func (v PositiveNumberValue) CheckIsValid(value string) error {
+	number, err := strconv.Atoi(value)
+
+	if err != nil {
+		return NotANumberError{}
+	}
+
+	if number < 0 {
+		return NumberIsNotPositiveError{}
+	}
+
+	return nil
 }
 
 type ArrayValue struct {
@@ -42,25 +74,57 @@ type ArrayValue struct {
 	AllowDuplicates bool
 }
 
-func (v ArrayValue) getTypeDescription() []string {
+func (v ArrayValue) GetTypeDescription() []string {
 	subValue := v.SubValue.(Value)
 
 	return append(
 		[]string{"An Array separated by " + v.Separator + " of:"},
-		subValue.getTypeDescription()...,
+		subValue.GetTypeDescription()...,
 	)
+}
+func (v ArrayValue) CheckIsValid(value string) error {
+	values := strings.Split(value, v.Separator)
+
+	for _, subValue := range values {
+		err := v.SubValue.CheckIsValid(subValue)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	if !v.AllowDuplicates {
+		valuesOccurrences := SliceToMap(values, 0)
+
+		// Only continue if there are actually duplicate values
+		if len(values) != len(valuesOccurrences) {
+			for _, subValue := range values {
+				valuesOccurrences[subValue]++
+			}
+
+			duplicateValues := FilterMapWhere(valuesOccurrences, func(_ string, value int) bool {
+				return value > 1
+			})
+
+			return ArrayContainsDuplicatesError{
+				Duplicates: KeysOfMap(duplicateValues),
+			}
+		}
+	}
+
+	return nil
 }
 
 type OrValue struct {
 	Values []Value
 }
 
-func (v OrValue) getTypeDescription() []string {
+func (v OrValue) GetTypeDescription() []string {
 	lines := make([]string, 0)
 
 	for _, subValueRaw := range v.Values {
 		subValue := subValueRaw.(Value)
-		subLines := subValue.getTypeDescription()
+		subLines := subValue.GetTypeDescription()
 
 		for index, line := range subLines {
 			if strings.HasPrefix(line, "\t*") {
@@ -78,19 +142,46 @@ func (v OrValue) getTypeDescription() []string {
 		lines...,
 	)
 }
+func (v OrValue) CheckIsValid(value string) error {
+	var firstError error = nil
+
+	for _, subValue := range v.Values {
+		err := subValue.CheckIsValid(value)
+
+		if err == nil {
+			return nil
+		} else if firstError == nil {
+			firstError = err
+		}
+	}
+
+	return firstError
+}
 
 type StringValue struct{}
 
-func (v StringValue) getTypeDescription() []string {
+func (v StringValue) GetTypeDescription() []string {
 	return []string{"String"}
+}
+
+func (v StringValue) CheckIsValid(value string) error {
+	if value == "" {
+		return EmptyStringError{}
+	}
+
+	return nil
 }
 
 type CustomValue struct {
 	FetchValue func() Value
 }
 
-func (v CustomValue) getTypeDescription() []string {
+func (v CustomValue) GetTypeDescription() []string {
 	return []string{"Custom"}
+}
+
+func (v CustomValue) CheckIsValid(value string) error {
+	return v.FetchValue().CheckIsValid(value)
 }
 
 type Prefix struct {
@@ -102,8 +193,8 @@ type PrefixWithMeaningValue struct {
 	SubValue Value
 }
 
-func (v PrefixWithMeaningValue) getTypeDescription() []string {
-	subDescription := v.SubValue.getTypeDescription()
+func (v PrefixWithMeaningValue) GetTypeDescription() []string {
+	subDescription := v.SubValue.GetTypeDescription()
 
 	prefixDescription := Map(v.Prefixes, func(prefix Prefix) string {
 		return fmt.Sprintf("_%s_ -> %s", prefix.Prefix, prefix.Meaning)
@@ -117,25 +208,29 @@ func (v PrefixWithMeaningValue) getTypeDescription() []string {
 	)
 }
 
+func (v PrefixWithMeaningValue) CheckIsValid(value string) error {
+	return v.SubValue.CheckIsValid(value)
+}
+
 type PathType uint8
 
 const (
 	PathTypeExistenceOptional PathType = 0
-	PathTypeFile PathType = 1
-	PathTypeDirectory PathType = 2
+	PathTypeFile              PathType = 1
+	PathTypeDirectory         PathType = 2
 )
 
 type PathValue struct {
 	RequiredType PathType
 }
 
-func (v PathValue) getTypeDescription() []string {
+func (v PathValue) GetTypeDescription() []string {
 	hints := make([]string, 0)
 
 	switch v.RequiredType {
 	case PathTypeExistenceOptional:
 		hints = append(hints, "Optional")
-		break;
+		break
 	case PathTypeFile:
 		hints = append(hints, "File")
 	case PathTypeDirectory:
@@ -145,13 +240,35 @@ func (v PathValue) getTypeDescription() []string {
 	return []string{strings.Join(hints, ", ")}
 }
 
+func (v PathValue) CheckIsValid(value string) error {
+	if !DoesPathExist(value) {
+		return PathDoesNotExistError{}
+	}
+
+	isValid := false
+
+	if (v.RequiredType & PathTypeFile) == PathTypeFile {
+		isValid = isValid && IsPathFile(value)
+	}
+
+	if (v.RequiredType & PathTypeDirectory) == PathTypeDirectory {
+		isValid = isValid && IsPathDirectory(value)
+	}
+
+	if isValid {
+		return nil
+	}
+
+	return PathInvalidError{}
+}
+
 type Option struct {
 	Documentation string
 	Value         Value
 }
 
 func GetDocumentation(o *Option) protocol.MarkupContent {
-	typeDescription := strings.Join(o.Value.getTypeDescription(), "\n")
+	typeDescription := strings.Join(o.Value.GetTypeDescription(), "\n")
 
 	return protocol.MarkupContent{
 		Kind:  protocol.MarkupKindPlainText,

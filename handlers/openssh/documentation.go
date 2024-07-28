@@ -5,8 +5,8 @@ import (
 )
 
 var BooleanEnumValue = common.EnumValue{
-					EnforceValues: true,
-	Values: []string{"yes", "no"},
+	EnforceValues: true,
+	Values:        []string{"yes", "no"},
 }
 
 var plusMinuxCaretPrefixes = []common.Prefix{
@@ -59,7 +59,7 @@ var Options = map[string]common.Option{
 		`Specifies which address family should be used by sshd(8). Valid arguments are any (the default), inet (use IPv4 only), or inet6 (use IPv6 only).`,
 		common.EnumValue{
 			EnforceValues: true,
-			Values: []string{"any", "inet", "inet6"},
+			Values:        []string{"any", "inet", "inet6"},
 		},
 	),
 	"AllowAgentForwarding": common.NewOption(
@@ -84,14 +84,14 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 		`Specifies whether StreamLocal (Unix-domain socket) forwarding is permitted. The available options are yes (the default) or all to allow StreamLocal forwarding, no to prevent all StreamLocal forwarding, local to allow local (from the perspective of ssh(1)) forwarding only or remote to allow remote forwarding only. Note that disabling StreamLocal forwarding does not improve security unless users are also denied shell access, as they can always install their own forwarders.`,
 		common.EnumValue{
 			EnforceValues: true,
-			Values: []string{"yes", "all", "no", "local", "remote"},
+			Values:        []string{"yes", "all", "no", "local", "remote"},
 		},
 	),
 	"AllowTcpForwarding": common.NewOption(
 		`Specifies whether TCP forwarding is permitted. The available options are yes (the default) or all to allow TCP forwarding, no to prevent all TCP forwarding, local to allow local (from the perspective of ssh(1)) forwarding only or remote to allow remote forwarding only. Note that disabling TCP forwarding does not improve security unless users are also denied shell access, as they can always install their own forwarders.`,
 		common.EnumValue{
 			EnforceValues: true,
-			Values: []string{"yes", "all", "no", "local", "remote"},
+			Values:        []string{"yes", "all", "no", "local", "remote"},
 		},
 	),
 	"AllowUsers": common.NewOption(
@@ -110,7 +110,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			Values: []common.Value{
 				common.EnumValue{
 					EnforceValues: true,
-					Values: []string{"any"},
+					Values:        []string{"any"},
 				},
 				common.ArrayValue{
 					AllowDuplicates: true,
@@ -256,7 +256,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	"Compression": common.NewOption(
 		`Specifies whether compression is enabled after the user has authenticated successfully. The argument must be yes, delayed (a legacy synonym for yes) or no. The default is yes.`,
 		common.EnumValue{
-				EnforceValues: true,
+			EnforceValues: true,
 			Values: []string{
 				"yes",
 				"delayed",
@@ -266,10 +266,10 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	),
 	//    "DenyGroups": `This keyword can be followed by a list of group name patterns, separated by spaces. Login is disallowed for users whose primary group or supplementary group list matches one of the patterns. Only group names are valid; a numerical group ID is not recognized. By default, login is allowed for all groups. The allow/deny groups directives are processed in the following order: DenyGroups, AllowGroups.
 	// See PATTERNS in ssh_config(5) for more information on patterns. This keyword may appear multiple times in sshd_config with each instance appending to the list.`,
-	   "DenyUsers": common.NewOption(`This keyword can be followed by a list of user name patterns, separated by spaces. Login is disallowed for user names that match one of the patterns. Only user names are valid; a numerical user ID is not recognized. By default, login is allowed for all users. If the pattern takes the form USER@HOST then USER and HOST are separately checked, restricting logins to particular users from particular hosts. HOST criteria may additionally contain addresses to match in CIDR address/masklen format. The allow/deny users directives are processed in the following order: DenyUsers, AllowUsers.
+	"DenyUsers": common.NewOption(`This keyword can be followed by a list of user name patterns, separated by spaces. Login is disallowed for user names that match one of the patterns. Only user names are valid; a numerical user ID is not recognized. By default, login is allowed for all users. If the pattern takes the form USER@HOST then USER and HOST are separately checked, restricting logins to particular users from particular hosts. HOST criteria may additionally contain addresses to match in CIDR address/masklen format. The allow/deny users directives are processed in the following order: DenyUsers, AllowUsers.
 	See PATTERNS in ssh_config(5) for more information on patterns. This keyword may appear multiple times in sshd_config with each instance appending to the list.`,
-	common.UserValue(" ", false),
-),
+		common.UserValue(" ", false),
+	),
 	"DisableForwarding": common.NewOption(
 		`Disables all forwarding features, including X11, ssh-agent(1), TCP and StreamLocal. This option overrides all other forwarding-related options and may simplify restricted configurations.`,
 		BooleanEnumValue,
@@ -308,7 +308,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 		`Determines whether to be strict about the identity of the GSSAPI acceptor a client authenticates against. If set to yes then the client must authenticate against the host service on the current hostname. If set to no then the client may authenticate against any service key stored in the machine's default store. This facility is provided to assist with operation on multi homed machines. The default is yes.`,
 		BooleanEnumValue,
 	),
-	   "HostbasedAcceptedAlgorithms": common.NewOption(`Specifies the signature algorithms that will be accepted for hostbased authentication as a list of comma-separated patterns. Alternately if the specified list begins with a ‘+’ character, then the specified signature algorithms will be appended to the default set instead of replacing them. If the specified list begins with a ‘-’ character, then the specified signature algorithms (including wildcards) will be removed from the default set instead of replacing them. If the specified list begins with a ‘^’ character, then the specified signature algorithms will be placed at the head of the default set. The default for this option is:
+	"HostbasedAcceptedAlgorithms": common.NewOption(`Specifies the signature algorithms that will be accepted for hostbased authentication as a list of comma-separated patterns. Alternately if the specified list begins with a ‘+’ character, then the specified signature algorithms will be appended to the default set instead of replacing them. If the specified list begins with a ‘-’ character, then the specified signature algorithms (including wildcards) will be removed from the default set instead of replacing them. If the specified list begins with a ‘^’ character, then the specified signature algorithms will be placed at the head of the default set. The default for this option is:
 	ssh-ed25519-cert-v01@openssh.com, ecdsa-sha2-nistp256-cert-v01@openssh.com, ecdsa-sha2-nistp384-cert-v01@openssh.com, ecdsa-sha2-nistp521-cert-v01@openssh.com, sk-ssh-ed25519-cert-v01@openssh.com, sk-ecdsa-sha2-nistp256-cert-v01@openssh.com, rsa-sha2-512-cert-v01@openssh.com, rsa-sha2-256-cert-v01@openssh.com, ssh-ed25519, ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521, sk-ssh-ed25519@openssh.com, sk-ecdsa-sha2-nistp256@openssh.com, rsa-sha2-512,rsa-sha2-256
 	The list of available signature algorithms may also be obtained using "ssh -Q HostbasedAcceptedAlgorithms". This was formerly named HostbasedAcceptedKeyTypes.`,
 		common.CustomValue{
@@ -319,7 +319,6 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 					// Fallback
 					options, _ = QueryOpenSSHOptions("HostbasedAcceptedKeyTypes")
 				}
-
 
 				return PrefixPlusMinusCaret(options)
 			},
@@ -348,13 +347,13 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			Values: []common.Value{
 				common.EnumValue{
 					EnforceValues: true,
-					Values: []string{"SSH_AUTH_SOCK"},
+					Values:        []string{"SSH_AUTH_SOCK"},
 				},
 				common.StringValue{},
 			},
 		},
 	),
-	   "HostKeyAlgorithms": common.NewOption(`Specifies the host key signature algorithms that the server offers. The default for this option is:
+	"HostKeyAlgorithms": common.NewOption(`Specifies the host key signature algorithms that the server offers. The default for this option is:
 	ssh-ed25519-cert-v01@openssh.com, ecdsa-sha2-nistp256-cert-v01@openssh.com, ecdsa-sha2-nistp384-cert-v01@openssh.com, ecdsa-sha2-nistp521-cert-v01@openssh.com, sk-ssh-ed25519-cert-v01@openssh.com, sk-ecdsa-sha2-nistp256-cert-v01@openssh.com, rsa-sha2-512-cert-v01@openssh.com, rsa-sha2-256-cert-v01@openssh.com, ssh-ed25519, ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521, sk-ssh-ed25519@openssh.com, sk-ecdsa-sha2-nistp256@openssh.com, rsa-sha2-512,rsa-sha2-256
 	The list of available signature algorithms may also be obtained using "ssh -Q HostKeyAlgorithms".`,
 		common.CustomValue{
@@ -369,7 +368,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
  Accepted values are yes (the default) to ignore all per- user files, shosts-only to allow the use of .shosts but to ignore .rhosts or no to allow both .shosts and rhosts.`,
 		common.EnumValue{
 			EnforceValues: true,
-			Values: []string{"yes", "shosts-only", "no"},
+			Values:        []string{"yes", "shosts-only", "no"},
 		},
 	),
 	"IgnoreUserKnownHosts": common.NewOption(
@@ -418,27 +417,27 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	"KerberosTicketCleanup": common.NewOption(`Specifies whether to automatically destroy the user's ticket cache file on logout. The default is yes.`,
 		BooleanEnumValue,
 	),
-	   "KexAlgorithms": common.NewOption(`Specifies the available KEX (Key Exchange) algorithms. Multiple algorithms must be comma-separated. Alternately if the specified list begins with a ‘+’ character, then the specified algorithms will be appended to the default set instead of replacing them. If the specified list begins with a ‘-’ character, then the specified algorithms (including wildcards) will be removed from the default set instead of replacing them. If the specified list begins with a ‘^’ character, then the specified algorithms will be placed at the head of the default set. The supported algorithms are:
+	"KexAlgorithms": common.NewOption(`Specifies the available KEX (Key Exchange) algorithms. Multiple algorithms must be comma-separated. Alternately if the specified list begins with a ‘+’ character, then the specified algorithms will be appended to the default set instead of replacing them. If the specified list begins with a ‘-’ character, then the specified algorithms (including wildcards) will be removed from the default set instead of replacing them. If the specified list begins with a ‘^’ character, then the specified algorithms will be placed at the head of the default set. The supported algorithms are:
 	curve25519-sha256 curve25519-sha256@libssh.org diffie-hellman-group1-sha1 diffie-hellman-group14-sha1 diffie-hellman-group14-sha256 diffie-hellman-group16-sha512 diffie-hellman-group18-sha512 diffie-hellman-group-exchange-sha1 diffie-hellman-group-exchange-sha256 ecdh-sha2-nistp256 ecdh-sha2-nistp384 ecdh-sha2-nistp521 sntrup761x25519-sha512@openssh.com
 	The default is:
 	sntrup761x25519-sha512@openssh.com, curve25519-sha256,curve25519-sha256@libssh.org, ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521, diffie-hellman-group-exchange-sha256, diffie-hellman-group16-sha512,diffie-hellman-group18-sha512, diffie-hellman-group14-sha256
 	The list of available key exchange algorithms may also be obtained using "ssh -Q KexAlgorithms".`,
 		PrefixPlusMinusCaret([]string{
-	"curve25519-sha256",
-	"curve25519-sha256@libssh.org",
-	"diffie-hellman-group1-sha1",
-	"diffie-hellman-group14-sha1",
-	"diffie-hellman-group14-sha256",
-	"diffie-hellman-group16-sha512",
-	"diffie-hellman-group18-sha512",
-	"diffie-hellman-group-exchange-sha1",
-	"diffie-hellman-group-exchange-sha256",
-	"ecdh-sha2-nistp256",
-	"ecdh-sha2-nistp384",
-	"ecdh-sha2-nistp521",
-	"sntrup761x25519-sha512@openssh.com",
-}),
-),
+			"curve25519-sha256",
+			"curve25519-sha256@libssh.org",
+			"diffie-hellman-group1-sha1",
+			"diffie-hellman-group14-sha1",
+			"diffie-hellman-group14-sha256",
+			"diffie-hellman-group16-sha512",
+			"diffie-hellman-group18-sha512",
+			"diffie-hellman-group-exchange-sha1",
+			"diffie-hellman-group-exchange-sha256",
+			"ecdh-sha2-nistp256",
+			"ecdh-sha2-nistp384",
+			"ecdh-sha2-nistp521",
+			"sntrup761x25519-sha512@openssh.com",
+		}),
+	),
 	//    "ListenAddress": `Specifies the local addresses sshd(8) should listen on. The following forms may be used:
 	// ListenAddress hostname|address [rdomain domain] ListenAddress hostname:port [rdomain domain] ListenAddress IPv4_address:port [rdomain domain] ListenAddress [hostname|address]:port [rdomain domain]
 	// The optional rdomain qualifier requests sshd(8) listen in an explicit routing domain. If port is not specified, sshd will listen on the address and all Port options specified. The default is to listen on all local addresses on the current default routing domain. Multiple ListenAddress options are permitted. For more information on routing domains, see rdomain(4).`,
@@ -447,7 +446,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	),
 	"LogLevel": common.NewOption(`Gives the verbosity level that is used when logging messages from sshd(8). The possible values are: QUIET, FATAL, ERROR, INFO, VERBOSE, DEBUG, DEBUG1, DEBUG2, and DEBUG3. The default is INFO. DEBUG and DEBUG1 are equivalent. DEBUG2 and DEBUG3 each specify higher levels of debugging output. Logging with a DEBUG level violates the privacy of users and is not recommended.`,
 		common.EnumValue{
-					EnforceValues: true,
+			EnforceValues: true,
 			Values: []string{
 				"QUIET",
 				"FATAL",
@@ -506,10 +505,10 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	//    "MaxStartups": `Specifies the maximum number of concurrent unauthenticated connections to the SSH daemon. Additional connections will be dropped until authentication succeeds or the LoginGraceTime expires for a connection. The default is 10:30:100.
 	// Alternatively, random early drop can be enabled by specifying the three colon separated values start:rate:full (e.g. "10:30:60"). sshd(8) will refuse connection attempts with a probability of rate/100 (30%) if there are currently start (10) unauthenticated connections. The probability increases linearly and all connection attempts are refused if the number of unauthenticated connections reaches full (60).`,
 	"ModuliFile": common.NewOption(`Specifies the moduli(5) file that contains the Diffie- Hellman groups used for the “diffie-hellman-group-exchange-sha1” and “diffie-hellman-group-exchange-sha256” key exchange methods. The default is /etc/moduli.`,
-	common.PathValue{
-		RequiredType: common.PathTypeFile,
-	},
-),
+		common.PathValue{
+			RequiredType: common.PathTypeFile,
+		},
+	),
 	"PasswordAuthentication": common.NewOption(`Specifies whether password authentication is allowed. The default is yes.`,
 		BooleanEnumValue,
 	),
@@ -527,7 +526,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
  If this option is set to forced-commands-only, root login with public key authentication will be allowed, but only if the command option has been specified (which may be useful for taking remote backups even if root login is normally not allowed). All other authentication methods are disabled for root.
  If this option is set to no, root is not allowed to log in.`,
 		common.EnumValue{
-					EnforceValues: true,
+			EnforceValues: true,
 			Values: []string{
 				"yes",
 				"prohibit-password",
@@ -542,7 +541,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	"PermitTunnel": common.NewOption(`Specifies whether tun(4) device forwarding is allowed. The argument must be yes, point-to-point (layer 3), ethernet (layer 2), or no. Specifying yes permits both point-to-point and ethernet. The default is no.
  Independent of this setting, the permissions of the selected tun(4) device must allow access to the user.`,
 		common.EnumValue{
-					EnforceValues: true,
+			EnforceValues: true,
 			Values: []string{
 				"yes",
 				"point-to-point",
@@ -551,20 +550,20 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			},
 		},
 	),
-	   "PermitUserEnvironment": common.NewOption(`Specifies whether ~/.ssh/environment and environment= options in ~/.ssh/authorized_keys are processed by sshd(8). Valid options are yes, no or a pattern-list specifying which environment variable names to accept (for example "LANG,LC_*"). The default is no. Enabling environment processing may enable users to bypass access restrictions in some configurations using mechanisms such as LD_PRELOAD.`,
-	   common.OrValue{
-		   Values: []common.Value{
-			   common.EnumValue{
-				   Values: []string{"yes", "no"},
-			   },
-			   common.ArrayValue{
-				   SubValue: common.StringValue{},
-				   Separator: ",",
-				   AllowDuplicates: false,
-			   },
-		   },
-	   },
-   ),
+	"PermitUserEnvironment": common.NewOption(`Specifies whether ~/.ssh/environment and environment= options in ~/.ssh/authorized_keys are processed by sshd(8). Valid options are yes, no or a pattern-list specifying which environment variable names to accept (for example "LANG,LC_*"). The default is no. Enabling environment processing may enable users to bypass access restrictions in some configurations using mechanisms such as LD_PRELOAD.`,
+		common.OrValue{
+			Values: []common.Value{
+				common.EnumValue{
+					Values: []string{"yes", "no"},
+				},
+				common.ArrayValue{
+					SubValue:        common.StringValue{},
+					Separator:       ",",
+					AllowDuplicates: false,
+				},
+			},
+		},
+	),
 	"PermitUserRC": common.NewOption(`Specifies whether any ~/.ssh/rc file is executed. The default is yes.`,
 		BooleanEnumValue,
 	),
@@ -573,7 +572,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			Values: []common.Value{
 				common.EnumValue{
 					EnforceValues: true,
-					Values: []string{"none"},
+					Values:        []string{"none"},
 				},
 				common.PositiveNumberValue{},
 			},
@@ -593,7 +592,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	"PrintMotd": common.NewOption(`Specifies whether sshd(8) should print /etc/motd when a user logs in interactively. (On some systems it is also printed by the shell, /etc/profile, or equivalent.) The default is yes.`,
 		BooleanEnumValue,
 	),
-	   "PubkeyAcceptedAlgorithms": common.NewOption(`Specifies the signature algorithms that will be accepted for public key authentication as a list of comma- separated patterns. Alternately if the specified list begins with a ‘+’ character, then the specified algorithms will be appended to the default set instead of replacing them. If the specified list begins with a ‘-’ character, then the specified algorithms (including wildcards) will be removed from the default set instead of replacing them. If the specified list begins with a ‘^’ character, then the specified algorithms will be placed at the head of the default set. The default for this option is:
+	"PubkeyAcceptedAlgorithms": common.NewOption(`Specifies the signature algorithms that will be accepted for public key authentication as a list of comma- separated patterns. Alternately if the specified list begins with a ‘+’ character, then the specified algorithms will be appended to the default set instead of replacing them. If the specified list begins with a ‘-’ character, then the specified algorithms (including wildcards) will be removed from the default set instead of replacing them. If the specified list begins with a ‘^’ character, then the specified algorithms will be placed at the head of the default set. The default for this option is:
 	ssh-ed25519-cert-v01@openssh.com, ecdsa-sha2-nistp256-cert-v01@openssh.com, ecdsa-sha2-nistp384-cert-v01@openssh.com, ecdsa-sha2-nistp521-cert-v01@openssh.com, sk-ssh-ed25519-cert-v01@openssh.com, sk-ecdsa-sha2-nistp256-cert-v01@openssh.com, rsa-sha2-512-cert-v01@openssh.com, rsa-sha2-256-cert-v01@openssh.com, ssh-ed25519, ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521, sk-ssh-ed25519@openssh.com, sk-ecdsa-sha2-nistp256@openssh.com, rsa-sha2-512,rsa-sha2-256
 	The list of available signature algorithms may also be obtained using "ssh -Q PubkeyAcceptedAlgorithms".`,
 		common.CustomValue{
@@ -603,7 +602,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 				return PrefixPlusMinusCaret(options)
 			},
 		},
-),
+	),
 	"PubkeyAuthOptions": common.NewOption(`Sets one or more public key authentication options. The supported keywords are: none (the default; indicating no additional options are enabled), touch-required and verify-required.
  The touch-required option causes public key authentication using a FIDO authenticator algorithm (i.e. ecdsa-sk or ed25519-sk) to always require the signature to attest that a physically present user explicitly confirmed the authentication (usually by touching the authenticator). By default, sshd(8) requires user presence unless overridden with an authorized_keys option. The touch-required flag disables this override.
  The verify-required option requires a FIDO key signature attest that the user was verified, e.g. via a PIN.
@@ -612,8 +611,8 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			AllowDuplicates: true,
 			Separator:       ",",
 			SubValue: common.EnumValue{
-					EnforceValues: true,
-				Values: []string{"none", "touch-required", "verify-required"},
+				EnforceValues: true,
+				Values:        []string{"none", "touch-required", "verify-required"},
 			},
 		},
 	),
@@ -628,17 +627,17 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 		common.StringValue{},
 	),
 	//    "RDomain": `Specifies an explicit routing domain that is applied after authentication has completed. The user session, as well as any forwarded or listening IP sockets, will be bound to this rdomain(4). If the routing domain is set to %D, then the domain in which the incoming connection was received will be applied.`,
-	   "SecurityKeyProvider": common.NewOption(`Specifies a path to a library that will be used when loading FIDO authenticator-hosted keys, overriding the default of using the built-in USB HID support.`,
-	   common.PathValue{
-		   RequiredType: common.PathTypeFile,
-	   },
-   ),
+	"SecurityKeyProvider": common.NewOption(`Specifies a path to a library that will be used when loading FIDO authenticator-hosted keys, overriding the default of using the built-in USB HID support.`,
+		common.PathValue{
+			RequiredType: common.PathTypeFile,
+		},
+	),
 
-   // "SetEnv": common.NewOption(`Specifies one or more environment variables to set in child sessions started by sshd(8) as “NAME=VALUE”. The environment value may be quoted (e.g. if it contains whitespace characters). Environment variables set by SetEnv override the default environment and any variables specified by the user via AcceptEnv or PermitUserEnvironment.`,
-	   "StreamLocalBindMask": common.NewOption(`Sets the octal file creation mode mask (umask) used when creating a Unix-domain socket file for local or remote port forwarding. This option is only used for port forwarding to a Unix-domain socket file.
+	// "SetEnv": common.NewOption(`Specifies one or more environment variables to set in child sessions started by sshd(8) as “NAME=VALUE”. The environment value may be quoted (e.g. if it contains whitespace characters). Environment variables set by SetEnv override the default environment and any variables specified by the user via AcceptEnv or PermitUserEnvironment.`,
+	"StreamLocalBindMask": common.NewOption(`Sets the octal file creation mode mask (umask) used when creating a Unix-domain socket file for local or remote port forwarding. This option is only used for port forwarding to a Unix-domain socket file.
 	The default value is 0177, which creates a Unix-domain socket file that is readable and writable only by the owner. Note that not all operating systems honor the file mode on Unix-domain socket files.`,
-	common.PositiveNumberValue{},
-),
+		common.PositiveNumberValue{},
+	),
 	"StreamLocalBindUnlink": common.NewOption(`Specifies whether to remove an existing Unix-domain socket file for local or remote port forwarding before creating a new one. If the socket file already exists and StreamLocalBindUnlink is not enabled, sshd will be unable to forward the port to the Unix-domain socket file. This option is only used for port forwarding to a Unix-domain socket file.
  The argument must be yes or no. The default is no.`,
 		BooleanEnumValue,
@@ -652,7 +651,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	// By default no subsystems are defined.`,
 	"SyslogFacility": common.NewOption(`Gives the facility code that is used when logging messages from sshd(8). The possible values are: DAEMON, USER, AUTH, LOCAL0, LOCAL1, LOCAL2, LOCAL3, LOCAL4, LOCAL5, LOCAL6, LOCAL7. The default is AUTH.`,
 		common.EnumValue{
-					EnforceValues: true,
+			EnforceValues: true,
 			Values: []string{
 				"DAEMON",
 				"USER",
@@ -695,7 +694,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			Values: []common.Value{
 				common.EnumValue{
 					EnforceValues: true,
-					Values: []string{"none"},
+					Values:        []string{"none"},
 				},
 				common.StringValue{},
 			},

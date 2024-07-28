@@ -39,4 +39,3 @@ func QueryOpenSSHOptions(
 
 	return availableQueries, nil
 }
-
