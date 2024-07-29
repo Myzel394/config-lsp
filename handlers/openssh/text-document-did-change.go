@@ -34,6 +34,8 @@ func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeText
 		)...,
 	)
 
+	diagnostics = DiagnoseSSHOptions(context, params)
+
 	if len(diagnostics) > 0 {
 		common.SendDiagnostics(context, params.TextDocument.URI, diagnostics)
 	} else {

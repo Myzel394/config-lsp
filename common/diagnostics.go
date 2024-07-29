@@ -25,3 +25,20 @@ func SendDiagnostics(context *glsp.Context, uri protocol.DocumentUri, diagnostic
 	)
 }
 
+func DiagnoseOption(
+	context *glsp.Context,
+	uri protocol.DocumentUri,
+	parser *SimpleConfigParser,
+	optionName string,
+	checkerFunc func (string, SimpleConfigPosition) []protocol.Diagnostic,
+) []protocol.Diagnostic {
+	option, err := parser.GetOption(optionName)
+
+	if err != nil {
+		// Nothing to diagnose
+		return nil
+	}
+
+	return checkerFunc(option.Value, option.Position)
+}
+
