@@ -1,4 +1,4 @@
-package handlers
+package openssh
 
 import (
 	"config-lsp/common"
@@ -37,12 +37,15 @@ func getRootCompletions() []protocol.CompletionItem {
 		insertText := label + " " + "${1:value}"
 
 		format := protocol.InsertTextFormatSnippet
+		kind := protocol.CompletionItemKindField
+
 
 		completions[index] = protocol.CompletionItem{
 			Label:            label,
 			Documentation:    common.GetDocumentation(&option),
 			InsertText:       &insertText,
 			InsertTextFormat: &format,
+			Kind: &kind,
 		}
 	}
 
@@ -57,10 +60,12 @@ func getCompletionsFromValue(value common.Value) []protocol.CompletionItem {
 
 		for index, value := range enumValue.Values {
 			textFormat := protocol.InsertTextFormatPlainText
+			kind := protocol.CompletionItemKindEnum
 
 			completions[index] = protocol.CompletionItem{
 				Label:            value,
 				InsertTextFormat: &textFormat,
+				Kind: &kind,
 			}
 		}
 

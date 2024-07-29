@@ -1,4 +1,4 @@
-package handlers
+package openssh
 
 import (
 	"config-lsp/common"
@@ -380,13 +380,16 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	),
 
 	"IPQoS": common.NewOption(`Specifies the IPv4 type-of-service or DSCP class for the connection. Accepted values are af11, af12, af13, af21, af22, af23, af31, af32, af33, af41, af42, af43, cs0, cs1, cs2, cs3, cs4, cs5, cs6, cs7, ef, le, lowdelay, throughput, reliability, a numeric value, or none to use the operating system default. This option may take one or two arguments, separated by whitespace. If one argument is specified, it is used as the packet class unconditionally. If two values are specified, the first is automatically selected for interactive sessions and the second for non-interactive sessions. The default is af21 (Low-Latency Data) for interactive sessions and cs1 (Lower Effort) for non-interactive sessions.`,
-		common.ArrayValue{
-			AllowDuplicates: true,
-			Separator:       " ",
-			SubValue: common.OrValue{
+		 common.OrValue{
 				Values: []common.Value{
 					common.PositiveNumberValue{},
 					common.EnumValue{
+						Values: []string{"none"},
+					},
+			common.ArrayValue{
+			AllowDuplicates: true,
+			Separator:       " ",
+			SubValue: common.EnumValue{
 						EnforceValues: true,
 						Values: []string{
 							"af11", "af12", "af13",
