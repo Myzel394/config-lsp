@@ -22,6 +22,10 @@ type EnumValue struct {
 }
 
 func (v EnumValue) GetTypeDescription() []string {
+	if len(v.Values) == 1 {
+		return []string{fmt.Sprintf("'%s'", v.Values[0])}
+	}
+
 	lines := make([]string, len(v.Values)+1)
 	lines[0] = "Enum of:"
 
@@ -78,7 +82,7 @@ func (v ArrayValue) GetTypeDescription() []string {
 	subValue := v.SubValue.(Value)
 
 	return append(
-		[]string{"An Array separated by " + v.Separator + " of:"},
+		[]string{fmt.Sprintf("An Array separated by '%s' of:", v.Separator)},
 		subValue.GetTypeDescription()...,
 	)
 }
