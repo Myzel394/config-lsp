@@ -127,7 +127,7 @@ type ArrayContainsDuplicatesError struct {
 	Duplicates []string
 }
 func (e ArrayContainsDuplicatesError) Error() string {
-	return fmt.Sprintf("Remove the following duplicate values: %s", strings.Join(e.Duplicates, ","))
+	return fmt.Sprintf("The following values are duplicated: %s", strings.Join(e.Duplicates, ","))
 }
 
 type PathDoesNotExistError struct{}

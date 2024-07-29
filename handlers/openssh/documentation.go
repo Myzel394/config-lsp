@@ -4,52 +4,6 @@ import (
 	"config-lsp/common"
 )
 
-var BooleanEnumValue = common.EnumValue{
-	EnforceValues: true,
-	Values:        []string{"yes", "no"},
-}
-
-var plusMinuxCaretPrefixes = []common.Prefix{
-	{
-		Prefix:  "+",
-		Meaning: "Append to the default set",
-	},
-	{
-		Prefix:  "-",
-		Meaning: "Remove from the default set",
-	},
-	{
-		Prefix:  "^",
-		Meaning: "Place at the head of the default set",
-	},
-}
-
-func PrefixPlusMinusCaret(values []string) common.PrefixWithMeaningValue {
-	return common.PrefixWithMeaningValue{
-		Prefixes: []common.Prefix{
-			{
-				Prefix:  "+",
-				Meaning: "Append to the default set",
-			},
-			{
-				Prefix:  "-",
-				Meaning: "Remove from the default set",
-			},
-			{
-				Prefix:  "^",
-				Meaning: "Place at the head of the default set",
-			},
-		},
-		SubValue: common.ArrayValue{
-			Separator:       ",",
-			AllowDuplicates: false,
-			SubValue: common.EnumValue{
-				Values: values,
-			},
-		},
-	}
-}
-
 var Options = map[string]common.Option{
 	"AcceptEnv": common.NewOption(
 		`Specifies what environment variables sent by the client will be copied into the session's environ(7). See SendEnv and SetEnv in ssh_config(5) for how to configure the client. The TERM environment variable is always accepted whenever the client requests a pseudo-terminal as it is required by the protocol. Variables are specified by name, which may contain the wildcard characters ‘*’ and ‘?’. Multiple environment variables may be separated by whitespace or spread across multiple AcceptEnv directives. Be warned that some environment variables could be used to bypass restricted user environments. For this reason, care should be taken in the use of this directive. The default is not to accept any environment variables.`,
@@ -73,7 +27,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 		common.CustomValue{
 			FetchValue: func() common.Value {
 				return common.ArrayValue{
-					AllowDuplicates: false,
+					DuplicatesExtractor: &common.SimpleDuplicatesExtractor,
 					SubValue:        common.StringValue{},
 					Separator:       " ",
 				}
@@ -113,7 +67,6 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 					Values:        []string{"any"},
 				},
 				common.ArrayValue{
-					AllowDuplicates: true,
 					SubValue: common.EnumValue{
 						EnforceValues: true,
 						Values: []string{
@@ -157,7 +110,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 		common.ArrayValue{
 			SubValue:        common.StringValue{},
 			Separator:       " ",
-			AllowDuplicates: false,
+			DuplicatesExtractor: &common.DuplicatesAllowedExtractor,
 		},
 	),
 	"AuthorizedPrincipalsCommand": common.NewOption(
@@ -200,7 +153,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			},
 			SubValue: common.ArrayValue{
 				Separator:       ",",
-				AllowDuplicates: false,
+				DuplicatesExtractor: &common.DuplicatesAllowedExtractor,
 				SubValue:        common.StringValue{},
 			},
 		},
@@ -222,7 +175,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	The default is not to expire channels of any type for inactivity.`,
 	common.ArrayValue{
 		Separator: " ",
-		AllowDuplicates: false,
+		DuplicatesExtractor: &ChannelTimeoutExtractor,
 		SubValue: common.KeyValueAssignmentValue{
 			Separator: "=",
 			Key: common.EnumValue{
@@ -407,7 +360,6 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 						Values: []string{"none"},
 					},
 			common.ArrayValue{
-			AllowDuplicates: true,
 			Separator:       " ",
 			SubValue: common.EnumValue{
 						EnforceValues: true,
@@ -582,7 +534,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 				common.ArrayValue{
 					SubValue:        common.StringValue{},
 					Separator:       ",",
-					AllowDuplicates: false,
+					DuplicatesExtractor: &common.DuplicatesAllowedExtractor,
 				},
 			},
 		},
@@ -631,7 +583,6 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
  The verify-required option requires a FIDO key signature attest that the user was verified, e.g. via a PIN.
  Neither the touch-required or verify-required options have any effect for other, non-FIDO, public key types.`,
 		common.ArrayValue{
-			AllowDuplicates: true,
 			Separator:       ",",
 			SubValue: common.EnumValue{
 				EnforceValues: true,

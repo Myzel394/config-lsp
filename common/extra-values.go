@@ -72,7 +72,7 @@ func UserValue(separatorForMultiple string, enforceValues bool) Value {
 				return enumValues
 			} else {
 				return ArrayValue{
-					AllowDuplicates: false,
+					DuplicatesExtractor: &SimpleDuplicatesExtractor,
 					SubValue:        enumValues,
 					Separator:       separatorForMultiple,
 				}

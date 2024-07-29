@@ -72,10 +72,32 @@ func (v PositiveNumberValue) CheckIsValid(value string) error {
 	return nil
 }
 
+var SimpleDuplicatesExtractor = func(value string) string {
+	return value
+}
+
+var ExtractKeyDuplicatesExtractor = func(separator string) func(string) string {
+	return func(value string) string {
+		splitted := strings.Split(value, separator)
+
+		if len(splitted) == 0 {
+			return ""
+		}
+
+		return splitted[0]
+	}
+}
+
+var DuplicatesAllowedExtractor func(string) string = nil
+
 type ArrayValue struct {
 	SubValue        Value
 	Separator       string
-	AllowDuplicates bool
+	// If this function is nil, no duplicate check is done
+	// (value) => Extracted value
+	// This is used to extract the value from the user input,
+	// because you may want to preprocess the value before checking for duplicates
+	DuplicatesExtractor *(func(string) string)
 }
 
 func (v ArrayValue) GetTypeDescription() []string {
@@ -89,21 +111,19 @@ func (v ArrayValue) GetTypeDescription() []string {
 func (v ArrayValue) CheckIsValid(value string) error {
 	values := strings.Split(value, v.Separator)
 
-	for _, subValue := range values {
-		err := v.SubValue.CheckIsValid(subValue)
+	println(fmt.Sprintf("values: %v", values))
 
-		if err != nil {
-			return err
-		}
-	}
-
-	if !v.AllowDuplicates {
-		valuesOccurrences := SliceToMap(values, 0)
+	if v.DuplicatesExtractor != nil {
+		valuesOccurrences := SliceToMap(
+			Map(values, *v.DuplicatesExtractor),
+			0,
+		)
 
 		// Only continue if there are actually duplicate values
 		if len(values) != len(valuesOccurrences) {
-			for _, subValue := range values {
-				valuesOccurrences[subValue]++
+			for _, duplicateRawValue := range values {
+				duplicateValue := (*v.DuplicatesExtractor)(duplicateRawValue)
+				valuesOccurrences[duplicateValue]++
 			}
 
 			duplicateValues := FilterMapWhere(valuesOccurrences, func(_ string, value int) bool {
@@ -113,6 +133,15 @@ func (v ArrayValue) CheckIsValid(value string) error {
 			return ArrayContainsDuplicatesError{
 				Duplicates: KeysOfMap(duplicateValues),
 			}
+		}
+	}
+
+
+	for _, subValue := range values {
+		err := v.SubValue.CheckIsValid(subValue)
+
+		if err != nil {
+			return err
 		}
 	}
 
