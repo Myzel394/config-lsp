@@ -3,6 +3,7 @@ package openssh
 import (
 	"config-lsp/common"
 	"errors"
+	"unicode/utf8"
 
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -12,13 +13,19 @@ import (
 )
 
 func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionParams) (interface{}, error) {
-	option, line, err := Parser.FindByLineNumber(uint32(params.Position.Line))
+	optionName, line, err := Parser.FindByLineNumber(uint32(params.Position.Line))
 
 	if err == nil {
 		if line.IsCursorAtRootOption(int(params.Position.Character)) {
 			return getRootCompletions(), nil
 		} else {
-			return getOptionCompletions(option), nil
+			rawLine, cursor := common.OffsetLineAtLeft(
+				uint32(utf8.RuneCountInString(optionName + " ")),
+				line.Value,
+				params.Position.Character,
+			)
+
+			return getOptionCompletions(optionName, rawLine, cursor), nil
 		}
 	} else if errors.Is(err, common.LineNotFoundError{}) {
 		return getRootCompletions(), nil
@@ -52,11 +59,11 @@ func getRootCompletions() []protocol.CompletionItem {
 	return completions
 }
 
-func getCompletionsFromValue(value common.Value) []protocol.CompletionItem {
-	switch value.(type) {
+func getCompletionsFromValue(requiredValue common.Value, line string, cursor uint32) []protocol.CompletionItem {
+	switch requiredValue.(type) {
 	case common.EnumValue:
-		enumValue := value.(common.EnumValue)
-		completions := make([]protocol.CompletionItem, len(value.(common.EnumValue).Values))
+		enumValue := requiredValue.(common.EnumValue)
+		completions := make([]protocol.CompletionItem, len(requiredValue.(common.EnumValue).Values))
 
 		for index, value := range enumValue.Values {
 			textFormat := protocol.InsertTextFormatPlainText
@@ -71,37 +78,54 @@ func getCompletionsFromValue(value common.Value) []protocol.CompletionItem {
 
 		return completions
 	case common.CustomValue:
-		customValue := value.(common.CustomValue)
+		customValue := requiredValue.(common.CustomValue)
 		val := customValue.FetchValue()
 
-		return getCompletionsFromValue(val)
+		return getCompletionsFromValue(val, line, cursor)
 	case common.ArrayValue:
-		arrayValue := value.(common.ArrayValue)
+		arrayValue := requiredValue.(common.ArrayValue)
+		relativePosition, found := common.FindPreviousCharacter(line, arrayValue.Separator)
 
-		return getCompletionsFromValue(arrayValue.SubValue)
+		if found {
+			line, cursor = common.OffsetLineAtLeft(relativePosition, line, cursor)
+		}
+
+		return getCompletionsFromValue(arrayValue.SubValue, line, cursor)
 	case common.OrValue:
-		orValue := value.(common.OrValue)
+		orValue := requiredValue.(common.OrValue)
 
 		completions := make([]protocol.CompletionItem, 0)
 
 		for _, subValue := range orValue.Values {
-			completions = append(completions, getCompletionsFromValue(subValue)...)
+			completions = append(completions, getCompletionsFromValue(subValue, line, cursor)...)
 		}
 
 		return completions
 	case common.PrefixWithMeaningValue:
-		prefixWithMeaningValue := value.(common.PrefixWithMeaningValue)
+		prefixWithMeaningValue := requiredValue.(common.PrefixWithMeaningValue)
 
-		return getCompletionsFromValue(prefixWithMeaningValue.SubValue)
+		return getCompletionsFromValue(prefixWithMeaningValue.SubValue, line, cursor)
+	case common.KeyValueAssignmentValue:
+		keyValueAssignmentValue := requiredValue.(common.KeyValueAssignmentValue)
+
+		relativePosition, found := common.FindPreviousCharacter(line, keyValueAssignmentValue.Separator)
+
+		if found {
+			line, cursor = common.OffsetLineAtLeft(relativePosition, line, cursor)
+
+			return getCompletionsFromValue(keyValueAssignmentValue.Value, line, cursor)
+		} else {
+			return getCompletionsFromValue(keyValueAssignmentValue.Key, line, cursor)
+		}
 	}
 
 	return []protocol.CompletionItem{}
 }
 
-func getOptionCompletions(optionName string) []protocol.CompletionItem {
+func getOptionCompletions(optionName string, line string, cursor uint32) []protocol.CompletionItem {
 	option := Options[optionName]
 
-	completions := getCompletionsFromValue(option.Value)
+	completions := getCompletionsFromValue(option.Value, line, cursor)
 
 	return completions
 }

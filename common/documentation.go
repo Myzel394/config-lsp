@@ -266,6 +266,42 @@ func (v PathValue) CheckIsValid(value string) error {
 	return PathInvalidError{}
 }
 
+type KeyValueAssignmentValue struct {
+	Key Value
+	Value Value
+	Separator string
+}
+
+func (v KeyValueAssignmentValue) GetTypeDescription() []string {
+	return []string{
+		fmt.Sprintf("Key-Value pair in form of 'key%svalue'", v.Separator),
+		fmt.Sprintf("#### Key\n%s", strings.Join(v.Key.GetTypeDescription(), "\n")),
+		fmt.Sprintf("#### Value:\n%s", strings.Join(v.Value.GetTypeDescription(), "\n")),
+	}
+}
+func (v KeyValueAssignmentValue) CheckIsValid(value string) error {
+	parts := strings.Split(value, v.Separator)
+
+	if len(parts) != 2 {
+		return KeyValueAssignmentError{}
+	}
+
+	err := v.Key.CheckIsValid(parts[0])
+
+	if err != nil {
+		return err
+	}
+
+	err = v.Value.CheckIsValid(parts[1])
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+
 type Option struct {
 	Documentation string
 	Value         Value

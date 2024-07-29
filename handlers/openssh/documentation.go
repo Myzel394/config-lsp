@@ -205,21 +205,41 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			},
 		},
 	),
-	//    "ChannelTimeout": `Specifies whether and how quickly sshd(8) should close inactive channels. Timeouts are specified as one or more “type=interval” pairs separated by whitespace, where the “type” must be the special keyword “global” or a channel type name from the list below, optionally containing wildcard characters.
-	// The timeout value “interval” is specified in seconds or may use any of the units documented in the “TIME FORMATS” section. For example, “session=5m” would cause interactive sessions to terminate after five minutes of inactivity. Specifying a zero value disables the inactivity timeout.
-	// The special timeout “global” applies to all active channels, taken together. Traffic on any active channel will reset the timeout, but when the timeout expires then all open channels will be closed. Note that this global timeout is not matched by wildcards and must be specified explicitly.
-	// The available channel type names include:
-	// agent-connection Open connections to ssh-agent(1).
-	// direct-tcpip, direct-streamlocal@openssh.com Open TCP or Unix socket (respectively) connections that have been established from a ssh(1) local forwarding, i.e. LocalForward or DynamicForward.
-	// forwarded-tcpip, forwarded-streamlocal@openssh.com Open TCP or Unix socket (respectively) connections that have been established to a sshd(8) listening on behalf of a ssh(1) remote forwarding, i.e. RemoteForward.
-	//
-	// `,
-	//    "session": `The interactive main session, including shell session, command execution, scp(1), sftp(1), etc.
-	// tun-connection Open TunnelForward connections.
-	// x11-connection Open X11 forwarding sessions.
-	// Note that in all the above cases, terminating an inactive session does not guarantee to remove all resources associated with the session, e.g. shell processes or X11 clients relating to the session may continue to execute.
-	// Moreover, terminating an inactive channel or session does not necessarily close the SSH connection, nor does it prevent a client from requesting another channel of the same type. In particular, expiring an inactive forwarding session does not prevent another identical forwarding from being subsequently created.
-	// The default is not to expire channels of any type for inactivity.`,
+	   "ChannelTimeout": common.NewOption(`Specifies whether and how quickly sshd(8) should close inactive channels. Timeouts are specified as one or more “type=interval” pairs separated by whitespace, where the “type” must be the special keyword “global” or a channel type name from the list below, optionally containing wildcard characters.
+	The timeout value “interval” is specified in seconds or may use any of the units documented in the “TIME FORMATS” section. For example, “session=5m” would cause interactive sessions to terminate after five minutes of inactivity. Specifying a zero value disables the inactivity timeout.
+	The special timeout “global” applies to all active channels, taken together. Traffic on any active channel will reset the timeout, but when the timeout expires then all open channels will be closed. Note that this global timeout is not matched by wildcards and must be specified explicitly.
+	The available channel type names include:
+
+	agent-connection Open connections to ssh-agent(1).
+	direct-tcpip, direct-streamlocal@openssh.com Open TCP or Unix socket (respectively) connections that have been established from a ssh(1) local forwarding, i.e. LocalForward or DynamicForward.
+	forwarded-tcpip, forwarded-streamlocal@openssh.com Open TCP or Unix socket (respectively) connections that have been established to a sshd(8) listening on behalf of a ssh(1) remote forwarding, i.e. RemoteForward.
+	session The interactive main session, including shell session, command execution, scp(1), sftp(1), etc.
+	tun-connection Open TunnelForward connections.
+	x11-connection Open X11 forwarding sessions.
+
+	Note that in all the above cases, terminating an inactive session does not guarantee to remove all resources associated with the session, e.g. shell processes or X11 clients relating to the session may continue to execute.
+	Moreover, terminating an inactive channel or session does not necessarily close the SSH connection, nor does it prevent a client from requesting another channel of the same type. In particular, expiring an inactive forwarding session does not prevent another identical forwarding from being subsequently created.
+	The default is not to expire channels of any type for inactivity.`,
+	common.ArrayValue{
+		Separator: " ",
+		AllowDuplicates: false,
+		SubValue: common.KeyValueAssignmentValue{
+			Separator: "=",
+			Key: common.EnumValue{
+				Values: []string{
+					"global",
+					"agent-connection",
+					"direct-tcpip", "direct-streamlocal@openssh.com",
+					"forwarded-tcpip", "forwarded-streamlocal@openssh.com",
+					"session",
+					"tun-connection",
+					"x11-connection",
+				},
+			},
+			Value: common.StringValue{},
+		},
+	},
+),
 	"ChrootDirectory": common.NewOption(`Specifies the pathname of a directory to chroot(2) to after authentication. At session startup sshd(8) checks that all components of the pathname are root-owned directories which are not writable by group or others. After the chroot, sshd(8) changes the working directory to the user's home directory. Arguments to ChrootDirectory accept the tokens described in the “TOKENS” section.
  The ChrootDirectory must contain the necessary files and directories to support the user's session. For an interactive session this requires at least a shell, typically sh(1), and basic /dev nodes such as null(4), zero(4), stdin(4), stdout(4), stderr(4), and tty(4) devices. For file transfer sessions using SFTP no additional configuration of the environment is necessary if the in-process sftp-server is used, though sessions which use logging may require /dev/log inside the chroot directory on some operating systems (see sftp-server(8) for details).
  For safety, it is very important that the directory hierarchy be prevented from modification by other processes on the system (especially those outside the jail). Misconfiguration can lead to unsafe environments which sshd(8) cannot detect.

@@ -136,6 +136,12 @@ func (e PathDoesNotExistError) Error() string {
 	return "This path does not exist"
 }
 
+type KeyValueAssignmentError struct{}
+
+func (e KeyValueAssignmentError) Error() string {
+	return "This is not valid key-value assignment"
+}
+
 type PathInvalidError struct{}
 
 func (e PathInvalidError) Error() string {
