@@ -14,13 +14,6 @@ type SimpleConfigLine struct {
 	Position SimpleConfigPosition
 }
 
-func (l SimpleConfigLine) IsCursorAtRootOption(cursor int) bool {
-	if cursor <= len(l.Value) {
-		return true
-	}
-
-	return false
-}
 
 type SimpleConfigOptions struct {
 	Separator        string

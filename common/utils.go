@@ -101,18 +101,10 @@ func IsPathFile(path string) bool {
 	return err == nil && !info.IsDir()
 }
 
-func OffsetLineAtLeft(offset uint32, line string, cursor uint32) (string, uint32) {
-	if offset >= uint32(len(line)) {
-		return line, cursor
-	}
-
-	return line[offset:], cursor - offset
-}
-
-func FindPreviousCharacter(line string, character string) (uint32, bool) {
-	for index := len(line) - 1; index >= 0; index-- {
+func FindPreviousCharacter(line string, character string, startIndex int) (int, bool) {
+	for index := startIndex; index >= 0; index-- {
 		if string(line[index]) == character {
-			return uint32(index), true
+			return index, true
 		}
 	}
 

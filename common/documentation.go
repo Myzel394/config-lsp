@@ -111,8 +111,6 @@ func (v ArrayValue) GetTypeDescription() []string {
 func (v ArrayValue) CheckIsValid(value string) error {
 	values := strings.Split(value, v.Separator)
 
-	println(fmt.Sprintf("values: %v", values))
-
 	if v.DuplicatesExtractor != nil {
 		valuesOccurrences := SliceToMap(
 			Map(values, *v.DuplicatesExtractor),
@@ -310,6 +308,10 @@ func (v KeyValueAssignmentValue) GetTypeDescription() []string {
 }
 func (v KeyValueAssignmentValue) CheckIsValid(value string) error {
 	parts := strings.Split(value, v.Separator)
+
+	if len(parts) == 1 && parts[0] == "" {
+		return nil
+	}
 
 	if len(parts) != 2 {
 		return KeyValueAssignmentError{}

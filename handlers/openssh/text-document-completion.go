@@ -3,7 +3,6 @@ package openssh
 import (
 	"config-lsp/common"
 	"errors"
-	"unicode/utf8"
 
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -16,16 +15,12 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 	optionName, line, err := Parser.FindByLineNumber(uint32(params.Position.Line))
 
 	if err == nil {
-		if line.IsCursorAtRootOption(int(params.Position.Character)) {
+		if params.Position.Character < uint32(len(optionName)) {
 			return getRootCompletions(), nil
 		} else {
-			rawLine, cursor := common.OffsetLineAtLeft(
-				uint32(utf8.RuneCountInString(optionName + " ")),
-				line.Value,
-				params.Position.Character,
-			)
+			cursor := params.Position.Character - uint32(len(optionName + Parser.Options.Separator))
 
-			return getOptionCompletions(optionName, rawLine, cursor), nil
+			return getOptionCompletions(optionName, line.Value, cursor), nil
 		}
 	} else if errors.Is(err, common.LineNotFoundError{}) {
 		return getRootCompletions(), nil
@@ -84,10 +79,11 @@ func getCompletionsFromValue(requiredValue common.Value, line string, cursor uin
 		return getCompletionsFromValue(val, line, cursor)
 	case common.ArrayValue:
 		arrayValue := requiredValue.(common.ArrayValue)
-		relativePosition, found := common.FindPreviousCharacter(line, arrayValue.Separator)
+		relativePosition, found := common.FindPreviousCharacter(line, arrayValue.Separator, int(cursor - 1))
 
 		if found {
-			line, cursor = common.OffsetLineAtLeft(relativePosition, line, cursor)
+			line = line[uint32(relativePosition):]
+			cursor -= uint32(relativePosition)
 		}
 
 		return getCompletionsFromValue(arrayValue.SubValue, line, cursor)
@@ -108,13 +104,18 @@ func getCompletionsFromValue(requiredValue common.Value, line string, cursor uin
 	case common.KeyValueAssignmentValue:
 		keyValueAssignmentValue := requiredValue.(common.KeyValueAssignmentValue)
 
-		relativePosition, found := common.FindPreviousCharacter(line, keyValueAssignmentValue.Separator)
+		println("keyLine", line, "cursor", cursor)
+		relativePosition, found := common.FindPreviousCharacter(line, keyValueAssignmentValue.Separator, int(cursor - 1))
+
+		println("relativePosition", relativePosition)
 
 		if found {
-			line, cursor = common.OffsetLineAtLeft(relativePosition, line, cursor)
+			line = line[uint32(relativePosition):]
+			cursor -= uint32(relativePosition)
 
 			return getCompletionsFromValue(keyValueAssignmentValue.Value, line, cursor)
 		} else {
+			println("giving key")
 			return getCompletionsFromValue(keyValueAssignmentValue.Key, line, cursor)
 		}
 	}
