@@ -11,13 +11,21 @@ type SimpleConfigPosition struct {
 }
 
 type SimpleConfigLine struct {
-	Value    string
-	Position SimpleConfigPosition
+	Value     string
+	Separator string
+	Position  SimpleConfigPosition
+}
+
+// Get the character positions of [Option End, Separator End, Value End]
+func (l SimpleConfigLine) GetCharacterPositions(optionName string) [3]int {
+	return [3]int{len(optionName), len(optionName + l.Separator), len(optionName + l.Separator + l.Value)}
 }
 
 type SimpleConfigOptions struct {
-	Separator        string
-	IgnorePattern    regexp.Regexp
+	Separator     regexp.Regexp
+	IgnorePattern regexp.Regexp
+	// This is the separator that will be used when adding a new line
+	IdealSeparator   string
 	AvailableOptions *map[string]Option
 }
 
@@ -27,23 +35,42 @@ type SimpleConfigParser struct {
 }
 
 func (p *SimpleConfigParser) AddLine(line string, lineNumber uint32) (string, error) {
-	parts := strings.SplitN(line, p.Options.Separator, 2)
+	var option string
+	var separator string
+	var value string
 
-	if len(parts) == 0 {
+	re := p.Options.Separator
+	matches := re.FindStringSubmatch(line)
+
+	if len(matches) == 0 {
 		return "", docvalues.MalformedLineError{}
 	}
 
-	option := parts[0]
+	optionIndex := re.SubexpIndex("OptionName")
+
+	if optionIndex == -1 {
+		return "", docvalues.MalformedLineError{}
+	}
+
+	option = matches[optionIndex]
 
 	if _, exists := (*p.Options.AvailableOptions)[option]; !exists {
 		return option, docvalues.OptionUnknownError{}
 	}
 
-	value := ""
+	separatorIndex := re.SubexpIndex("Separator")
 
-	if len(parts) > 1 {
-		value = parts[1]
+	if separatorIndex == -1 {
+		return option, docvalues.MalformedLineError{}
 	}
+
+	valueIndex := re.SubexpIndex("Value")
+
+	if valueIndex == -1 {
+		return option, docvalues.MalformedLineError{}
+	}
+
+	value = matches[valueIndex]
 
 	if _, exists := p.Lines[option]; exists {
 		return option, docvalues.OptionAlreadyExistsError{
@@ -52,7 +79,8 @@ func (p *SimpleConfigParser) AddLine(line string, lineNumber uint32) (string, er
 	}
 
 	p.Lines[option] = SimpleConfigLine{
-		Value: value,
+		Value:     value,
+		Separator: separator,
 		Position: SimpleConfigPosition{
 			Line: lineNumber,
 		},
@@ -75,26 +103,12 @@ func (p *SimpleConfigParser) RemoveOption(option string) {
 	delete(p.Lines, option)
 }
 
-func (p *SimpleConfigParser) UpsertOption(option string, value string) {
-	if _, exists := p.Lines[option]; exists {
-		p.ReplaceOption(option, value)
-	} else {
-		p.AddLine(option+p.Options.Separator+value, uint32(len(p.Lines)))
-	}
-}
-
 func (p *SimpleConfigParser) GetOption(option string) (SimpleConfigLine, error) {
 	if _, exists := p.Lines[option]; exists {
 		return p.Lines[option], nil
 	}
 
-	return SimpleConfigLine{
-			Value: "",
-			Position: SimpleConfigPosition{
-				Line: 0,
-			},
-		},
-		docvalues.OptionUnknownError{}
+	return SimpleConfigLine{}, docvalues.OptionUnknownError{}
 }
 
 func (p *SimpleConfigParser) ParseFromFile(content string) []docvalues.OptionError {

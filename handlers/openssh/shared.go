@@ -6,17 +6,12 @@ import (
 )
 
 func createOpenSSHConfigParser() common.SimpleConfigParser {
-	pattern, err := regexp.Compile(`^(?:#|\s*$)`)
-
-	if err != nil {
-		panic(err)
-	}
-
 	return common.SimpleConfigParser{
 		Lines: make(map[string]common.SimpleConfigLine),
 		Options: common.SimpleConfigOptions{
-			Separator:        " ",
-			IgnorePattern:    *pattern,
+			Separator:        *regexp.MustCompile(`(?m)^\s*(?P<OptionName>\w+)(?P<Separator>\s*)(?P<Value>.*)\s*$`),
+			IgnorePattern:    *regexp.MustCompile(`^(?:#|\s*$)`),
+			IdealSeparator:   " ",
 			AvailableOptions: &Options,
 		},
 	}

@@ -55,7 +55,7 @@ func (v ArrayValue) GetTypeDescription() []string {
 func (v ArrayValue) CheckIsValid(value string) error {
 	values := strings.Split(value, v.Separator)
 
-	if v.DuplicatesExtractor != nil {
+	if *v.DuplicatesExtractor != nil {
 		valuesOccurrences := utils.SliceToMap(
 			utils.Map(values, *v.DuplicatesExtractor),
 			0,

@@ -19,7 +19,7 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 		if params.Position.Character < uint32(len(optionName)) {
 			return getRootCompletions(), nil
 		} else {
-			cursor := params.Position.Character - uint32(len(optionName+Parser.Options.Separator))
+			cursor := params.Position.Character - uint32(line.GetCharacterPositions(optionName)[1])
 
 			return getOptionCompletions(optionName, line.Value, cursor), nil
 		}
