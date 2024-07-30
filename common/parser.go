@@ -47,11 +47,9 @@ func (p *SimpleConfigParser) AddLine(line string, lineNumber uint32) (string, er
 	}
 
 	optionIndex := re.SubexpIndex("OptionName")
-
 	if optionIndex == -1 {
 		return "", docvalues.MalformedLineError{}
 	}
-
 	option = matches[optionIndex]
 
 	if _, exists := (*p.Options.AvailableOptions)[option]; !exists {
@@ -59,17 +57,15 @@ func (p *SimpleConfigParser) AddLine(line string, lineNumber uint32) (string, er
 	}
 
 	separatorIndex := re.SubexpIndex("Separator")
-
 	if separatorIndex == -1 {
 		return option, docvalues.MalformedLineError{}
 	}
+	separator = matches[separatorIndex]
 
 	valueIndex := re.SubexpIndex("Value")
-
 	if valueIndex == -1 {
 		return option, docvalues.MalformedLineError{}
 	}
-
 	value = matches[valueIndex]
 
 	if _, exists := p.Lines[option]; exists {

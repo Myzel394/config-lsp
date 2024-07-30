@@ -147,7 +147,8 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			SubValue: docvalues.ArrayValue{
 				Separator:           ",",
 				DuplicatesExtractor: &docvalues.DuplicatesAllowedExtractor,
-				SubValue:            docvalues.StringValue{},
+				// TODO: Add
+				SubValue: docvalues.StringValue{},
 			},
 		},
 	),
@@ -182,7 +183,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 						"x11-connection",
 					},
 				},
-				Value: docvalues.StringValue{},
+				Value: TimeFormatValue{},
 			},
 		},
 	),
@@ -230,7 +231,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			},
 		},
 	),
-	   "DenyGroups": common.NewOption(`This keyword can be followed by a list of group name patterns, separated by spaces. Login is disallowed for users whose primary group or supplementary group list matches one of the patterns. Only group names are valid; a numerical group ID is not recognized. By default, login is allowed for all groups. The allow/deny groups directives are processed in the following order: DenyGroups, AllowGroups.
+	"DenyGroups": common.NewOption(`This keyword can be followed by a list of group name patterns, separated by spaces. Login is disallowed for users whose primary group or supplementary group list matches one of the patterns. Only group names are valid; a numerical group ID is not recognized. By default, login is allowed for all groups. The allow/deny groups directives are processed in the following order: DenyGroups, AllowGroups.
 	See PATTERNS in ssh_config(5) for more information on patterns. This keyword may appear multiple times in sshd_config with each instance appending to the list.`,
 		docvalues.GroupValue(" ", false),
 	),
@@ -430,7 +431,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			},
 		},
 	),
-	   "LogVerbose": common.NewOption(`Specify one or more overrides to LogLevel. An override consists of a pattern lists that matches the source file, function and line number to force detailed logging for. For example, an override pattern of:
+	"LogVerbose": common.NewOption(`Specify one or more overrides to LogLevel. An override consists of a pattern lists that matches the source file, function and line number to force detailed logging for. For example, an override pattern of:
 	kex.c:*:1000,*:kex_exchange_identification():*,packet.c:*
 	would enable detailed logging for line 1000 of kex.c, everything in the kex_exchange_identification() function, and all code in the packet.c file. This option is intended for debugging and no overrides are enabled by default.`,
 		docvalues.StringValue{},
@@ -605,16 +606,16 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	),
 
 	"SetEnv": common.NewOption(`Specifies one or more environment variables to set in child sessions started by sshd(8) as “NAME=VALUE”. The environment value may be quoted (e.g. if it contains whitespace characters). Environment variables set by SetEnv override the default environment and any variables specified by the user via AcceptEnv or PermitUserEnvironment.`,
-	docvalues.ArrayValue{
-		Separator: " ",
-		DuplicatesExtractor: &SetEnvExtractor,
-		SubValue: docvalues.KeyValueAssignmentValue{
-			Separator: "=",
-			Key: docvalues.StringValue{},
-			Value: docvalues.StringValue{},
+		docvalues.ArrayValue{
+			Separator:           " ",
+			DuplicatesExtractor: &SetEnvExtractor,
+			SubValue: docvalues.KeyValueAssignmentValue{
+				Separator: "=",
+				Key:       docvalues.StringValue{},
+				Value:     docvalues.StringValue{},
+			},
 		},
-	},
-),
+	),
 	"StreamLocalBindMask": common.NewOption(`Sets the octal file creation mode mask (umask) used when creating a Unix-domain socket file for local or remote port forwarding. This option is only used for port forwarding to a Unix-domain socket file.
 	The default value is 0177, which creates a Unix-domain socket file that is readable and writable only by the owner. Note that not all operating systems honor the file mode on Unix-domain socket files.`,
 		docvalues.PositiveNumberValue{},

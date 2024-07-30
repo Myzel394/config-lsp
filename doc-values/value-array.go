@@ -90,6 +90,10 @@ func (v ArrayValue) CheckIsValid(value string) error {
 }
 
 func (v ArrayValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+	if cursor == 0 {
+		return v.SubValue.FetchCompletions(line, cursor)
+	}
+
 	relativePosition, found := utils.FindPreviousCharacter(line, v.Separator, int(cursor-1))
 
 	if found {

@@ -55,10 +55,14 @@ func (v KeyValueAssignmentValue) CheckIsValid(value string) error {
 }
 
 func (v KeyValueAssignmentValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+	if cursor == 0 {
+		return v.Key.FetchCompletions(line, cursor)
+	}
+
 	relativePosition, found := utils.FindPreviousCharacter(line, v.Separator, int(cursor-1))
 
 	if found {
-		line = line[uint32(relativePosition):]
+		line = line[uint32(relativePosition+len(v.Separator)):]
 		cursor -= uint32(relativePosition)
 
 		return v.Value.FetchCompletions(line, cursor)

@@ -89,7 +89,6 @@ type groupInfo struct {
 
 var _cachedGroupInfo []groupInfo
 
-
 func fetchGroupInfo() ([]groupInfo, error) {
 	if len(_cachedGroupInfo) > 0 {
 		return _cachedGroupInfo, nil
