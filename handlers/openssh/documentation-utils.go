@@ -1,17 +1,17 @@
 package openssh
 
 import (
-	"config-lsp/common"
+	docvalues "config-lsp/doc-values"
 	"os/exec"
 	"strings"
 )
 
-var BooleanEnumValue = common.EnumValue{
+var BooleanEnumValue = docvalues.EnumValue{
 	EnforceValues: true,
 	Values:        []string{"yes", "no"},
 }
 
-var plusMinuxCaretPrefixes = []common.Prefix{
+var plusMinuxCaretPrefixes = []docvalues.Prefix{
 	{
 		Prefix:  "+",
 		Meaning: "Append to the default set",
@@ -26,11 +26,11 @@ var plusMinuxCaretPrefixes = []common.Prefix{
 	},
 }
 
-var ChannelTimeoutExtractor = common.ExtractKeyDuplicatesExtractor("=")
+var ChannelTimeoutExtractor = docvalues.ExtractKeyDuplicatesExtractor("=")
 
-func PrefixPlusMinusCaret(values []string) common.PrefixWithMeaningValue {
-	return common.PrefixWithMeaningValue{
-		Prefixes: []common.Prefix{
+func PrefixPlusMinusCaret(values []string) docvalues.PrefixWithMeaningValue {
+	return docvalues.PrefixWithMeaningValue{
+		Prefixes: []docvalues.Prefix{
 			{
 				Prefix:  "+",
 				Meaning: "Append to the default set",
@@ -44,10 +44,10 @@ func PrefixPlusMinusCaret(values []string) common.PrefixWithMeaningValue {
 				Meaning: "Place at the head of the default set",
 			},
 		},
-		SubValue: common.ArrayValue{
-			Separator:       ",",
-			DuplicatesExtractor: &common.SimpleDuplicatesExtractor,
-			SubValue: common.EnumValue{
+		SubValue: docvalues.ArrayValue{
+			Separator:           ",",
+			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+			SubValue: docvalues.EnumValue{
 				Values: values,
 			},
 		},
@@ -88,4 +88,3 @@ func QueryOpenSSHOptions(
 
 	return availableQueries, nil
 }
-

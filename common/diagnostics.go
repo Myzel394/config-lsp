@@ -30,7 +30,7 @@ func DiagnoseOption(
 	uri protocol.DocumentUri,
 	parser *SimpleConfigParser,
 	optionName string,
-	checkerFunc func (string, SimpleConfigPosition) []protocol.Diagnostic,
+	checkerFunc func(string, SimpleConfigPosition) []protocol.Diagnostic,
 ) []protocol.Diagnostic {
 	option, err := parser.GetOption(optionName)
 
@@ -41,4 +41,3 @@ func DiagnoseOption(
 
 	return checkerFunc(option.Value, option.Position)
 }
-

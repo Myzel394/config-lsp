@@ -1,8 +1,6 @@
 package common
 
-import (
-	docvalues "config-lsp/doc-values"
-)
+import docvalues "config-lsp/doc-values"
 
 func AnalyzeValues(
 	parser SimpleConfigParser,
@@ -17,9 +15,9 @@ func AnalyzeValues(
 
 		if err != nil {
 			errors = append(errors, docvalues.ValueError{
-				Line:     line.Position.Line,
-				Option:   optionName,
-				Value:    line.Value,
+				Line:   line.Position.Line,
+				Option: optionName,
+				Value: line.Value,
 				DocError: err,
 			})
 		}
@@ -27,3 +25,4 @@ func AnalyzeValues(
 
 	return errors
 }
+

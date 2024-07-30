@@ -1,6 +1,7 @@
-package common
+package docvalues
 
 import (
+	"config-lsp/utils"
 	"os"
 	"strings"
 )
@@ -63,7 +64,7 @@ func UserValue(separatorForMultiple string, enforceValues bool) Value {
 
 			enumValues := EnumValue{
 				EnforceValues: enforceValues,
-				Values: Map(infos, func(info passwdInfo) string {
+				Values: utils.Map(infos, func(info passwdInfo) string {
 					return info.Name
 				}),
 			}
@@ -73,8 +74,8 @@ func UserValue(separatorForMultiple string, enforceValues bool) Value {
 			} else {
 				return ArrayValue{
 					DuplicatesExtractor: &SimpleDuplicatesExtractor,
-					SubValue:        enumValues,
-					Separator:       separatorForMultiple,
+					SubValue:            enumValues,
+					Separator:           separatorForMultiple,
 				}
 			}
 		},

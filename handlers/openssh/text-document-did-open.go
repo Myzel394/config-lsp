@@ -15,27 +15,7 @@ func TextDocumentDidOpen(context *glsp.Context, params *protocol.DidOpenTextDocu
 		return err
 	}
 
-	diagnostics := make([]protocol.Diagnostic, 0)
-
-	diagnostics = append(
-		diagnostics,
-		common.Map(
-			Parser.ParseFromFile(string(readBytes)),
-			func (err common.OptionError) protocol.Diagnostic {
-				return err.GetPublishDiagnosticsParams()
-			},
-		)...,
-	)
-
-	diagnostics = append(
-		diagnostics,
-		common.Map(
-			common.AnalyzeValues(Parser, Options),
-			func (err common.ValueError) protocol.Diagnostic {
-				return err.GetPublishDiagnosticsParams()
-			},
-		)...,
-	)
+	diagnostics := DiagnoseParser(context, params.TextDocument.URI, string(readBytes))
 
 	if len(diagnostics) > 0 {
 		common.SendDiagnostics(context, params.TextDocument.URI, diagnostics)

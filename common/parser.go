@@ -1,6 +1,7 @@
 package common
 
 import (
+	docvalues "config-lsp/doc-values"
 	"regexp"
 	"strings"
 )
@@ -13,7 +14,6 @@ type SimpleConfigLine struct {
 	Value    string
 	Position SimpleConfigPosition
 }
-
 
 type SimpleConfigOptions struct {
 	Separator        string
@@ -30,13 +30,13 @@ func (p *SimpleConfigParser) AddLine(line string, lineNumber uint32) (string, er
 	parts := strings.SplitN(line, p.Options.Separator, 2)
 
 	if len(parts) == 0 {
-		return "", MalformedLineError{}
+		return "", docvalues.MalformedLineError{}
 	}
 
 	option := parts[0]
 
 	if _, exists := (*p.Options.AvailableOptions)[option]; !exists {
-		return option, OptionUnknownError{}
+		return option, docvalues.OptionUnknownError{}
 	}
 
 	value := ""
@@ -46,7 +46,7 @@ func (p *SimpleConfigParser) AddLine(line string, lineNumber uint32) (string, er
 	}
 
 	if _, exists := p.Lines[option]; exists {
-		return option, OptionAlreadyExistsError{
+		return option, docvalues.OptionAlreadyExistsError{
 			AlreadyLine: p.Lines[option].Position.Line,
 		}
 	}
@@ -94,12 +94,12 @@ func (p *SimpleConfigParser) GetOption(option string) (SimpleConfigLine, error) 
 				Line: 0,
 			},
 		},
-		OptionUnknownError{}
+		docvalues.OptionUnknownError{}
 }
 
-func (p *SimpleConfigParser) ParseFromFile(content string) []OptionError {
+func (p *SimpleConfigParser) ParseFromFile(content string) []docvalues.OptionError {
 	lines := strings.Split(content, "\n")
-	errors := make([]OptionError, 0)
+	errors := make([]docvalues.OptionError, 0)
 
 	for index, line := range lines {
 		if p.Options.IgnorePattern.MatchString(line) {
@@ -109,10 +109,10 @@ func (p *SimpleConfigParser) ParseFromFile(content string) []OptionError {
 		option, err := p.AddLine(line, uint32(index))
 
 		if err != nil {
-			errors = append(errors, OptionError{
-				Line: uint32(index),
+			errors = append(errors, docvalues.OptionError{
+				Line:           uint32(index),
 				ProvidedOption: option,
-				DocError: err,
+				DocError:       err,
 			})
 		}
 	}
@@ -132,5 +132,5 @@ func (p *SimpleConfigParser) FindByLineNumber(lineNumber uint32) (string, Simple
 		}
 	}
 
-	return "", SimpleConfigLine{Value: "", Position: SimpleConfigPosition{Line: 0}}, LineNotFoundError{}
+	return "", SimpleConfigLine{Value: "", Position: SimpleConfigPosition{Line: 0}}, docvalues.LineNotFoundError{}
 }
