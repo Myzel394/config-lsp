@@ -25,15 +25,7 @@ var Options = map[string]common.Option{
 		`This keyword can be followed by a list of group name patterns, separated by spaces. If specified, login is allowed only for users whose primary group or supplementary group list matches one of the patterns. Only group names are valid; a numerical group ID is not recognized. By default, login is allowed for all groups. The allow/deny groups directives are processed in the following order: DenyGroups, AllowGroups.
 	
 See PATTERNS in ssh_config(5) for more information on patterns. This keyword may appear multiple times in sshd_config with each instance appending to the list.`,
-		docvalues.CustomValue{
-			FetchValue: func() docvalues.Value {
-				return docvalues.ArrayValue{
-					DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
-					SubValue:            docvalues.StringValue{},
-					Separator:           " ",
-				}
-			},
-		},
+		docvalues.GroupValue(" ", false),
 	),
 	"AllowStreamLocalForwarding": common.NewOption(
 		`Specifies whether StreamLocal (Unix-domain socket) forwarding is permitted. The available options are yes (the default) or all to allow StreamLocal forwarding, no to prevent all StreamLocal forwarding, local to allow local (from the perspective of ssh(1)) forwarding only or remote to allow remote forwarding only. Note that disabling StreamLocal forwarding does not improve security unless users are also denied shell access, as they can always install their own forwarders.`,
@@ -238,8 +230,10 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			},
 		},
 	),
-	//    "DenyGroups": `This keyword can be followed by a list of group name patterns, separated by spaces. Login is disallowed for users whose primary group or supplementary group list matches one of the patterns. Only group names are valid; a numerical group ID is not recognized. By default, login is allowed for all groups. The allow/deny groups directives are processed in the following order: DenyGroups, AllowGroups.
-	// See PATTERNS in ssh_config(5) for more information on patterns. This keyword may appear multiple times in sshd_config with each instance appending to the list.`,
+	   "DenyGroups": common.NewOption(`This keyword can be followed by a list of group name patterns, separated by spaces. Login is disallowed for users whose primary group or supplementary group list matches one of the patterns. Only group names are valid; a numerical group ID is not recognized. By default, login is allowed for all groups. The allow/deny groups directives are processed in the following order: DenyGroups, AllowGroups.
+	See PATTERNS in ssh_config(5) for more information on patterns. This keyword may appear multiple times in sshd_config with each instance appending to the list.`,
+		docvalues.GroupValue(" ", false),
+	),
 	"DenyUsers": common.NewOption(`This keyword can be followed by a list of user name patterns, separated by spaces. Login is disallowed for user names that match one of the patterns. Only user names are valid; a numerical user ID is not recognized. By default, login is allowed for all users. If the pattern takes the form USER@HOST then USER and HOST are separately checked, restricting logins to particular users from particular hosts. HOST criteria may additionally contain addresses to match in CIDR address/masklen format. The allow/deny users directives are processed in the following order: DenyUsers, AllowUsers.
 	See PATTERNS in ssh_config(5) for more information on patterns. This keyword may appear multiple times in sshd_config with each instance appending to the list.`,
 		docvalues.UserValue(" ", false),
@@ -436,10 +430,12 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			},
 		},
 	),
-	//    "LogVerbose": `Specify one or more overrides to LogLevel. An override consists of a pattern lists that matches the source file, function and line number to force detailed logging for. For example, an override pattern of:
-	// kex.c:*:1000,*:kex_exchange_identification():*,packet.c:*
-	// would enable detailed logging for line 1000 of kex.c, everything in the kex_exchange_identification() function, and all code in the packet.c file. This option is intended for debugging and no overrides are enabled by default.
-	//
+	   "LogVerbose": common.NewOption(`Specify one or more overrides to LogLevel. An override consists of a pattern lists that matches the source file, function and line number to force detailed logging for. For example, an override pattern of:
+	kex.c:*:1000,*:kex_exchange_identification():*,packet.c:*
+	would enable detailed logging for line 1000 of kex.c, everything in the kex_exchange_identification() function, and all code in the packet.c file. This option is intended for debugging and no overrides are enabled by default.`,
+		docvalues.StringValue{},
+	),
+
 	"MACs": common.NewOption(`Specifies the available MAC (message authentication code) algorithms. The MAC algorithm is used for data integrity protection. Multiple algorithms must be comma-separated. If the specified list begins with a ‘+’ character, then the specified algorithms will be appended to the default set instead of replacing them. If the specified list begins with a ‘-’ character, then the specified algorithms (including wildcards) will be removed from the default set instead of replacing them. If the specified list begins with a ‘^’ character, then the specified algorithms will be placed at the head of the default set.
  The algorithms that contain "-etm" calculate the MAC after encryption (encrypt-then-mac). These are considered safer and their use recommended. The supported MACs are:
  hmac-md5 hmac-md5-96 hmac-sha1 hmac-sha1-96 hmac-sha2-256 hmac-sha2-512 umac-64@openssh.com umac-128@openssh.com hmac-md5-etm@openssh.com hmac-md5-96-etm@openssh.com hmac-sha1-etm@openssh.com hmac-sha1-96-etm@openssh.com hmac-sha2-256-etm@openssh.com hmac-sha2-512-etm@openssh.com umac-64-etm@openssh.com umac-128-etm@openssh.com
@@ -608,7 +604,17 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 		},
 	),
 
-	// "SetEnv": common.NewOption(`Specifies one or more environment variables to set in child sessions started by sshd(8) as “NAME=VALUE”. The environment value may be quoted (e.g. if it contains whitespace characters). Environment variables set by SetEnv override the default environment and any variables specified by the user via AcceptEnv or PermitUserEnvironment.`,
+	"SetEnv": common.NewOption(`Specifies one or more environment variables to set in child sessions started by sshd(8) as “NAME=VALUE”. The environment value may be quoted (e.g. if it contains whitespace characters). Environment variables set by SetEnv override the default environment and any variables specified by the user via AcceptEnv or PermitUserEnvironment.`,
+	docvalues.ArrayValue{
+		Separator: " ",
+		DuplicatesExtractor: &SetEnvExtractor,
+		SubValue: docvalues.KeyValueAssignmentValue{
+			Separator: "=",
+			Key: docvalues.StringValue{},
+			Value: docvalues.StringValue{},
+		},
+	},
+),
 	"StreamLocalBindMask": common.NewOption(`Sets the octal file creation mode mask (umask) used when creating a Unix-domain socket file for local or remote port forwarding. This option is only used for port forwarding to a Unix-domain socket file.
 	The default value is 0177, which creates a Unix-domain socket file that is readable and writable only by the owner. Note that not all operating systems honor the file mode on Unix-domain socket files.`,
 		docvalues.PositiveNumberValue{},

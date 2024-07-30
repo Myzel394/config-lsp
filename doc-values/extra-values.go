@@ -81,3 +81,74 @@ func UserValue(separatorForMultiple string, enforceValues bool) Value {
 		},
 	}
 }
+
+type groupInfo struct {
+	Name string
+	GID  string
+}
+
+var _cachedGroupInfo []groupInfo
+
+
+func fetchGroupInfo() ([]groupInfo, error) {
+	if len(_cachedGroupInfo) > 0 {
+		return _cachedGroupInfo, nil
+	}
+
+	readBytes, err := os.ReadFile("/etc/group")
+
+	if err != nil {
+		return []groupInfo{}, err
+	}
+
+	lines := strings.Split(string(readBytes), "\n")
+	infos := make([]groupInfo, 0)
+
+	for _, line := range lines {
+		splitted := strings.Split(line, ":")
+
+		if len(splitted) < 3 {
+			continue
+		}
+
+		info := groupInfo{
+			Name: splitted[0],
+			GID:  splitted[2],
+		}
+
+		infos = append(infos, info)
+	}
+
+	_cachedGroupInfo = infos
+
+	return infos, nil
+}
+
+func GroupValue(separatorForMultiple string, enforceValues bool) Value {
+	return CustomValue{
+		FetchValue: func() Value {
+			infos, err := fetchGroupInfo()
+
+			if err != nil {
+				return StringValue{}
+			}
+
+			enumValues := EnumValue{
+				EnforceValues: enforceValues,
+				Values: utils.Map(infos, func(info groupInfo) string {
+					return info.Name
+				}),
+			}
+
+			if separatorForMultiple == "" {
+				return enumValues
+			} else {
+				return ArrayValue{
+					DuplicatesExtractor: &SimpleDuplicatesExtractor,
+					SubValue:            enumValues,
+					Separator:           separatorForMultiple,
+				}
+			}
+		},
+	}
+}

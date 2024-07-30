@@ -27,6 +27,7 @@ var plusMinuxCaretPrefixes = []docvalues.Prefix{
 }
 
 var ChannelTimeoutExtractor = docvalues.ExtractKeyDuplicatesExtractor("=")
+var SetEnvExtractor = docvalues.ExtractKeyDuplicatesExtractor("=")
 
 func PrefixPlusMinusCaret(values []string) docvalues.PrefixWithMeaningValue {
 	return docvalues.PrefixWithMeaningValue{
