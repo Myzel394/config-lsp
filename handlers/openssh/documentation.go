@@ -5,6 +5,10 @@ import (
 	docvalues "config-lsp/doc-values"
 )
 
+var ZERO = 0
+var MAX_PORT = 65535
+var MAX_FILE_MODE = 0777
+
 var Options = map[string]common.Option{
 	"AcceptEnv": common.NewOption(
 		`Specifies what environment variables sent by the client will be copied into the session's environ(7). See SendEnv and SetEnv in ssh_config(5) for how to configure the client. The TERM environment variable is always accepted whenever the client requests a pseudo-terminal as it is required by the protocol. Variables are specified by name, which may contain the wildcard characters ‘*’ and ‘?’. Multiple environment variables may be separated by whitespace or spread across multiple AcceptEnv directives. Be warned that some environment variables could be used to bypass restricted user environments. For this reason, care should be taken in the use of this directive. The default is not to accept any environment variables.`,
@@ -171,7 +175,8 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			Separator:           " ",
 			DuplicatesExtractor: &ChannelTimeoutExtractor,
 			SubValue: docvalues.KeyValueAssignmentValue{
-				Separator: "=",
+				ValueIsOptional: false,
+				Separator:       "=",
 				Key: docvalues.EnumValue{
 					Values: []string{
 						"global",
@@ -213,12 +218,12 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 		}),
 	),
 	"ClientAliveCountMax": common.NewOption(`Sets the number of client alive messages which may be sent without sshd(8) receiving any messages back from the client. If this threshold is reached while client alive messages are being sent, sshd will disconnect the client, terminating the session. It is important to note that the use of client alive messages is very different from TCPKeepAlive. The client alive messages are sent through the encrypted channel and therefore will not be spoofable. The TCP keepalive option enabled by TCPKeepAlive is spoofable. The client alive mechanism is valuable when the client or server depend on knowing when a connection has become unresponsive.
- // The default value is 3. If ClientAliveInterval is set to 15, and ClientAliveCountMax is left at the default, unresponsive SSH clients will be disconnected after approximately 45 seconds. Setting a zero ClientAliveCountMax disables connection termination.`,
-		docvalues.PositiveNumberValue{},
+ The default value is 3. If ClientAliveInterval is set to 15, and ClientAliveCountMax is left at the default, unresponsive SSH clients will be disconnected after approximately 45 seconds. Setting a zero ClientAliveCountMax disables connection termination.`,
+		docvalues.NumberValue{Min: &ZERO},
 	),
 	"ClientAliveInterval": common.NewOption(
 		`Sets a timeout interval in seconds after which if no data has been received from the client, sshd(8) will send a message through the encrypted channel to request a response from the client. The default is 0, indicating that these messages will not be sent to the client.`,
-		docvalues.PositiveNumberValue{},
+		docvalues.NumberValue{Min: &ZERO},
 	),
 	"Compression": common.NewOption(
 		`Specifies whether compression is enabled after the user has authenticated successfully. The argument must be yes, delayed (a legacy synonym for yes) or no. The default is yes.`,
@@ -303,12 +308,12 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	),
 	"HostCertificate": common.NewOption(
 		`Specifies a file containing a public host certificate. The certificate's public key must match a private host key already specified by HostKey. The default behaviour of sshd(8) is not to load any certificates.`,
-		docvalues.StringValue{},
+		docvalues.PathValue{},
 	),
 	"HostKey": common.NewOption(`Specifies a file containing a private host key used by SSH. The defaults are /etc/ssh/ssh_host_ecdsa_key, /etc/ssh/ssh_host_ed25519_key and /etc/ssh/ssh_host_rsa_key.
  Note that sshd(8) will refuse to use a file if it is group/world-accessible and that the HostKeyAlgorithms option restricts which of the keys are actually used by sshd(8).
  It is possible to have multiple host key files. It is also possible to specify public host key files instead. In this case operations on the private key will be delegated to an ssh-agent(1).`,
-		docvalues.StringValue{},
+		docvalues.PathValue{},
 	),
 	"HostKeyAgent": common.NewOption(
 		`Identifies the UNIX-domain socket used to communicate with an agent that has access to the private host keys. If the string "SSH_AUTH_SOCK" is specified, the location of the socket will be read from the SSH_AUTH_SOCK environment variable.`,
@@ -345,13 +350,20 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 		BooleanEnumValue,
 	),
 	"Include": common.NewOption(`Include the specified configuration file(s). Multiple pathnames may be specified and each pathname may contain glob(7) wildcards that will be expanded and processed in lexical order. Files without absolute paths are assumed to be in /etc/ssh. An Include directive may appear inside a Match block to perform conditional inclusion.`,
-		docvalues.StringValue{},
+		docvalues.ArrayValue{
+			Separator:           " ",
+			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+			SubValue: docvalues.PathValue{
+				RequiredType: docvalues.PathTypeFile,
+			},
+		},
+		// TODO: Add extra check
 	),
 
 	"IPQoS": common.NewOption(`Specifies the IPv4 type-of-service or DSCP class for the connection. Accepted values are af11, af12, af13, af21, af22, af23, af31, af32, af33, af41, af42, af43, cs0, cs1, cs2, cs3, cs4, cs5, cs6, cs7, ef, le, lowdelay, throughput, reliability, a numeric value, or none to use the operating system default. This option may take one or two arguments, separated by whitespace. If one argument is specified, it is used as the packet class unconditionally. If two values are specified, the first is automatically selected for interactive sessions and the second for non-interactive sessions. The default is af21 (Low-Latency Data) for interactive sessions and cs1 (Lower Effort) for non-interactive sessions.`,
 		docvalues.OrValue{
 			Values: []docvalues.Value{
-				docvalues.PositiveNumberValue{},
+				docvalues.NumberValue{},
 				docvalues.EnumValue{
 					Values: []string{"none"},
 				},
@@ -409,11 +421,23 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			"sntrup761x25519-sha512@openssh.com",
 		}),
 	),
-	//    "ListenAddress": `Specifies the local addresses sshd(8) should listen on. The following forms may be used:
-	// ListenAddress hostname|address [rdomain domain] ListenAddress hostname:port [rdomain domain] ListenAddress IPv4_address:port [rdomain domain] ListenAddress [hostname|address]:port [rdomain domain]
-	// The optional rdomain qualifier requests sshd(8) listen in an explicit routing domain. If port is not specified, sshd will listen on the address and all Port options specified. The default is to listen on all local addresses on the current default routing domain. Multiple ListenAddress options are permitted. For more information on routing domains, see rdomain(4).`,
+	"ListenAddress": common.NewOption(`Specifies the local addresses sshd(8) should listen on. The following forms may be used:
+	ListenAddress hostname|address [rdomain domain] ListenAddress hostname:port [rdomain domain] ListenAddress IPv4_address:port [rdomain domain] ListenAddress [hostname|address]:port [rdomain domain]
+	The optional rdomain qualifier requests sshd(8) listen in an explicit routing domain. If port is not specified, sshd will listen on the address and all Port options specified. The default is to listen on all local addresses on the current default routing domain. Multiple ListenAddress options are permitted. For more information on routing domains, see rdomain(4).`,
+		docvalues.KeyValueAssignmentValue{
+			ValueIsOptional: true,
+			Key: docvalues.IPAddressValue{
+				AllowIPv4:     true,
+				AllowIPv6:     true,
+				AllowRange:    false,
+				DisallowedIPs: &docvalues.NonRoutableNetworks,
+			},
+			Separator: ":",
+			Value:     docvalues.NumberValue{Min: &ZERO, Max: &MAX_PORT},
+		},
+	),
 	"LoginGraceTime": common.NewOption(`The server disconnects after this time if the user has not successfully logged in. If the value is 0, there is no time limit. The default is 120 seconds.`,
-		docvalues.PositiveNumberValue{},
+		TimeFormatValue{},
 	),
 	"LogLevel": common.NewOption(`Gives the verbosity level that is used when logging messages from sshd(8). The possible values are: QUIET, FATAL, ERROR, INFO, VERBOSE, DEBUG, DEBUG1, DEBUG2, and DEBUG3. The default is INFO. DEBUG and DEBUG1 are equivalent. DEBUG2 and DEBUG3 each specify higher levels of debugging output. Logging with a DEBUG level violates the privacy of users and is not recommended.`,
 		docvalues.EnumValue{
@@ -470,10 +494,10 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	// The patterns in an Address criteria may additionally contain addresses to match in CIDR address/masklen format, such as 192.0.2.0/24 or 2001:db8::/32. Note that the mask length provided must be consistent with the address - it is an error to specify a mask length that is too long for the address or one with bits set in this host portion of the address. For example, 192.0.2.0/33 and 192.0.2.0/8, respectively.
 	// Only a subset of keywords may be used on the lines following a Match keyword. Available keywords are AcceptEnv, AllowAgentForwarding, AllowGroups, AllowStreamLocalForwarding, AllowTcpForwarding, AllowUsers, AuthenticationMethods, AuthorizedKeysCommand, AuthorizedKeysCommandUser, AuthorizedKeysFile, AuthorizedPrincipalsCommand, AuthorizedPrincipalsCommandUser, AuthorizedPrincipalsFile, Banner, CASignatureAlgorithms, ChannelTimeout, ChrootDirectory, ClientAliveCountMax, ClientAliveInterval, DenyGroups, DenyUsers, DisableForwarding, ExposeAuthInfo, ForceCommand, GatewayPorts, GSSAPIAuthentication, HostbasedAcceptedAlgorithms, HostbasedAuthentication, HostbasedUsesNameFromPacketOnly, IgnoreRhosts, Include, IPQoS, KbdInteractiveAuthentication, KerberosAuthentication, LogLevel, MaxAuthTries, MaxSessions, PasswordAuthentication, PermitEmptyPasswords, PermitListen, PermitOpen, PermitRootLogin, PermitTTY, PermitTunnel, PermitUserRC, PubkeyAcceptedAlgorithms, PubkeyAuthentication, PubkeyAuthOptions, RekeyLimit, RevokedKeys, RDomain, SetEnv, StreamLocalBindMask, StreamLocalBindUnlink, TrustedUserCAKeys, UnusedConnectionTimeout, X11DisplayOffset, X11Forwarding and X11UseLocalhost.`,
 	"MaxAuthTries": common.NewOption(`Specifies the maximum number of authentication attempts permitted per connection. Once the number of failures reaches half this value, additional failures are logged. The default is 6.`,
-		docvalues.PositiveNumberValue{},
+		docvalues.NumberValue{Min: &ZERO},
 	),
 	"MaxSessions": common.NewOption(`Specifies the maximum number of open shell, login or subsystem (e.g. sftp) sessions permitted per network connection. Multiple sessions may be established by clients that support connection multiplexing. Setting MaxSessions to 1 will effectively disable session multiplexing, whereas setting it to 0 will prevent all shell, login and subsystem sessions while still permitting forwarding. The default is 10.`,
-		docvalues.PositiveNumberValue{},
+		docvalues.NumberValue{Min: &ZERO},
 	),
 	//    "MaxStartups": `Specifies the maximum number of concurrent unauthenticated connections to the SSH daemon. Additional connections will be dropped until authentication succeeds or the LoginGraceTime expires for a connection. The default is 10:30:100.
 	// Alternatively, random early drop can be enabled by specifying the three colon separated values start:rate:full (e.g. "10:30:60"). sshd(8) will refuse connection attempts with a probability of rate/100 (30%) if there are currently start (10) unauthenticated connections. The probability increases linearly and all connection attempts are refused if the number of unauthenticated connections reaches full (60).`,
@@ -547,7 +571,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 					EnforceValues: true,
 					Values:        []string{"none"},
 				},
-				docvalues.PositiveNumberValue{},
+				docvalues.NumberValue{Min: &ZERO},
 			},
 		},
 	),
@@ -557,7 +581,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	),
 
 	"Port": common.NewOption(`Specifies the port number that sshd(8) listens on. The default is 22. Multiple options of this type are permitted. See also ListenAddress.`,
-		docvalues.PositiveNumberValue{},
+		docvalues.NumberValue{Min: &ZERO, Max: &MAX_PORT},
 	),
 	"PrintLastLog": common.NewOption(`Specifies whether sshd(8) should print the date and time of the last user login when a user logs in interactively. The default is yes.`,
 		BooleanEnumValue,
@@ -593,7 +617,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	),
 	//    "RekeyLimit": `Specifies the maximum amount of data that may be transmitted or received before the session key is renegotiated, optionally followed by a maximum amount of time that may pass before the session key is renegotiated. The first argument is specified in bytes and may have a suffix of ‘K’, ‘M’, or ‘G’ to indicate Kilobytes, Megabytes, or Gigabytes, respectively. The default is between ‘1G’ and ‘4G’, depending on the cipher. The optional second value is specified in seconds and may use any of the units documented in the “TIME FORMATS” section. The default value for RekeyLimit is default none, which means that rekeying is performed after the cipher's default amount of data has been sent or received and no time based rekeying is done.`,
 	"RequiredRSASize": common.NewOption(`Specifies the minimum RSA key size (in bits) that sshd(8) will accept. User and host-based authentication keys smaller than this limit will be refused. The default is 1024 bits. Note that this limit may only be raised from the default.`,
-		docvalues.PositiveNumberValue{},
+		docvalues.NumberValue{Min: &ZERO},
 	),
 	"RevokedKeys": common.NewOption(`Specifies revoked public keys file, or none to not use one. Keys listed in this file will be refused for public key authentication. Note that if this file is not readable, then public key authentication will be refused for all users. Keys may be specified as a text file, listing one public key per line, or as an OpenSSH Key Revocation List (KRL) as generated by ssh-keygen(1). For more information on KRLs, see the KEY REVOCATION LISTS section in ssh-keygen(1).`,
 		docvalues.StringValue{},
@@ -610,15 +634,16 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			Separator:           " ",
 			DuplicatesExtractor: &SetEnvExtractor,
 			SubValue: docvalues.KeyValueAssignmentValue{
-				Separator: "=",
-				Key:       docvalues.StringValue{},
-				Value:     docvalues.StringValue{},
+				ValueIsOptional: false,
+				Separator:       "=",
+				Key:             docvalues.StringValue{},
+				Value:           docvalues.StringValue{},
 			},
 		},
 	),
 	"StreamLocalBindMask": common.NewOption(`Sets the octal file creation mode mask (umask) used when creating a Unix-domain socket file for local or remote port forwarding. This option is only used for port forwarding to a Unix-domain socket file.
 	The default value is 0177, which creates a Unix-domain socket file that is readable and writable only by the owner. Note that not all operating systems honor the file mode on Unix-domain socket files.`,
-		docvalues.PositiveNumberValue{},
+		docvalues.NumberValue{Min: &ZERO, Max: &MAX_FILE_MODE},
 	),
 	"StreamLocalBindUnlink": common.NewOption(`Specifies whether to remove an existing Unix-domain socket file for local or remote port forwarding before creating a new one. If the socket file already exists and StreamLocalBindUnlink is not enabled, sshd will be unable to forward the port to the Unix-domain socket file. This option is only used for port forwarding to a Unix-domain socket file.
  The argument must be yes or no. The default is no.`,
@@ -683,7 +708,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 		},
 	),
 	"X11DisplayOffset": common.NewOption(`Specifies the first display number available for sshd(8)'s X11 forwarding. This prevents sshd from interfering with real X11 servers. The default is 10.`,
-		docvalues.PositiveNumberValue{},
+		docvalues.NumberValue{Min: &ZERO},
 	),
 	"X11Forwarding": common.NewOption(`Specifies whether X11 forwarding is permitted. The argument must be yes or no. The default is no.
  When X11 forwarding is enabled, there may be additional exposure to the server and to client displays if the sshd(8) proxy display is configured to listen on the wildcard address (see X11UseLocalhost), though this is not the default. Additionally, the authentication spoofing and authentication data verification and substitution occur on the client side. The security risk of using X11 forwarding is that the client's X11 display server may be exposed to attack when the SSH client requests forwarding (see the warnings for ForwardX11 in ssh_config(5)). A system administrator may have a stance in which they want to protect clients that may expose themselves to attack by unwittingly requesting X11 forwarding, which can warrant a no setting.

@@ -15,9 +15,10 @@ func (e KeyValueAssignmentError) Error() string {
 }
 
 type KeyValueAssignmentValue struct {
-	Key       Value
-	Value     Value
-	Separator string
+	Key             Value
+	Value           Value
+	ValueIsOptional bool
+	Separator       string
 }
 
 func (v KeyValueAssignmentValue) GetTypeDescription() []string {
@@ -31,18 +32,23 @@ func (v KeyValueAssignmentValue) GetTypeDescription() []string {
 func (v KeyValueAssignmentValue) CheckIsValid(value string) error {
 	parts := strings.Split(value, v.Separator)
 
-	if len(parts) == 1 && parts[0] == "" {
+	if len(parts) == 0 || parts[0] == "" {
+		// Nothing to check for
 		return nil
-	}
-
-	if len(parts) != 2 {
-		return KeyValueAssignmentError{}
 	}
 
 	err := v.Key.CheckIsValid(parts[0])
 
 	if err != nil {
 		return err
+	}
+
+	if len(parts) != 2 {
+		if v.ValueIsOptional {
+			return nil
+		}
+
+		return KeyValueAssignmentError{}
 	}
 
 	err = v.Value.CheckIsValid(parts[1])
