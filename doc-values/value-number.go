@@ -10,7 +10,7 @@ import (
 type NotANumberError struct{}
 
 func (e NotANumberError) Error() string {
-	return "This must be number"
+	return "This must be a number"
 }
 
 type NumberNotInRangeError struct {

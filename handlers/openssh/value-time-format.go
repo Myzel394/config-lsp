@@ -12,7 +12,12 @@ import (
 
 var timeFormatCompletionsPattern = regexp.MustCompile(`(?i)^(\d+)([smhdw])$`)
 var timeFormatCheckPattern = regexp.MustCompile(`(?i)^(\d+)([smhdw]?)$`)
-var isJustDigitsPattern = regexp.MustCompile(`^\d+$`)
+
+type InvalidTimeFormatError struct{}
+
+func (e InvalidTimeFormatError) Error() string {
+	return "Time format is invalid. It must be in the form of: <number>[s|m|h|d|w]"
+}
 
 type TimeFormatValue struct{}
 
@@ -22,7 +27,7 @@ func (v TimeFormatValue) GetTypeDescription() []string {
 
 func (v TimeFormatValue) CheckIsValid(value string) error {
 	if !timeFormatCheckPattern.MatchString(value) {
-		return docvalues.RegexInvalidError{Regex: timeFormatCheckPattern.String()}
+		return InvalidTimeFormatError{}
 	}
 
 	return nil
@@ -88,20 +93,7 @@ func (v TimeFormatValue) FetchCompletions(line string, cursor uint32) []protocol
 	if line == "" || isJustDigitsPattern.MatchString(line) {
 		completions = append(
 			completions,
-			utils.Map(
-				[]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
-				func(index int) protocol.CompletionItem {
-					kind := protocol.CompletionItemKindValue
-
-					sortText := strconv.Itoa(index)
-
-					return protocol.CompletionItem{
-						Label:    line + strconv.Itoa(index),
-						Kind:     &kind,
-						SortText: &sortText,
-					}
-				},
-			)...,
+			docvalues.GenerateBase10Completions(line)...,
 		)
 	}
 

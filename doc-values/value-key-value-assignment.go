@@ -22,10 +22,19 @@ type KeyValueAssignmentValue struct {
 }
 
 func (v KeyValueAssignmentValue) GetTypeDescription() []string {
-	return []string{
-		fmt.Sprintf("Key-Value pair in form of 'key%svalue'", v.Separator),
-		fmt.Sprintf("#### Key\n%s", strings.Join(v.Key.GetTypeDescription(), "\n")),
-		fmt.Sprintf("#### Value:\n%s", strings.Join(v.Value.GetTypeDescription(), "\n")),
+	keyDescription := v.Key.GetTypeDescription()
+	valueDescription := v.Value.GetTypeDescription()
+
+	if len(keyDescription) == 1 && len(valueDescription) == 1 {
+		return []string{
+			fmt.Sprintf("Key-Value pair in form of '<%s>%s<%s>'", keyDescription[0], v.Separator, valueDescription[0]),
+		}
+	} else {
+		return []string{
+			fmt.Sprintf("Key-Value pair in form of 'key%svalue'", v.Separator),
+			fmt.Sprintf("#### Key\n%s", strings.Join(v.Key.GetTypeDescription(), "\n")),
+			fmt.Sprintf("#### Value:\n%s", strings.Join(v.Value.GetTypeDescription(), "\n")),
+		}
 	}
 }
 
