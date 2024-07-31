@@ -49,6 +49,7 @@ func (v NumberValue) GetTypeDescription() []string {
 	return []string{"A number"}
 }
 func (v NumberValue) CheckIsValid(value string) error {
+	println("Da number is checking if it is valid", value)
 	number, err := strconv.Atoi(value)
 
 	if err != nil {

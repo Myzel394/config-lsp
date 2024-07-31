@@ -3,6 +3,7 @@ package openssh
 import (
 	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
+	"regexp"
 )
 
 var ZERO = 0
@@ -499,8 +500,13 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	"MaxSessions": common.NewOption(`Specifies the maximum number of open shell, login or subsystem (e.g. sftp) sessions permitted per network connection. Multiple sessions may be established by clients that support connection multiplexing. Setting MaxSessions to 1 will effectively disable session multiplexing, whereas setting it to 0 will prevent all shell, login and subsystem sessions while still permitting forwarding. The default is 10.`,
 		docvalues.NumberValue{Min: &ZERO},
 	),
-	//    "MaxStartups": `Specifies the maximum number of concurrent unauthenticated connections to the SSH daemon. Additional connections will be dropped until authentication succeeds or the LoginGraceTime expires for a connection. The default is 10:30:100.
-	// Alternatively, random early drop can be enabled by specifying the three colon separated values start:rate:full (e.g. "10:30:60"). sshd(8) will refuse connection attempts with a probability of rate/100 (30%) if there are currently start (10) unauthenticated connections. The probability increases linearly and all connection attempts are refused if the number of unauthenticated connections reaches full (60).`,
+	"MaxStartups": common.NewOption(`Specifies the maximum number of concurrent unauthenticated connections to the SSH daemon. Additional connections will be dropped until authentication succeeds or the LoginGraceTime expires for a connection. The default is 10:30:100.
+	Alternatively, random early drop can be enabled by specifying the three colon separated values start:rate:full (e.g. "10:30:60"). sshd(8) will refuse connection attempts with a probability of rate/100 (30%) if there are currently start (10) unauthenticated connections. The probability increases linearly and all connection attempts are refused if the number of unauthenticated connections reaches full (60).`,
+		// TODO: Add custom value `SeapartorValue` that takes an array of values and separators
+		docvalues.RegexValue{
+			Regex: *regexp.MustCompile(`^(\d+):(\d+):(\d+)$`),
+		},
+	),
 	"ModuliFile": common.NewOption(`Specifies the moduli(5) file that contains the Diffie- Hellman groups used for the “diffie-hellman-group-exchange-sha1” and “diffie-hellman-group-exchange-sha256” key exchange methods. The default is /etc/moduli.`,
 		docvalues.PathValue{
 			RequiredType: docvalues.PathTypeFile,
@@ -512,12 +518,60 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	"PermitEmptyPasswords": common.NewOption(`When password authentication is allowed, it specifies whether the server allows login to accounts with empty password strings. The default is no.`,
 		BooleanEnumValue,
 	),
-	//    "PermitListen": `Specifies the addresses/ports on which a remote TCP port forwarding may listen. The listen specification must be one of the following forms:
-	// PermitListen port PermitListen host:port
-	// Multiple permissions may be specified by separating them with whitespace. An argument of any can be used to remove all restrictions and permit any listen requests. An argument of none can be used to prohibit all listen requests. The host name may contain wildcards as described in the PATTERNS section in ssh_config(5). The wildcard ‘*’ can also be used in place of a port number to allow all ports. By default all port forwarding listen requests are permitted. Note that the GatewayPorts option may further restrict which addresses may be listened on. Note also that ssh(1) will request a listen host of “localhost” if no listen host was specifically requested, and this name is treated differently to explicit localhost addresses of “127.0.0.1” and “::1”.`,
-	//    "PermitOpen": `Specifies the destinations to which TCP port forwarding is permitted. The forwarding specification must be one of the following forms:
-	// PermitOpen host:port PermitOpen IPv4_addr:port PermitOpen [IPv6_addr]:port
-	// Multiple forwards may be specified by separating them with whitespace. An argument of any can be used to remove all restrictions and permit any forwarding requests. An argument of none can be used to prohibit all forwarding requests. The wildcard ‘*’ can be used for host or port to allow all hosts or ports respectively. Otherwise, no pattern matching or address lookups are performed on supplied names. By default all port forwarding requests are permitted.`,
+	"PermitListen": common.NewOption(`Specifies the addresses/ports on which a remote TCP port forwarding may listen. The listen specification must be one of the following forms:
+	PermitListen port PermitListen host:port
+	Multiple permissions may be specified by separating them with whitespace. An argument of any can be used to remove all restrictions and permit any listen requests. An argument of none can be used to prohibit all listen requests. The host name may contain wildcards as described in the PATTERNS section in ssh_config(5). The wildcard ‘*’ can also be used in place of a port number to allow all ports. By default all port forwarding listen requests are permitted. Note that the GatewayPorts option may further restrict which addresses may be listened on. Note also that ssh(1) will request a listen host of “localhost” if no listen host was specifically requested, and this name is treated differently to explicit localhost addresses of “127.0.0.1” and “::1”.`,
+		docvalues.ArrayValue{
+			Separator:           " ",
+			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+			SubValue: docvalues.KeyValueAssignmentValue{
+				ValueIsOptional: true,
+				Key: docvalues.IPAddressValue{
+					AllowIPv4:     true,
+					AllowIPv6:     true,
+					AllowRange:    false,
+					DisallowedIPs: &docvalues.NonRoutableNetworks,
+				},
+				Separator: ":",
+				Value: docvalues.OrValue{
+					Values: []docvalues.Value{
+						docvalues.EnumValue{
+							Values:        []string{"*"},
+							EnforceValues: true,
+						},
+						docvalues.NumberValue{Min: &ZERO, Max: &MAX_PORT},
+					},
+				},
+			},
+		},
+	),
+	"PermitOpen": common.NewOption(`Specifies the destinations to which TCP port forwarding is permitted. The forwarding specification must be one of the following forms:
+	PermitOpen host:port PermitOpen IPv4_addr:port PermitOpen [IPv6_addr]:port
+	Multiple forwards may be specified by separating them with whitespace. An argument of any can be used to remove all restrictions and permit any forwarding requests. An argument of none can be used to prohibit all forwarding requests. The wildcard ‘*’ can be used for host or port to allow all hosts or ports respectively. Otherwise, no pattern matching or address lookups are performed on supplied names. By default all port forwarding requests are permitted.`,
+		docvalues.ArrayValue{
+			Separator:           " ",
+			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+			SubValue: docvalues.KeyValueAssignmentValue{
+				ValueIsOptional: true,
+				Key: docvalues.IPAddressValue{
+					AllowIPv4:     true,
+					AllowIPv6:     true,
+					AllowRange:    false,
+					DisallowedIPs: &docvalues.NonRoutableNetworks,
+				},
+				Separator: ":",
+				Value: docvalues.OrValue{
+					Values: []docvalues.Value{
+						docvalues.EnumValue{
+							Values:        []string{"*"},
+							EnforceValues: true,
+						},
+						docvalues.NumberValue{Min: &ZERO, Max: &MAX_PORT},
+					},
+				},
+			},
+		},
+	),
 	"PermitRootLogin": common.NewOption(`Specifies whether root can log in using ssh(1). The argument must be yes, prohibit-password, forced-commands-only, or no. The default is prohibit-password.
  If this option is set to prohibit-password (or its deprecated alias, without-password), password and keyboard-interactive authentication are disabled for root.
  If this option is set to forced-commands-only, root login with public key authentication will be allowed, but only if the command option has been specified (which may be useful for taking remote backups even if root login is normally not allowed). All other authentication methods are disabled for root.

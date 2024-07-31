@@ -1,8 +1,9 @@
 package docvalues
 
 import (
-	protocol "github.com/tliron/glsp/protocol_3_16"
 	"strings"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 type OrValue struct {

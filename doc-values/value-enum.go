@@ -26,7 +26,7 @@ type EnumValue struct {
 
 func (v EnumValue) GetTypeDescription() []string {
 	if len(v.Values) == 1 {
-		return []string{fmt.Sprintf("'%s'", v.Values[0])}
+		return []string{"'" + v.Values[0] + "'"}
 	}
 
 	lines := make([]string, len(v.Values)+1)
@@ -45,6 +45,7 @@ func (v EnumValue) CheckIsValid(value string) error {
 
 	for _, validValue := range v.Values {
 		if validValue == value {
+			println("Yep so", value, "is equal to", validValue)
 			return nil
 		}
 
