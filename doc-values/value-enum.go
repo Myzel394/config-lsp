@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/utils"
 	"fmt"
 	"strings"
 
@@ -16,8 +17,32 @@ func (e ValueNotInEnumError) Error() string {
 	return fmt.Sprintf("This value is not valid. Select one from: %s", strings.Join(e.AvailableValues, ","))
 }
 
+type EnumString struct {
+	// What is actually inserted into the document
+	InsertText string
+	// What is shown in the completion list
+	DescriptionText string
+	// Documentation for this value
+	Documentation string
+}
+
+func CreateEnumString(value string) EnumString {
+	return EnumString{
+		InsertText:      value,
+		DescriptionText: value,
+	}
+}
+
+func CreateEnumStringWithDoc(value string, doc string) EnumString {
+	return EnumString{
+		InsertText:      value,
+		DescriptionText: value,
+		Documentation:   doc,
+	}
+}
+
 type EnumValue struct {
-	Values []string
+	Values []EnumString
 	// If `true`, the value MUST be one of the values in the Values array
 	// Otherwise an error is shown
 	// If `false`, the value is just a hint
@@ -26,14 +51,14 @@ type EnumValue struct {
 
 func (v EnumValue) GetTypeDescription() []string {
 	if len(v.Values) == 1 {
-		return []string{"'" + v.Values[0] + "'"}
+		return []string{"'" + v.Values[0].DescriptionText + "'"}
 	}
 
 	lines := make([]string, len(v.Values)+1)
 	lines[0] = "Enum of:"
 
 	for index, value := range v.Values {
-		lines[index+1] += "\t* " + value
+		lines[index+1] += "\t* " + value.DescriptionText
 	}
 
 	return lines
@@ -44,8 +69,7 @@ func (v EnumValue) CheckIsValid(value string) error {
 	}
 
 	for _, validValue := range v.Values {
-		if validValue == value {
-			println("Yep so", value, "is equal to", validValue)
+		if validValue.InsertText == value {
 			return nil
 		}
 
@@ -53,7 +77,7 @@ func (v EnumValue) CheckIsValid(value string) error {
 
 	return ValueNotInEnumError{
 		ProvidedValue:   value,
-		AvailableValues: v.Values,
+		AvailableValues: utils.Map(v.Values, func(value EnumString) string { return value.InsertText }),
 	}
 }
 func (v EnumValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
@@ -64,9 +88,10 @@ func (v EnumValue) FetchCompletions(line string, cursor uint32) []protocol.Compl
 		kind := protocol.CompletionItemKindEnum
 
 		completions[index] = protocol.CompletionItem{
-			Label:            value,
+			Label:            value.InsertText,
 			InsertTextFormat: &textFormat,
 			Kind:             &kind,
+			Documentation:    &value.Documentation,
 		}
 	}
 

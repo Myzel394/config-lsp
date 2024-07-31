@@ -34,19 +34,19 @@ func (v OrValue) GetTypeDescription() []string {
 	)
 }
 func (v OrValue) CheckIsValid(value string) error {
-	var firstError error = nil
+	var lastError error = nil
 
 	for _, subValue := range v.Values {
 		err := subValue.CheckIsValid(value)
 
 		if err == nil {
 			return nil
-		} else if firstError == nil {
-			firstError = err
+		} else {
+			lastError = err
 		}
 	}
 
-	return firstError
+	return lastError
 }
 func (v OrValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	completions := make([]protocol.CompletionItem, 0)

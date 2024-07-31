@@ -2,13 +2,17 @@ package openssh
 
 import (
 	docvalues "config-lsp/doc-values"
+	"config-lsp/utils"
 	"os/exec"
 	"strings"
 )
 
 var BooleanEnumValue = docvalues.EnumValue{
 	EnforceValues: true,
-	Values:        []string{"yes", "no"},
+	Values: []docvalues.EnumString{
+		docvalues.CreateEnumString("yes"),
+		docvalues.CreateEnumString("no"),
+	},
 }
 
 var plusMinuxCaretPrefixes = []docvalues.Prefix{
@@ -29,7 +33,7 @@ var plusMinuxCaretPrefixes = []docvalues.Prefix{
 var ChannelTimeoutExtractor = docvalues.ExtractKeyDuplicatesExtractor("=")
 var SetEnvExtractor = docvalues.ExtractKeyDuplicatesExtractor("=")
 
-func PrefixPlusMinusCaret(values []string) docvalues.PrefixWithMeaningValue {
+func PrefixPlusMinusCaret(values []docvalues.EnumString) docvalues.PrefixWithMeaningValue {
 	return docvalues.PrefixWithMeaningValue{
 		Prefixes: []docvalues.Prefix{
 			{
@@ -55,7 +59,7 @@ func PrefixPlusMinusCaret(values []string) docvalues.PrefixWithMeaningValue {
 	}
 }
 
-var _cachedQueries map[string][]string = make(map[string][]string)
+var _cachedQueries map[string][]docvalues.EnumString = make(map[string][]docvalues.EnumString)
 
 func queryValues(query string) ([]string, error) {
 	cmd := exec.Command("ssh", "-Q", query)
@@ -71,17 +75,18 @@ func queryValues(query string) ([]string, error) {
 
 func QueryOpenSSHOptions(
 	query string,
-) ([]string, error) {
-	var availableQueries []string
+) ([]docvalues.EnumString, error) {
+	var availableQueries []docvalues.EnumString
 	key := query
 
 	if _cachedQueries[key] != nil && len(_cachedQueries[key]) > 0 {
 		return _cachedQueries[key], nil
 	} else {
-		availableQueries, err := queryValues(query)
+		availableRawQueries, err := queryValues(query)
+		availableQueries = utils.Map(availableRawQueries, docvalues.CreateEnumString)
 
 		if err != nil {
-			return []string{}, err
+			return []docvalues.EnumString{}, err
 		}
 
 		_cachedQueries[key] = availableQueries

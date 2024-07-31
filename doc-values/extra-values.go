@@ -64,8 +64,8 @@ func UserValue(separatorForMultiple string, enforceValues bool) Value {
 
 			enumValues := EnumValue{
 				EnforceValues: enforceValues,
-				Values: utils.Map(infos, func(info passwdInfo) string {
-					return info.Name
+				Values: utils.Map(infos, func(info passwdInfo) EnumString {
+					return CreateEnumString(info.Name)
 				}),
 			}
 
@@ -134,8 +134,8 @@ func GroupValue(separatorForMultiple string, enforceValues bool) Value {
 
 			enumValues := EnumValue{
 				EnforceValues: enforceValues,
-				Values: utils.Map(infos, func(info groupInfo) string {
-					return info.Name
+				Values: utils.Map(infos, func(info groupInfo) EnumString {
+					return CreateEnumString(info.Name)
 				}),
 			}
 

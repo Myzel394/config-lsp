@@ -19,7 +19,11 @@ var Options = map[string]common.Option{
 		`Specifies which address family should be used by sshd(8). Valid arguments are any (the default), inet (use IPv4 only), or inet6 (use IPv6 only).`,
 		docvalues.EnumValue{
 			EnforceValues: true,
-			Values:        []string{"any", "inet", "inet6"},
+			Values: []docvalues.EnumString{
+				docvalues.CreateEnumString("any"),
+				docvalues.CreateEnumString("inet"),
+				docvalues.CreateEnumString("inet6"),
+			},
 		},
 	),
 	"AllowAgentForwarding": common.NewOption(
@@ -36,14 +40,26 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 		`Specifies whether StreamLocal (Unix-domain socket) forwarding is permitted. The available options are yes (the default) or all to allow StreamLocal forwarding, no to prevent all StreamLocal forwarding, local to allow local (from the perspective of ssh(1)) forwarding only or remote to allow remote forwarding only. Note that disabling StreamLocal forwarding does not improve security unless users are also denied shell access, as they can always install their own forwarders.`,
 		docvalues.EnumValue{
 			EnforceValues: true,
-			Values:        []string{"yes", "all", "no", "local", "remote"},
+			Values: []docvalues.EnumString{
+				docvalues.CreateEnumString("yes"),
+				docvalues.CreateEnumString("all"),
+				docvalues.CreateEnumString("no"),
+				docvalues.CreateEnumString("local"),
+				docvalues.CreateEnumString("remote"),
+			},
 		},
 	),
 	"AllowTcpForwarding": common.NewOption(
 		`Specifies whether TCP forwarding is permitted. The available options are yes (the default) or all to allow TCP forwarding, no to prevent all TCP forwarding, local to allow local (from the perspective of ssh(1)) forwarding only or remote to allow remote forwarding only. Note that disabling TCP forwarding does not improve security unless users are also denied shell access, as they can always install their own forwarders.`,
 		docvalues.EnumValue{
 			EnforceValues: true,
-			Values:        []string{"yes", "all", "no", "local", "remote"},
+			Values: []docvalues.EnumString{
+				docvalues.CreateEnumString("yes"),
+				docvalues.CreateEnumString("all"),
+				docvalues.CreateEnumString("no"),
+				docvalues.CreateEnumString("local"),
+				docvalues.CreateEnumString("remote"),
+			},
 		},
 	),
 	"AllowUsers": common.NewOption(
@@ -62,31 +78,33 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			Values: []docvalues.Value{
 				docvalues.EnumValue{
 					EnforceValues: true,
-					Values:        []string{"any"},
+					Values: []docvalues.EnumString{
+						docvalues.CreateEnumString("any"),
+					},
 				},
 				docvalues.ArrayValue{
 					SubValue: docvalues.EnumValue{
 						EnforceValues: true,
-						Values: []string{
-							"none",
+						Values: []docvalues.EnumString{
+							docvalues.CreateEnumString("none"),
 
-							"password",
-							"publickey",
-							"gssapi-with-mic",
-							"keyboard-interactive",
-							"hostbased",
+							docvalues.CreateEnumString("password"),
+							docvalues.CreateEnumString("publickey"),
+							docvalues.CreateEnumString("gssapi-with-mic"),
+							docvalues.CreateEnumString("keyboard-interactive"),
+							docvalues.CreateEnumString("hostbased"),
 
-							"password:bsdauth",
-							"publickey:bsdauth",
-							"gssapi-with-mic:bsdauth",
-							"keyboard-interactive:bsdauth",
-							"hostbased:bsdauth",
+							docvalues.CreateEnumString("password:bsdauth"),
+							docvalues.CreateEnumString("publickey:bsdauth"),
+							docvalues.CreateEnumString("gssapi-with-mic:bsdauth"),
+							docvalues.CreateEnumString("keyboard-interactive:bsdauth"),
+							docvalues.CreateEnumString("hostbased:bsdauth"),
 
-							"password:pam",
-							"publickey:pam",
-							"gssapi-with-mic:pam",
-							"keyboard-interactive:pam",
-							"hostbased:pam",
+							docvalues.CreateEnumString("password:pam"),
+							docvalues.CreateEnumString("publickey:pam"),
+							docvalues.CreateEnumString("gssapi-with-mic:pam"),
+							docvalues.CreateEnumString("keyboard-interactive:pam"),
+							docvalues.CreateEnumString("hostbased:pam"),
 						},
 					},
 				},
@@ -179,15 +197,16 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 				ValueIsOptional: false,
 				Separator:       "=",
 				Key: docvalues.EnumValue{
-					Values: []string{
-						"*",
-						"global",
-						"agent-connection",
-						"direct-tcpip", "direct-streamlocal@openssh.com",
-						"forwarded-tcpip", "forwarded-streamlocal@openssh.com",
-						"session",
-						"tun-connection",
-						"x11-connection",
+					Values: []docvalues.EnumString{
+						docvalues.CreateEnumString("global"),
+						docvalues.CreateEnumString("agent-connection"),
+						docvalues.CreateEnumString("direct-tcpip"),
+						docvalues.CreateEnumString("direct-streamlocal@openssh.com"),
+						docvalues.CreateEnumString("forwarded-tcpip"),
+						docvalues.CreateEnumString("forwarded-streamlocal@openssh.com"),
+						docvalues.CreateEnumString("session"),
+						docvalues.CreateEnumString("tun-connection"),
+						docvalues.CreateEnumString("x11-connection"),
 					},
 				},
 				Value: TimeFormatValue{},
@@ -206,17 +225,17 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
  The default is:
  chacha20-poly1305@openssh.com, aes128-ctr,aes192-ctr,aes256-ctr, aes128-gcm@openssh.com,aes256-gcm@openssh.com
  The list of available ciphers may also be obtained using "ssh -Q cipher".`,
-		PrefixPlusMinusCaret([]string{
-			"3des-cbc",
-			"aes128-cbc",
-			"aes192-cbc",
-			"aes256-cbc",
-			"aes128-ctr",
-			"aes192-ctr",
-			"aes256-ctr",
-			"aes128-gcm@openssh.com",
-			"aes256-gcm@openssh.com",
-			"chacha20-poly1305@openssh.com",
+		PrefixPlusMinusCaret([]docvalues.EnumString{
+			docvalues.CreateEnumString("3des-cbc"),
+			docvalues.CreateEnumString("aes128-cbc"),
+			docvalues.CreateEnumString("aes192-cbc"),
+			docvalues.CreateEnumString("aes256-cbc"),
+			docvalues.CreateEnumString("aes128-ctr"),
+			docvalues.CreateEnumString("aes192-ctr"),
+			docvalues.CreateEnumString("aes256-ctr"),
+			docvalues.CreateEnumString("aes128-gcm@openssh.com"),
+			docvalues.CreateEnumString("aes256-gcm@openssh.com"),
+			docvalues.CreateEnumString("chacha20-poly1305@openssh.com"),
 		}),
 	),
 	"ClientAliveCountMax": common.NewOption(`Sets the number of client alive messages which may be sent without sshd(8) receiving any messages back from the client. If this threshold is reached while client alive messages are being sent, sshd will disconnect the client, terminating the session. It is important to note that the use of client alive messages is very different from TCPKeepAlive. The client alive messages are sent through the encrypted channel and therefore will not be spoofable. The TCP keepalive option enabled by TCPKeepAlive is spoofable. The client alive mechanism is valuable when the client or server depend on knowing when a connection has become unresponsive.
@@ -231,10 +250,10 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 		`Specifies whether compression is enabled after the user has authenticated successfully. The argument must be yes, delayed (a legacy synonym for yes) or no. The default is yes.`,
 		docvalues.EnumValue{
 			EnforceValues: true,
-			Values: []string{
-				"yes",
-				"delayed",
-				"no",
+			Values: []docvalues.EnumString{
+				docvalues.CreateEnumString("yes"),
+				docvalues.CreateEnumString("delayed"),
+				docvalues.CreateEnumString("no"),
 			},
 		},
 	),
@@ -258,9 +277,9 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 		`Specifies the hash algorithm used when logging key fingerprints. Valid options are: md5 and sha256. The default is sha256.`,
 		docvalues.EnumValue{
 			EnforceValues: true,
-			Values: []string{
-				"md5",
-				"sha256",
+			Values: []docvalues.EnumString{
+				docvalues.CreateEnumString("md5"),
+				docvalues.CreateEnumString("sha256"),
 			},
 		},
 	),
@@ -323,7 +342,9 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			Values: []docvalues.Value{
 				docvalues.EnumValue{
 					EnforceValues: true,
-					Values:        []string{"SSH_AUTH_SOCK"},
+					Values: []docvalues.EnumString{
+						docvalues.CreateEnumStringWithDoc("SSH_AUTH_SOCK", "The location of the socket will be read from the SSH_AUTH_SOCK environment variable."),
+					},
 				},
 				docvalues.StringValue{},
 			},
@@ -344,7 +365,11 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
  Accepted values are yes (the default) to ignore all per- user files, shosts-only to allow the use of .shosts but to ignore .rhosts or no to allow both .shosts and rhosts.`,
 		docvalues.EnumValue{
 			EnforceValues: true,
-			Values:        []string{"yes", "shosts-only", "no"},
+			Values: []docvalues.EnumString{
+				docvalues.CreateEnumString("yes"),
+				docvalues.CreateEnumString("shosts-only"),
+				docvalues.CreateEnumString("no"),
+			},
 		},
 	),
 	"IgnoreUserKnownHosts": common.NewOption(
@@ -367,19 +392,41 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			Values: []docvalues.Value{
 				docvalues.NumberValue{},
 				docvalues.EnumValue{
-					Values: []string{"none"},
+					Values: []docvalues.EnumString{
+						docvalues.CreateEnumString("none"),
+					},
 				},
 				docvalues.ArrayValue{
 					Separator: " ",
 					SubValue: docvalues.EnumValue{
 						EnforceValues: true,
-						Values: []string{
-							"af11", "af12", "af13",
-							"af21", "af22", "af23",
-							"af31", "af32", "af33",
-							"af41", "af42", "af43",
-							"cs0", "cs1", "cs2", "cs3", "cs4", "cs5", "cs6", "cs7",
-							"ef", "le", "lowdelay", "throughput", "reliability", "none",
+						Values: []docvalues.EnumString{
+							docvalues.CreateEnumString("af11"),
+							docvalues.CreateEnumString("af12"),
+							docvalues.CreateEnumString("af13"),
+							docvalues.CreateEnumString("af21"),
+							docvalues.CreateEnumString("af22"),
+							docvalues.CreateEnumString("af23"),
+							docvalues.CreateEnumString("af31"),
+							docvalues.CreateEnumString("af32"),
+							docvalues.CreateEnumString("af33"),
+							docvalues.CreateEnumString("af41"),
+							docvalues.CreateEnumString("af42"),
+							docvalues.CreateEnumString("af43"),
+							docvalues.CreateEnumString("cs0"),
+							docvalues.CreateEnumString("cs1"),
+							docvalues.CreateEnumString("cs2"),
+							docvalues.CreateEnumString("cs3"),
+							docvalues.CreateEnumString("cs4"),
+							docvalues.CreateEnumString("cs5"),
+							docvalues.CreateEnumString("cs6"),
+							docvalues.CreateEnumString("cs7"),
+							docvalues.CreateEnumString("ef"),
+							docvalues.CreateEnumString("le"),
+							docvalues.CreateEnumString("lowdelay"),
+							docvalues.CreateEnumString("throughput"),
+							docvalues.CreateEnumString("reliability"),
+							docvalues.CreateEnumString("none"),
 						},
 					},
 				},
@@ -407,20 +454,20 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	The default is:
 	sntrup761x25519-sha512@openssh.com, curve25519-sha256,curve25519-sha256@libssh.org, ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521, diffie-hellman-group-exchange-sha256, diffie-hellman-group16-sha512,diffie-hellman-group18-sha512, diffie-hellman-group14-sha256
 	The list of available key exchange algorithms may also be obtained using "ssh -Q KexAlgorithms".`,
-		PrefixPlusMinusCaret([]string{
-			"curve25519-sha256",
-			"curve25519-sha256@libssh.org",
-			"diffie-hellman-group1-sha1",
-			"diffie-hellman-group14-sha1",
-			"diffie-hellman-group14-sha256",
-			"diffie-hellman-group16-sha512",
-			"diffie-hellman-group18-sha512",
-			"diffie-hellman-group-exchange-sha1",
-			"diffie-hellman-group-exchange-sha256",
-			"ecdh-sha2-nistp256",
-			"ecdh-sha2-nistp384",
-			"ecdh-sha2-nistp521",
-			"sntrup761x25519-sha512@openssh.com",
+		PrefixPlusMinusCaret([]docvalues.EnumString{
+			docvalues.CreateEnumString("curve25519-sha256"),
+			docvalues.CreateEnumString("curve25519-sha256@libssh.org"),
+			docvalues.CreateEnumString("diffie-hellman-group1-sha1"),
+			docvalues.CreateEnumString("diffie-hellman-group14-sha1"),
+			docvalues.CreateEnumString("diffie-hellman-group14-sha256"),
+			docvalues.CreateEnumString("diffie-hellman-group16-sha512"),
+			docvalues.CreateEnumString("diffie-hellman-group18-sha512"),
+			docvalues.CreateEnumString("diffie-hellman-group-exchange-sha1"),
+			docvalues.CreateEnumString("diffie-hellman-group-exchange-sha256"),
+			docvalues.CreateEnumString("ecdh-sha2-nistp256"),
+			docvalues.CreateEnumString("ecdh-sha2-nistp384"),
+			docvalues.CreateEnumString("ecdh-sha2-nistp521"),
+			docvalues.CreateEnumString("sntrup761x25519-sha512@openssh.com"),
 		}),
 	),
 	"ListenAddress": common.NewOption(`Specifies the local addresses sshd(8) should listen on. The following forms may be used:
@@ -444,16 +491,16 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	"LogLevel": common.NewOption(`Gives the verbosity level that is used when logging messages from sshd(8). The possible values are: QUIET, FATAL, ERROR, INFO, VERBOSE, DEBUG, DEBUG1, DEBUG2, and DEBUG3. The default is INFO. DEBUG and DEBUG1 are equivalent. DEBUG2 and DEBUG3 each specify higher levels of debugging output. Logging with a DEBUG level violates the privacy of users and is not recommended.`,
 		docvalues.EnumValue{
 			EnforceValues: true,
-			Values: []string{
-				"QUIET",
-				"FATAL",
-				"ERROR",
-				"INFO",
-				"VERBOSE",
-				"DEBUG",
-				"DEBUG1",
-				"DEBUG2",
-				"DEBUG3",
+			Values: []docvalues.EnumString{
+				docvalues.CreateEnumString("QUIET"),
+				docvalues.CreateEnumString("FATAL"),
+				docvalues.CreateEnumString("ERROR"),
+				docvalues.CreateEnumString("INFO"),
+				docvalues.CreateEnumString("VERBOSE"),
+				docvalues.CreateEnumString("DEBUG"),
+				docvalues.CreateEnumString("DEBUG1"),
+				docvalues.CreateEnumString("DEBUG2"),
+				docvalues.CreateEnumString("DEBUG3"),
 			},
 		},
 	),
@@ -469,24 +516,24 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
  The default is:
  umac-64-etm@openssh.com,umac-128-etm@openssh.com, hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com, hmac-sha1-etm@openssh.com, umac-64@openssh.com,umac-128@openssh.com, hmac-sha2-256,hmac-sha2-512,hmac-sha1
  The list of available MAC algorithms may also be obtained using "ssh -Q mac".`,
-		PrefixPlusMinusCaret([]string{
-			"hmac-md5",
-			"hmac-md5-96",
-			"hmac-sha1",
-			"hmac-sha1-96",
-			"hmac-sha2-256",
-			"hmac-sha2-256",
-			"hmac-sha2-512",
-			"umac-64@openssh.com",
-			"umac-128@openssh.com",
-			"hmac-md5-etm@openssh.com",
-			"hmac-md5-96-etm@openssh.com",
-			"hmac-sha1-etm@openssh.com",
-			"hmac-sha1-96-etm@openssh.com",
-			"hmac-sha2-256-etm@openssh.com",
-			"hmac-sha2-512-etm@openssh.com",
-			"umac-64-etm@openssh.com",
-			"umac-128-etm@openssh.com",
+		PrefixPlusMinusCaret([]docvalues.EnumString{
+			docvalues.CreateEnumString("hmac-md5"),
+			docvalues.CreateEnumString("hmac-md5-96"),
+			docvalues.CreateEnumString("hmac-sha1"),
+			docvalues.CreateEnumString("hmac-sha1-96"),
+			docvalues.CreateEnumString("hmac-sha2-256"),
+			docvalues.CreateEnumString("hmac-sha2-256"),
+			docvalues.CreateEnumString("hmac-sha2-512"),
+			docvalues.CreateEnumString("umac-64@openssh.com"),
+			docvalues.CreateEnumString("umac-128@openssh.com"),
+			docvalues.CreateEnumString("hmac-md5-etm@openssh.com"),
+			docvalues.CreateEnumString("hmac-md5-96-etm@openssh.com"),
+			docvalues.CreateEnumString("hmac-sha1-etm@openssh.com"),
+			docvalues.CreateEnumString("hmac-sha1-96-etm@openssh.com"),
+			docvalues.CreateEnumString("hmac-sha2-256-etm@openssh.com"),
+			docvalues.CreateEnumString("hmac-sha2-512-etm@openssh.com"),
+			docvalues.CreateEnumString("umac-64-etm@openssh.com"),
+			docvalues.CreateEnumString("umac-128-etm@openssh.com"),
 		}),
 	),
 
@@ -537,7 +584,13 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 				Value: docvalues.OrValue{
 					Values: []docvalues.Value{
 						docvalues.EnumValue{
-							Values:        []string{"*"},
+							Values: []docvalues.EnumString{
+								{
+									InsertText:      "*",
+									DescriptionText: "\\*",
+									Documentation:   "Allow all ports",
+								},
+							},
 							EnforceValues: true,
 						},
 						docvalues.NumberValue{Min: &ZERO, Max: &MAX_PORT},
@@ -554,17 +607,36 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
 			SubValue: docvalues.KeyValueAssignmentValue{
 				ValueIsOptional: true,
-				Key: docvalues.IPAddressValue{
-					AllowIPv4:     true,
-					AllowIPv6:     true,
-					AllowRange:    false,
-					DisallowedIPs: &docvalues.NonRoutableNetworks,
+				Key: docvalues.OrValue{
+					Values: []docvalues.Value{
+						docvalues.EnumValue{
+							Values: []docvalues.EnumString{
+								{
+									InsertText:      "*",
+									DescriptionText: "\\*",
+									Documentation:   "Allow all hosts",
+								},
+							},
+						},
+						docvalues.IPAddressValue{
+							AllowIPv4:     true,
+							AllowIPv6:     true,
+							AllowRange:    false,
+							DisallowedIPs: &docvalues.NonRoutableNetworks,
+						},
+					},
 				},
 				Separator: ":",
 				Value: docvalues.OrValue{
 					Values: []docvalues.Value{
 						docvalues.EnumValue{
-							Values:        []string{"*"},
+							Values: []docvalues.EnumString{
+								{
+									InsertText:      "*",
+									DescriptionText: "\\*",
+									Documentation:   "Allow all ports",
+								},
+							},
 							EnforceValues: true,
 						},
 						docvalues.NumberValue{Min: &ZERO, Max: &MAX_PORT},
@@ -579,11 +651,11 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
  If this option is set to no, root is not allowed to log in.`,
 		docvalues.EnumValue{
 			EnforceValues: true,
-			Values: []string{
-				"yes",
-				"prohibit-password",
-				"forced-commands-only",
-				"no",
+			Values: []docvalues.EnumString{
+				docvalues.CreateEnumString("yes"),
+				docvalues.CreateEnumString("prohibit-password"),
+				docvalues.CreateEnumString("forced-commands-only"),
+				docvalues.CreateEnumString("no"),
 			},
 		},
 	),
@@ -594,11 +666,11 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
  Independent of this setting, the permissions of the selected tun(4) device must allow access to the user.`,
 		docvalues.EnumValue{
 			EnforceValues: true,
-			Values: []string{
-				"yes",
-				"point-to-point",
-				"ethernet",
-				"no",
+			Values: []docvalues.EnumString{
+				docvalues.CreateEnumString("yes"),
+				docvalues.CreateEnumString("point-to-point"),
+				docvalues.CreateEnumString("ethernet"),
+				docvalues.CreateEnumString("no"),
 			},
 		},
 	),
@@ -606,7 +678,10 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 		docvalues.OrValue{
 			Values: []docvalues.Value{
 				docvalues.EnumValue{
-					Values: []string{"yes", "no"},
+					Values: []docvalues.EnumString{
+						docvalues.CreateEnumString("yes"),
+						docvalues.CreateEnumString("no"),
+					},
 				},
 				docvalues.ArrayValue{
 					SubValue:            docvalues.StringValue{},
@@ -624,7 +699,13 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			Values: []docvalues.Value{
 				docvalues.EnumValue{
 					EnforceValues: true,
-					Values:        []string{"none"},
+					Values: []docvalues.EnumString{
+						{
+							InsertText:      "none",
+							DescriptionText: "none",
+							Documentation:   "No limit",
+						},
+					},
 				},
 				docvalues.NumberValue{Min: &ZERO},
 			},
@@ -663,7 +744,11 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			Separator: ",",
 			SubValue: docvalues.EnumValue{
 				EnforceValues: true,
-				Values:        []string{"none", "touch-required", "verify-required"},
+				Values: []docvalues.EnumString{
+					docvalues.CreateEnumString("none"),
+					docvalues.CreateEnumString("touch-required"),
+					docvalues.CreateEnumString("verify-required"),
+				},
 			},
 		},
 	),
@@ -677,16 +762,22 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	"RevokedKeys": common.NewOption(`Specifies revoked public keys file, or none to not use one. Keys listed in this file will be refused for public key authentication. Note that if this file is not readable, then public key authentication will be refused for all users. Keys may be specified as a text file, listing one public key per line, or as an OpenSSH Key Revocation List (KRL) as generated by ssh-keygen(1). For more information on KRLs, see the KEY REVOCATION LISTS section in ssh-keygen(1).`,
 		docvalues.StringValue{},
 	),
-	   "RDomain": common.NewOption(`Specifies an explicit routing domain that is applied after authentication has completed. The user session, as well as any forwarded or listening IP sockets, will be bound to this rdomain(4). If the routing domain is set to %D, then the domain in which the incoming connection was received will be applied.`,
+	"RDomain": common.NewOption(`Specifies an explicit routing domain that is applied after authentication has completed. The user session, as well as any forwarded or listening IP sockets, will be bound to this rdomain(4). If the routing domain is set to %D, then the domain in which the incoming connection was received will be applied.`,
 		docvalues.OrValue{
 			Values: []docvalues.Value{
 				docvalues.EnumValue{
-					Values: []string{"%D"},
+					Values: []docvalues.EnumString{
+						{
+							InsertText:      "%D",
+							DescriptionText: "%D",
+							Documentation:   "The domain in which the incoming connection was received",
+						},
+					},
 				},
 				docvalues.StringValue{},
 			},
 		},
-   ),
+	),
 	"SecurityKeyProvider": common.NewOption(`Specifies a path to a library that will be used when loading FIDO authenticator-hosted keys, overriding the default of using the built-in USB HID support.`,
 		docvalues.PathValue{
 			RequiredType: docvalues.PathTypeFile,
@@ -723,18 +814,18 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	"SyslogFacility": common.NewOption(`Gives the facility code that is used when logging messages from sshd(8). The possible values are: DAEMON, USER, AUTH, LOCAL0, LOCAL1, LOCAL2, LOCAL3, LOCAL4, LOCAL5, LOCAL6, LOCAL7. The default is AUTH.`,
 		docvalues.EnumValue{
 			EnforceValues: true,
-			Values: []string{
-				"DAEMON",
-				"USER",
-				"AUTH",
-				"LOCAL0",
-				"LOCAL1",
-				"LOCAL2",
-				"LOCAL3",
-				"LOCAL4",
-				"LOCAL5",
-				"LOCAL6",
-				"LOCAL7",
+			Values: []docvalues.EnumString{
+				docvalues.CreateEnumString("DAEMON"),
+				docvalues.CreateEnumString("USER"),
+				docvalues.CreateEnumString("AUTH"),
+				docvalues.CreateEnumString("LOCAL0"),
+				docvalues.CreateEnumString("LOCAL1"),
+				docvalues.CreateEnumString("LOCAL2"),
+				docvalues.CreateEnumString("LOCAL3"),
+				docvalues.CreateEnumString("LOCAL4"),
+				docvalues.CreateEnumString("LOCAL5"),
+				docvalues.CreateEnumString("LOCAL6"),
+				docvalues.CreateEnumString("LOCAL7"),
 			},
 		},
 	),
@@ -746,11 +837,11 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	"TrustedUserCAKeys": common.NewOption(`Specifies a file containing public keys of certificate authorities that are trusted to sign user certificates for authentication, or none to not use one. Keys are listed one per line; empty lines and comments starting with ‘#’ are allowed. If a certificate is presented for authentication and has its signing CA key listed in this file, then it may be used for authentication for any user listed in the certificate's principals list. Note that certificates that lack a list of principals will not be permitted for authentication using TrustedUserCAKeys. For more details on certificates, see the CERTIFICATES section in ssh-keygen(1).`,
 		docvalues.StringValue{},
 	),
-	   "UnusedConnectionTimeout": common.NewOption(`Specifies whether and how quickly sshd(8) should close client connections with no open channels. Open channels include active shell, command execution or subsystem sessions, connected network, socket, agent or X11 forwardings. Forwarding listeners, such as those from the ssh(1) -R flag, are not considered as open channels and do not prevent the timeout. The timeout value is specified in seconds or may use any of the units documented in the “TIME FORMATS” section.
+	"UnusedConnectionTimeout": common.NewOption(`Specifies whether and how quickly sshd(8) should close client connections with no open channels. Open channels include active shell, command execution or subsystem sessions, connected network, socket, agent or X11 forwardings. Forwarding listeners, such as those from the ssh(1) -R flag, are not considered as open channels and do not prevent the timeout. The timeout value is specified in seconds or may use any of the units documented in the “TIME FORMATS” section.
 	Note that this timeout starts when the client connection completes user authentication but before the client has an opportunity to open any channels. Caution should be used when using short timeout values, as they may not provide sufficient time for the client to request and open its channels before terminating the connection.
 	The default none is to never expire connections for having no open channels. This option may be useful in conjunction with ChannelTimeout.`,
-	TimeFormatValue{},
-),
+		TimeFormatValue{},
+	),
 	"UseDNS": common.NewOption(`Specifies whether sshd(8) should look up the remote host name, and to check that the resolved host name for the remote IP address maps back to the very same IP address.
  If this option is set to no (the default) then only addresses and not host names may be used in ~/.ssh/authorized_keys from and sshd_config Match Host directives.`,
 		BooleanEnumValue,
@@ -766,7 +857,9 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			Values: []docvalues.Value{
 				docvalues.EnumValue{
 					EnforceValues: true,
-					Values:        []string{"none"},
+					Values: []docvalues.EnumString{
+						docvalues.CreateEnumString("none"),
+					},
 				},
 				docvalues.StringValue{},
 			},
