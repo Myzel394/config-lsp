@@ -711,7 +711,14 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			},
 		},
 	),
-	//    "PerSourceNetBlockSize": `Specifies the number of bits of source address that are grouped together for the purposes of applying PerSourceMaxStartups limits. Values for IPv4 and optionally IPv6 may be specified, separated by a colon. The default is 32:128, which means each address is considered individually.`,
+	   "PerSourceNetBlockSize": common.NewOption(`Specifies the number of bits of source address that are grouped together for the purposes of applying PerSourceMaxStartups limits. Values for IPv4 and optionally IPv6 may be specified, separated by a colon. The default is 32:128, which means each address is considered individually.`,
+	   docvalues.KeyValueAssignmentValue{
+		   Separator: ":",
+		   ValueIsOptional: false,
+		   Key: docvalues.NumberValue{Min: &ZERO},
+		   Value: docvalues.NumberValue{Min: &ZERO},
+	   },
+   ),
 	"PidFile": common.NewOption(`Specifies the file that contains the process ID of the SSH daemon, or none to not write one. The default is /var/run/sshd.pid.`,
 		docvalues.StringValue{},
 	),
@@ -814,10 +821,12 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	"StrictModes": common.NewOption(`Specifies whether sshd(8) should check file modes and ownership of the user's files and home directory before accepting login. This is normally desirable because novices sometimes accidentally leave their directory or files world-writable. The default is yes. Note that this does not apply to ChrootDirectory, whose permissions and ownership are checked unconditionally.`,
 		BooleanEnumValue,
 	),
-	//    "Subsystem": `Configures an external subsystem (e.g. file transfer daemon). Arguments should be a subsystem name and a command (with optional arguments) to execute upon subsystem request.
-	// The command sftp-server implements the SFTP file transfer subsystem.
-	// Alternately the name internal-sftp implements an in- process SFTP server. This may simplify configurations using ChrootDirectory to force a different filesystem root on clients. It accepts the same command line arguments as sftp-server and even though it is in- process, settings such as LogLevel or SyslogFacility do not apply to it and must be set explicitly via command line arguments.
-	// By default no subsystems are defined.`,
+	   "Subsystem": common.NewOption(`Configures an external subsystem (e.g. file transfer daemon). Arguments should be a subsystem name and a command (with optional arguments) to execute upon subsystem request.
+	The command sftp-server implements the SFTP file transfer subsystem.
+	Alternately the name internal-sftp implements an in- process SFTP server. This may simplify configurations using ChrootDirectory to force a different filesystem root on clients. It accepts the same command line arguments as sftp-server and even though it is in- process, settings such as LogLevel or SyslogFacility do not apply to it and must be set explicitly via command line arguments.
+	By default no subsystems are defined.`,
+	docvalues.StringValue{},
+),
 	"SyslogFacility": common.NewOption(`Gives the facility code that is used when logging messages from sshd(8). The possible values are: DAEMON, USER, AUTH, LOCAL0, LOCAL1, LOCAL2, LOCAL3, LOCAL4, LOCAL5, LOCAL6, LOCAL7. The default is AUTH.`,
 		docvalues.EnumValue{
 			EnforceValues: true,
