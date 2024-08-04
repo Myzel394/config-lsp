@@ -14,8 +14,17 @@ func (e KeyValueAssignmentError) Error() string {
 	return "This is not valid key-value assignment"
 }
 
+type KeyValueAssignmentContext struct {
+	SelectedKey string
+}
+
+func (KeyValueAssignmentContext) GetIsContext() bool {
+	return true
+}
+
 type KeyValueAssignmentValue struct {
-	Key             Value
+	Key Value
+	// If this is a `CustomValue`, it will receive a `KeyValueAssignmentContext`
 	Value           Value
 	ValueIsOptional bool
 	Separator       string
@@ -34,6 +43,24 @@ func (v KeyValueAssignmentValue) GetTypeDescription() []string {
 			fmt.Sprintf("Key-Value pair in form of 'key%svalue'", v.Separator),
 			fmt.Sprintf("#### Key\n%s", strings.Join(v.Key.GetTypeDescription(), "\n")),
 			fmt.Sprintf("#### Value:\n%s", strings.Join(v.Value.GetTypeDescription(), "\n")),
+		}
+	}
+}
+
+func (v KeyValueAssignmentValue) getValue(selectedKey string) Value {
+	switch v.Value.(type) {
+	case CustomValue:
+		{
+			customValue := v.Value.(CustomValue)
+			context := KeyValueAssignmentContext{
+				SelectedKey: selectedKey,
+			}
+
+			return customValue.FetchValue(context)
+		}
+	default:
+		{
+			return v.Value
 		}
 	}
 }
@@ -60,7 +87,7 @@ func (v KeyValueAssignmentValue) CheckIsValid(value string) error {
 		return KeyValueAssignmentError{}
 	}
 
-	err = v.Value.CheckIsValid(parts[1])
+	err = v.getValue(parts[0]).CheckIsValid(parts[1])
 
 	if err != nil {
 		return err
@@ -77,10 +104,11 @@ func (v KeyValueAssignmentValue) FetchCompletions(line string, cursor uint32) []
 	relativePosition, found := utils.FindPreviousCharacter(line, v.Separator, int(cursor-1))
 
 	if found {
+		selectedKey := line[:uint32(relativePosition)]
 		line = line[uint32(relativePosition+len(v.Separator)):]
 		cursor -= uint32(relativePosition)
 
-		return v.Value.FetchCompletions(line, cursor)
+		return v.getValue(selectedKey).FetchCompletions(line, cursor)
 	} else {
 		return v.Key.FetchCompletions(line, cursor)
 	}

@@ -55,7 +55,7 @@ func fetchPasswdInfo() ([]passwdInfo, error) {
 // if `separatorForMultiple` is not empty, it will return an ArrayValue
 func UserValue(separatorForMultiple string, enforceValues bool) Value {
 	return CustomValue{
-		FetchValue: func() Value {
+		FetchValue: func(context CustomValueContext) Value {
 			infos, err := fetchPasswdInfo()
 
 			if err != nil {
@@ -125,7 +125,7 @@ func fetchGroupInfo() ([]groupInfo, error) {
 
 func GroupValue(separatorForMultiple string, enforceValues bool) Value {
 	return CustomValue{
-		FetchValue: func() Value {
+		FetchValue: func(context CustomValueContext) Value {
 			infos, err := fetchGroupInfo()
 
 			if err != nil {
