@@ -1,3 +1,4 @@
+// This file contains documentation for ext2 filesystem options
 package commondocumentation
 
 import docvalues "config-lsp/doc-values"
@@ -157,5 +158,13 @@ var Ext2DocumentationEnums = []docvalues.EnumString{
 	docvalues.CreateEnumStringWithDoc(
 		"orlov",
 		"Use Orlov block allocator for new inodes (default)",
+	),
+	docvalues.CreateEnumStringWithDoc(
+		"user_xattr",
+		"Support \"user.\" extended attributes",
+	),
+	docvalues.CreateEnumStringWithDoc(
+		"nouser_xattr",
+		"Do not support \"user.\" extended attributes",
 	),
 }
