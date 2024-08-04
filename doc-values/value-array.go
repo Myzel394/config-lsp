@@ -37,7 +37,7 @@ var DuplicatesAllowedExtractor func(string) string = nil
 type ArrayValue struct {
 	SubValue  Value
 	Separator string
-	// If this function is nil, no duplicate check is done
+	// If this function is nil, no duplicate check is done.
 	// (value) => Extracted value
 	// This is used to extract the value from the user input,
 	// because you may want to preprocess the value before checking for duplicates

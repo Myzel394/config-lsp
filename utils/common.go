@@ -110,3 +110,15 @@ func FindPreviousCharacter(line string, character string, startIndex int) (int, 
 
 	return 0, false
 }
+
+func MergeMaps[T comparable, O any](maps ...map[T]O) map[T]O {
+	result := make(map[T]O)
+
+	for _, m := range maps {
+		for key, value := range m {
+			result[key] = value
+		}
+	}
+
+	return result
+}

@@ -2,6 +2,8 @@ package fstab
 
 import (
 	"config-lsp/common"
+	docvalues "config-lsp/doc-values"
+	"fmt"
 	"regexp"
 	"slices"
 	"strings"
@@ -22,6 +24,10 @@ type Field struct {
 	Value string
 	Start uint32
 	End   uint32
+}
+
+func (f Field) String() string {
+	return f.Value
 }
 
 func (f *Field) CreateRange(fieldLine uint32) protocol.Range {
@@ -46,44 +52,80 @@ type FstabFields struct {
 	Pass           *Field
 }
 
+func (f FstabFields) String() string {
+	return fmt.Sprintf("Spec: %s, MountPoint: %s, FilesystemType: %s, Options: %s, Freq: %s, Pass: %s", f.Spec, f.MountPoint, f.FilesystemType, f.Options, f.Freq, f.Pass)
+}
+
 type FstabEntry struct {
 	Line   uint32
 	Fields FstabFields
 }
 
 func (e *FstabEntry) CheckIsValid() []protocol.Diagnostic {
-	if e.Fields.Spec == nil || e.Fields.MountPoint == nil || e.Fields.FilesystemType == nil || e.Fields.Options == nil || e.Fields.Freq == nil || e.Fields.Pass == nil {
-		severity := protocol.DiagnosticSeverityHint
-
-		return []protocol.Diagnostic{
-			{
-				Message:  "This line is not fully filled",
-				Severity: &severity,
-				Range: protocol.Range{
-					Start: protocol.Position{
-						Line:      e.Line,
-						Character: 0,
-					},
-					End: protocol.Position{
-						Line:      e.Line,
-						Character: 9999,
-					},
-				},
-			},
-		}
-	}
-
+	println(fmt.Sprintf("Checking entry at line %d; fields: %v", e.Line, e.Fields))
 	diagnostics := make([]protocol.Diagnostic, 0)
 	severity := protocol.DiagnosticSeverityError
 
-	err := specField.CheckIsValid(e.Fields.Spec.Value)
+	if e.Fields.Spec != nil {
+		err := specField.CheckIsValid(e.Fields.Spec.Value)
 
-	if err != nil {
-		diagnostics = append(diagnostics, protocol.Diagnostic{
-			Range:    e.Fields.Spec.CreateRange(e.Line),
-			Message:  err.Error(),
-			Severity: &severity,
-		})
+		if err != nil {
+			diagnostics = append(diagnostics, protocol.Diagnostic{
+				Range:    e.Fields.Spec.CreateRange(e.Line),
+				Message:  err.Error(),
+				Severity: &severity,
+			})
+		}
+	}
+
+	if e.Fields.MountPoint != nil {
+		err := mountPointField.CheckIsValid(e.Fields.MountPoint.Value)
+
+		if err != nil {
+			diagnostics = append(diagnostics, protocol.Diagnostic{
+				Range:    e.Fields.Spec.CreateRange(e.Line),
+				Message:  err.Error(),
+				Severity: &severity,
+			})
+		}
+	}
+
+	var fileSystemType string = ""
+
+	if e.Fields.FilesystemType != nil {
+		err := fileSystemTypeField.CheckIsValid(e.Fields.FilesystemType.Value)
+
+		if err != nil {
+			diagnostics = append(diagnostics, protocol.Diagnostic{
+				Range:    e.Fields.FilesystemType.CreateRange(e.Line),
+				Message:  err.Error(),
+				Severity: &severity,
+			})
+		} else {
+			fileSystemType = e.Fields.FilesystemType.Value
+		}
+	}
+
+	if e.Fields.Options != nil && fileSystemType != "" {
+		var optionsField docvalues.Value
+
+		if foundField, found := mountOptionsMapField[fileSystemType]; found {
+			optionsField = foundField
+		} else {
+			optionsField = defaultMountOptionsField
+		}
+
+		println(fmt.Sprintf("Checking options for %s", fileSystemType))
+
+		err := optionsField.CheckIsValid(e.Fields.Options.Value)
+
+		if err != nil {
+			diagnostics = append(diagnostics, protocol.Diagnostic{
+				Range:    e.Fields.Options.CreateRange(e.Line),
+				Message:  err.Error(),
+				Severity: &severity,
+			})
+		}
 	}
 
 	return diagnostics
@@ -116,6 +158,7 @@ func (p *FstabParser) AddLine(line string, lineNumber int) error {
 			Start: start,
 			End:   start + uint32(len(value)),
 		}
+		fallthrough
 	case 5:
 		value := fields[4]
 		start := uint32(strings.Index(line, value))
@@ -125,6 +168,7 @@ func (p *FstabParser) AddLine(line string, lineNumber int) error {
 			Start: start,
 			End:   start + uint32(len(value)),
 		}
+		fallthrough
 	case 4:
 		value := fields[3]
 		start := uint32(strings.Index(line, value))
@@ -134,6 +178,7 @@ func (p *FstabParser) AddLine(line string, lineNumber int) error {
 			Start: start,
 			End:   start + uint32(len(value)),
 		}
+		fallthrough
 	case 3:
 		value := fields[2]
 		start := uint32(strings.Index(line, value))
@@ -143,6 +188,7 @@ func (p *FstabParser) AddLine(line string, lineNumber int) error {
 			Start: start,
 			End:   start + uint32(len(value)),
 		}
+		fallthrough
 	case 2:
 		value := fields[1]
 		start := uint32(strings.Index(line, value))
@@ -152,6 +198,7 @@ func (p *FstabParser) AddLine(line string, lineNumber int) error {
 			Start: start,
 			End:   start + uint32(len(value)),
 		}
+		fallthrough
 	case 1:
 		value := fields[0]
 		start := uint32(strings.Index(line, value))

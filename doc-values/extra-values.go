@@ -151,3 +151,10 @@ func GroupValue(separatorForMultiple string, enforceValues bool) Value {
 		},
 	}
 }
+
+func PositiveNumberValue() Value {
+	zero := 0
+	return NumberValue{
+		Min: &zero,
+	}
+}
