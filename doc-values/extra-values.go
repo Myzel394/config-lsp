@@ -158,3 +158,12 @@ func PositiveNumberValue() Value {
 		Min: &zero,
 	}
 }
+
+func SingleEnumValue(value string) EnumValue {
+	return EnumValue{
+		EnforceValues: true,
+		Values: []EnumString{
+			CreateEnumString(value),
+		},
+	}
+}
