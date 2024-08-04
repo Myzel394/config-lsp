@@ -3,67 +3,55 @@ package commondocumentation
 
 import docvalues "config-lsp/doc-values"
 
-var Ext2DocumentationAssignable = map[string]AssignableOption{
-	"check": {
-		Handler: func(context docvalues.KeyValueAssignmentContext) docvalues.Value {
-			return docvalues.EnumValue{
-				EnforceValues: true,
-				Values: []docvalues.EnumString{
-					{
-						InsertText:      "none",
-						DescriptionText: "none",
-						Documentation:   "No checking is done at mount time",
-					},
-				},
-			}
+var Ext2DocumentationAssignable = docvalues.KeyEnumAssignmentValue{
+	Separator: ",",
+	ValueIsOptional: false,
+	Values: map[docvalues.EnumString]docvalues.Value{
+		docvalues.CreateEnumStringWithDoc(
+			"none",
+			"No checking is done at mount time. This is the default. This is fast.  It is wise to invoke e2fsck(8) every now and then, e.g. at boot time. The non-default behavior is unsupported (check=normal and check=strict options have been removed). Note that these mount options don't have to be supported if ext4 kernel driver is used for ext2 and ext3 file systems.",
+		): docvalues.EnumValue{
+			EnforceValues: true,
+			Values: []docvalues.EnumString{
+				docvalues.CreateEnumStringWithDoc(
+					"none",
+					"No checking is done at mount time",
+				),
+			},
 		},
-		Documentation: "No checking is done at mount time. This is the default. This is fast.  It is wise to invoke e2fsck(8) every now and then, e.g. at boot time. The non-default behavior is unsupported (check=normal and check=strict options have been removed). Note that these mount options don't have to be supported if ext4 kernel driver is used for ext2 and ext3 file systems.",
-	},
-	"errors": {
-		Handler: func(context docvalues.KeyValueAssignmentContext) docvalues.Value {
-			footer := "The default is set in the file system superblock, and can be changed using tune2fs(8)."
+		docvalues.CreateEnumStringWithDoc(
+			"errors",
+			"Define the behavior when an error is encountered.  (Either ignore errors and just mark the file system erroneous and continue, or remount the file system read-only, or panic and halt the system.)  The default is set in the file system superblock, and can be changed using tune2fs(8).",
+		): docvalues.EnumValue{
+			EnforceValues: true,
+			Values: []docvalues.EnumString{
+				docvalues.CreateEnumStringWithDoc(
+					"continue",
+					"Ignore errors and just mark the file system erroneous and continue",
+				),
+				docvalues.CreateEnumStringWithDoc(
+					"remount-ro",
+					"Remount the file system read-only",
+				),
+				docvalues.CreateEnumStringWithDoc(
+					"panic",
+					"Panic and halt the system",
+				),
+			},
+		},
+		docvalues.CreateEnumStringWithDoc(
+			"resgid",
+			"The ext2 file system reserves a certain percentage of the available space (by default 5%, see mke2fs(8) and tune2fs(8)).  These options determine who can use the reserved blocks.  (Roughly: whoever has the specified uid, or belongs to the specified group.)",
+		): docvalues.PositiveNumberValue(),
+		docvalues.CreateEnumStringWithDoc(
+			"resuid",
+			"The ext2 file system reserves a certain percentage of the available space (by default 5%, see mke2fs(8) and tune2fs(8)).  These options determine who can use the reserved blocks.  (Roughly: whoever has the specified uid, or belongs to the specified group.)",
+		): docvalues.PositiveNumberValue(),
+		docvalues.CreateEnumStringWithDoc(
+			"sb",
+			"Instead of using the normal superblock, use an alternative superblock specified by n.  This option is normally used when the primary superblock has been corrupted.  The location of backup superblocks is dependent on the file system's blocksize, the number of blocks per group, and features such as sparse_super.",
+		): docvalues.PositiveNumberValue(),
 
-			return docvalues.EnumValue{
-				EnforceValues: true,
-				Values: []docvalues.EnumString{
-					docvalues.CreateEnumStringWithDoc(
-						"continue",
-						"Ignore errors and just mark the file system erroneous and continue"+footer,
-					),
-					docvalues.CreateEnumStringWithDoc(
-						"remount-ro",
-						"Remount the file system read-only"+footer,
-					),
-					docvalues.CreateEnumStringWithDoc(
-						"panic",
-						"Panic and halt the system"+footer,
-					),
-				},
-			}
-		},
-		Documentation: "Define the behavior when an error is encountered.  (Either ignore errors and just mark the file system erroneous and continue, or remount the file system read-only, or panic and halt the system.)  The default is set in the file system superblock, and can be changed using tune2fs(8).",
-	},
-	"resgid": {
-		Handler: func(context docvalues.KeyValueAssignmentContext) docvalues.Value {
-			return docvalues.PositiveNumberValue()
-		},
-		Documentation: "The ext2 file system reserves a certain percentage of the available space (by default 5%, see mke2fs(8) and tune2fs(8)).  These options determine who can use the reserved blocks.  (Roughly: whoever has the specified uid, or belongs to the specified group.)",
-	},
-	"resuid": {
-		Handler: func(context docvalues.KeyValueAssignmentContext) docvalues.Value {
-			return docvalues.PositiveNumberValue()
-		},
-		Documentation: "The ext2 file system reserves a certain percentage of the available space (by default 5%, see mke2fs(8) and tune2fs(8)).  These options determine who can use the reserved blocks.  (Roughly: whoever has the specified uid, or belongs to the specified group.)",
-	},
-	"sb": {
-		Handler: func(context docvalues.KeyValueAssignmentContext) docvalues.Value {
-			return docvalues.PositiveNumberValue()
-		},
-		Documentation: `Instead of using the normal superblock, use an alternative superblock specified by n.  This option is normally used when the primary superblock has been corrupted.  The location of backup superblocks is dependent on the file system's blocksize, the number of blocks per group, and features such as sparse_super.
-
-              Additional backup superblocks can be determined by using the mke2fs program using the -n option to print out where the superblocks exist, supposing mke2fs is supplied with arguments that are consistent with the file system's layout (e.g. blocksize, blocks per group, sparse_super, etc.).
-
-              The block number here uses 1 k units. Thus, if you want to use logical block 32768 on a file system with 4 k blocks, use "sb=131072".`,
 	},
 }
 
