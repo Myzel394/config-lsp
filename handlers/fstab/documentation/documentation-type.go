@@ -1,8 +1,8 @@
-package fstab
+package fstabdocumentation
 
 import docvalues "config-lsp/doc-values"
 
-var fileSystemTypeField = docvalues.ArrayValue{
+var FileSystemTypeField = docvalues.ArrayValue{
 	Separator:           ",",
 	DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
 	SubValue: docvalues.EnumValue{

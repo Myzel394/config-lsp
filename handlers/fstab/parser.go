@@ -3,6 +3,7 @@ package fstab
 import (
 	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
+	fstabdocumentation "config-lsp/handlers/fstab/documentation"
 	"fmt"
 	"regexp"
 	"slices"
@@ -62,45 +63,40 @@ type FstabEntry struct {
 }
 
 func (e *FstabEntry) CheckIsValid() []protocol.Diagnostic {
-	println(fmt.Sprintf("Checking entry at line %d; fields: %v", e.Line, e.Fields))
 	diagnostics := make([]protocol.Diagnostic, 0)
-	severity := protocol.DiagnosticSeverityError
 
 	if e.Fields.Spec != nil {
-		err := specField.CheckIsValid(e.Fields.Spec.Value)
+		errors := fstabdocumentation.SpecField.CheckIsValid(e.Fields.Spec.Value)
 
-		if err != nil {
-			diagnostics = append(diagnostics, protocol.Diagnostic{
-				Range:    e.Fields.Spec.CreateRange(e.Line),
-				Message:  err.Error(),
-				Severity: &severity,
-			})
+		if len(errors) > 0 {
+			diagnostics = append(
+				diagnostics,
+				docvalues.InvalidValuesToErrorDiagnostics(e.Line, e.Fields.Spec.Start, errors)...,
+			)
 		}
 	}
 
 	if e.Fields.MountPoint != nil {
-		err := mountPointField.CheckIsValid(e.Fields.MountPoint.Value)
+		errors := fstabdocumentation.MountPointField.CheckIsValid(e.Fields.MountPoint.Value)
 
-		if err != nil {
-			diagnostics = append(diagnostics, protocol.Diagnostic{
-				Range:    e.Fields.Spec.CreateRange(e.Line),
-				Message:  err.Error(),
-				Severity: &severity,
-			})
+		if len(errors) > 0 {
+			diagnostics = append(
+				diagnostics,
+				docvalues.InvalidValuesToErrorDiagnostics(e.Line, e.Fields.MountPoint.Start, errors)...,
+			)
 		}
 	}
 
 	var fileSystemType string = ""
 
 	if e.Fields.FilesystemType != nil {
-		err := fileSystemTypeField.CheckIsValid(e.Fields.FilesystemType.Value)
+		errors := fstabdocumentation.FileSystemTypeField.CheckIsValid(e.Fields.FilesystemType.Value)
 
-		if err != nil {
-			diagnostics = append(diagnostics, protocol.Diagnostic{
-				Range:    e.Fields.FilesystemType.CreateRange(e.Line),
-				Message:  err.Error(),
-				Severity: &severity,
-			})
+		if len(errors) > 0 {
+			diagnostics = append(
+				diagnostics,
+				docvalues.InvalidValuesToErrorDiagnostics(e.Line, e.Fields.FilesystemType.Start, errors)...,
+			)
 		} else {
 			fileSystemType = e.Fields.FilesystemType.Value
 		}
@@ -109,22 +105,41 @@ func (e *FstabEntry) CheckIsValid() []protocol.Diagnostic {
 	if e.Fields.Options != nil && fileSystemType != "" {
 		var optionsField docvalues.Value
 
-		if foundField, found := mountOptionsMapField[fileSystemType]; found {
+		if foundField, found := fstabdocumentation.MountOptionsMapField[fileSystemType]; found {
 			optionsField = foundField
 		} else {
-			optionsField = defaultMountOptionsField
+			optionsField = fstabdocumentation.DefaultMountOptionsField
 		}
 
-		println(fmt.Sprintf("Checking options for %s", fileSystemType))
+		errors := optionsField.CheckIsValid(e.Fields.Options.Value)
 
-		err := optionsField.CheckIsValid(e.Fields.Options.Value)
+		if len(errors) > 0 {
+			diagnostics = append(
+				diagnostics,
+				docvalues.InvalidValuesToErrorDiagnostics(e.Line, e.Fields.Options.Start, errors)...,
+			)
+		}
+	}
 
-		if err != nil {
-			diagnostics = append(diagnostics, protocol.Diagnostic{
-				Range:    e.Fields.Options.CreateRange(e.Line),
-				Message:  err.Error(),
-				Severity: &severity,
-			})
+	if e.Fields.Freq != nil {
+		errors := fstabdocumentation.FreqField.CheckIsValid(e.Fields.Freq.Value)
+
+		if len(errors) > 0 {
+			diagnostics = append(
+				diagnostics,
+				docvalues.InvalidValuesToErrorDiagnostics(e.Line, e.Fields.Freq.Start, errors)...,
+			)
+		}
+	}
+
+	if e.Fields.Pass != nil {
+		errors := fstabdocumentation.PassField.CheckIsValid(e.Fields.Pass.Value)
+
+		if len(errors) > 0 {
+			diagnostics = append(
+				diagnostics,
+				docvalues.InvalidValuesToErrorDiagnostics(e.Line, e.Fields.Pass.Start, errors)...,
+			)
 		}
 	}
 

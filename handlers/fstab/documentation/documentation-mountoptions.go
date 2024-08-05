@@ -1,9 +1,8 @@
-package fstab
+package fstabdocumentation
 
 import (
-	commondocumentation "config-lsp/common-documentation/filesystems"
+	commondocumentation "config-lsp/common-documentation/filesystems/mountoptions"
 	docvalues "config-lsp/doc-values"
-	"config-lsp/utils"
 	"strings"
 )
 
@@ -199,67 +198,40 @@ type assignOption struct {
 	Handler       func(context docvalues.KeyValueAssignmentContext) docvalues.Value
 }
 
-var defaultAssignOptions = map[string]commondocumentation.AssignableOption{
-	"context": {
-		Documentation: "The context= option is useful when mounting filesystems that do not support extended attributes, such as a floppy or hard disk formatted with VFAT, or systems that are not normally running under SELinux, such as an ext3 or ext4 formatted disk from a non-SELinux workstation. You can also use context= on filesystems you do not trust, such as a floppy. It also helps in compatibility with xattr-supporting filesystems on earlier 2.4.<x> kernel versions. Even where xattrs are supported, you can save time not having to label every file by assigning the entire disk one security context. A commonly used option for removable media is context=\"system_u:object_r:removable_t\".",
-		Handler: func(_ docvalues.KeyValueAssignmentContext) docvalues.Value {
-			return docvalues.StringValue{}
-		},
-	},
-	"fscontext": {
-		Documentation: "The fscontext= option works for all filesystems, regardless of their xattr support. The fscontext option sets the overarching filesystem label to a specific security context. This filesystem label is separate from the individual labels on the files. It represents the entire filesystem for certain kinds of permission checks, such as during mount or file creation. Individual file labels are still obtained from the xattrs on the files themselves. The context option actually sets the aggregate context that fscontext provides, in addition to supplying the same label for individual files.",
-		Handler: func(_ docvalues.KeyValueAssignmentContext) docvalues.Value {
-			return docvalues.StringValue{}
-		},
-	},
-	"defcontext": {
-		Documentation: "You can set the default security context for unlabeled files using defcontext= option. This overrides the value set for unlabeled files in the policy and requires a filesystem that supports xattr labeling.",
-		Handler: func(_ docvalues.KeyValueAssignmentContext) docvalues.Value {
-			return docvalues.StringValue{}
-		},
-	},
-	"rootcontext": {
-		Documentation: "The rootcontext= option allows you to explicitly label the root inode of a FS being mounted before that FS or inode becomes visible to userspace. This was found to be useful for things like stateless Linux. The special value @target can be used to assign the current context of the target mountpoint location.",
-		Handler: func(_ docvalues.KeyValueAssignmentContext) docvalues.Value {
-			return docvalues.StringValue{}
-		},
-	},
+var defaultAssignOptions = map[docvalues.EnumString]docvalues.Value{
+	docvalues.CreateEnumStringWithDoc(
+		"context",
+		"The context= option is useful when mounting filesystems that do not support extended attributes, such as a floppy or hard disk formatted with VFAT, or systems that are not normally running under SELinux, such as an ext3 or ext4 formatted disk from a non-SELinux workstation. You can also use context= on filesystems you do not trust, such as a floppy. It also helps in compatibility with xattr-supporting filesystems on earlier 2.4.<x> kernel versions. Even where xattrs are supported, you can save time not having to label every file by assigning the entire disk one security context. A commonly used option for removable media is context=\"system_u:object_r:removable_t\".",
+	): docvalues.StringValue{},
+	docvalues.CreateEnumStringWithDoc(
+		"fscontext",
+		"The fscontext= option works for all filesystems, regardless of their xattr support. The fscontext option sets the overarching filesystem label to a specific security context. This filesystem label is separate from the individual labels on the files. It represents the entire filesystem for certain kinds of permission checks, such as during mount or file creation. Individual file labels are still obtained from the xattrs on the files themselves. The context option actually sets the aggregate context that fscontext provides, in addition to supplying the same label for individual files.",
+	): docvalues.StringValue{},
+	docvalues.CreateEnumStringWithDoc(
+		"defcontext",
+		"You can set the default security context for unlabeled files using defcontext= option. This overrides the value set for unlabeled files in the policy and requires a filesystem that supports xattr labeling.",
+	): docvalues.StringValue{},
+	docvalues.CreateEnumStringWithDoc(
+		"rootcontext",
+		"The rootcontext= option allows you to explicitly label the root inode of a FS being mounted before that FS or inode becomes visible to userspace. This was found to be useful for things like stateless Linux. The special value @target can be used to assign the current context of the target mountpoint location.",
+	): docvalues.StringValue{},
 }
 
 func createMountOptionField(
 	options []docvalues.EnumString,
-	assignOption map[string]commondocumentation.AssignableOption,
+	assignOption map[docvalues.EnumString]docvalues.Value,
 ) docvalues.Value {
-	dynamicOptions := utils.MergeMaps(defaultAssignOptions, assignOption)
+	dynamicOptions := docvalues.MergeKeyEnumAssignmentMaps(defaultAssignOptions, assignOption)
 
 	return docvalues.ArrayValue{
 		Separator:           ",",
 		DuplicatesExtractor: &mountOptionsExtractor,
 		SubValue: docvalues.OrValue{
 			Values: []docvalues.Value{
-				docvalues.KeyValueAssignmentValue{
-					Separator:       "=",
+				docvalues.KeyEnumAssignmentValue{
+					Values:          dynamicOptions,
 					ValueIsOptional: false,
-					Key: docvalues.EnumValue{
-						EnforceValues: true,
-						Values: utils.Map(
-							utils.KeysOfMap(dynamicOptions),
-							func(key string) docvalues.EnumString {
-								return docvalues.CreateEnumStringWithDoc(
-									key,
-									dynamicOptions[key].Documentation,
-								)
-							},
-						),
-					},
-					Value: docvalues.CustomValue{
-						FetchValue: func(rawContext docvalues.CustomValueContext) docvalues.Value {
-							context := rawContext.(docvalues.KeyValueAssignmentContext)
-							option := dynamicOptions[context.SelectedKey]
-
-							return option.Handler(context)
-						},
-					},
+					Separator:       "=",
 				},
 				docvalues.EnumValue{
 					EnforceValues: true,
@@ -270,30 +242,38 @@ func createMountOptionField(
 	}
 }
 
-var defaultMountOptionsField = createMountOptionField([]docvalues.EnumString{}, map[string]commondocumentation.AssignableOption{})
+var DefaultMountOptionsField = createMountOptionField([]docvalues.EnumString{}, map[docvalues.EnumString]docvalues.Value{})
 
-var mountOptionsMapField = map[string]docvalues.Value{
-	"adfs": createMountOptionField(
-		[]docvalues.EnumString{},
-		map[string]commondocumentation.AssignableOption{
-			"uid": {
-				Documentation: "Set the owner of the files in the filesystem",
-				Handler: func(context docvalues.KeyValueAssignmentContext) docvalues.Value {
-					min := 0
-					return docvalues.NumberValue{Min: &min}
-				},
-			},
-			"gid": {
-				Documentation: "Set the group of the files in the filesystem",
-				Handler: func(context docvalues.KeyValueAssignmentContext) docvalues.Value {
-					min := 0
-					return docvalues.NumberValue{Min: &min}
-				},
-			},
-		},
-	),
+var MountOptionsMapField = map[string]docvalues.Value{
+	// "adfs": createMountOptionField(
+	// 	[]docvalues.EnumString{},
+	// 	map[string]commondocumentation.AssignableOption{
+	// 		"uid": {
+	// 			Documentation: "Set the owner of the files in the filesystem",
+	// 			Handler: func(context docvalues.KeyValueAssignmentContext) docvalues.Value {
+	// 				min := 0
+	// 				return docvalues.NumberValue{Min: &min}
+	// 			},
+	// 		},
+	// 		"gid": {
+	// 			Documentation: "Set the group of the files in the filesystem",
+	// 			Handler: func(context docvalues.KeyValueAssignmentContext) docvalues.Value {
+	// 				min := 0
+	// 				return docvalues.NumberValue{Min: &min}
+	// 			},
+	// 		},
+	// 	},
+	// ),
 	"ext2": createMountOptionField(
 		commondocumentation.Ext2DocumentationEnums,
 		commondocumentation.Ext2DocumentationAssignable,
+	),
+	"ext3": createMountOptionField(
+		append(commondocumentation.Ext2DocumentationEnums, commondocumentation.Ext3DocumentationEnums...),
+		docvalues.MergeKeyEnumAssignmentMaps(commondocumentation.Ext2DocumentationAssignable, commondocumentation.Ext3DocumentationAssignable),
+	),
+	"ext4": createMountOptionField(
+		append(append(commondocumentation.Ext2DocumentationEnums, commondocumentation.Ext3DocumentationEnums...), commondocumentation.Ext4DocumentationEnums...),
+		docvalues.MergeKeyEnumAssignmentMaps(commondocumentation.Ext2DocumentationAssignable, docvalues.MergeKeyEnumAssignmentMaps(commondocumentation.Ext3DocumentationAssignable, commondocumentation.Ext4DocumentationAssignable)),
 	),
 }
