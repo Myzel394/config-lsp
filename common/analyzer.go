@@ -17,10 +17,9 @@ func AnalyzeValues(
 
 		if err != nil {
 			errors = append(errors, docvalues.ValueError{
-				Line:     line.Position.Line,
-				Option:   optionName,
-				Value:    line.Value,
-				DocError: err,
+				Line:   line.Position.Line,
+				Option: optionName,
+				Value:  line.Value,
 			})
 		}
 	}

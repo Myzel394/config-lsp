@@ -17,12 +17,13 @@ var lspHandler protocol.Handler
 func SetUpRootHandler() {
 	rootHandler = NewRootHandler()
 	lspHandler = protocol.Handler{
-		Initialize:            initialize,
-		Initialized:           initialized,
-		Shutdown:              shutdown,
-		SetTrace:              setTrace,
-		TextDocumentDidOpen:   TextDocumentDidOpen,
-		TextDocumentDidChange: TextDocumentDidChange,
+		Initialize:             initialize,
+		Initialized:            initialized,
+		Shutdown:               shutdown,
+		SetTrace:               setTrace,
+		TextDocumentDidOpen:    TextDocumentDidOpen,
+		TextDocumentDidChange:  TextDocumentDidChange,
+		TextDocumentCompletion: TextDocumentCompletion,
 	}
 
 	server := server.NewServer(&lspHandler, lsName, false)
