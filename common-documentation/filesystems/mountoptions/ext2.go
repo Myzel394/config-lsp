@@ -3,56 +3,51 @@ package commondocumentation
 
 import docvalues "config-lsp/doc-values"
 
-var Ext2DocumentationAssignable = docvalues.KeyEnumAssignmentValue{
-	Separator: ",",
-	ValueIsOptional: false,
-	Values: map[docvalues.EnumString]docvalues.Value{
-		docvalues.CreateEnumStringWithDoc(
-			"none",
-			"No checking is done at mount time. This is the default. This is fast.  It is wise to invoke e2fsck(8) every now and then, e.g. at boot time. The non-default behavior is unsupported (check=normal and check=strict options have been removed). Note that these mount options don't have to be supported if ext4 kernel driver is used for ext2 and ext3 file systems.",
-		): docvalues.EnumValue{
-			EnforceValues: true,
-			Values: []docvalues.EnumString{
-				docvalues.CreateEnumStringWithDoc(
-					"none",
-					"No checking is done at mount time",
-				),
-			},
+var Ext2DocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
+	docvalues.CreateEnumStringWithDoc(
+		"none",
+		"No checking is done at mount time. This is the default. This is fast.  It is wise to invoke e2fsck(8) every now and then, e.g. at boot time. The non-default behavior is unsupported (check=normal and check=strict options have been removed). Note that these mount options don't have to be supported if ext4 kernel driver is used for ext2 and ext3 file systems.",
+	): docvalues.EnumValue{
+		EnforceValues: true,
+		Values: []docvalues.EnumString{
+			docvalues.CreateEnumStringWithDoc(
+				"none",
+				"No checking is done at mount time",
+			),
 		},
-		docvalues.CreateEnumStringWithDoc(
-			"errors",
-			"Define the behavior when an error is encountered.  (Either ignore errors and just mark the file system erroneous and continue, or remount the file system read-only, or panic and halt the system.)  The default is set in the file system superblock, and can be changed using tune2fs(8).",
-		): docvalues.EnumValue{
-			EnforceValues: true,
-			Values: []docvalues.EnumString{
-				docvalues.CreateEnumStringWithDoc(
-					"continue",
-					"Ignore errors and just mark the file system erroneous and continue",
-				),
-				docvalues.CreateEnumStringWithDoc(
-					"remount-ro",
-					"Remount the file system read-only",
-				),
-				docvalues.CreateEnumStringWithDoc(
-					"panic",
-					"Panic and halt the system",
-				),
-			},
-		},
-		docvalues.CreateEnumStringWithDoc(
-			"resgid",
-			"The ext2 file system reserves a certain percentage of the available space (by default 5%, see mke2fs(8) and tune2fs(8)).  These options determine who can use the reserved blocks.  (Roughly: whoever has the specified uid, or belongs to the specified group.)",
-		): docvalues.PositiveNumberValue(),
-		docvalues.CreateEnumStringWithDoc(
-			"resuid",
-			"The ext2 file system reserves a certain percentage of the available space (by default 5%, see mke2fs(8) and tune2fs(8)).  These options determine who can use the reserved blocks.  (Roughly: whoever has the specified uid, or belongs to the specified group.)",
-		): docvalues.PositiveNumberValue(),
-		docvalues.CreateEnumStringWithDoc(
-			"sb",
-			"Instead of using the normal superblock, use an alternative superblock specified by n.  This option is normally used when the primary superblock has been corrupted.  The location of backup superblocks is dependent on the file system's blocksize, the number of blocks per group, and features such as sparse_super.",
-		): docvalues.PositiveNumberValue(),
-
 	},
+	docvalues.CreateEnumStringWithDoc(
+		"errors",
+		"Define the behavior when an error is encountered.  (Either ignore errors and just mark the file system erroneous and continue, or remount the file system read-only, or panic and halt the system.)  The default is set in the file system superblock, and can be changed using tune2fs(8).",
+	): docvalues.EnumValue{
+		EnforceValues: true,
+		Values: []docvalues.EnumString{
+			docvalues.CreateEnumStringWithDoc(
+				"continue",
+				"Ignore errors and just mark the file system erroneous and continue",
+			),
+			docvalues.CreateEnumStringWithDoc(
+				"remount-ro",
+				"Remount the file system read-only",
+			),
+			docvalues.CreateEnumStringWithDoc(
+				"panic",
+				"Panic and halt the system",
+			),
+		},
+	},
+	docvalues.CreateEnumStringWithDoc(
+		"resgid",
+		"The ext2 file system reserves a certain percentage of the available space (by default 5%, see mke2fs(8) and tune2fs(8)).  These options determine who can use the reserved blocks.  (Roughly: whoever has the specified uid, or belongs to the specified group.)",
+	): docvalues.PositiveNumberValue(),
+	docvalues.CreateEnumStringWithDoc(
+		"resuid",
+		"The ext2 file system reserves a certain percentage of the available space (by default 5%, see mke2fs(8) and tune2fs(8)).  These options determine who can use the reserved blocks.  (Roughly: whoever has the specified uid, or belongs to the specified group.)",
+	): docvalues.PositiveNumberValue(),
+	docvalues.CreateEnumStringWithDoc(
+		"sb",
+		"Instead of using the normal superblock, use an alternative superblock specified by n.  This option is normally used when the primary superblock has been corrupted.  The location of backup superblocks is dependent on the file system's blocksize, the number of blocks per group, and features such as sparse_super.",
+	): docvalues.PositiveNumberValue(),
 }
 
 var Ext2DocumentationEnums = []docvalues.EnumString{
