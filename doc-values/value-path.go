@@ -46,9 +46,14 @@ func (v PathValue) GetTypeDescription() []string {
 	return []string{strings.Join(hints, ", ")}
 }
 
-func (v PathValue) CheckIsValid(value string) error {
+func (v PathValue) CheckIsValid(value string) []*InvalidValue {
 	if !utils.DoesPathExist(value) {
-		return PathDoesNotExistError{}
+		return []*InvalidValue{{
+			Err:   PathDoesNotExistError{},
+			Start: 0,
+			End:   uint32(len(value)),
+		},
+		}
 	}
 
 	isValid := false
@@ -65,7 +70,12 @@ func (v PathValue) CheckIsValid(value string) error {
 		return nil
 	}
 
-	return PathInvalidError{}
+	return []*InvalidValue{{
+		Err:   PathInvalidError{},
+		Start: 0,
+		End:   uint32(len(value)),
+	},
+	}
 }
 
 func (v PathValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {

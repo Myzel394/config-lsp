@@ -9,11 +9,11 @@ import (
 )
 
 type ArrayContainsDuplicatesError struct {
-	Duplicates []string
+	Value string
 }
 
 func (e ArrayContainsDuplicatesError) Error() string {
-	return fmt.Sprintf("The following values are duplicated: %s", strings.Join(e.Duplicates, ","))
+	return fmt.Sprintf("'%s' is a duplicate value (and duplicates are not allowed)", e.Value)
 }
 
 var SimpleDuplicatesExtractor = func(value string) string {
@@ -52,7 +52,9 @@ func (v ArrayValue) GetTypeDescription() []string {
 		subValue.GetTypeDescription()...,
 	)
 }
-func (v ArrayValue) CheckIsValid(value string) error {
+
+func (v ArrayValue) CheckIsValid(value string) []*InvalidValue {
+	errors := []*InvalidValue{}
 	values := strings.Split(value, v.Separator)
 
 	if *v.DuplicatesExtractor != nil {
@@ -68,25 +70,48 @@ func (v ArrayValue) CheckIsValid(value string) error {
 				valuesOccurrences[duplicateValue]++
 			}
 
-			duplicateValues := utils.FilterMapWhere(valuesOccurrences, func(_ string, value int) bool {
+			duplicateValuesAsList := utils.FilterMapWhere(valuesOccurrences, func(_ string, value int) bool {
 				return value > 1
 			})
+			duplicateValues := utils.KeysAsSet(duplicateValuesAsList)
 
-			return ArrayContainsDuplicatesError{
-				Duplicates: utils.KeysOfMap(duplicateValues),
+			duplicateIndexStart := uint32(0)
+			duplicateIndexEnd := uint32(0)
+
+			currentIndex := uint32(0)
+			for _, rawValue := range values {
+				if _, found := duplicateValues[rawValue]; found {
+					duplicateIndexStart = currentIndex
+					duplicateIndexEnd = currentIndex + uint32(len(rawValue))
+
+					errors = append(errors, &InvalidValue{
+						Err: ArrayContainsDuplicatesError{
+							Value: rawValue,
+						},
+						Start: duplicateIndexStart,
+						End:   duplicateIndexEnd,
+					})
+				}
 			}
+
+			return errors
 		}
 	}
 
+	currentIndex := uint32(0)
 	for _, subValue := range values {
-		err := v.SubValue.CheckIsValid(subValue)
+		newErrors := v.SubValue.CheckIsValid(subValue)
 
-		if err != nil {
-			return err
+		if len(newErrors) > 0 {
+			ShiftInvalidValues(currentIndex, newErrors)
 		}
+
+		errors = append(errors, newErrors...)
+
+		currentIndex += uint32(len(subValue) + len(v.Separator))
 	}
 
-	return nil
+	return errors
 }
 
 func (v ArrayValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {

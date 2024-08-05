@@ -2,7 +2,9 @@ package docvalues
 
 import (
 	"config-lsp/utils"
+
 	protocol "github.com/tliron/glsp/protocol_3_16"
+	"golang.org/x/exp/slices"
 )
 
 func GenerateBase10Completions(prefix string) []protocol.CompletionItem {
@@ -17,4 +19,25 @@ func GenerateBase10Completions(prefix string) []protocol.CompletionItem {
 			}
 		},
 	)
+}
+
+func MergeKeyEnumAssignmentMaps(maps ...map[EnumString]Value) map[EnumString]Value {
+	existingEnums := make(map[string]interface{})
+	result := make(map[EnumString]Value)
+
+	slices.Reverse(maps)
+
+	for _, m := range maps {
+		for key, value := range m {
+			if _, ok := existingEnums[key.InsertText]; !ok {
+				continue
+			}
+
+			existingEnums[key.InsertText] = nil
+
+			result[key] = value
+		}
+	}
+
+	return result
 }

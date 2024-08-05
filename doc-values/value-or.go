@@ -33,20 +33,20 @@ func (v OrValue) GetTypeDescription() []string {
 		lines...,
 	)
 }
-func (v OrValue) CheckIsValid(value string) error {
-	var lastError error = nil
+func (v OrValue) CheckIsValid(value string) []*InvalidValue {
+	errors := make([]*InvalidValue, 0)
 
 	for _, subValue := range v.Values {
-		err := subValue.CheckIsValid(value)
+		valueErrors := subValue.CheckIsValid(value)
 
-		if err == nil {
+		if len(valueErrors) == 0 {
 			return nil
-		} else {
-			lastError = err
 		}
+
+		errors = append(errors, valueErrors...)
 	}
 
-	return lastError
+	return errors
 }
 func (v OrValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	completions := make([]protocol.CompletionItem, 0)

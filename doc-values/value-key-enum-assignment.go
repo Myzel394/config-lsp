@@ -9,8 +9,8 @@ import (
 )
 
 type KeyEnumAssignmentValue struct {
-	Values map[EnumString]Value
-	Separator string
+	Values          map[EnumString]Value
+	Separator       string
 	ValueIsOptional bool
 }
 
@@ -19,13 +19,12 @@ func (v KeyEnumAssignmentValue) GetTypeDescription() []string {
 		firstKey := utils.KeysOfMap(v.Values)[0]
 		valueDescription := v.Values[firstKey].GetTypeDescription()
 
-		if (len(valueDescription) == 1) {
+		if len(valueDescription) == 1 {
 			return []string{
 				fmt.Sprintf("Key-Value pair in form of '<%s>%s<%s>'", firstKey.DescriptionText, v.Separator, valueDescription[0]),
 			}
 		}
-	} 
-
+	}
 
 	var result []string
 	for key, value := range v.Values {
@@ -42,17 +41,17 @@ func (v KeyEnumAssignmentValue) getValue(findKey string) (*Value, bool) {
 	for key, value := range v.Values {
 		if key.InsertText == findKey {
 			switch value.(type) {
-				case CustomValue:
-					customValue := value.(CustomValue)
-					context := KeyValueAssignmentContext{
-						SelectedKey: findKey,
-					}
+			case CustomValue:
+				customValue := value.(CustomValue)
+				context := KeyValueAssignmentContext{
+					SelectedKey: findKey,
+				}
 
-					fetchedValue := customValue.FetchValue(context)
+				fetchedValue := customValue.FetchValue(context)
 
-					return &fetchedValue, true
-				default:
-					return &value, true
+				return &fetchedValue, true
+			default:
+				return &value, true
 			}
 		}
 	}
@@ -60,7 +59,7 @@ func (v KeyEnumAssignmentValue) getValue(findKey string) (*Value, bool) {
 	return nil, false
 }
 
-func (v KeyEnumAssignmentValue) CheckIsValid(value string) error {
+func (v KeyEnumAssignmentValue) CheckIsValid(value string) []*InvalidValue {
 	parts := strings.Split(value, v.Separator)
 
 	if len(parts) == 0 || parts[0] == "" {
@@ -73,22 +72,35 @@ func (v KeyEnumAssignmentValue) CheckIsValid(value string) error {
 			return nil
 		}
 
-		return KeyValueAssignmentError{}
+		return []*InvalidValue{
+			{
+				Err:   KeyValueAssignmentError{},
+				Start: 0,
+				End:   uint32(len(parts[0]) + len(v.Separator)),
+			},
+		}
 	}
 
 	checkValue, found := v.getValue(parts[0])
 
 	if !found {
-		return ValueNotInEnumError{
-			AvailableValues: utils.Map(utils.KeysOfMap(v.Values), func(key EnumString) string { return key.InsertText }),
-			ProvidedValue: parts[0],
+		return []*InvalidValue{
+			{
+				Err: ValueNotInEnumError{
+					AvailableValues: utils.Map(utils.KeysOfMap(v.Values), func(key EnumString) string { return key.InsertText }),
+					ProvidedValue:   parts[0],
+				},
+				Start: 0,
+				End:   uint32(len(parts[0])),
+			},
 		}
 	}
 
-	err := (*checkValue).CheckIsValid(parts[1])
+	errors := (*checkValue).CheckIsValid(parts[1])
 
-	if err != nil {
-		return err
+	if len(errors) > 0 {
+		ShiftInvalidValues(uint32(len(parts[0])+len(v.Separator)), errors)
+		return errors
 	}
 
 	return nil

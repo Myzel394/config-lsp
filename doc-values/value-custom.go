@@ -24,7 +24,7 @@ func (v CustomValue) GetTypeDescription() []string {
 	return []string{"Custom"}
 }
 
-func (v CustomValue) CheckIsValid(value string) error {
+func (v CustomValue) CheckIsValid(value string) []*InvalidValue {
 	return v.FetchValue(EmptyValueContextInstance).CheckIsValid(value)
 }
 

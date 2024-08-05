@@ -30,7 +30,7 @@ func (v PrefixWithMeaningValue) GetTypeDescription() []string {
 	)
 }
 
-func (v PrefixWithMeaningValue) CheckIsValid(value string) error {
+func (v PrefixWithMeaningValue) CheckIsValid(value string) []*InvalidValue {
 	return v.SubValue.CheckIsValid(value)
 }
 

@@ -16,9 +16,14 @@ func (v StringValue) GetTypeDescription() []string {
 	return []string{"String"}
 }
 
-func (v StringValue) CheckIsValid(value string) error {
+func (v StringValue) CheckIsValid(value string) []*InvalidValue {
 	if value == "" {
-		return EmptyStringError{}
+		return []*InvalidValue{{
+			Err:   EmptyStringError{},
+			Start: 0,
+			End:   uint32(len(value)),
+		},
+		}
 	}
 
 	return nil

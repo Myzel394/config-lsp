@@ -25,9 +25,14 @@ func (v RegexValue) GetTypeDescription() []string {
 	}
 }
 
-func (v RegexValue) CheckIsValid(value string) error {
+func (v RegexValue) CheckIsValid(value string) []*InvalidValue {
 	if value == "" {
-		return EmptyStringError{}
+		return []*InvalidValue{{
+			Err:   EmptyStringError{},
+			Start: 0,
+			End:   uint32(len(value)),
+		},
+		}
 	}
 
 	return nil

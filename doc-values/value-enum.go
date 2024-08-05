@@ -14,7 +14,11 @@ type ValueNotInEnumError struct {
 }
 
 func (e ValueNotInEnumError) Error() string {
-	return fmt.Sprintf("This value is not valid. Select one from: %s", strings.Join(e.AvailableValues, ","))
+	if len(e.AvailableValues) <= 6 {
+		return fmt.Sprintf("This value is not valid. Select one from: %s", strings.Join(e.AvailableValues, ","))
+	} else {
+		return fmt.Sprintf("This value is not valid")
+	}
 }
 
 type EnumString struct {
@@ -63,7 +67,7 @@ func (v EnumValue) GetTypeDescription() []string {
 
 	return lines
 }
-func (v EnumValue) CheckIsValid(value string) error {
+func (v EnumValue) CheckIsValid(value string) []*InvalidValue {
 	if !v.EnforceValues {
 		return nil
 	}
@@ -75,9 +79,15 @@ func (v EnumValue) CheckIsValid(value string) error {
 
 	}
 
-	return ValueNotInEnumError{
-		ProvidedValue:   value,
-		AvailableValues: utils.Map(v.Values, func(value EnumString) string { return value.InsertText }),
+	return []*InvalidValue{
+		{
+			Err: ValueNotInEnumError{
+				ProvidedValue:   value,
+				AvailableValues: utils.Map(v.Values, func(value EnumString) string { return value.InsertText }),
+			},
+			Start: 0,
+			End:   uint32(len(value)),
+		},
 	}
 }
 func (v EnumValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {

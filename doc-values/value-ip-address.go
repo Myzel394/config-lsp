@@ -63,14 +63,20 @@ func (v IPAddressValue) GetTypeDescription() []string {
 	return []string{"An IP Address"}
 }
 
-func (v IPAddressValue) CheckIsValid(value string) error {
+func (v IPAddressValue) CheckIsValid(value string) []*InvalidValue {
 	var ip net.Prefix
 
 	if v.AllowRange {
 		rawIP, err := net.ParsePrefix(value)
 
 		if err != nil {
-			return InvalidIPAddress{}
+			return []*InvalidValue{
+				{
+					Err:   InvalidIPAddress{},
+					Start: 0,
+					End:   uint32(len(value)),
+				},
+			}
 		}
 
 		ip = rawIP
@@ -78,14 +84,24 @@ func (v IPAddressValue) CheckIsValid(value string) error {
 		rawIP, err := net.ParseAddr(value)
 
 		if err != nil {
-			return InvalidIPAddress{}
+			return []*InvalidValue{{
+				Err:   InvalidIPAddress{},
+				Start: 0,
+				End:   uint32(len(value)),
+			},
+			}
 		}
 
 		ip = net.PrefixFrom(rawIP, 32)
 	}
 
 	if !ip.IsValid() {
-		return InvalidIPAddress{}
+		return []*InvalidValue{{
+			Err:   InvalidIPAddress{},
+			Start: 0,
+			End:   uint32(len(value)),
+		},
+		}
 	}
 
 	if v.AllowedIPs != nil {
@@ -95,13 +111,23 @@ func (v IPAddressValue) CheckIsValid(value string) error {
 			}
 		}
 
-		return IpRangeNotAllowedError{}
+		return []*InvalidValue{{
+			Err:   IPAddressNotAllowedError{},
+			Start: 0,
+			End:   uint32(len(value)),
+		},
+		}
 	}
 
 	if v.DisallowedIPs != nil {
 		for _, disallowedIP := range *v.DisallowedIPs {
 			if disallowedIP.Contains(ip.Addr()) {
-				return IPAddressNotAllowedError{}
+				return []*InvalidValue{{
+					Err:   IPAddressNotAllowedError{},
+					Start: 0,
+					End:   uint32(len(value)),
+				},
+				}
 			}
 		}
 	}
@@ -114,7 +140,12 @@ func (v IPAddressValue) CheckIsValid(value string) error {
 		return nil
 	}
 
-	return InvalidIPAddress{}
+	return []*InvalidValue{{
+		Err:   InvalidIPAddress{},
+		Start: 0,
+		End:   uint32(len(value)),
+	},
+	}
 }
 
 func (v IPAddressValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {

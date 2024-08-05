@@ -65,7 +65,7 @@ func (v KeyValueAssignmentValue) getValue(selectedKey string) Value {
 	}
 }
 
-func (v KeyValueAssignmentValue) CheckIsValid(value string) error {
+func (v KeyValueAssignmentValue) CheckIsValid(value string) []*InvalidValue {
 	parts := strings.Split(value, v.Separator)
 
 	if len(parts) == 0 || parts[0] == "" {
@@ -84,13 +84,20 @@ func (v KeyValueAssignmentValue) CheckIsValid(value string) error {
 			return nil
 		}
 
-		return KeyValueAssignmentError{}
+		return []*InvalidValue{
+			{
+				Err:   KeyValueAssignmentError{},
+				Start: 0,
+				End:   uint32(len(parts[0]) + len(v.Separator)),
+			},
+		}
 	}
 
-	err = v.getValue(parts[0]).CheckIsValid(parts[1])
+	errors := v.getValue(parts[0]).CheckIsValid(parts[1])
 
-	if err != nil {
-		return err
+	if len(errors) > 0 {
+		ShiftInvalidValues(uint32(len(parts[0])+len(v.Separator)), errors)
+		return errors
 	}
 
 	return nil

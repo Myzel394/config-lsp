@@ -48,15 +48,27 @@ func (v NumberValue) GetTypeDescription() []string {
 
 	return []string{"A number"}
 }
-func (v NumberValue) CheckIsValid(value string) error {
+func (v NumberValue) CheckIsValid(value string) []*InvalidValue {
 	number, err := strconv.Atoi(value)
 
 	if err != nil {
-		return NotANumberError{}
+		return []*InvalidValue{
+			{
+				Err:   NotANumberError{},
+				Start: 0,
+				End:   uint32(len(value)),
+			},
+		}
 	}
 
 	if (v.Min != nil && number < *v.Min) || (v.Max != nil && number > *v.Max) {
-		return NumberNotInRangeError{v.Min, v.Max}
+		return []*InvalidValue{
+			{
+				Err:   NumberNotInRangeError{v.Min, v.Max},
+				Start: 0,
+				End:   uint32(len(value)),
+			},
+		}
 	}
 
 	return nil
