@@ -73,6 +73,16 @@ func FilterMapWhere[T comparable, O any](values map[T]O, f func(T, O) bool) map[
 	return result
 }
 
+func KeysAsSet[T comparable, O any](values map[T]O) map[T]struct{} {
+	set := make(map[T]struct{})
+
+	for key := range values {
+		set[key] = struct{}{}
+	}
+
+	return set
+}
+
 func KeysOfMap[T comparable, O any](values map[T]O) []T {
 	keys := make([]T, 0)
 
