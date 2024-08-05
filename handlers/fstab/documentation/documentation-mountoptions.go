@@ -245,25 +245,18 @@ func createMountOptionField(
 var DefaultMountOptionsField = createMountOptionField([]docvalues.EnumString{}, map[docvalues.EnumString]docvalues.Value{})
 
 var MountOptionsMapField = map[string]docvalues.Value{
-	// "adfs": createMountOptionField(
-	// 	[]docvalues.EnumString{},
-	// 	map[string]commondocumentation.AssignableOption{
-	// 		"uid": {
-	// 			Documentation: "Set the owner of the files in the filesystem",
-	// 			Handler: func(context docvalues.KeyValueAssignmentContext) docvalues.Value {
-	// 				min := 0
-	// 				return docvalues.NumberValue{Min: &min}
-	// 			},
-	// 		},
-	// 		"gid": {
-	// 			Documentation: "Set the group of the files in the filesystem",
-	// 			Handler: func(context docvalues.KeyValueAssignmentContext) docvalues.Value {
-	// 				min := 0
-	// 				return docvalues.NumberValue{Min: &min}
-	// 			},
-	// 		},
-	// 	},
-	// ),
+	"adfs": createMountOptionField(
+		[]docvalues.EnumString{},
+		commondocumentation.AdfsDocumentationAssignable,
+	),
+	"affs": createMountOptionField(
+		[]docvalues.EnumString{},
+		commondocumentation.AffsDocumentationAssignable,
+	),
+	"debugfs": createMountOptionField(
+		[]docvalues.EnumString{},
+		commondocumentation.DebugfsDocumentationAssignable,
+	),
 	"ext2": createMountOptionField(
 		commondocumentation.Ext2DocumentationEnums,
 		commondocumentation.Ext2DocumentationAssignable,
