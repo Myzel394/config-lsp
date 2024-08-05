@@ -44,6 +44,17 @@ func (f *Field) CreateRange(fieldLine uint32) protocol.Range {
 	}
 }
 
+type FstabField string
+
+const (
+	FstabFieldSpec           FstabField = "spec"
+	FstabFieldMountPoint     FstabField = "mountpoint"
+	FstabFieldFileSystemType FstabField = "filesystemtype"
+	FstabFieldOptions        FstabField = "options"
+	FstabFieldFreq           FstabField = "freq"
+	FstabFieldPass           FstabField = "pass"
+)
+
 type FstabFields struct {
 	Spec           *Field
 	MountPoint     *Field
@@ -146,6 +157,30 @@ func (e *FstabEntry) CheckIsValid() []protocol.Diagnostic {
 	return diagnostics
 }
 
+func (e FstabEntry) GetFieldAtPosition(cursor uint32) FstabField {
+	if e.Fields.Spec == nil || (cursor >= e.Fields.Spec.Start && cursor <= e.Fields.Spec.End) {
+		return FstabFieldSpec
+	}
+
+	if e.Fields.MountPoint == nil || (cursor >= e.Fields.MountPoint.Start && cursor <= e.Fields.MountPoint.End) {
+		return FstabFieldMountPoint
+	}
+
+	if e.Fields.FilesystemType == nil || (cursor >= e.Fields.FilesystemType.Start && cursor <= e.Fields.FilesystemType.End) {
+		return FstabFieldFileSystemType
+	}
+
+	if e.Fields.Options == nil || (cursor >= e.Fields.Options.Start && cursor <= e.Fields.Options.End) {
+		return FstabFieldOptions
+	}
+
+	if e.Fields.Freq == nil || (cursor >= e.Fields.Freq.Start && cursor <= e.Fields.Freq.End) {
+		return FstabFieldFreq
+	}
+
+	return FstabFieldPass
+}
+
 type FstabParser struct {
 	entries []FstabEntry
 }
@@ -157,83 +192,83 @@ func (p *FstabParser) AddLine(line string, lineNumber int) error {
 		return MalformedLineError{}
 	}
 
-	var spec Field
-	var mountPoint Field
-	var filesystemType Field
-	var options Field
-	var freq Field
-	var pass Field
+	var spec *Field
+	var mountPoint *Field
+	var filesystemType *Field
+	var options *Field
+	var freq *Field
+	var pass *Field
 
 	switch len(fields) {
 	case 6:
 		value := fields[5]
 		start := uint32(strings.Index(line, value))
-		pass = Field{
+		pass = &Field{
 			Value: fields[5],
 			Start: start,
-			End:   start + uint32(len(value)),
+			End:   start + uint32(len(value)) - 1,
 		}
 		fallthrough
 	case 5:
 		value := fields[4]
 		start := uint32(strings.Index(line, value))
 
-		freq = Field{
+		freq = &Field{
 			Value: value,
 			Start: start,
-			End:   start + uint32(len(value)),
+			End:   start + uint32(len(value)) - 1,
 		}
 		fallthrough
 	case 4:
 		value := fields[3]
 		start := uint32(strings.Index(line, value))
 
-		options = Field{
+		options = &Field{
 			Value: value,
 			Start: start,
-			End:   start + uint32(len(value)),
+			End:   start + uint32(len(value)) - 1,
 		}
 		fallthrough
 	case 3:
 		value := fields[2]
 		start := uint32(strings.Index(line, value))
 
-		filesystemType = Field{
+		filesystemType = &Field{
 			Value: value,
 			Start: start,
-			End:   start + uint32(len(value)),
+			End:   start + uint32(len(value)) - 1,
 		}
 		fallthrough
 	case 2:
 		value := fields[1]
 		start := uint32(strings.Index(line, value))
 
-		mountPoint = Field{
+		mountPoint = &Field{
 			Value: value,
 			Start: start,
-			End:   start + uint32(len(value)),
+			End:   start + uint32(len(value)) - 1,
 		}
 		fallthrough
 	case 1:
 		value := fields[0]
 		start := uint32(strings.Index(line, value))
 
-		spec = Field{
+		spec = &Field{
 			Value: value,
 			Start: start,
-			End:   start + uint32(len(value)),
+			End:   start + uint32(len(value)) - 1,
 		}
 	}
 
 	entry := FstabEntry{
 		Line: uint32(lineNumber),
 		Fields: FstabFields{
-			Spec:           &spec,
-			MountPoint:     &mountPoint,
-			FilesystemType: &filesystemType,
-			Options:        &options,
-			Freq:           &freq,
-			Pass:           &pass,
+			Spec:           spec,
+			MountPoint:     mountPoint,
+			FilesystemType: filesystemType,
+			Options:        options,
+			Freq:           freq,
+			Pass:           pass,
 		},
 	}
 	p.entries = append(p.entries, entry)
@@ -263,7 +298,7 @@ func (p *FstabParser) ParseFromContent(content string) []common.ParseError {
 	return errors
 }
 
-func (p *FstabParser) GetEntry(line uint32) (FstabEntry, bool) {
+func (p *FstabParser) GetEntry(line uint32) (*FstabEntry, bool) {
 	index, found := slices.BinarySearchFunc(p.entries, line, func(entry FstabEntry, line uint32) int {
 		if entry.Line < line {
 			return -1
@@ -277,10 +312,10 @@ func (p *FstabParser) GetEntry(line uint32) (FstabEntry, bool) {
 	})
 
 	if !found {
-		return FstabEntry{}, false
+		return nil, false
 	}
 
-	return p.entries[index], true
+	return &p.entries[index], true
 }
 
 func (p *FstabParser) Clear() {

@@ -15,7 +15,6 @@ func TextDocumentDidOpen(
 	common.ClearDiagnostics(context, params.TextDocument.URI)
 
 	parser := FstabParser{}
-
 	documentParserMap[params.TextDocument.URI] = &parser
 
 	errors := parser.ParseFromContent(params.TextDocument.Text)

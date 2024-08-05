@@ -17,33 +17,14 @@ var SpecField = docvalues.OrValue{
 		// docvalues.PathValue{
 		// 	RequiredType: docvalues.PathTypeFile & docvalues.PathTypeExistenceOptional,
 		// },
-		docvalues.KeyValueAssignmentValue{
+		docvalues.KeyEnumAssignmentValue{
 			Separator:       "=",
 			ValueIsOptional: false,
-			Key: docvalues.EnumValue{
-				EnforceValues: true,
-				Values: []docvalues.EnumString{
-					docvalues.CreateEnumString("UUID"),
-					docvalues.CreateEnumString("LABEL"),
-					docvalues.CreateEnumString("PARTUUID"),
-					docvalues.CreateEnumString("PARTLABEL"),
-				},
-			},
-			Value: docvalues.CustomValue{
-				FetchValue: func(rawContext docvalues.CustomValueContext) docvalues.Value {
-					context := rawContext.(docvalues.KeyValueAssignmentContext)
-
-					switch context.SelectedKey {
-					case "UUID":
-					case "PARTUUID":
-						return UuidField
-					case "LABEL":
-					case "PARTLABEL":
-						return LabelField
-					}
-
-					return docvalues.StringValue{}
-				},
+			Values: map[docvalues.EnumString]docvalues.Value{
+				docvalues.CreateEnumString("UUID"):      UuidField,
+				docvalues.CreateEnumString("PARTUUID"):  UuidField,
+				docvalues.CreateEnumString("LABEL"):     LabelField,
+				docvalues.CreateEnumString("PARTLABEL"): LabelField,
 			},
 		},
 	},
