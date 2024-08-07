@@ -2,38 +2,32 @@ package commondocumentation
 
 import docvalues "config-lsp/doc-values"
 
+var prefixMaxLength = uint32(30)
+
 var AffsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
 		"uid",
 		"Set the owner and group of the root of the filesystem (default: uid=gid=0, but with option uid or gid without specified value, the UID and GID of the current process are taken).",
-	): docvalues.NumberValue{Min: &zero},
+	): docvalues.UIDValue{
+		EnforceUsingExisting: true,
+	},
 	docvalues.CreateEnumStringWithDoc(
 		"gid",
 		"Set the owner and group of the root of the filesystem (default: uid=gid=0, but with option uid or gid without specified value, the UID and GID of the current process are taken).",
-	): docvalues.NumberValue{Min: &zero},
+	): docvalues.GIDValue{
+		EnforceUsingExisting: true,
+	},
 	docvalues.CreateEnumStringWithDoc(
 		"setuid",
 		"Set the owner of all files.",
-	): docvalues.NumberValue{Min: &zero},
+	): docvalues.StringValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"setgid",
 		"Set the group of all files.",
-	): docvalues.NumberValue{Min: &zero},
+	): docvalues.StringValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"mode",
 		"Set the mode of all files to value & 0777 disregarding the original permissions. Add search permission to directories that have read permission. The value is given in octal.",
-	): docvalues.StringValue{},
-	docvalues.CreateEnumStringWithDoc(
-		"protect",
-		"Do not allow any changes to the protection bits on the filesystem.",
-	): docvalues.StringValue{},
-	docvalues.CreateEnumStringWithDoc(
-		"usemp",
-		"Set UID and GID of the root of the filesystem to the UID and GID of the mount point upon the first sync or umount, and then clear this option. Strange...",
-	): docvalues.StringValue{},
-	docvalues.CreateEnumStringWithDoc(
-		"verbose",
-		"Print an informational message for each successful mount.",
 	): docvalues.StringValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"prefix",
@@ -42,7 +36,7 @@ var AffsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
 		"volume",
 		"Prefix (of length at most 30) used before '/' when following a symbolic link.",
-	): docvalues.StringValue{},
+	): docvalues.StringValue{MaxLength: &prefixMaxLength},
 	docvalues.CreateEnumStringWithDoc(
 		"reserved",
 		"(Default: 2.) Number of unused blocks at the start of the device.",
@@ -79,4 +73,19 @@ var AffsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 		"usrquota",
 		"These options are accepted but ignored. (However, quota utilities may react to such strings in /etc/fstab.)",
 	): docvalues.StringValue{},
+}
+
+var AffsDocumentationEnums = []docvalues.EnumString{
+	docvalues.CreateEnumStringWithDoc(
+		"protect",
+		"Do not allow any changes to the protection bits on the filesystem.",
+	),
+	docvalues.CreateEnumStringWithDoc(
+		"usemp",
+		"Set UID and GID of the root of the filesystem to the UID and GID of the mount point upon the first sync or umount, and then clear this option. Strange...",
+	),
+	docvalues.CreateEnumStringWithDoc(
+		"verbose",
+		"Print an informational message for each successful mount.",
+	),
 }
