@@ -3,7 +3,6 @@ package fstab
 import (
 	docvalues "config-lsp/doc-values"
 	fstabdocumentation "config-lsp/handlers/fstab/documentation"
-	"fmt"
 
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -25,8 +24,6 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 	cursor := params.Position.Character
 	targetField := entry.GetFieldAtPosition(cursor - 1)
 
-	println("cursor at", cursor, "target field", targetField)
-
 	switch targetField {
 	case FstabFieldSpec:
 		value, cursor := GetFieldSafely(entry.Fields.Spec, cursor)
@@ -43,9 +40,7 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 			cursor,
 		), nil
 	case FstabFieldFileSystemType:
-		println(fmt.Sprintf("file system type: %s", entry.Fields.FilesystemType))
 		value, cursor := GetFieldSafely(entry.Fields.FilesystemType, cursor)
-		println("CURSOR", cursor)
 
 		return fstabdocumentation.FileSystemTypeField.FetchCompletions(
 			value,
@@ -64,10 +59,12 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 
 		value, cursor := GetFieldSafely(entry.Fields.Options, cursor)
 
-		return optionsField.FetchCompletions(
+		completions := optionsField.FetchCompletions(
 			value,
 			cursor,
-		), nil
+		)
+
+		return completions, nil
 	case FstabFieldFreq:
 		value, cursor := GetFieldSafely(entry.Fields.Freq, cursor)
 

@@ -11,8 +11,6 @@ import (
 func TextDocumentDidOpen(context *glsp.Context, params *protocol.DidOpenTextDocumentParams) error {
 	readBytes, err := os.ReadFile(params.TextDocument.URI[len("file://"):])
 
-	println("opened i la language eta", params.TextDocument.LanguageID)
-
 	if err != nil {
 		return err
 	}

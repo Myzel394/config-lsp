@@ -246,15 +246,15 @@ var DefaultMountOptionsField = createMountOptionField([]docvalues.EnumString{}, 
 
 var MountOptionsMapField = map[string]docvalues.Value{
 	"adfs": createMountOptionField(
-		[]docvalues.EnumString{},
+		commondocumentation.AdfsDocumentationEnums,
 		commondocumentation.AdfsDocumentationAssignable,
 	),
 	"affs": createMountOptionField(
-		[]docvalues.EnumString{},
+		commondocumentation.AffsDocumentationEnums,
 		commondocumentation.AffsDocumentationAssignable,
 	),
 	"debugfs": createMountOptionField(
-		[]docvalues.EnumString{},
+		commondocumentation.DebugfsDocumentationEnums,
 		commondocumentation.DebugfsDocumentationAssignable,
 	),
 	"ext2": createMountOptionField(
