@@ -30,6 +30,17 @@ type EnumString struct {
 	Documentation string
 }
 
+func (v EnumString) ToCompletionItem() protocol.CompletionItem {
+	textFormat := protocol.InsertTextFormatPlainText
+	kind := protocol.CompletionItemKindEnum
+	return protocol.CompletionItem{
+		Label:            v.InsertText,
+		InsertTextFormat: &textFormat,
+		Kind:             &kind,
+		Documentation:    &v.Documentation,
+	}
+}
+
 func CreateEnumString(value string) EnumString {
 	return EnumString{
 		InsertText:      value,

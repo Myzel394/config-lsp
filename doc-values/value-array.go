@@ -122,8 +122,8 @@ func (v ArrayValue) FetchCompletions(line string, cursor uint32) []protocol.Comp
 	relativePosition, found := utils.FindPreviousCharacter(line, v.Separator, int(cursor-1))
 
 	if found {
-		line = line[uint32(relativePosition):]
-		cursor -= uint32(relativePosition)
+		line = line[uint32(relativePosition+1):]
+		cursor -= uint32(relativePosition + 1)
 	}
 
 	return v.SubValue.FetchCompletions(line, cursor)
