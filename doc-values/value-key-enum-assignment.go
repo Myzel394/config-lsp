@@ -111,13 +111,23 @@ func (v KeyEnumAssignmentValue) FetchEnumCompletions() []protocol.CompletionItem
 
 	for enumKey := range v.Values {
 		textFormat := protocol.InsertTextFormatPlainText
-		kind := protocol.CompletionItemKindEnum
+		kind := protocol.CompletionItemKindField
+		val := v.Values[enumKey]
+		description := val.GetTypeDescription()
+
+		var documentation string
+
+		if len(description) == 1 {
+			documentation = fmt.Sprintf("%s%s<%s> \n\n%s", enumKey.InsertText, v.Separator, description[0], enumKey.Documentation)
+		} else {
+			documentation = fmt.Sprintf("%s%s<value> \n\n%s", enumKey.InsertText, v.Separator, enumKey.Documentation)
+		}
 
 		completions = append(completions, protocol.CompletionItem{
 			Label:            enumKey.InsertText,
 			InsertTextFormat: &textFormat,
 			Kind:             &kind,
-			Documentation:    &enumKey.Documentation,
+			Documentation:    documentation,
 		})
 	}
 

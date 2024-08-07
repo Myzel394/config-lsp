@@ -29,7 +29,7 @@ func MergeKeyEnumAssignmentMaps(maps ...map[EnumString]Value) map[EnumString]Val
 
 	for _, m := range maps {
 		for key, value := range m {
-			if _, ok := existingEnums[key.InsertText]; !ok {
+			if _, ok := existingEnums[key.InsertText]; ok {
 				continue
 			}
 

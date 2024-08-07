@@ -159,6 +159,12 @@ func PositiveNumberValue() Value {
 	}
 }
 
+func MaskValue() Value {
+	min := 0
+	max := 777
+	return NumberValue{Min: &min, Max: &max}
+}
+
 func SingleEnumValue(value string) EnumValue {
 	return EnumValue{
 		EnforceValues: true,

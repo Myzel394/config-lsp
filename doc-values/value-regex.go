@@ -26,16 +26,15 @@ func (v RegexValue) GetTypeDescription() []string {
 }
 
 func (v RegexValue) CheckIsValid(value string) []*InvalidValue {
-	if value == "" {
+	if !v.Regex.MatchString(value) {
 		return []*InvalidValue{{
-			Err:   EmptyStringError{},
+			Err:   RegexInvalidError{Regex: v.Regex.String()},
 			Start: 0,
 			End:   uint32(len(value)),
-		},
-		}
+		}}
 	}
 
-	return nil
+	return []*InvalidValue{}
 }
 
 func (v RegexValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {

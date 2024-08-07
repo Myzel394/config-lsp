@@ -62,7 +62,7 @@ var powers = []int{1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192
 
 func (v PowerOfTwoValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	textFormat := protocol.InsertTextFormatPlainText
-	kind := protocol.CompletionItemKindEnum
+	kind := protocol.CompletionItemKindValue
 
 	return utils.Map(
 		powers,

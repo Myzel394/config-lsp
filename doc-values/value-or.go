@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/utils"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -49,6 +50,26 @@ func (v OrValue) CheckIsValid(value string) []*InvalidValue {
 	return errors
 }
 func (v OrValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+	// Check for special cases
+	if len(v.Values) == 2 {
+		switch v.Values[0].(type) {
+		case KeyEnumAssignmentValue:
+			if cursor > 0 {
+				// KeyEnumAssignment + other values
+				// If there is an separator, we only want to show
+				// the values of the KeyEnumAssignment
+				keyEnumValue := v.Values[0].(KeyEnumAssignmentValue)
+
+				println("line eta cursor", line, cursor)
+				_, found := utils.FindPreviousCharacter(line, keyEnumValue.Separator, int(cursor-1))
+
+				if found {
+					return keyEnumValue.FetchCompletions(line, cursor)
+				}
+			}
+		}
+	}
+
 	completions := make([]protocol.CompletionItem, 0)
 
 	for _, subValue := range v.Values {

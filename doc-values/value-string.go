@@ -10,7 +10,15 @@ func (e EmptyStringError) Error() string {
 	return "This setting may not be empty"
 }
 
-type StringValue struct{}
+type StringTooLongError struct{}
+
+func (e StringTooLongError) Error() string {
+	return "This setting is too long"
+}
+
+type StringValue struct {
+	MaxLength *uint32
+}
 
 func (v StringValue) GetTypeDescription() []string {
 	return []string{"String"}
@@ -24,6 +32,14 @@ func (v StringValue) CheckIsValid(value string) []*InvalidValue {
 			End:   uint32(len(value)),
 		},
 		}
+	}
+
+	if v.MaxLength != nil && uint32(len(value)) > *v.MaxLength {
+		return []*InvalidValue{{
+			Err:   StringTooLongError{},
+			Start: 0,
+			End:   uint32(len(value)),
+		}}
 	}
 
 	return nil
