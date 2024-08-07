@@ -269,4 +269,20 @@ var MountOptionsMapField = map[string]docvalues.Value{
 		append(append(commondocumentation.Ext2DocumentationEnums, commondocumentation.Ext3DocumentationEnums...), commondocumentation.Ext4DocumentationEnums...),
 		docvalues.MergeKeyEnumAssignmentMaps(commondocumentation.Ext2DocumentationAssignable, docvalues.MergeKeyEnumAssignmentMaps(commondocumentation.Ext3DocumentationAssignable, commondocumentation.Ext4DocumentationAssignable)),
 	),
+	"devpts": createMountOptionField(
+		commondocumentation.DevptsDocumentationEnums,
+		commondocumentation.DevptsDocumentationAssignable,
+	),
+	"fat": createMountOptionField(
+		commondocumentation.FatDocumentationEnums,
+		commondocumentation.FatDocumentationAssignable,
+	),
+	"hfs": createMountOptionField(
+		commondocumentation.HfsDocumentationEnums,
+		commondocumentation.HfsDocumentationAssignable,
+	),
+	"hpfs": createMountOptionField(
+		commondocumentation.HpfsDocumentationEnums,
+		commondocumentation.HpfsDocumentationAssignable,
+	),
 }
