@@ -9,7 +9,6 @@ var FatDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	): docvalues.EnumValue{
 		EnforceValues: true,
 		Values: []docvalues.EnumString{
-			// TODO: Check for other values too
 			docvalues.CreateEnumString("512"),
 			docvalues.CreateEnumString("1024"),
 			docvalues.CreateEnumString("2048"),
@@ -30,20 +29,19 @@ var FatDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
 		"umask",
 		"Set the umask (the bitmask of the permissions that are not present). The default is the umask of the current process. The value is given in octal.",
-	): docvalues.StringValue{},
+	): docvalues.UmaskValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"dmask",
 		"Set the umask applied to directories only. The default is the umask of the current process. The value is given in octal.",
-		// TODO: Add mask
-	): docvalues.StringValue{},
+	): docvalues.UmaskValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"fmask",
 		"Set the umask applied to regular files only. The default is the umask of the current process. The value is given in octal.",
-	): docvalues.StringValue{},
+	): docvalues.UmaskValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"allow_utime",
 		"This option controls the permission check of mtime/atime.",
-	): docvalues.StringValue{},
+	): docvalues.UmaskValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"check",
 		"Three different levels of pickiness can be chosen: relaxed, normal, strict.",
@@ -58,34 +56,95 @@ var FatDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
 		"codepage",
 		"Sets the codepage for converting to shortname characters on FAT and VFAT filesystems. By default, codepage 437 is used.",
-		// TODO: Check if NumberValue fits here 
+	): docvalues.NumberValue{Min: &zero},
+	docvalues.CreateEnumStringWithDoc(
+		// TODO: Show warning in analyzevalue when used
+		"conv",
+		"This option is obsolete and may fail or be ignored.",
 	): docvalues.StringValue{},
+	docvalues.CreateEnumStringWithDoc(
+		"cvf_format",
+		"Forces the driver to use the CVF (Compressed Volume File) module cvf_module instead of auto-detection. If the kernel supports kmod, the cvf_format=xxx option also controls on-demand CVF module loading. This option is obsolete.",
+	): docvalues.StringValue{},
+	docvalues.CreateEnumStringWithDoc(
+		"cvf_option",
+		"Option passed to the CVF module. This option is obsolete.",
+	): docvalues.StringValue{},
+	docvalues.CreateEnumStringWithDoc(
+		"errors",
+		"Specify FAT behavior on critical errors: panic, continue without doing anything, or remount the partition in read-only mode (default behavior).",
+	): docvalues.EnumValue{
+		EnforceValues: true,
+		Values: []docvalues.EnumString{
+			docvalues.CreateEnumStringWithDoc(
+				"panic",
+				"Causes the kernel to panic on errors.",
+			),
+			docvalues.CreateEnumStringWithDoc(
+				"continue",
+				"Continues without doing anything.",
+			),
+			docvalues.CreateEnumStringWithDoc(
+				"remount",
+				"Remounts the partition in read-only mode.",
+			),
+		},
+	},
+	docvalues.CreateEnumStringWithDoc(
+		"fat",
+		"Specify a 12, 16 or 32 bit fat. This overrides the automatic FAT type detection routine. Use with caution!",
+	): docvalues.EnumValue{
+		EnforceValues: true,
+		Values: []docvalues.EnumString{
+			docvalues.CreateEnumString("12"),
+			docvalues.CreateEnumString("16"),
+			docvalues.CreateEnumString("32"),
+		},
+	},
 	docvalues.CreateEnumStringWithDoc(
 		"iocharset",
 		"Character set to use for converting between 8 bit characters and 16 bit Unicode characters. The default is iso8859-1. Long filenames are stored on disk in Unicode format.",
 	// TODO: Use enum for charsets
 	): docvalues.StringValue{},
 	docvalues.CreateEnumStringWithDoc(
+		"nfs",
+		`Enable this only if you want to export the FAT filesystem over NFS.
+	To maintain backward compatibility, -o nfs is also accepted, defaulting to stale_rw`,
+	): docvalues.EnumValue{
+		EnforceValues: true,
+		Values: []docvalues.EnumString{
+			docvalues.CreateEnumStringWithDoc(
+				"stale_rw",
+				"This option maintains an index (cache) of directory inodes which is used by the nfs-related code to improve look-ups. Full file operations (read/write) over NFS are supported but with cache eviction at NFS server, this could result in spurious ESTALE errors.",
+			),
+			docvalues.CreateEnumStringWithDoc(
+				"nostale_ro",
+				"This option bases the inode number and file handle on the on-disk location of a file in the FAT directory entry. This ensures that ESTALE will not be returned after a file is evicted from the inode cache. However, it means that operations such as rename, create and unlink could cause file handles that previously pointed at one file to point at a different file, potentially causing data corruption. For this reason, this option also mounts the filesystem readonly.",
+			),
+		},
+	},
+	docvalues.CreateEnumStringWithDoc(
+		"tz",
+		"This option disables the conversion of timestamps between local time (as used by Windows on FAT) and UTC (which Linux uses internally). This is particularly useful when mounting devices (like digital cameras) that are set to UTC in order to avoid the pitfalls of local time.",
+		// TODO: Add enum for timezones
+	): docvalues.StringValue{},
+	docvalues.CreateEnumStringWithDoc(
 		"time_offset",
 		"Set offset for conversion of timestamps from local time used by FAT to UTC. I.e., minutes will be subtracted from each timestamp to convert it to UTC used internally by Linux. This is useful when the time zone set in the kernel via settimeofday(2) is not the time zone used by the filesystem. Note that this option still does not provide correct time stamps in all cases in presence of DST - time stamps in a different DST setting will be off by one hour.",
-		// TODO: Probably NumberValeu
 	): docvalues.NumberValue{},
+	docvalues.CreateEnumStringWithDoc(
+		"dotsOK",
+		"Various misguided attempts to force Unix or DOS conventions onto a FAT filesystem.",
+	): docvalues.EnumValue{
+		EnforceValues: true,
+		Values: []docvalues.EnumString{
+			docvalues.CreateEnumString("yes"),
+			docvalues.CreateEnumString("no"),
+		},
+	},
 }
 
 var FatDocumentationEnums = []docvalues.EnumString{
-	docvalues.CreateEnumStringWithDoc(
-		// TODO: Show warning in analyzevalue when used
-		"conv",
-		"This option is obsolete and may fail or be ignored.",
-	),
-	docvalues.CreateEnumStringWithDoc(
-		"cvf_format",
-		"Forces the driver to use the CVF (Compressed Volume File) module cvf_module instead of auto-detection. If the kernel supports kmod, the cvf_format=xxx option also controls on-demand CVF module loading. This option is obsolete.",
-	),
-	docvalues.CreateEnumStringWithDoc(
-		"cvf_option",
-		"Option passed to the CVF module. This option is obsolete.",
-	),
 	docvalues.CreateEnumStringWithDoc(
 		"debug",
 		"Turn on the debug flag. A version string and a list of filesystem parameters will be printed (these data are also printed if the parameters appear to be inconsistent).",
@@ -97,19 +156,6 @@ var FatDocumentationEnums = []docvalues.EnumString{
 	docvalues.CreateEnumStringWithDoc(
 		"dos1xfloppy",
 		"If set, use a fallback default BIOS Parameter Block configuration, determined by backing device size. These static parameters match defaults assumed by DOS 1.x for 160 kiB, 180 kiB, 320 kiB, and 360 kiB floppies and floppy images.",
-	),
-	// TODO: Should be in map
-	docvalues.CreateEnumStringWithDoc(
-		"errors",
-		"Specify FAT behavior on critical errors: panic, continue without doing anything, or remount the partition in read-only mode (default behavior).",
-	),
-	docvalues.CreateEnumStringWithDoc(
-		"fat",
-		"Specify a 12, 16 or 32 bit fat. This overrides the automatic FAT type detection routine. Use with caution!",
-	),
-	docvalues.CreateEnumStringWithDoc(
-		"nfs",
-		"Enable this only if you want to export the FAT filesystem over NFS.",
 	),
 	docvalues.CreateEnumStringWithDoc(
 		"quiet",
@@ -141,10 +187,6 @@ var FatDocumentationEnums = []docvalues.EnumString{
 	),
 	docvalues.CreateEnumStringWithDoc(
 		"nodots",
-		"Various misguided attempts to force Unix or DOS conventions onto a FAT filesystem.",
-	),
-	docvalues.CreateEnumStringWithDoc(
-		"dotsOK",
 		"Various misguided attempts to force Unix or DOS conventions onto a FAT filesystem.",
 	),
 }

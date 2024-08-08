@@ -26,15 +26,15 @@ var HfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
 		"dir_umask",
 		"Set the umask used for all directories. Defaults to the umask of the current process.",
-	): docvalues.StringValue{},
+	): docvalues.UmaskValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"file_umask",
 		"Set the umask used for all regular files. Defaults to the umask of the current process.",
-	): docvalues.StringValue{},
+	): docvalues.UmaskValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"umask",
 		"Set the umask used for all files and directories. Defaults to the umask of the current process.",
-	): docvalues.StringValue{},
+	): docvalues.UmaskValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"session",
 		"Select the CDROM session to mount. Defaults to leaving that decision to the CDROM driver. This option will fail with anything but a CDROM as underlying device.",
@@ -42,8 +42,7 @@ var HfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
 		"part",
 		"Select partition number n from the device. Only makes sense for CDROMs. Defaults to not parsing the partition table at all.",
-		// TODO: Probably NumberValue
-	): docvalues.StringValue{},
+	): docvalues.NumberValue{Min: &zero},
 }
 
 var HfsDocumentationEnums = []docvalues.EnumString{

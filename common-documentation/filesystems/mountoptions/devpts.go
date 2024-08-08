@@ -18,11 +18,11 @@ var DevptsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
 		"mode",
 		"Set the mode of newly created pseudo terminals to the specified value. The default is 0600. A value of mode=620 and gid=5 makes \"mesg y\" the default on newly created pseudo terminals.",
-	): docvalues.StringValue{},
+	): docvalues.MaskModeValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"ptmxmode",
 		"Set the mode for the new ptmx device node in the devpts filesystem. With the support for multiple instances of devpts (see newinstance option above), each instance has a private ptmx node in the root of the devpts filesystem (typically /dev/pts/ptmx). For compatibility with older versions of the kernel, the default mode of the new ptmx node is 0000. ptmxmode=value specifies a more useful mode for the ptmx node and is highly recommended when the newinstance option is specified. This option is only implemented in Linux kernel versions starting with 2.6.29. Further, this option is valid only if CONFIG_DEVPTS_MULTIPLE_INSTANCES is enabled in the kernel configuration.",
-	): docvalues.StringValue{},
+	): docvalues.MaskModeValue{},
 }
 
 var DevptsDocumentationEnums = []docvalues.EnumString{

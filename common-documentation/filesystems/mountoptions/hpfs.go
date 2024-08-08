@@ -18,19 +18,25 @@ var HpfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
 		"umask",
 		"Set the umask (the bitmask of the permissions that are not present). The default is the umask of the current process. The value is given in octal.",
+	): docvalues.UmaskValue{},
+	docvalues.CreateEnumStringWithDoc(
+		"case",
+		"Convert all files names to lower case, or leave them. (Default: case=lower.)",
+	): docvalues.EnumValue{
+		EnforceValues: true,
+		Values: []docvalues.EnumString{
+			docvalues.CreateEnumString("lower"),
+			docvalues.CreateEnumString("asis"),
+		},
+	},
+	// Todo: Show error in analyzer
+	docvalues.CreateEnumStringWithDoc(
+		"conv",
+		"This option is obsolete and may fail or being ignored.",
 	): docvalues.StringValue{},
 }
 
 var HpfsDocumentationEnums = []docvalues.EnumString{
-	// Move up to map
-	docvalues.CreateEnumStringWithDoc(
-		"case",
-		"Convert all files names to lower case, or leave them. (Default: case=lower.)",
-	),
-	docvalues.CreateEnumStringWithDoc(
-		"conv",
-		"This option is obsolete and may fail or being ignored.",
-	),
 	docvalues.CreateEnumStringWithDoc(
 		"nocheck",
 		"Do not abort mounting when certain consistency checks fail.",
