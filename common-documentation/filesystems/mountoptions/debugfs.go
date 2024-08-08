@@ -18,7 +18,7 @@ var DebugfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
 		"mode",
 		"Sets the mode of the mountpoint.",
-	): docvalues.StringValue{},
+	): docvalues.MaskModeValue{},
 }
 
 var DebugfsDocumentationEnums = []docvalues.EnumString{}
