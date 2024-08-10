@@ -3,6 +3,7 @@ package fstab
 import (
 	docvalues "config-lsp/doc-values"
 	fstabdocumentation "config-lsp/handlers/fstab/documentation"
+	"fmt"
 
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -22,7 +23,7 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 	}
 
 	cursor := params.Position.Character
-	targetField := entry.GetFieldAtPosition(cursor - 1)
+	targetField := entry.GetFieldAtPosition(cursor)
 
 	switch targetField {
 	case FstabFieldSpec:

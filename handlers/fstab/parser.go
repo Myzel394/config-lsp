@@ -28,7 +28,7 @@ type Field struct {
 }
 
 func (f Field) String() string {
-	return f.Value
+	return fmt.Sprintf("%v [%v-%v]", f.Value, f.Start, f.End)
 }
 
 func (f *Field) CreateRange(fieldLine uint32) protocol.Range {
@@ -65,7 +65,15 @@ type FstabFields struct {
 }
 
 func (f FstabFields) String() string {
-	return fmt.Sprintf("Spec: %s, MountPoint: %s, FilesystemType: %s, Options: %s, Freq: %s, Pass: %s", f.Spec, f.MountPoint, f.FilesystemType, f.Options, f.Freq, f.Pass)
+	return fmt.Sprintf(
+		"Spec: %s, MountPoint: %s, FilesystemType: %s, Options: %s, Freq: %s, Pass: %s",
+		f.Spec,
+		f.MountPoint,
+		f.FilesystemType,
+		f.Options,
+		f.Freq,
+		f.Pass,
+	)
 }
 
 type FstabEntry struct {
@@ -206,7 +214,7 @@ func (p *FstabParser) AddLine(line string, lineNumber int) error {
 		pass = &Field{
 			Value: fields[5],
 			Start: start,
-			End:   start + uint32(len(value)) - 1,
+			End:   start + uint32(len(value)),
 		}
 		fallthrough
 	case 5:
@@ -216,7 +224,7 @@ func (p *FstabParser) AddLine(line string, lineNumber int) error {
 		freq = &Field{
 			Value: value,
 			Start: start,
-			End:   start + uint32(len(value)) - 1,
+			End:   start + uint32(len(value)),
 		}
 		fallthrough
 	case 4:
@@ -226,7 +234,7 @@ func (p *FstabParser) AddLine(line string, lineNumber int) error {
 		options = &Field{
 			Value: value,
 			Start: start,
-			End:   start + uint32(len(value)) - 1,
+			End:   start + uint32(len(value)),
 		}
 		fallthrough
 	case 3:
@@ -236,7 +244,7 @@ func (p *FstabParser) AddLine(line string, lineNumber int) error {
 		filesystemType = &Field{
 			Value: value,
 			Start: start,
-			End:   start + uint32(len(value)) - 1,
+			End:   start + uint32(len(value)),
 		}
 		fallthrough
 	case 2:
@@ -246,7 +254,7 @@ func (p *FstabParser) AddLine(line string, lineNumber int) error {
 		mountPoint = &Field{
 			Value: value,
 			Start: start,
-			End:   start + uint32(len(value)) - 1,
+			End:   start + uint32(len(value)),
 		}
 		fallthrough
 	case 1:
@@ -256,7 +264,7 @@ func (p *FstabParser) AddLine(line string, lineNumber int) error {
 		spec = &Field{
 			Value: value,
 			Start: start,
-			End:   start + uint32(len(value)) - 1,
+			End:   start + uint32(len(value)),
 		}
 	}
 

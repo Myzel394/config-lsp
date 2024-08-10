@@ -60,7 +60,6 @@ func (v OrValue) FetchCompletions(line string, cursor uint32) []protocol.Complet
 				// the values of the KeyEnumAssignment
 				keyEnumValue := v.Values[0].(KeyEnumAssignmentValue)
 
-				println("line eta cursor", line, cursor)
 				_, found := utils.FindPreviousCharacter(line, keyEnumValue.Separator, int(cursor-1))
 
 				if found {

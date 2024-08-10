@@ -1,7 +1,7 @@
 package fstabdocumentation
 
 import (
-	commondocumentation "config-lsp/common-documentation/filesystems/mountoptions"
+	commondocumentation "config-lsp/common-documentation"
 	docvalues "config-lsp/doc-values"
 	"strings"
 )
