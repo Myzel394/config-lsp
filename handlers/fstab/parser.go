@@ -211,6 +211,11 @@ func (p *FstabParser) AddLine(line string, lineNumber int) error {
 	case 6:
 		value := fields[5]
 		start := uint32(strings.Index(line, value))
+
+		if start == 0 {
+			start = uint32(len(line))
+		}
+
 		pass = &Field{
 			Value: fields[5],
 			Start: start,
@@ -220,6 +225,10 @@ func (p *FstabParser) AddLine(line string, lineNumber int) error {
 	case 5:
 		value := fields[4]
 		start := uint32(strings.Index(line, value))
+
+		if start == 0 {
+			start = uint32(len(line))
+		}
 
 		freq = &Field{
 			Value: value,
@@ -231,6 +240,10 @@ func (p *FstabParser) AddLine(line string, lineNumber int) error {
 		value := fields[3]
 		start := uint32(strings.Index(line, value))
 
+		if start == 0 {
+			start = uint32(len(line))
+		}
+
 		options = &Field{
 			Value: value,
 			Start: start,
@@ -241,6 +254,10 @@ func (p *FstabParser) AddLine(line string, lineNumber int) error {
 		value := fields[2]
 		start := uint32(strings.Index(line, value))
 
+		if start == 0 {
+			start = uint32(len(line))
+		}
+
 		filesystemType = &Field{
 			Value: value,
 			Start: start,
@@ -250,6 +267,10 @@ func (p *FstabParser) AddLine(line string, lineNumber int) error {
 	case 2:
 		value := fields[1]
 		start := uint32(strings.Index(line, value))
+
+		if start == 0 {
+			start = uint32(len(line))
+		}
 
 		mountPoint = &Field{
 			Value: value,
