@@ -61,6 +61,21 @@ func FilterWhere[T any](values []T, f func(T) bool) []T {
 	return result
 }
 
+func FilterMap[T comparable, O any](
+	values map[T]O,
+	f func(T, O) bool,
+) map[T]O {
+	result := make(map[T]O)
+
+	for key, value := range values {
+		if f(key, value) {
+			result[key] = value
+		}
+	}
+
+	return result
+}
+
 func FilterMapWhere[T comparable, O any](values map[T]O, f func(T, O) bool) map[T]O {
 	result := make(map[T]O)
 

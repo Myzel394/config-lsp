@@ -54,11 +54,11 @@ var Iso9660DocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
 		"session",
 		"Select number of session on a multisession CD.",
-	): docvalues.StringValue{},
+	): docvalues.NumberValue{Min: &zero},
 	docvalues.CreateEnumStringWithDoc(
 		"sbsector",
 		"Session begins from sector xxx.",
-	): docvalues.StringValue{},
+	): docvalues.NumberValue{Min: &zero},
 	docvalues.CreateEnumStringWithDoc(
 		"iocharset",
 		"Character set to use for converting 16 bit Unicode characters on CD to 8 bit characters. The default is iso8859-1.",

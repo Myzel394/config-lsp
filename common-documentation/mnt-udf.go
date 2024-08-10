@@ -6,11 +6,15 @@ var UdfDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
 		"uid",
 		"Make all files in the filesystem belong to the given user. uid=forget can be specified independently of (or usually in addition to) uid=<user> and results in UDF not storing uids to the media. In fact the recorded uid is the 32-bit overflow uid -1 as defined by the UDF standard. The value is given as either <user> which is a valid user name or the corresponding decimal user id, or the special string 'forget'.",
-	): docvalues.StringValue{},
+	): docvalues.UIDValue{
+		EnforceUsingExisting: true,
+	},
 	docvalues.CreateEnumStringWithDoc(
 		"gid",
 		"Make all files in the filesystem belong to the given group. gid=forget can be specified independently of (or usually in addition to) gid=<group> and results in UDF not storing gids to the media. In fact the recorded gid is the 32-bit overflow gid -1 as defined by the UDF standard. The value is given as either <group> which is a valid group name or the corresponding decimal group id, or the special string 'forget'.",
-	): docvalues.StringValue{},
+	): docvalues.GIDValue{
+		EnforceUsingExisting: true,
+	},
 	docvalues.CreateEnumStringWithDoc(
 		"umask",
 		"Mask out the given permissions from all inodes read from the filesystem. The value is given in octal.",
@@ -41,15 +45,11 @@ var UdfDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
 		"anchor",
 		"Override standard anchor location. (default= 256)",
-	): docvalues.StringValue{},
+	): docvalues.NumberValue{Min: &zero},
 	docvalues.CreateEnumStringWithDoc(
 		"lastblock",
 		"Set the last block of the filesystem.",
-	): docvalues.StringValue{},
-	docvalues.CreateEnumStringWithDoc(
-		"conv",
-		"This option is obsolete and may fail or being ignored.",
-	): docvalues.StringValue{},
+	): docvalues.NumberValue{Min: &zero},
 }
 
 var UdfDocumentationEnums = []docvalues.EnumString{
@@ -88,17 +88,5 @@ var UdfDocumentationEnums = []docvalues.EnumString{
 	docvalues.CreateEnumStringWithDoc(
 		"novrs",
 		"Ignore the Volume Recognition Sequence and attempt to mount anyway.",
-	),
-	docvalues.CreateEnumStringWithDoc(
-		"session",
-		"Select the session number for multi-session recorded optical media. (default= last session)",
-	),
-	docvalues.CreateEnumStringWithDoc(
-		"anchor",
-		"Override standard anchor location. (default= 256)",
-	),
-	docvalues.CreateEnumStringWithDoc(
-		"lastblock",
-		"Set the last block of the filesystem.",
 	),
 }

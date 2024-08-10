@@ -313,6 +313,10 @@ var MountOptionsMapField = map[string]docvalues.Value{
 		commondocumentation.ReiserfsDocumentationEnums,
 		commondocumentation.ReiserfsDocumentationAssignable,
 	),
+	"usbfs": createMountOptionField(
+		commondocumentation.UsbfsDocumentationEnums,
+		commondocumentation.UsbfsDocumentationAssignable,
+	),
 	"ubifs": createMountOptionField(
 		commondocumentation.UbifsDocumentationEnums,
 		commondocumentation.UbifsDocumentationAssignable,

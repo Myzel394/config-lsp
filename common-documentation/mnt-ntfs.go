@@ -6,14 +6,13 @@ var NtfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
 		"iocharset",
 		"Character set to use when returning file names. Unlike VFAT, NTFS suppresses names that contain nonconvertible characters. Deprecated.",
-	): docvalues.StringValue{},
+	): docvalues.EnumValue{
+		EnforceValues: true,
+		Values:        AvailableCharsets,
+	},
 	docvalues.CreateEnumStringWithDoc(
 		"nls",
 		"New name for the option earlier called iocharset.",
-	): docvalues.StringValue{},
-	docvalues.CreateEnumStringWithDoc(
-		"utf8",
-		"Use UTF-8 for converting file names.",
 	): docvalues.StringValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"uni_xlate",
@@ -54,4 +53,9 @@ var NtfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	): docvalues.UmaskValue{},
 }
 
-var NtfsDocumentationEnums = []docvalues.EnumString{}
+var NtfsDocumentationEnums = []docvalues.EnumString{
+	docvalues.CreateEnumStringWithDoc(
+		"utf8",
+		"Use UTF-8 for converting file names.",
+	),
+}

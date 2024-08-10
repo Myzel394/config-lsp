@@ -9,16 +9,46 @@ var UfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	): docvalues.EnumValue{
 		EnforceValues: true,
 		Values: []docvalues.EnumString{
-			docvalues.CreateEnumString("old"),
-			docvalues.CreateEnumString("44bsd"),
-			docvalues.CreateEnumString("ufs2"),
-			docvalues.CreateEnumString("5xbsd"),
-			docvalues.CreateEnumString("sun"),
-			docvalues.CreateEnumString("sunx86"),
-			docvalues.CreateEnumString("hp"),
-			docvalues.CreateEnumString("nextstep"),
-			docvalues.CreateEnumString("nextstep-cd"),
-			docvalues.CreateEnumString("openstep"),
+			docvalues.CreateEnumStringWithDoc(
+				"old",
+				"Old format of ufs, this is the default, read only. (Don’t forget to give the -r option.)",
+			),
+			docvalues.CreateEnumStringWithDoc(
+				"44bsd",
+				"For filesystems created by a BSD-like system (NetBSD, FreeBSD, OpenBSD).",
+			),
+			docvalues.CreateEnumStringWithDoc(
+				"ufs2",
+				"For filesystems created by a BSD-like system (NetBSD, FreeBSD, OpenBSD).",
+			),
+			docvalues.CreateEnumStringWithDoc(
+				"5xbsd",
+				"Synonym for ufs2.",
+			),
+			docvalues.CreateEnumStringWithDoc(
+				"sun",
+				"For filesystems created by SunOS or Solaris on Sparc.",
+			),
+			docvalues.CreateEnumStringWithDoc(
+				"sunx86",
+				"For filesystems created by Solaris on x86.",
+			),
+			docvalues.CreateEnumStringWithDoc(
+				"hp",
+				"For filesystems created by HP-UX, read-only.",
+			),
+			docvalues.CreateEnumStringWithDoc(
+				"nextstep",
+				"For filesystems created by NeXTStep (on NeXT station) (currently read only).",
+			),
+			docvalues.CreateEnumStringWithDoc(
+				"nextstep-cd",
+				"For NextStep CDROMs (block_size == 2048), read-only.",
+			),
+			docvalues.CreateEnumStringWithDoc(
+				"openstep",
+				"For filesystems created by OpenStep (currently read only). The same filesystem type is also used by macOS.",
+			),
 		},
 	},
 	docvalues.CreateEnumStringWithDoc(
@@ -27,10 +57,22 @@ var UfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	): docvalues.EnumValue{
 		EnforceValues: true,
 		Values: []docvalues.EnumString{
-			docvalues.CreateEnumString("panic"),
-			docvalues.CreateEnumString("lock"),
-			docvalues.CreateEnumString("umount"),
-			docvalues.CreateEnumString("repair"),
+			docvalues.CreateEnumStringWithDoc(
+				"panic",
+				"If an error is encountered, cause a kernel panic.",
+			),
+			docvalues.CreateEnumStringWithDoc(
+				"lock",
+				"This mount option doesn’t do anything at present; when an error is encountered only a console message is printed.",
+			),
+			docvalues.CreateEnumStringWithDoc(
+				"umount",
+				"This mount option doesn’t do anything at present; when an error is encountered only a console message is printed.",
+			),
+			docvalues.CreateEnumStringWithDoc(
+				"repair",
+				"This mount option doesn’t do anything at present; when an error is encountered only a console message is printed.",
+			),
 		},
 	},
 }
