@@ -77,3 +77,16 @@ func (v OrValue) FetchCompletions(line string, cursor uint32) []protocol.Complet
 
 	return completions
 }
+
+func (v OrValue) FetchHoverInfo(line string, cursor uint32) []string {
+	for _, subValue := range v.Values {
+		valueErrors := subValue.CheckIsValid(line)
+
+		if len(valueErrors) == 0 {
+			// Found
+			return subValue.FetchHoverInfo(line, cursor)
+		}
+	}
+
+	return []string{}
+}

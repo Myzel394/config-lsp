@@ -21,7 +21,7 @@ type CustomValue struct {
 }
 
 func (v CustomValue) GetTypeDescription() []string {
-	return []string{"Custom"}
+	return v.FetchValue(EmptyValueContextInstance).GetTypeDescription()
 }
 
 func (v CustomValue) CheckIsValid(value string) []*InvalidValue {
@@ -30,4 +30,8 @@ func (v CustomValue) CheckIsValid(value string) []*InvalidValue {
 
 func (v CustomValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	return v.FetchValue(EmptyValueContextInstance).FetchCompletions(line, cursor)
+}
+
+func (v CustomValue) FetchHoverInfo(line string, cursor uint32) []string {
+	return v.FetchValue(EmptyValueContextInstance).FetchHoverInfo(line, cursor)
 }

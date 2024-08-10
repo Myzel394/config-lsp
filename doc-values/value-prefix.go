@@ -3,6 +3,8 @@ package docvalues
 import (
 	"config-lsp/utils"
 	"fmt"
+	"strings"
+
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
@@ -48,4 +50,18 @@ func (v PrefixWithMeaningValue) FetchCompletions(line string, cursor uint32) []p
 	})
 
 	return append(prefixCompletions, v.SubValue.FetchCompletions(line, cursor)...)
+}
+
+func (v PrefixWithMeaningValue) FetchHoverInfo(line string, cursor uint32) []string {
+	for _, prefix := range v.Prefixes {
+		if strings.HasPrefix(line, prefix.Prefix) {
+			return append([]string{
+				fmt.Sprintf("Prefix: _%s_ -> %s", prefix.Prefix, prefix.Meaning),
+			},
+				v.SubValue.FetchHoverInfo(line[1:], cursor)...,
+			)
+		}
+	}
+
+	return v.SubValue.FetchHoverInfo(line[1:], cursor)
 }

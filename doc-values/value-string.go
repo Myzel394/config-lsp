@@ -48,3 +48,7 @@ func (v StringValue) CheckIsValid(value string) []*InvalidValue {
 func (v StringValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	return []protocol.CompletionItem{}
 }
+
+func (v StringValue) FetchHoverInfo(line string, cursor uint32) []string {
+	return []string{}
+}

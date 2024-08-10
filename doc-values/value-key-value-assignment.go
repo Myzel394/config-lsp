@@ -120,3 +120,49 @@ func (v KeyValueAssignmentValue) FetchCompletions(line string, cursor uint32) []
 		return v.Key.FetchCompletions(line, cursor)
 	}
 }
+
+func (v KeyValueAssignmentValue) getValueAtCursor(line string, cursor uint32) (string, *selectedValue, uint32) {
+	relativePosition, found := utils.FindPreviousCharacter(line, v.Separator, int(cursor))
+
+	if found {
+		// Value found
+		selected := valueSelected
+		return line[:uint32(relativePosition)], &selected, cursor - uint32(relativePosition)
+	}
+
+	selected := keySelected
+
+	// Key, let's check for the separator
+	relativePosition, found = utils.FindNextCharacter(line, v.Separator, int(cursor))
+
+	if found {
+		return line[:uint32(relativePosition)], &selected, cursor
+	}
+
+	// No separator, so we can just return the whole line
+	return line, &selected, cursor
+}
+
+func (v KeyValueAssignmentValue) FetchHoverInfo(line string, cursor uint32) []string {
+	if len(v.CheckIsValid(line)) != 0 {
+		return []string{}
+	}
+
+	value, selected, cursor := v.getValueAtCursor(line, cursor)
+
+	if selected == nil {
+		return []string{}
+	}
+
+	if *selected == keySelected {
+		// Get key documentation
+		return v.Key.FetchHoverInfo(value, cursor)
+	} else if *selected == valueSelected {
+		// Get for value documentation
+		key := strings.SplitN(line, v.Separator, 2)[0]
+
+		return v.getValue(key).FetchHoverInfo(value, cursor)
+	}
+
+	return []string{}
+}

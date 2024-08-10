@@ -110,3 +110,7 @@ func (v UmaskValue) FetchCompletions(line string, cursor uint32) []protocol.Comp
 		},
 	}
 }
+
+func (v UmaskValue) FetchHoverInfo(line string, cursor uint32) []string {
+	return []string{}
+}

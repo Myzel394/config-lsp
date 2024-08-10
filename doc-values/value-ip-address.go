@@ -2,6 +2,7 @@ package docvalues
 
 import (
 	"config-lsp/utils"
+	"fmt"
 	net "net/netip"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -161,4 +162,48 @@ func (v IPAddressValue) FetchCompletions(line string, cursor uint32) []protocol.
 	}
 
 	return []protocol.CompletionItem{}
+}
+
+func (v IPAddressValue) FetchHoverInfo(line string, cursor uint32) []string {
+	if v.AllowRange {
+		ip, err := net.ParsePrefix(line)
+
+		if err != nil {
+			return []string{}
+		}
+
+		if ip.Addr().IsPrivate() {
+			return []string{
+				fmt.Sprintf("%s (Private IP Address)", ip.String()),
+			}
+		} else if ip.Addr().IsLoopback() {
+			return []string{
+				fmt.Sprintf("%s (Loopback IP Address)", ip.String()),
+			}
+		} else {
+			return []string{
+				fmt.Sprintf("%s (Public IP Address)", ip.String()),
+			}
+		}
+	} else {
+		ip, err := net.ParseAddr(line)
+
+		if err != nil {
+			return []string{}
+		}
+
+		if ip.IsPrivate() {
+			return []string{
+				fmt.Sprintf("%s (Private IP Address)", ip.String()),
+			}
+		} else if ip.IsLoopback() {
+			return []string{
+				fmt.Sprintf("%s (Loopback IP Address)", ip.String()),
+			}
+		} else {
+			return []string{
+				fmt.Sprintf("%s (Public IP Address)", ip.String()),
+			}
+		}
+	}
 }

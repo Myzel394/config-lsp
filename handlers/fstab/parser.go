@@ -12,8 +12,9 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-var ignoreLinePattern = regexp.MustCompile(`^\s*(#|$)`)
-var whitespacePattern = regexp.MustCompile(`\s+`)
+var commentPattern = regexp.MustCompile(`^\s*#`)
+var ignoreLinePattern = regexp.MustCompile(`^\s*$`)
+var whitespacePattern = regexp.MustCompile(`\S+`)
 
 type MalformedLineError struct{}
 
@@ -76,12 +77,12 @@ func (f FstabFields) String() string {
 	)
 }
 
-type FstabEntry struct {
+type FstabLine struct {
 	Line   uint32
 	Fields FstabFields
 }
 
-func (e *FstabEntry) CheckIsValid() []protocol.Diagnostic {
+func (e *FstabLine) CheckIsValid() []protocol.Diagnostic {
 	diagnostics := make([]protocol.Diagnostic, 0)
 
 	if e.Fields.Spec != nil {
@@ -165,7 +166,7 @@ func (e *FstabEntry) CheckIsValid() []protocol.Diagnostic {
 	return diagnostics
 }
 
-func (e FstabEntry) GetFieldAtPosition(cursor uint32) FstabField {
+func (e FstabLine) GetFieldAtPosition(cursor uint32) FstabField {
 	if e.Fields.Spec == nil || (cursor >= e.Fields.Spec.Start && cursor <= e.Fields.Spec.End) {
 		return FstabFieldSpec
 	}
@@ -182,6 +183,7 @@ func (e FstabEntry) GetFieldAtPosition(cursor uint32) FstabField {
 		return FstabFieldOptions
 	}
 
+	println(fmt.Sprintf("cursor: %v, freq: %v", cursor, e.Fields.Freq))
 	if e.Fields.Freq == nil || (cursor >= e.Fields.Freq.Start && cursor <= e.Fields.Freq.End) {
 		return FstabFieldFreq
 	}
@@ -189,12 +191,24 @@ func (e FstabEntry) GetFieldAtPosition(cursor uint32) FstabField {
 	return FstabFieldPass
 }
 
+type FstabEntryType string
+
+const (
+	FstabEntryTypeLine    FstabEntryType = "line"
+	FstabEntryTypeComment FstabEntryType = "comment"
+)
+
+type FstabEntry struct {
+	Type FstabEntryType
+	Line FstabLine
+}
+
 type FstabParser struct {
 	entries []FstabEntry
 }
 
 func (p *FstabParser) AddLine(line string, lineNumber int) error {
-	fields := whitespacePattern.Split(line, -1)
+	fields := whitespacePattern.FindAllStringIndex(line, -1)
 
 	if len(fields) == 0 {
 		return MalformedLineError{}
@@ -209,100 +223,99 @@ func (p *FstabParser) AddLine(line string, lineNumber int) error {
 
 	switch len(fields) {
 	case 6:
-		value := fields[5]
-		start := uint32(strings.Index(line, value))
-
-		if start == 0 {
-			start = uint32(len(line))
-		}
+		field := fields[5]
+		start := uint32(field[0])
+		end := uint32(field[1])
 
 		pass = &Field{
-			Value: fields[5],
+			Value: line[start:end],
 			Start: start,
-			End:   start + uint32(len(value)),
+			End:   end,
 		}
 		fallthrough
 	case 5:
-		value := fields[4]
-		start := uint32(strings.Index(line, value))
-
-		if start == 0 {
-			start = uint32(len(line))
-		}
+		field := fields[4]
+		start := uint32(field[0])
+		end := uint32(field[1])
 
 		freq = &Field{
-			Value: value,
+			Value: line[start:end],
 			Start: start,
-			End:   start + uint32(len(value)),
+			End:   end,
 		}
 		fallthrough
 	case 4:
-		value := fields[3]
-		start := uint32(strings.Index(line, value))
-
-		if start == 0 {
-			start = uint32(len(line))
-		}
+		field := fields[3]
+		start := uint32(field[0])
+		end := uint32(field[1])
 
 		options = &Field{
-			Value: value,
+			Value: line[start:end],
 			Start: start,
-			End:   start + uint32(len(value)),
+			End:   end,
 		}
 		fallthrough
 	case 3:
-		value := fields[2]
-		start := uint32(strings.Index(line, value))
-
-		if start == 0 {
-			start = uint32(len(line))
-		}
+		field := fields[2]
+		start := uint32(field[0])
+		end := uint32(field[1])
 
 		filesystemType = &Field{
-			Value: value,
+			Value: line[start:end],
 			Start: start,
-			End:   start + uint32(len(value)),
+			End:   end,
 		}
 		fallthrough
 	case 2:
-		value := fields[1]
-		start := uint32(strings.Index(line, value))
-
-		if start == 0 {
-			start = uint32(len(line))
-		}
+		field := fields[1]
+		start := uint32(field[0])
+		end := uint32(field[1])
 
 		mountPoint = &Field{
-			Value: value,
+			Value: line[start:end],
 			Start: start,
-			End:   start + uint32(len(value)),
+			End:   end,
 		}
 		fallthrough
 	case 1:
-		value := fields[0]
-		start := uint32(strings.Index(line, value))
+		field := fields[0]
+		start := uint32(field[0])
+		end := uint32(field[1])
 
 		spec = &Field{
-			Value: value,
+			Value: line[start:end],
 			Start: start,
-			End:   start + uint32(len(value)),
+			End:   end,
 		}
 	}
 
 	entry := FstabEntry{
-		Line: uint32(lineNumber),
-		Fields: FstabFields{
-			Spec:           spec,
-			MountPoint:     mountPoint,
-			FilesystemType: filesystemType,
-			Options:        options,
-			Freq:           freq,
-			Pass:           pass,
+		Type: FstabEntryTypeLine,
+		Line: FstabLine{
+			Line: uint32(lineNumber),
+			Fields: FstabFields{
+				Spec:           spec,
+				MountPoint:     mountPoint,
+				FilesystemType: filesystemType,
+				Options:        options,
+				Freq:           freq,
+				Pass:           pass,
+			},
 		},
 	}
 	p.entries = append(p.entries, entry)
 
 	return nil
+}
+
+func (p *FstabParser) AddCommentLine(line string, lineNumber int) {
+	entry := FstabLine{
+		Line: uint32(lineNumber),
+	}
+	p.entries = append(p.entries, FstabEntry{
+		Type: FstabEntryTypeComment,
+		Line: entry,
+	})
 }
 
 func (p *FstabParser) ParseFromContent(content string) []common.ParseError {
@@ -311,6 +324,11 @@ func (p *FstabParser) ParseFromContent(content string) []common.ParseError {
 
 	for index, line := range lines {
 		if ignoreLinePattern.MatchString(line) {
+			continue
+		}
+
+		if commentPattern.MatchString(line) {
+			p.AddCommentLine(line, index)
 			continue
 		}
 
@@ -329,11 +347,11 @@ func (p *FstabParser) ParseFromContent(content string) []common.ParseError {
 
 func (p *FstabParser) GetEntry(line uint32) (*FstabEntry, bool) {
 	index, found := slices.BinarySearchFunc(p.entries, line, func(entry FstabEntry, line uint32) int {
-		if entry.Line < line {
+		if entry.Line.Line < line {
 			return -1
 		}
 
-		if entry.Line > line {
+		if entry.Line.Line > line {
 			return 1
 		}
 
@@ -355,10 +373,15 @@ func (p *FstabParser) AnalyzeValues() []protocol.Diagnostic {
 	diagnostics := []protocol.Diagnostic{}
 
 	for _, entry := range p.entries {
-		newDiagnostics := entry.CheckIsValid()
+		switch entry.Type {
+		case FstabEntryTypeLine:
+			newDiagnostics := entry.Line.CheckIsValid()
 
-		if len(newDiagnostics) > 0 {
-			diagnostics = append(diagnostics, newDiagnostics...)
+			if len(newDiagnostics) > 0 {
+				diagnostics = append(diagnostics, newDiagnostics...)
+			}
+		case FstabEntryTypeComment:
+			// Do nothing
 		}
 	}
 

@@ -75,3 +75,7 @@ func (v PowerOfTwoValue) FetchCompletions(line string, cursor uint32) []protocol
 		},
 	)
 }
+
+func (v PowerOfTwoValue) FetchHoverInfo(line string, cursor uint32) []string {
+	return []string{}
+}

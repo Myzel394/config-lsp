@@ -114,17 +114,55 @@ func (v ArrayValue) CheckIsValid(value string) []*InvalidValue {
 	return errors
 }
 
-func (v ArrayValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
-	if cursor == 0 {
-		return v.SubValue.FetchCompletions(line, cursor)
+func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32) {
+	if line == "" {
+		return line, cursor
 	}
 
-	relativePosition, found := utils.FindPreviousCharacter(line, v.Separator, int(cursor-1))
+	if cursor == uint32(len(line)) {
+		cursor--
+	}
+
+	var start uint32
+	var end uint32
+
+	relativePosition, found := utils.FindPreviousCharacter(
+		line,
+		v.Separator,
+		int(cursor),
+	)
 
 	if found {
-		line = line[uint32(relativePosition+1):]
-		cursor -= uint32(relativePosition + 1)
+		// +1 to skip the separator
+		start = uint32(relativePosition + 1)
+	} else {
+		start = 0
 	}
 
-	return v.SubValue.FetchCompletions(line, cursor)
+	relativePosition, found = utils.FindNextCharacter(
+		line,
+		v.Separator,
+		int(cursor),
+	)
+
+	if found {
+		// -1 to skip the separator
+		end = uint32(relativePosition - 1)
+	} else {
+		end = uint32(len(line))
+	}
+
+	return line[start:end], cursor - start
+}
+
+func (v ArrayValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+	value, cursor := v.getCurrentValue(line, cursor)
+
+	return v.SubValue.FetchCompletions(value, cursor)
+}
+
+func (v ArrayValue) FetchHoverInfo(line string, cursor uint32) []string {
+	value, cursor := v.getCurrentValue(line, cursor)
+
+	return v.SubValue.FetchHoverInfo(value, cursor)
 }

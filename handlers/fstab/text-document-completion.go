@@ -22,32 +22,33 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 	}
 
 	cursor := params.Position.Character
-	targetField := entry.GetFieldAtPosition(cursor)
+	line := entry.Line
+	targetField := line.GetFieldAtPosition(cursor)
 
 	switch targetField {
 	case FstabFieldSpec:
-		value, cursor := GetFieldSafely(entry.Fields.Spec, cursor)
+		value, cursor := GetFieldSafely(line.Fields.Spec, cursor)
 
 		return fstabdocumentation.SpecField.FetchCompletions(
 			value,
 			cursor,
 		), nil
 	case FstabFieldMountPoint:
-		value, cursor := GetFieldSafely(entry.Fields.MountPoint, cursor)
+		value, cursor := GetFieldSafely(line.Fields.MountPoint, cursor)
 
 		return fstabdocumentation.MountPointField.FetchCompletions(
 			value,
 			cursor,
 		), nil
 	case FstabFieldFileSystemType:
-		value, cursor := GetFieldSafely(entry.Fields.FilesystemType, cursor)
+		value, cursor := GetFieldSafely(line.Fields.FilesystemType, cursor)
 
 		return fstabdocumentation.FileSystemTypeField.FetchCompletions(
 			value,
 			cursor,
 		), nil
 	case FstabFieldOptions:
-		fileSystemType := entry.Fields.FilesystemType.Value
+		fileSystemType := line.Fields.FilesystemType.Value
 
 		var optionsField docvalues.Value
 
@@ -57,7 +58,7 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 			optionsField = fstabdocumentation.DefaultMountOptionsField
 		}
 
-		value, cursor := GetFieldSafely(entry.Fields.Options, cursor)
+		value, cursor := GetFieldSafely(line.Fields.Options, cursor)
 
 		completions := optionsField.FetchCompletions(
 			value,
@@ -66,14 +67,14 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 
 		return completions, nil
 	case FstabFieldFreq:
-		value, cursor := GetFieldSafely(entry.Fields.Freq, cursor)
+		value, cursor := GetFieldSafely(line.Fields.Freq, cursor)
 
 		return fstabdocumentation.FreqField.FetchCompletions(
 			value,
 			cursor,
 		), nil
 	case FstabFieldPass:
-		value, cursor := GetFieldSafely(entry.Fields.Pass, cursor)
+		value, cursor := GetFieldSafely(line.Fields.Pass, cursor)
 
 		return fstabdocumentation.PassField.FetchCompletions(
 			value,

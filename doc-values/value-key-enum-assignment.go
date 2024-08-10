@@ -136,6 +136,35 @@ func (v KeyEnumAssignmentValue) FetchEnumCompletions() []protocol.CompletionItem
 	return completions
 }
 
+type selectedValue string
+
+const (
+	keySelected   selectedValue = "key"
+	valueSelected selectedValue = "value"
+)
+
+func (v KeyEnumAssignmentValue) getValueAtCursor(line string, cursor uint32) (string, *selectedValue, uint32) {
+	relativePosition, found := utils.FindPreviousCharacter(line, v.Separator, int(cursor))
+
+	if found {
+		// Value found
+		selected := valueSelected
+		return line[uint32(relativePosition+1):], &selected, cursor - uint32(relativePosition)
+	}
+
+	selected := keySelected
+
+	// Key, let's check for the separator
+	relativePosition, found = utils.FindNextCharacter(line, v.Separator, int(cursor))
+
+	if found {
+		return line[:uint32(relativePosition)], &selected, cursor
+	}
+
+	// No separator, so we can just return the whole line
+	return line, &selected, cursor
+}
+
 func (v KeyEnumAssignmentValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	if cursor == 0 {
 		return v.FetchEnumCompletions()
@@ -159,4 +188,51 @@ func (v KeyEnumAssignmentValue) FetchCompletions(line string, cursor uint32) []p
 	} else {
 		return v.FetchEnumCompletions()
 	}
+}
+
+func (v KeyEnumAssignmentValue) FetchHoverInfo(line string, cursor uint32) []string {
+	if len(v.CheckIsValid(line)) != 0 {
+		return []string{}
+	}
+
+	value, selected, cursor := v.getValueAtCursor(line, cursor)
+
+	if selected == nil {
+		return []string{}
+	}
+
+	if *selected == keySelected {
+		// Search for enum documentation
+		enums := utils.KeysOfMap(v.Values)
+		key := value
+
+		for _, enum := range enums {
+			if enum.InsertText == value {
+				return []string{
+					fmt.Sprintf("## `%s%s<value>`", key, v.Separator),
+					enum.Documentation,
+				}
+			}
+		}
+	} else if *selected == valueSelected {
+		// Search for value documentation
+		// - 1 to remove the separator
+		key := strings.SplitN(line, v.Separator, 2)[0]
+		checkValue, found := v.getValue(key)
+
+		if !found {
+			return []string{}
+		}
+
+		info := (*checkValue).FetchHoverInfo(value, cursor)
+
+		return append(
+			[]string{
+				fmt.Sprintf("## `%s%s%s`", key, v.Separator, value),
+			},
+			info...,
+		)
+	}
+
+	return []string{}
 }

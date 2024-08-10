@@ -10,6 +10,7 @@ type Value interface {
 	GetTypeDescription() []string
 	CheckIsValid(value string) []*InvalidValue
 	FetchCompletions(line string, cursor uint32) []protocol.CompletionItem
+	FetchHoverInfo(line string, cursor uint32) []string
 }
 
 type InvalidValue struct {

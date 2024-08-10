@@ -118,3 +118,14 @@ func (v EnumValue) FetchCompletions(line string, cursor uint32) []protocol.Compl
 
 	return completions
 }
+func (v EnumValue) FetchHoverInfo(line string, cursor uint32) []string {
+	for _, value := range v.Values {
+		if value.InsertText == line {
+			return []string{
+				value.Documentation,
+			}
+		}
+	}
+
+	return []string{}
+}

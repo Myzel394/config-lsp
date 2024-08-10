@@ -2,6 +2,7 @@ package docvalues
 
 import (
 	"config-lsp/utils"
+	"fmt"
 	"strconv"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -125,4 +126,27 @@ func (v GIDValue) FetchCompletions(line string, cursor uint32) []protocol.Comple
 	}
 
 	return completions
+}
+func (v GIDValue) FetchHoverInfo(line string, cursor uint32) []string {
+	uid, err := strconv.Atoi(line)
+
+	if err != nil {
+		return []string{}
+	}
+
+	infos, err := fetchGroupInfo()
+
+	if err != nil {
+		return []string{}
+	}
+
+	for _, info := range infos {
+		if info.GID == strconv.Itoa(uid) {
+			return []string{
+				fmt.Sprintf("Group %s; GID: %s", info.Name, info.GID),
+			}
+		}
+	}
+
+	return []string{}
 }

@@ -136,6 +136,16 @@ func FindPreviousCharacter(line string, character string, startIndex int) (int, 
 	return 0, false
 }
 
+func FindNextCharacter(line string, character string, startIndex int) (int, bool) {
+	for index := startIndex; index < len(line); index++ {
+		if string(line[index]) == character {
+			return index, true
+		}
+	}
+
+	return 0, false
+}
+
 func MergeMaps[T comparable, O any](maps ...map[T]O) map[T]O {
 	result := make(map[T]O)
 

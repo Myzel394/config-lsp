@@ -40,3 +40,9 @@ func (v RegexValue) CheckIsValid(value string) []*InvalidValue {
 func (v RegexValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	return []protocol.CompletionItem{}
 }
+
+func (v RegexValue) FetchHoverInfo(line string, cursor uint32) []string {
+	return []string{
+		fmt.Sprintf("Pattern: `%s`", v.Regex.String()),
+	}
+}

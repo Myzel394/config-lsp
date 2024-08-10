@@ -1,8 +1,10 @@
 package docvalues
 
 import (
-	protocol "github.com/tliron/glsp/protocol_3_16"
+	"fmt"
 	"regexp"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 type MaskModeInvalidError struct{}
@@ -119,5 +121,46 @@ func (v MaskModeValue) FetchCompletions(line string, cursor uint32) []protocol.C
 			Documentation: "Read/execute for all",
 			Kind:          &kind,
 		},
+	}
+}
+
+func getMaskRepresentation(digit uint8) string {
+	switch digit {
+	case 0:
+		return "---"
+	case 1:
+		return "--x"
+	case 2:
+		return "-w-"
+	case 3:
+		return "-wx"
+	case 4:
+		return "r--"
+	case 5:
+		return "r-x"
+	case 6:
+		return "rw-"
+	case 7:
+		return "rwx"
+	}
+
+	return ""
+}
+
+func (v MaskModeValue) FetchHoverInfo(line string, cursor uint32) []string {
+	if !maskModePattern.MatchString(line) {
+		return []string{}
+	}
+
+	mask := line
+
+	firstDigit := uint8(mask[1] - 48)
+	secondDigit := uint8(mask[2] - 48)
+	thridDigit := uint8(mask[3] - 48)
+
+	representation := getMaskRepresentation(firstDigit) + getMaskRepresentation(secondDigit) + getMaskRepresentation(thridDigit)
+
+	return []string{
+		fmt.Sprintf("%s (%s)", mask, representation),
 	}
 }

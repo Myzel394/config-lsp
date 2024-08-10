@@ -127,3 +127,27 @@ func (v UIDValue) FetchCompletions(line string, cursor uint32) []protocol.Comple
 
 	return completions
 }
+
+func (v UIDValue) FetchHoverInfo(line string, cursor uint32) []string {
+	uid, err := strconv.Atoi(line)
+
+	if err != nil {
+		return []string{}
+	}
+
+	infos, err := fetchPasswdInfo()
+
+	if err != nil {
+		return []string{}
+	}
+
+	for _, info := range infos {
+		if info.UID == strconv.Itoa(uid) {
+			return []string{
+				fmt.Sprintf("User %s; ID: %s:%s; ~:%s", info.Name, info.UID, info.GID, info.HomePath),
+			}
+		}
+	}
+
+	return []string{}
+}
