@@ -1,0 +1,5 @@
+package commondocumentation
+
+var MsdosDocumentationAssignable = FatDocumentationAssignable
+
+var MsdosDocumentationEnums = FatDocumentationEnums

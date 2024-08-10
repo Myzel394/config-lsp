@@ -114,6 +114,7 @@ func (v KeyEnumAssignmentValue) FetchEnumCompletions() []protocol.CompletionItem
 		kind := protocol.CompletionItemKindField
 		val := v.Values[enumKey]
 		description := val.GetTypeDescription()
+		insertText := enumKey.InsertText + v.Separator
 
 		var documentation string
 
@@ -125,6 +126,7 @@ func (v KeyEnumAssignmentValue) FetchEnumCompletions() []protocol.CompletionItem
 
 		completions = append(completions, protocol.CompletionItem{
 			Label:            enumKey.InsertText,
+			InsertText:       &insertText,
 			InsertTextFormat: &textFormat,
 			Kind:             &kind,
 			Documentation:    documentation,

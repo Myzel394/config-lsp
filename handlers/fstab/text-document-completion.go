@@ -3,7 +3,6 @@ package fstab
 import (
 	docvalues "config-lsp/doc-values"
 	fstabdocumentation "config-lsp/handlers/fstab/documentation"
-	"fmt"
 
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
