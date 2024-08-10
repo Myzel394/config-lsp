@@ -1,6 +1,8 @@
 package commondocumentation
 
-import docvalues "config-lsp/doc-values"
+import (
+	docvalues "config-lsp/doc-values"
+)
 
 var FatDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
@@ -104,8 +106,10 @@ var FatDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
 		"iocharset",
 		"Character set to use for converting between 8 bit characters and 16 bit Unicode characters. The default is iso8859-1. Long filenames are stored on disk in Unicode format.",
-	// TODO: Use enum for charsets
-	): docvalues.StringValue{},
+	): docvalues.EnumValue{
+		EnforceValues: true,
+		Values:        AvailableCharsets,
+	},
 	docvalues.CreateEnumStringWithDoc(
 		"nfs",
 		`Enable this only if you want to export the FAT filesystem over NFS.

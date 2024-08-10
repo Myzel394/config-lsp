@@ -2,7 +2,7 @@ package commondocumentation
 
 import docvalues "config-lsp/doc-values"
 
-var CharsetsDocumentation = []docvalues.EnumString{
+var AvailableCharsets = []docvalues.EnumString{
 	docvalues.CreateEnumStringWithDoc(
 		"ascii",
 		`ASCII (American Standard Code For Information Interchange) is the
