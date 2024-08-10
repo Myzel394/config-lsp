@@ -307,7 +307,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	ssh-ed25519-cert-v01@openssh.com, ecdsa-sha2-nistp256-cert-v01@openssh.com, ecdsa-sha2-nistp384-cert-v01@openssh.com, ecdsa-sha2-nistp521-cert-v01@openssh.com, sk-ssh-ed25519-cert-v01@openssh.com, sk-ecdsa-sha2-nistp256-cert-v01@openssh.com, rsa-sha2-512-cert-v01@openssh.com, rsa-sha2-256-cert-v01@openssh.com, ssh-ed25519, ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521, sk-ssh-ed25519@openssh.com, sk-ecdsa-sha2-nistp256@openssh.com, rsa-sha2-512,rsa-sha2-256
 	The list of available signature algorithms may also be obtained using "ssh -Q HostbasedAcceptedAlgorithms". This was formerly named HostbasedAcceptedKeyTypes.`,
 		docvalues.CustomValue{
-			FetchValue: func() docvalues.Value {
+			FetchValue: func(_ docvalues.CustomValueContext) docvalues.Value {
 				options, err := QueryOpenSSHOptions("HostbasedAcceptedAlgorithms")
 
 				if err != nil {
@@ -354,7 +354,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	ssh-ed25519-cert-v01@openssh.com, ecdsa-sha2-nistp256-cert-v01@openssh.com, ecdsa-sha2-nistp384-cert-v01@openssh.com, ecdsa-sha2-nistp521-cert-v01@openssh.com, sk-ssh-ed25519-cert-v01@openssh.com, sk-ecdsa-sha2-nistp256-cert-v01@openssh.com, rsa-sha2-512-cert-v01@openssh.com, rsa-sha2-256-cert-v01@openssh.com, ssh-ed25519, ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521, sk-ssh-ed25519@openssh.com, sk-ecdsa-sha2-nistp256@openssh.com, rsa-sha2-512,rsa-sha2-256
 	The list of available signature algorithms may also be obtained using "ssh -Q HostKeyAlgorithms".`,
 		docvalues.CustomValue{
-			FetchValue: func() docvalues.Value {
+			FetchValue: func(_ docvalues.CustomValueContext) docvalues.Value {
 				options, _ := QueryOpenSSHOptions("HostKeyAlgorithms")
 
 				return PrefixPlusMinusCaret(options)
@@ -736,7 +736,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	ssh-ed25519-cert-v01@openssh.com, ecdsa-sha2-nistp256-cert-v01@openssh.com, ecdsa-sha2-nistp384-cert-v01@openssh.com, ecdsa-sha2-nistp521-cert-v01@openssh.com, sk-ssh-ed25519-cert-v01@openssh.com, sk-ecdsa-sha2-nistp256-cert-v01@openssh.com, rsa-sha2-512-cert-v01@openssh.com, rsa-sha2-256-cert-v01@openssh.com, ssh-ed25519, ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521, sk-ssh-ed25519@openssh.com, sk-ecdsa-sha2-nistp256@openssh.com, rsa-sha2-512,rsa-sha2-256
 	The list of available signature algorithms may also be obtained using "ssh -Q PubkeyAcceptedAlgorithms".`,
 		docvalues.CustomValue{
-			FetchValue: func() docvalues.Value {
+			FetchValue: func(_ docvalues.CustomValueContext) docvalues.Value {
 				options, _ := QueryOpenSSHOptions("PubkeyAcceptedAlgorithms")
 
 				return PrefixPlusMinusCaret(options)

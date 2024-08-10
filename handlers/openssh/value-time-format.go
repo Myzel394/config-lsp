@@ -25,9 +25,15 @@ func (v TimeFormatValue) GetTypeDescription() []string {
 	return []string{"Time value"}
 }
 
-func (v TimeFormatValue) CheckIsValid(value string) error {
+func (v TimeFormatValue) CheckIsValid(value string) []*docvalues.InvalidValue {
 	if !timeFormatCheckPattern.MatchString(value) {
-		return InvalidTimeFormatError{}
+		return []*docvalues.InvalidValue{
+			{
+				Err: InvalidTimeFormatError{},
+				Start: 0,
+				End:   uint32(len(value)),
+			},
+		}
 	}
 
 	return nil
@@ -98,4 +104,8 @@ func (v TimeFormatValue) FetchCompletions(line string, cursor uint32) []protocol
 	}
 
 	return completions
+}
+
+func (v TimeFormatValue) FetchHoverInfo(line string, cursor uint32) []string {
+	return []string{}
 }

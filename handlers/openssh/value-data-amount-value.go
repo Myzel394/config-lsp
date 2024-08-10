@@ -23,9 +23,15 @@ func (v DataAmountValue) GetTypeDescription() []string {
 	return []string{"Data amount"}
 }
 
-func (v DataAmountValue) CheckIsValid(value string) error {
+func (v DataAmountValue) CheckIsValid(value string) []*docvalues.InvalidValue {
 	if !dataAmountCheckPattern.MatchString(value) {
-		return InvalidDataAmountError{}
+		return []*docvalues.InvalidValue{
+			{
+				Err: InvalidDataAmountError{},
+				Start: 0,
+				End:   uint32(len(value)),
+			},
+		}
 	}
 
 	return nil
@@ -84,4 +90,8 @@ func (v DataAmountValue) FetchCompletions(line string, cursor uint32) []protocol
 	}
 
 	return completions
+}
+
+func (v DataAmountValue) FetchHoverInfo(line string, cursor uint32) []string {
+	return []string{}
 }
