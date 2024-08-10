@@ -285,4 +285,52 @@ var MountOptionsMapField = map[string]docvalues.Value{
 		commondocumentation.HpfsDocumentationEnums,
 		commondocumentation.HpfsDocumentationAssignable,
 	),
+	"iso9660": createMountOptionField(
+		commondocumentation.Iso9660DocumentationEnums,
+		commondocumentation.Iso9660DocumentationAssignable,
+	),
+	"jfs": createMountOptionField(
+		commondocumentation.JfsDocumentationEnums,
+		commondocumentation.JfsDocumentationAssignable,
+	),
+	"msdos": createMountOptionField(
+		commondocumentation.MsdosDocumentationEnums,
+		commondocumentation.MsdosDocumentationAssignable,
+	),
+	"ncpfs": createMountOptionField(
+		commondocumentation.NcpfsDocumentationEnums,
+		commondocumentation.NcpfsDocumentationAssignable,
+	),
+	"ntfs": createMountOptionField(
+		commondocumentation.NtfsDocumentationEnums,
+		commondocumentation.NtfsDocumentationAssignable,
+	),
+	"overlay": createMountOptionField(
+		commondocumentation.OverlayDocumentationEnums,
+		commondocumentation.OverlayDocumentationAssignable,
+	),
+	"reiserfs": createMountOptionField(
+		commondocumentation.ReiserfsDocumentationEnums,
+		commondocumentation.ReiserfsDocumentationAssignable,
+	),
+	"ubifs": createMountOptionField(
+		commondocumentation.UbifsDocumentationEnums,
+		commondocumentation.UbifsDocumentationAssignable,
+	),
+	"udf": createMountOptionField(
+		commondocumentation.UdfDocumentationEnums,
+		commondocumentation.UdfDocumentationAssignable,
+	),
+	"ufs": createMountOptionField(
+		commondocumentation.UfsDocumentationEnums,
+		commondocumentation.UfsDocumentationAssignable,
+	),
+	"umsdos": createMountOptionField(
+		commondocumentation.UmsdosDocumentationEnums,
+		commondocumentation.UmsdosDocumentationAssignable,
+	),
+	"vfat": createMountOptionField(
+		commondocumentation.VfatDocumentationEnums,
+		commondocumentation.VfatDocumentationAssignable,
+	),
 }
