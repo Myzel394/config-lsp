@@ -28,7 +28,7 @@ type FatalFileNotReadableError struct {
 }
 
 func (e FatalFileNotReadableError) Error() string {
-	return fmt.Sprint("Fatal error! config-lsp was unable to read the file (%s); error: %s", e.FileURI, e.Err.Error())
+	return fmt.Sprintf("Fatal error! config-lsp was unable to read the file (%s); error: %s", e.FileURI, e.Err.Error())
 }
 
 type UnsupportedLanguageError struct {
@@ -36,7 +36,7 @@ type UnsupportedLanguageError struct {
 }
 
 func (e UnsupportedLanguageError) Error() string {
-	return fmt.Sprint("Language '%s' is not supported. Choose one of: %s", e.SuggestedLanguage, strings.Join(AllSupportedLanguages, ", "))
+	return fmt.Sprintf("Language '%s' is not supported. Choose one of: %s", e.SuggestedLanguage, strings.Join(AllSupportedLanguages, ", "))
 }
 
 type LanguageUndetectableError struct{}

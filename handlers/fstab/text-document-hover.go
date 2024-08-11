@@ -26,6 +26,10 @@ func TextDocumentHover(context *glsp.Context, params *protocol.HoverParams) (*pr
 		return nil, nil
 	}
 
+	return getHoverInfo(entry, cursor)
+}
+
+func getHoverInfo(entry *FstabEntry, cursor uint32) (*protocol.Hover, error) {
 	line := entry.Line
 	targetField := line.GetFieldAtPosition(cursor)
 

@@ -27,7 +27,7 @@ func (v DataAmountValue) CheckIsValid(value string) []*docvalues.InvalidValue {
 	if !dataAmountCheckPattern.MatchString(value) {
 		return []*docvalues.InvalidValue{
 			{
-				Err: InvalidDataAmountError{},
+				Err:   InvalidDataAmountError{},
 				Start: 0,
 				End:   uint32(len(value)),
 			},

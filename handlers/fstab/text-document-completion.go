@@ -21,8 +21,20 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 		), nil
 	}
 
+	if entry.Type == FstabEntryTypeComment {
+		return nil, nil
+	}
+
 	cursor := params.Position.Character
 	line := entry.Line
+
+	return getCompletion(line, cursor)
+}
+
+func getCompletion(
+	line FstabLine,
+	cursor uint32,
+) ([]protocol.CompletionItem, error) {
 	targetField := line.GetFieldAtPosition(cursor)
 
 	switch targetField {
