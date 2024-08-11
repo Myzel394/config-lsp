@@ -1,0 +1,26 @@
+name: Run Go tests
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: [ '1.22.x' ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+      # You can test your matrix by printing the current Go version
+      - name: Display Go version
+        run: go version
+
+      - name: Get dependencies
+        run: go mod download
+
+      - name: Run tests
+        run: go test -v ./...
