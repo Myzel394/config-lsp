@@ -29,7 +29,7 @@ func (v TimeFormatValue) CheckIsValid(value string) []*docvalues.InvalidValue {
 	if !timeFormatCheckPattern.MatchString(value) {
 		return []*docvalues.InvalidValue{
 			{
-				Err: InvalidTimeFormatError{},
+				Err:   InvalidTimeFormatError{},
 				Start: 0,
 				End:   uint32(len(value)),
 			},
