@@ -9,6 +9,12 @@ func dedent(s string) string {
 	return strings.TrimLeft(s, "\n")
 }
 
+func keyExists[T comparable, V any](keys map[T]V, key T) bool {
+	_, found := keys[key]
+
+	return found
+}
+
 func TestValidWildTestWorksFine(
 	t *testing.T,
 ) {
@@ -26,14 +32,14 @@ Endpoint = 1.2.3.4 ; I'm just a comment
 PublicKey = 5555
 	`)
 
-	parser := wireguardParser{}
+	parser := createWireguardParser()
 	errors := parser.parseFromString(sample)
 
 	if len(errors) > 0 {
 		t.Fatalf("parseFromString failed with error %v", errors)
 	}
 
-	if !(len(parser.CommentLines) == 1 && parser.CommentLines[0] == 4) {
+	if !(len(parser.CommentLines) == 1 && keyExists(parser.CommentLines, 4)) {
 		t.Fatalf("parseFromString failed to collect comment lines %v", parser.CommentLines)
 	}
 
@@ -72,7 +78,7 @@ func TestEmptySectionAtStartWorksFine(
 PublicKey = 1234567890
 `)
 
-	parser := wireguardParser{}
+	parser := createWireguardParser()
 	errors := parser.parseFromString(sample)
 
 	if len(errors) > 0 {
@@ -99,7 +105,7 @@ PrivateKey = 1234567890
 # Just sneaking in here, hehe
 `)
 
-	parser := wireguardParser{}
+	parser := createWireguardParser()
 	errors := parser.parseFromString(sample)
 
 	if len(errors) > 0 {
@@ -114,7 +120,7 @@ PrivateKey = 1234567890
 		t.Fatalf("parseFromString failed to collect properties %v", parser.Sections)
 	}
 
-	if !(len(parser.CommentLines) == 1 && parser.CommentLines[0] == 4) {
+	if !(len(parser.CommentLines) == 1 && keyExists(parser.CommentLines, 4)) {
 		t.Fatalf("parseFromString failed to collect comment lines %v", parser.CommentLines)
 	}
 }
@@ -125,7 +131,7 @@ func TestEmptyFileWorksFine(
 	sample := dedent(`
 `)
 
-	parser := wireguardParser{}
+	parser := createWireguardParser()
 	errors := parser.parseFromString(sample)
 
 	if len(errors) > 0 {
@@ -147,7 +153,7 @@ func TestPartialSectionWithNoPropertiesWorksFine(
 PublicKey = 1234567890
 `)
 
-	parser := wireguardParser{}
+	parser := createWireguardParser()
 	errors := parser.parseFromString(sample)
 
 	if len(errors) > 0 {
@@ -181,7 +187,7 @@ PrivateKey = 1234567890
 [Peer]
 `)
 
-	parser := wireguardParser{}
+	parser := createWireguardParser()
 	errors := parser.parseFromString(sample)
 
 	if len(errors) > 0 {
@@ -208,7 +214,7 @@ func TestFileWithOnlyComments(
 # This is a comment
 # Another comment
 `)
-	parser := wireguardParser{}
+	parser := createWireguardParser()
 	errors := parser.parseFromString(sample)
 
 	if len(errors) > 0 {
@@ -223,7 +229,7 @@ func TestFileWithOnlyComments(
 		t.Fatalf("parseFromString failed to collect comment lines: %v", parser.CommentLines)
 	}
 
-	if !(parser.CommentLines[0] == 0 && parser.CommentLines[1] == 1) {
+	if !(keyExists(parser.CommentLines, 0) && keyExists(parser.CommentLines, 1)) {
 		t.Fatalf("parseFromString failed to collect comment lines: %v", parser.CommentLines)
 	}
 }
@@ -236,7 +242,8 @@ func TestMultipleSectionsNoProperties(
 [Peer]
 [Peer]
 `)
-	parser := wireguardParser{}
+
+	parser := createWireguardParser()
 	errors := parser.parseFromString(sample)
 
 	if len(errors) > 0 {
@@ -251,5 +258,118 @@ func TestMultipleSectionsNoProperties(
 		if len(section.Properties) != 0 {
 			t.Fatalf("parseFromString failed to collect properties: %v", section.Properties)
 		}
+	}
+}
+
+func TestGetLineTypeWorksCorrectly(
+	t *testing.T,
+) {
+	sample := dedent(`
+# A comment at the very top
+Test=Hello
+
+[Interface]
+PrivateKey = 1234567890 # Some comment
+Address = 10.0.0.1
+
+
+
+[Peer]
+PublicKey = 1234567890
+
+; I'm a comment
+`)
+
+	parser := createWireguardParser()
+	parser.parseFromString(sample)
+
+	lineType := parser.getTypeByLine(0)
+	if lineType != LineTypeComment {
+		t.Fatalf("getTypeByLine: Expected line 0 to be a comment, but it is %v", lineType)
+	}
+
+	lineType = parser.getTypeByLine(1)
+	if lineType != LineTypeProperty {
+		t.Fatalf("getTypeByLine: Expected line 1 to be a property, but it is %v", lineType)
+	}
+
+	lineType = parser.getTypeByLine(2)
+	if lineType != LineTypeEmpty {
+		t.Fatalf("getTypeByLine: Expected line 2 to be empty, but it is %v", lineType)
+	}
+
+	lineType = parser.getTypeByLine(3)
+	if lineType != LineTypeHeader {
+		t.Fatalf("getTypeByLine: Expected line 3 to be a header, but it is %v", lineType)
+	}
+
+	lineType = parser.getTypeByLine(4)
+	if lineType != LineTypeProperty {
+		t.Fatalf("getTypeByLine: Expected line 4 to be a property, but it is %v", lineType)
+	}
+
+	lineType = parser.getTypeByLine(12)
+	if lineType != LineTypeComment {
+		t.Fatalf("getTypeByLine: Expected line 12 to be a comment, but it is %v", lineType)
+	}
+}
+
+func TestGetBelongingSectionWorksCorrectly(
+	t *testing.T,
+) {
+	sample := dedent(`
+# A comment at the very top
+Test=Hello
+
+[Interface]
+PrivateKey = 1234567890 # Some comment
+Address = 10.0.0.1
+
+
+
+[Peer]
+PublicKey = 1234567890
+
+; I'm a comment
+`)
+
+	parser := createWireguardParser()
+	parser.parseFromString(sample)
+
+	section := parser.getBelongingSectionByLine(0)
+
+	if section != nil {
+		t.Fatalf("getBelongingSectionByLine: Expected line 0 to be in no section, but it is in %v", section)
+	}
+
+	section = parser.getBelongingSectionByLine(1)
+
+	if section != nil {
+		t.Fatalf("getBelongingSectionByLine: Expected line 1 to be in no section, but it is in %v", section)
+	}
+
+	section = parser.getBelongingSectionByLine(2)
+	if section != nil {
+		t.Fatalf("getBelongingSectionByLine: Expected line 2 to be in no section, but it is in %v", section)
+	}
+
+	section = parser.getBelongingSectionByLine(3)
+	if section == nil || *section.Name != "Interface" {
+		t.Fatalf("getBelongingSectionByLine: Expected line 3 to be in section Interface, but it is in %v", section)
+	}
+
+	section = parser.getBelongingSectionByLine(4)
+	if section == nil || *section.Name != "Interface" {
+		t.Fatalf("getBelongingSectionByLine: Expected line 4 to be in section Interface, but it is in %v", section)
+	}
+
+	section = parser.getBelongingSectionByLine(6)
+	if section == nil || *section.Name != "Interface" {
+		t.Fatalf("getBelongingSectionByLine: Expected line 6 to be in section Interface, but it is in %v", section)
+	}
+
+	section = parser.getBelongingSectionByLine(10)
+	if section == nil || *section.Name != "Peer" {
+		t.Fatalf("getBelongingSectionByLine: Expected line 10 to be in section Peer, but it is in %v", section)
 	}
 }
