@@ -18,7 +18,14 @@ type characterLocation struct {
 type wireguardParser struct {
 	Sections []wireguardSection
 	// Used to identify where not to show diagnostics
-	CommentLines []uint32
+	CommentLines map[uint32]struct{}
+}
+
+func createWireguardParser() wireguardParser {
+	return wireguardParser{
+		Sections:     []wireguardSection{},
+		CommentLines: map[uint32]struct{}{},
+	}
 }
 
 type lineType string
@@ -57,6 +64,7 @@ func (p *wireguardParser) parseFromString(input string) []lineError {
 
 	collectedProperties := wireguardProperties{}
 	var lastPropertyLine *uint32
+	var earliestPropertyLine *uint32
 
 	for index, line := range lines {
 		currentLineNumber := uint32(len(lines) - index - 1)
@@ -64,7 +72,7 @@ func (p *wireguardParser) parseFromString(input string) []lineError {
 
 		switch lineType {
 		case LineTypeComment:
-			p.CommentLines = append(p.CommentLines, currentLineNumber)
+			p.CommentLines[currentLineNumber] = struct{}{}
 
 		case LineTypeEmpty:
 			continue
@@ -79,6 +87,8 @@ func (p *wireguardParser) parseFromString(input string) []lineError {
 				})
 				continue
 			}
+
+			earliestPropertyLine = &currentLineNumber
 
 			if lastPropertyLine == nil {
 				lastPropertyLine = &currentLineNumber
@@ -108,10 +118,68 @@ func (p *wireguardParser) parseFromString(input string) []lineError {
 		}
 	}
 
+	if len(collectedProperties) > 0 {
+		p.Sections = append(p.Sections, wireguardSection{
+			StartLine:  *earliestPropertyLine,
+			EndLine:    *lastPropertyLine,
+			Name:       nil,
+			Properties: collectedProperties,
+		})
+	}
+
 	// Since we parse the content from bottom to top,
 	// we need to reverse the order
-	slices.Reverse(p.CommentLines)
 	slices.Reverse(p.Sections)
 
 	return errors
+}
+
+func (p *wireguardParser) getTypeByLine(line uint32) lineType {
+	// Check if line is a comment
+	if _, found := p.CommentLines[line]; found {
+		return LineTypeComment
+	}
+
+	// Check if line is a section
+	for _, section := range p.Sections {
+		if section.StartLine <= line && section.EndLine >= line {
+			if section.StartLine == line && section.Name != nil {
+				return LineTypeHeader
+			}
+
+			// Check for properties
+			for propertyLineNumber := range section.Properties {
+				if propertyLineNumber == line {
+					return LineTypeProperty
+				}
+			}
+		}
+	}
+
+	return LineTypeEmpty
+}
+
+// Get the section that the line belongs to
+// Example:
+// [Interface]
+// Address = 10.0.0.1
+//
+// <line here>
+// [Peer]
+//
+// This would return the section [Interface]
+func (p *wireguardParser) getBelongingSectionByLine(line uint32) *wireguardSection {
+	// Create a copy
+	sections := append([]wireguardSection{}, p.Sections...)
+
+	slices.Reverse(sections)
+
+	for _, section := range sections {
+		if section.StartLine <= line && section.Name != nil {
+			return &section
+		}
+	}
+
+	// Global section
+	return nil
 }
