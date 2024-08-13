@@ -253,6 +253,10 @@ var MountOptionsMapField = map[string]docvalues.Value{
 		commondocumentation.AffsDocumentationEnums,
 		commondocumentation.AffsDocumentationAssignable,
 	),
+	"btrfs": createMountOptionField(
+		commondocumentation.BtrfsDocumentationEnums,
+		commondocumentation.BtrfsDocumentationAssignable,
+	),
 	"debugfs": createMountOptionField(
 		commondocumentation.DebugfsDocumentationEnums,
 		commondocumentation.DebugfsDocumentationAssignable,
