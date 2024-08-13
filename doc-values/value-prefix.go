@@ -33,6 +33,12 @@ func (v PrefixWithMeaningValue) GetTypeDescription() []string {
 }
 
 func (v PrefixWithMeaningValue) CheckIsValid(value string) []*InvalidValue {
+	for _, prefix := range v.Prefixes {
+		if strings.HasPrefix(value, prefix.Prefix) {
+			return v.SubValue.CheckIsValid(value[len(prefix.Prefix):])
+		}
+	}
+
 	return v.SubValue.CheckIsValid(value)
 }
 

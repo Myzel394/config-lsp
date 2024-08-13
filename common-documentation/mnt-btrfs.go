@@ -2,6 +2,8 @@ package commondocumentation
 
 import docvalues "config-lsp/doc-values"
 
+var maxInlineMin = 2048
+
 var BtrfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
 		"check_int_print_mask",
@@ -10,15 +12,37 @@ var BtrfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
 		"commit",
 		"Set the interval of periodic transaction commit when data are synchronized to permanent storage. Higher interval values lead to larger amount of unwritten data, which has obvious consequences when the system crashes. The upper bound is not forced, but a warning is printed if it's more than 300 seconds (5 minutes). Use with care.",
-	): docvalues.StringValue{},
+	): docvalues.NumberValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"compress",
 		"Control BTRFS file data compression. Type may be specified as zlib, lzo, zstd or no (for no compression, used for remounting). If no type is specified, zlib is used. If compress-force is specified, then compression will always be attempted, but the data may end up uncompressed if the compression would make them larger.",
-	): docvalues.StringValue{},
+	): docvalues.EnumValue{
+		EnforceValues: true,
+		Values: []docvalues.EnumString{
+			docvalues.CreateEnumString("zlib"),
+			docvalues.CreateEnumString("lzo"),
+			docvalues.CreateEnumString("zstd"),
+			docvalues.CreateEnumStringWithDoc(
+				"no",
+				"No compression, used for remounting.",
+			),
+		},
+	},
 	docvalues.CreateEnumStringWithDoc(
 		"compress-force",
 		"Control BTRFS file data compression. Type may be specified as zlib, lzo, zstd or no (for no compression, used for remounting). If no type is specified, zlib is used. If compress-force is specified, then compression will always be attempted, but the data may end up uncompressed if the compression would make them larger.",
-	): docvalues.StringValue{},
+	): docvalues.EnumValue{
+		EnforceValues: true,
+		Values: []docvalues.EnumString{
+			docvalues.CreateEnumString("zlib"),
+			docvalues.CreateEnumString("lzo"),
+			docvalues.CreateEnumString("zstd"),
+			docvalues.CreateEnumStringWithDoc(
+				"no",
+				"No compression, used for remounting.",
+			),
+		},
+	},
 	docvalues.CreateEnumStringWithDoc(
 		"device",
 		"Specify a path to a device that will be scanned for BTRFS filesystem during mount. This is usually done automatically by a device manager (like udev) or using the btrfs device scan command (eg. run from the initial ramdisk). In cases where this is not possible the device mount option can help.",
@@ -26,7 +50,19 @@ var BtrfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
 		"fatal_errors",
 		"Action to take when encountering a fatal error.",
-	): docvalues.StringValue{},
+	): docvalues.EnumValue{
+		EnforceValues: true,
+		Values: []docvalues.EnumString{
+			docvalues.CreateEnumStringWithDoc(
+				"bug",
+				"BUG() on a fatal error, the system will stay in the crashed state and may be still partially usable, but reboot is required for full operation",
+			),
+			docvalues.CreateEnumStringWithDoc(
+				"panic",
+				"panic() on a fatal error, depending on other system configuration, this may be followed by a reboot. Please refer to the documentation of kernel boot parameters, e.g. panic, oops or crashkernel.",
+			),
+		},
+	},
 	docvalues.CreateEnumStringWithDoc(
 		"fragment",
 		"A debugging helper to intentionally fragment given type of block groups. The type can be data, metadata or all. This mount option should not be used outside of debugging environments and is not recognized if the kernel config option BTRFS_DEBUG is not enabled.",
@@ -34,7 +70,28 @@ var BtrfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
 		"max_inline",
 		"Specify the maximum amount of space, that can be inlined in a metadata b-tree leaf. The value is specified in bytes, optionally with a K suffix (case insensitive). In practice, this value is limited by the filesystem block size (named sectorsize at mkfs time), and memory page size of the system. In case of sectorsize limit, there's some space unavailable due to leaf headers. For example, a 4Ki",
-	): docvalues.StringValue{},
+	): docvalues.OrValue{
+		Values: []docvalues.Value{
+			docvalues.EnumValue{
+				EnforceValues: true,
+				Values: []docvalues.EnumString{
+					docvalues.CreateEnumStringWithDoc(
+						"0",
+						"panic() on a fatal error, depending on other system configuration, this may be followed by a reboot. Please refer to the documentation of kernel boot parameters, e.g. panic, oops or crashkernel.",
+					),
+				},
+			},
+			docvalues.SuffixWithMeaningValue{
+				Suffixes: []docvalues.Suffix{
+					{
+						Suffix:  "K",
+						Meaning: "Kilobytes",
+					},
+				},
+				SubValue: docvalues.NumberValue{Min: &maxInlineMin},
+			},
+		},
+	},
 	docvalues.CreateEnumStringWithDoc(
 		"metadata_ratio",
 		"Specifies that 1 metadata chunk should be allocated after every value data chunks. Default behaviour depends on internal logic, some percent of unused metadata space is attempted to be maintained but is not always possible if there's not enough space left for chunk allocation. The option could be useful to override the internal logic in favor of the metadata allocation if the expected workload",
@@ -50,7 +107,7 @@ var BtrfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 	docvalues.CreateEnumStringWithDoc(
 		"thread_pool",
 		"The number of worker threads to start. NRCPUS is number of on-line CPUs detected at the time of mount. Small number leads to less parallelism in processing data and metadata, higher numbers could lead to a performance hit due to increased locking contention, process scheduling, cache-line bouncing or costly data transfers between local CPU memories.",
-	): docvalues.StringValue{},
+	): docvalues.PositiveNumberValue(),
 }
 
 var BtrfsDocumentationEnums = []docvalues.EnumString{
