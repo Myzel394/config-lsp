@@ -57,11 +57,11 @@ func (s wireguardSection) getCompletionsForEmptyLine() ([]protocol.CompletionIte
 		return nil, nil
 	}
 
+	options := make(map[docvalues.EnumString]docvalues.Value)
+
 	switch *s.Name {
 	case "Interface":
-		availableOptions := map[docvalues.EnumString]docvalues.Value{}
-
-		maps.Copy(availableOptions, interfaceOptions)
+		maps.Copy(options, interfaceOptions)
 
 		// Remove existing options
 		for _, property := range s.Properties {
@@ -71,31 +71,66 @@ func (s wireguardSection) getCompletionsForEmptyLine() ([]protocol.CompletionIte
 
 			// Remove the option from the available options
 			maps.DeleteFunc(
-				availableOptions,
+				options,
 				func(key docvalues.EnumString, value docvalues.Value) bool {
 					return key.DescriptionText == property.Key.Name
 				},
 			)
 		}
+	case "Peer":
+		maps.Copy(options, peerOptions)
 
-		kind := protocol.CompletionItemKindProperty
+		// Remove existing options
+		for _, property := range s.Properties {
+			if _, found := peerAllowedDuplicateFields[property.Key.Name]; found {
+				continue
+			}
 
-		return utils.MapMapToSlice(
-			availableOptions,
-			func(key docvalues.EnumString, value docvalues.Value) protocol.CompletionItem {
-				insertText := key.InsertText + " = "
-
-				return protocol.CompletionItem{
-					Label:         key.InsertText,
-					InsertText:    &insertText,
-					Documentation: key.Documentation,
-					Kind:          &kind,
-				}
-			},
-		), nil
+			// Remove the option from the available options
+			maps.DeleteFunc(
+				options,
+				func(key docvalues.EnumString, value docvalues.Value) bool {
+					return key.DescriptionText == property.Key.Name
+				},
+			)
+		}
 	}
 
-	return []protocol.CompletionItem{}, nil
+	kind := protocol.CompletionItemKindProperty
+
+	return utils.MapMapToSlice(
+		options,
+		func(key docvalues.EnumString, value docvalues.Value) protocol.CompletionItem {
+			insertText := key.InsertText + " = "
+
+			return protocol.CompletionItem{
+				Label:         key.InsertText,
+				InsertText:    &insertText,
+				Documentation: key.Documentation,
+				Kind:          &kind,
+			}
+		},
+	), nil
+}
+
+func getSeparatorCompletion(property wireguardProperty, character uint32) ([]protocol.CompletionItem, error) {
+	var insertText string
+
+	if character == property.Key.Location.End {
+		insertText = property.Key.Name + " = "
+	} else {
+		insertText = "= "
+	}
+
+	kind := protocol.CompletionItemKindValue
+
+	return []protocol.CompletionItem{
+		{
+			Label:      insertText,
+			InsertText: &insertText,
+			Kind:       &kind,
+		},
+	}, propertyNotFullyTypedError{}
 }
 
 func (p wireguardSection) getCompletionsForPropertyLine(
@@ -109,31 +144,25 @@ func (p wireguardSection) getCompletionsForPropertyLine(
 	}
 
 	if property.Separator == nil {
-		var insertText string
-
-		if character == property.Key.Location.End {
-			insertText = property.Key.Name + " = "
-		} else {
-			insertText = "= "
-		}
-
-		kind := protocol.CompletionItemKindValue
-
-		return []protocol.CompletionItem{
-			{
-				Label:      insertText,
-				InsertText: &insertText,
-				Kind:       &kind,
-			},
-		}, propertyNotFullyTypedError{}
+		return getSeparatorCompletion(*property, character)
 	}
 
 	var option docvalues.Value
 
-	for enum, opt := range interfaceOptions {
-		if enum.InsertText == property.Key.Name {
-			option = opt
-			break
+	switch *p.Name {
+	case "Interface":
+		for enum, opt := range interfaceOptions {
+			if enum.InsertText == property.Key.Name {
+				option = opt
+				break
+			}
+		}
+	case "Peer":
+		for enum, opt := range peerOptions {
+			if enum.InsertText == property.Key.Name {
+				option = opt
+				break
+			}
 		}
 	}
 

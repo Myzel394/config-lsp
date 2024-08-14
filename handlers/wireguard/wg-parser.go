@@ -40,30 +40,13 @@ func (p wireguardParser) hasInterfaceSection() bool {
 }
 
 func (p wireguardParser) getRootCompletionsForEmptyLine() []protocol.CompletionItem {
-	kind := protocol.CompletionItemKindInterface
 	completions := []protocol.CompletionItem{}
 
 	if !p.hasInterfaceSection() {
-		sortText := "Z"
-		insertText := "[Interface]\n"
-		completions = append(completions, protocol.CompletionItem{
-			Label:         "[Interface]",
-			InsertText:    &insertText,
-			Kind:          &kind,
-			Documentation: "An interface section represents the local node's configuration",
-			SortText:      &sortText,
-		})
+		completions = append(completions, headerInterfaceEnum.ToCompletionItem())
 	}
 
-	sortText := "A"
-	insertText := "[Peer]\n"
-	completions = append(completions, protocol.CompletionItem{
-		Label:         "[Peer]",
-		InsertText:    &insertText,
-		Kind:          &kind,
-		Documentation: "A peer section represents a peer that this node communicates with",
-		SortText:      &sortText,
-	})
+	completions = append(completions, headerPeerEnum.ToCompletionItem())
 
 	return completions
 }

@@ -5,23 +5,18 @@ import (
 	docvalues "config-lsp/doc-values"
 )
 
-var HeaderField = docvalues.EnumValue{
-	EnforceValues: true,
-	Values: []docvalues.EnumString{
-		docvalues.CreateEnumStringWithDoc(
-			"Interface",
-			"Defines the VPN settings for the local node.",
-		),
-		docvalues.CreateEnumStringWithDoc(
-			"Peer",
-			`Defines the VPN settings for a remote peer capable of routing traffic for one or more addresses (itself and/or other peers). Peers can be either a public bounce server that relays traffic to other peers, or a directly accessible client via LAN/internet that is not behind a NAT and only routes traffic for itself.
+var headerInterfaceEnum = docvalues.CreateEnumStringWithDoc(
+	"[Interface]",
+	"Defines the VPN settings for the local node.",
+)
+var headerPeerEnum = docvalues.CreateEnumStringWithDoc(
+	"[Peer]",
+	`Defines the VPN settings for a remote peer capable of routing traffic for one or more addresses (itself and/or other peers). Peers can be either a public bounce server that relays traffic to other peers, or a directly accessible client via LAN/internet that is not behind a NAT and only routes traffic for itself.
 
 All clients must be defined as peers on the public bounce server. Simple clients that only route traffic for themselves, only need to define peers for the public relay, and any other nodes directly accessible. Nodes that are behind separate NATs should not be defined as peers outside of the public server config, as no direct route is available between separate NATs. Instead, nodes behind NATs should only define the public relay servers and other public clients as their peers, and should specify AllowedIPs = 192.0.2.1/24 on the public server that accept routes and bounce traffic for the VPN subnet to the remote NAT-ed peers.
 
 In summary, all nodes must be defined on the main bounce server. On client servers, only peers that are directly accessible from a node should be defined as peers of that node, any peers that must be relayed by a bounce server should be left out and will be handled by the relay server's catchall route.`,
-		),
-	},
-}
+)
 
 var minPortValue = 1
 var maxPortValue = 65535
@@ -214,6 +209,10 @@ Remove the iptables rule that forwards packets on the WireGuard interface
 
     PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
 	`): docvalues.StringValue{},
+	docvalues.CreateEnumStringWithDoc(
+		"PreSharedKey",
+		"Optionally defines a pre-shared key for the peer, used to authenticate the connection. This is not necessary, but strongly recommended for security.",
+	): docvalues.StringValue{},
 }
 
 var interfaceAllowedDuplicateFields = map[string]struct{}{
@@ -222,3 +221,90 @@ var interfaceAllowedDuplicateFields = map[string]struct{}{
 	"PreDown":  {},
 	"PostDown": {},
 }
+
+var peerOptions map[docvalues.EnumString]docvalues.Value = map[docvalues.EnumString]docvalues.Value{
+	docvalues.CreateEnumStringWithDoc(
+		"Endpoint",
+		`Defines the publicly accessible address for a remote peer. This should be left out for peers behind a NAT or peers that don't have a stable publicly accessible IP:PORT pair. Typically, this only needs to be defined on the main bounce server, but it can also be defined on other public nodes with stable IPs like public-server2 in the example config below.
+
+## Examples
+Endpoint is an IP address
+
+	[Endpoint = 123.124.125.126:51820] (IPv6 is also supported)
+
+Endpoint is a hostname/FQDN
+
+	 Endpoint = public-server1.example-vpn.tld:51820
+	 `): docvalues.StringValue{},
+	docvalues.CreateEnumStringWithDoc(
+		"AllowedIPs",
+		`This defines the IP ranges for which a peer will route traffic. On simple clients, this is usually a single address (the VPN address of the simple client itself). For bounce servers this will be a range of the IPs or subnets that the relay server is capable of routing traffic for. Multiple IPs and subnets may be specified using comma-separated IPv4 or IPv6 CIDR notation (from a single /32 or /128 address, all the way up to 0.0.0.0/0 and ::/0 to indicate a default route to send all internet and VPN traffic through that peer). This option may be specified multiple times.
+
+When deciding how to route a packet, the system chooses the most specific route first, and falls back to broader routes. So for a packet destined to 192.0.2.3, the system would first look for a peer advertising 192.0.2.3/32 specifically, and would fall back to a peer advertising 192.0.2.1/24 or a larger range like 0.0.0.0/0 as a last resort.
+
+## Examples
+
+Peer is a simple client that only accepts traffic to/from itself
+
+    AllowedIPs = 192.0.2.3/32
+
+Peer is a relay server that can bounce VPN traffic to all other peers
+
+    AllowedIPs = 192.0.2.1/24
+
+Peer is a relay server that bounces all internet & VPN traffic (like a proxy), including IPv6
+
+    AllowedIPs = 0.0.0.0/0,::/0
+
+Peer is a relay server that routes to itself and only one other peer
+
+    AllowedIPs = 192.0.2.3/32,192.0.2.4/32
+
+Peer is a relay server that routes to itself and all nodes on its local LAN
+
+    AllowedIPs = 192.0.2.3/32,192.168.1.1/24
+`,
+	): docvalues.ArrayValue{
+		Separator:           ",",
+		DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+		SubValue: docvalues.IPAddressValue{
+			AllowIPv4:  true,
+			AllowIPv6:  true,
+			AllowRange: true,
+		},
+	},
+	docvalues.CreateEnumStringWithDoc(
+		"PublicKey",
+		`This is the public key for the remote node, shareable with all peers. All nodes must have a public key set, regardless of whether they are public bounce servers relaying traffic, or simple clients joining the VPN.
+
+This key can be generated with wg pubkey < example.key > example.key.pub. (see above for how to generate the private key example.key)
+
+## Examples
+
+	PublicKey = somePublicKeyAbcdAbcdAbcdAbcd=
+	`): docvalues.StringValue{},
+	docvalues.CreateEnumStringWithDoc(
+		"PersistentKeepalive",
+		`If the connection is going from a NAT-ed peer to a public peer, the node behind the NAT must regularly send an outgoing ping in order to keep the bidirectional connection alive in the NAT router's connection table.
+
+## Examples
+
+Local public node to remote public node
+
+    This value should be left undefined as persistent pings are not needed.
+
+Local public node to remote NAT-ed node
+
+    This value should be left undefined as it's the client's responsibility to keep the connection alive because the server cannot reopen a dead connection to the client if it times out.
+
+Oocal NAT-ed node to remote public node
+
+    PersistentKeepalive = 25 this will send a ping to every 25 seconds keeping the connection open in the local NAT router's connection table.
+`): docvalues.PositiveNumberValue(),
+	docvalues.CreateEnumStringWithDoc(
+		"PreSharedKey",
+		"Optionally defines a pre-shared key for the peer, used to authenticate the connection. This is not necessary, but strongly recommended for security.",
+	): docvalues.StringValue{},
+}
+
+var peerAllowedDuplicateFields = map[string]struct{}{}
