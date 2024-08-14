@@ -17,7 +17,7 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 	case LineTypeComment:
 		return nil, nil
 	case LineTypeHeader:
-		return nil, nil
+		return parser.getRootCompletionsForEmptyLine(), nil
 	case LineTypeEmpty:
 		if section == nil {
 			return parser.getRootCompletionsForEmptyLine(), nil
@@ -25,7 +25,11 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 
 		return section.getCompletionsForEmptyLine()
 	case LineTypeProperty:
-		return nil, nil
+		if section == nil {
+			return nil, nil
+		}
+
+		return section.getCompletionsForPropertyLine(lineNumber, params.Position.Character)
 	}
 
 	panic("TextDocumentCompletion: unexpected line type")

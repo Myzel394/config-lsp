@@ -96,3 +96,53 @@ func TestInterfaceAndPeerSectionRootCompletionsWork(
 		t.Fatalf("getRootCompletionsForEmptyLine: Expected 1 completions, but got %v", len(completions))
 	}
 }
+
+func TestPropertyNoSepatorShouldCompleteSeparator(
+	t *testing.T,
+) {
+	sample := dedent(`
+[Interface]
+DNS
+`)
+	parser := createWireguardParser()
+	parser.parseFromString(sample)
+
+	completions, err := parser.Sections[0].getCompletionsForPropertyLine(1, 3)
+
+	if err == nil {
+		t.Fatalf("getCompletionsForPropertyLine err is nil but should not be")
+	}
+
+	if len(completions) != 1 {
+		t.Fatalf("getCompletionsForPropertyLine: Expected 1 completion, but got %v", len(completions))
+	}
+
+	if *completions[0].InsertText != " = " {
+		t.Fatalf("getCompletionsForPropertyLine: Expected completion to be ' = ', but got '%v'", completions[0].Label)
+	}
+}
+
+func TestPropertyNoSeparatorWithSpaceShouldCompleteSeparator(
+	t *testing.T,
+) {
+	sample := dedent(`
+[Interface]
+DNS 
+`)
+	parser := createWireguardParser()
+	parser.parseFromString(sample)
+
+	completions, err := parser.Sections[0].getCompletionsForPropertyLine(1, 4)
+
+	if err == nil {
+		t.Fatalf("getCompletionsForPropertyLine err is nil but should not be")
+	}
+
+	if len(completions) != 1 {
+		t.Fatalf("getCompletionsForPropertyLine: Expected 1 completion, but got %v", len(completions))
+	}
+
+	if *completions[0].InsertText != "= " {
+		t.Fatalf("getCompletionsForPropertyLine: Expected completion to be '= ', but got '%v'", completions[0].Label)
+	}
+}

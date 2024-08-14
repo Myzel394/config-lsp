@@ -1,7 +1,9 @@
 // Documentation taken from https://github.com/pirate/wireguard-docs
 package wireguard
 
-import docvalues "config-lsp/doc-values"
+import (
+	docvalues "config-lsp/doc-values"
+)
 
 var HeaderField = docvalues.EnumValue{
 	EnforceValues: true,
