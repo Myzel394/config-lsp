@@ -302,3 +302,49 @@ DNS=1.1.1.1
 		t.Fatalf("parseFromString: Invalid start and end lines %v", parser.Sections)
 	}
 }
+
+func TestPartialKeyWorksCorrectly(
+	t *testing.T,
+) {
+	sample := dedent(`
+[Interface]
+DNS
+`)
+	parser := createWireguardParser()
+	errors := parser.parseFromString(sample)
+
+	if len(errors) > 0 {
+		t.Fatalf("parseFromString failed with error: %v", errors)
+	}
+
+	if !(parser.Sections[0].Properties[1].Key.Name == "DNS") {
+		t.Fatalf("parseFromString failed to collect properties of section 0: %v", parser.Sections[0].Properties)
+	}
+
+	if !(parser.Sections[0].Properties[1].Separator == nil) {
+		t.Fatalf("parseFromString failed to collect properties of section 0: %v", parser.Sections[0].Properties)
+	}
+}
+
+func TestPartialValueWithSeparatorWorksCorrectly(
+	t *testing.T,
+) {
+	sample := dedent(`
+[Interface]
+DNS=
+`)
+	parser := createWireguardParser()
+	errors := parser.parseFromString(sample)
+
+	if len(errors) > 0 {
+		t.Fatalf("parseFromString failed with error: %v", errors)
+	}
+
+	if !(parser.Sections[0].Properties[1].Value == nil) {
+		t.Fatalf("parseFromString failed to collect properties of section 0: %v", parser.Sections[0].Properties)
+	}
+
+	if !(parser.Sections[0].Properties[1].Separator != nil) {
+		t.Fatalf("parseFromString failed to collect properties of section 0: %v", parser.Sections[0].Properties)
+	}
+}

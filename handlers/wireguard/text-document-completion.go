@@ -29,7 +29,19 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 			return nil, nil
 		}
 
-		return section.getCompletionsForPropertyLine(lineNumber, params.Position.Character)
+		completions, err := section.getCompletionsForPropertyLine(lineNumber, params.Position.Character)
+
+		if err != nil {
+			switch err.(type) {
+			// Ignore
+			case propertyNotFullyTypedError:
+				break
+			default:
+				return nil, err
+			}
+		}
+
+		return completions, nil
 	}
 
 	panic("TextDocumentCompletion: unexpected line type")

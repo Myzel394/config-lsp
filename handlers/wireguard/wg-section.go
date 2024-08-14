@@ -43,13 +43,13 @@ func (s wireguardSection) String() string {
 }
 
 func (s *wireguardSection) findProperty(lineNumber uint32) (*wireguardProperty, error) {
-	for _, property := range s.Properties {
-		if property.Key.Location.Start <= lineNumber && property.Key.Location.End >= lineNumber {
-			return &property, nil
-		}
+	property, found := s.Properties[lineNumber]
+
+	if !found {
+		return nil, propertyNotFoundError{}
 	}
 
-	return nil, propertyNotFoundError{}
+	return &property, nil
 }
 
 func (s wireguardSection) getCompletionsForEmptyLine() ([]protocol.CompletionItem, error) {
@@ -112,15 +112,18 @@ func (p wireguardSection) getCompletionsForPropertyLine(
 		var insertText string
 
 		if character == property.Key.Location.End {
-			insertText = " = "
+			insertText = property.Key.Name + " = "
 		} else {
 			insertText = "= "
 		}
 
+		kind := protocol.CompletionItemKindValue
+
 		return []protocol.CompletionItem{
 			{
-				Label:      "=",
+				Label:      insertText,
 				InsertText: &insertText,
+				Kind:       &kind,
 			},
 		}, propertyNotFullyTypedError{}
 	}

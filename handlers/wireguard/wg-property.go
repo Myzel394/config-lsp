@@ -48,6 +48,7 @@ func createWireguardProperty(line string) (*wireguardProperty, error) {
 
 		return &wireguardProperty{
 			Key: wireguardPropertyKey{
+				Name: line[indexes[0]:indexes[1]],
 				Location: characterLocation{
 					Start: uint32(indexes[0]),
 					End:   uint32(indexes[1]),
