@@ -83,7 +83,7 @@ func createWireguardProperty(line string) (*wireguardProperty, error) {
 
 	var value *wireguardPropertyValue
 
-	if len(indexes) > 6 {
+	if indexes[6] != -1 && indexes[7] != -1 {
 		// value exists
 		valueStart := uint32(indexes[6])
 		valueEnd := uint32(indexes[7])

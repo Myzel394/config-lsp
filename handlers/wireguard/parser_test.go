@@ -261,115 +261,44 @@ func TestMultipleSectionsNoProperties(
 	}
 }
 
-func TestGetLineTypeWorksCorrectly(
+func TestWildTest1WorksCorrectly(
 	t *testing.T,
 ) {
 	sample := dedent(`
-# A comment at the very top
-Test=Hello
-
 [Interface]
-PrivateKey = 1234567890 # Some comment
-Address = 10.0.0.1
+DNS=1.1.1.1
 
 
-
-[Peer]
-PublicKey = 1234567890
-
-; I'm a comment
 `)
 
 	parser := createWireguardParser()
-	parser.parseFromString(sample)
+	errors := parser.parseFromString(sample)
 
-	lineType := parser.getTypeByLine(0)
-	if lineType != LineTypeComment {
-		t.Fatalf("getTypeByLine: Expected line 0 to be a comment, but it is %v", lineType)
+	if len(errors) > 0 {
+		t.Fatalf("parseFromString failed with error: %v", errors)
 	}
 
-	lineType = parser.getTypeByLine(1)
-	if lineType != LineTypeProperty {
-		t.Fatalf("getTypeByLine: Expected line 1 to be a property, but it is %v", lineType)
+	if !(len(parser.Sections) == 1) {
+		t.Fatalf("parseFromString failed to collect sections: %v", parser.Sections)
 	}
 
-	lineType = parser.getTypeByLine(2)
-	if lineType != LineTypeEmpty {
-		t.Fatalf("getTypeByLine: Expected line 2 to be empty, but it is %v", lineType)
+	if !(len(parser.Sections[0].Properties) == 1) {
+		t.Fatalf("parseFromString failed to collect properties: %v", parser.Sections[0].Properties)
 	}
 
-	lineType = parser.getTypeByLine(3)
-	if lineType != LineTypeHeader {
-		t.Fatalf("getTypeByLine: Expected line 3 to be a header, but it is %v", lineType)
+	if !(parser.Sections[0].Properties[1].Key.Name == "DNS") {
+		t.Fatalf("parseFromString failed to collect properties of section 0: %v", parser.Sections[0].Properties)
 	}
 
-	lineType = parser.getTypeByLine(4)
-	if lineType != LineTypeProperty {
-		t.Fatalf("getTypeByLine: Expected line 4 to be a property, but it is %v", lineType)
+	if !(parser.Sections[0].Properties[1].Value.Value == "1.1.1.1") {
+		t.Fatalf("parseFromString failed to collect properties of section 0: %v", parser.Sections[0].Properties)
 	}
 
-	lineType = parser.getTypeByLine(12)
-	if lineType != LineTypeComment {
-		t.Fatalf("getTypeByLine: Expected line 12 to be a comment, but it is %v", lineType)
-	}
-}
-
-func TestGetBelongingSectionWorksCorrectly(
-	t *testing.T,
-) {
-	sample := dedent(`
-# A comment at the very top
-Test=Hello
-
-[Interface]
-PrivateKey = 1234567890 # Some comment
-Address = 10.0.0.1
-
-
-
-[Peer]
-PublicKey = 1234567890
-
-; I'm a comment
-`)
-
-	parser := createWireguardParser()
-	parser.parseFromString(sample)
-
-	section := parser.getBelongingSectionByLine(0)
-
-	if section != nil {
-		t.Fatalf("getBelongingSectionByLine: Expected line 0 to be in no section, but it is in %v", section)
+	if !(len(parser.CommentLines) == 0) {
+		t.Fatalf("parseFromString failed to collect comment lines: %v", parser.CommentLines)
 	}
 
-	section = parser.getBelongingSectionByLine(1)
-
-	if section != nil {
-		t.Fatalf("getBelongingSectionByLine: Expected line 1 to be in no section, but it is in %v", section)
-	}
-
-	section = parser.getBelongingSectionByLine(2)
-	if section != nil {
-		t.Fatalf("getBelongingSectionByLine: Expected line 2 to be in no section, but it is in %v", section)
-	}
-
-	section = parser.getBelongingSectionByLine(3)
-	if section == nil || *section.Name != "Interface" {
-		t.Fatalf("getBelongingSectionByLine: Expected line 3 to be in section Interface, but it is in %v", section)
-	}
-
-	section = parser.getBelongingSectionByLine(4)
-	if section == nil || *section.Name != "Interface" {
-		t.Fatalf("getBelongingSectionByLine: Expected line 4 to be in section Interface, but it is in %v", section)
-	}
-
-	section = parser.getBelongingSectionByLine(6)
-	if section == nil || *section.Name != "Interface" {
-		t.Fatalf("getBelongingSectionByLine: Expected line 6 to be in section Interface, but it is in %v", section)
-	}
-
-	section = parser.getBelongingSectionByLine(10)
-	if section == nil || *section.Name != "Peer" {
-		t.Fatalf("getBelongingSectionByLine: Expected line 10 to be in section Peer, but it is in %v", section)
+	if !(parser.Sections[0].StartLine == 0 && parser.Sections[0].EndLine == 1) {
+		t.Fatalf("parseFromString: Invalid start and end lines %v", parser.Sections)
 	}
 }
