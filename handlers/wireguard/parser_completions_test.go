@@ -45,3 +45,54 @@ PrivateKey = 1234567890
 		t.Fatalf("getCompletionsForEmptyLine: Expected %v completions, but got %v", expected, len(completions))
 	}
 }
+
+func TestEmptyRootCompletionsWork(
+	t *testing.T,
+) {
+	sample := dedent(`
+	`)
+
+	parser := createWireguardParser()
+	parser.parseFromString(sample)
+
+	completions := parser.getRootCompletionsForEmptyLine()
+
+	if len(completions) != 2 {
+		t.Fatalf("getRootCompletionsForEmptyLine: Expected 2 completions, but got %v", len(completions))
+	}
+}
+
+func TestInterfaceSectionRootCompletionsBeforeWork(
+	t *testing.T,
+) {
+	sample := dedent(`
+
+[Interface]
+`)
+	parser := createWireguardParser()
+	parser.parseFromString(sample)
+
+	completions := parser.getRootCompletionsForEmptyLine()
+
+	if len(completions) != 1 {
+		t.Fatalf("getRootCompletionsForEmptyLine: Expected 1 completions, but got %v", len(completions))
+	}
+}
+
+func TestInterfaceAndPeerSectionRootCompletionsWork(
+	t *testing.T,
+) {
+	sample := dedent(`
+[Interface]
+
+[Peer]
+`)
+	parser := createWireguardParser()
+	parser.parseFromString(sample)
+
+	completions := parser.getRootCompletionsForEmptyLine()
+
+	if len(completions) != 1 {
+		t.Fatalf("getRootCompletionsForEmptyLine: Expected 1 completions, but got %v", len(completions))
+	}
+}

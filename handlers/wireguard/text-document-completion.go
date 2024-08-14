@@ -20,7 +20,7 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 		return nil, nil
 	case LineTypeEmpty:
 		if section == nil {
-			return nil, nil
+			return parser.getRootCompletionsForEmptyLine(), nil
 		}
 
 		return section.getCompletionsForEmptyLine()

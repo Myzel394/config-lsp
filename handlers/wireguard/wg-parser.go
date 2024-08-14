@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"slices"
 	"strings"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 var commentPattern = regexp.MustCompile(`^\s*(;|#)`)
@@ -25,6 +27,45 @@ type wireguardParser struct {
 func (p *wireguardParser) clear() {
 	p.Sections = []wireguardSection{}
 	p.CommentLines = map[uint32]struct{}{}
+}
+
+func (p wireguardParser) hasInterfaceSection() bool {
+	for _, section := range p.Sections {
+		if section.Name != nil && *section.Name == "Interface" {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (p wireguardParser) getRootCompletionsForEmptyLine() []protocol.CompletionItem {
+	kind := protocol.CompletionItemKindInterface
+	completions := []protocol.CompletionItem{}
+
+	if !p.hasInterfaceSection() {
+		sortText := "Z"
+		insertText := "[Interface]\n"
+		completions = append(completions, protocol.CompletionItem{
+			Label:         "[Interface]",
+			InsertText:    &insertText,
+			Kind:          &kind,
+			Documentation: "An interface section represents the local node's configuration",
+			SortText:      &sortText,
+		})
+	}
+
+	sortText := "A"
+	insertText := "[Peer]\n"
+	completions = append(completions, protocol.CompletionItem{
+		Label:         "[Peer]",
+		InsertText:    &insertText,
+		Kind:          &kind,
+		Documentation: "A peer section represents a peer that this node communicates with",
+		SortText:      &sortText,
+	})
+
+	return completions
 }
 
 func createWireguardParser() wireguardParser {
