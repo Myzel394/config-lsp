@@ -1,6 +1,7 @@
 package wireguard
 
 import (
+	"config-lsp/common"
 	"regexp"
 	"slices"
 	"strings"
@@ -21,11 +22,16 @@ type wireguardParser struct {
 	CommentLines map[uint32]struct{}
 }
 
+func (p *wireguardParser) clear() {
+	p.Sections = []wireguardSection{}
+	p.CommentLines = map[uint32]struct{}{}
+}
+
 func createWireguardParser() wireguardParser {
-	return wireguardParser{
-		Sections:     []wireguardSection{},
-		CommentLines: map[uint32]struct{}{},
-	}
+	parser := wireguardParser{}
+	parser.clear()
+
+	return parser
 }
 
 type lineType string
@@ -53,8 +59,8 @@ func getLineType(line string) lineType {
 	return LineTypeProperty
 }
 
-func (p *wireguardParser) parseFromString(input string) []lineError {
-	errors := []lineError{}
+func (p *wireguardParser) parseFromString(input string) []common.ParseError {
+	errors := []common.ParseError{}
 	lines := strings.Split(
 		input,
 		"\n",
@@ -81,7 +87,7 @@ func (p *wireguardParser) parseFromString(input string) []lineError {
 			err := collectedProperties.AddLine(currentLineNumber, line)
 
 			if err != nil {
-				errors = append(errors, lineError{
+				errors = append(errors, common.ParseError{
 					Line: currentLineNumber,
 					Err:  err,
 				})

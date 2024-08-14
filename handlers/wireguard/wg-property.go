@@ -1,6 +1,7 @@
 package wireguard
 
 import (
+	docvalues "config-lsp/doc-values"
 	"config-lsp/utils"
 	"regexp"
 	"strings"
@@ -42,7 +43,7 @@ func createWireguardProperty(line string) (*wireguardProperty, error) {
 
 		if indexes == nil {
 			// weird, should not happen
-			return nil, &malformedLineError{}
+			return nil, &docvalues.MalformedLineError{}
 		}
 
 		return &wireguardProperty{
@@ -58,7 +59,7 @@ func createWireguardProperty(line string) (*wireguardProperty, error) {
 	indexes := linePattern.FindStringSubmatchIndex(line)
 
 	if indexes == nil || len(indexes) == 0 {
-		return nil, &malformedLineError{}
+		return nil, &docvalues.MalformedLineError{}
 	}
 
 	keyStart := uint32(indexes[2])
