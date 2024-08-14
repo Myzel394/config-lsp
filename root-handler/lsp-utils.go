@@ -15,11 +15,13 @@ type SupportedLanguage string
 const (
 	LanguageSSHDConfig SupportedLanguage = "sshd_config"
 	LanguageFstab      SupportedLanguage = "fstab"
+	LanguageWireguard  SupportedLanguage = "languagewireguard"
 )
 
 var AllSupportedLanguages = []string{
 	string(LanguageSSHDConfig),
 	string(LanguageFstab),
+	string(LanguageWireguard),
 }
 
 type FatalFileNotReadableError struct {
@@ -53,9 +55,14 @@ var valueToLanguageMap = map[string]SupportedLanguage{
 
 	"fstab":     LanguageFstab,
 	"etc/fstab": LanguageFstab,
+
+	"wireguard":         LanguageWireguard,
+	"wg":                LanguageWireguard,
+	"languagewireguard": LanguageWireguard,
 }
 
 var typeOverwriteRegex = regexp.MustCompile(`^#\?\s*lsp\.language\s*=\s*(\w+)\s*$`)
+var wireguardPattern = regexp.MustCompile(`/wg\d+\.conf$`)
 
 func DetectLanguage(
 	content string,
@@ -92,6 +99,10 @@ func DetectLanguage(
 		return LanguageSSHDConfig, nil
 	case "file:///etc/fstab":
 		return LanguageFstab, nil
+	}
+
+	if strings.HasPrefix(uri, "file:///etc/wireguard/") || wireguardPattern.MatchString(uri) {
+		return LanguageWireguard, nil
 	}
 
 	return "", common.ParseError{

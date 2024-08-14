@@ -25,6 +25,7 @@ func SetUpRootHandler() {
 		TextDocumentDidChange:  TextDocumentDidChange,
 		TextDocumentCompletion: TextDocumentCompletion,
 		TextDocumentHover:      TextDocumentHover,
+		TextDocumentDidClose:   TextDocumentDidClose,
 	}
 
 	server := server.NewServer(&lspHandler, lsName, false)
