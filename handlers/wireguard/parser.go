@@ -134,7 +134,7 @@ func (p *wireguardParser) parseFromString(input string) []lineError {
 	return errors
 }
 
-func (p *wireguardParser) getTypeByLine(line uint32) lineType {
+func (p wireguardParser) getTypeByLine(line uint32) lineType {
 	// Check if line is a comment
 	if _, found := p.CommentLines[line]; found {
 		return LineTypeComment
@@ -168,13 +168,10 @@ func (p *wireguardParser) getTypeByLine(line uint32) lineType {
 // [Peer]
 //
 // This would return the section [Interface]
-func (p *wireguardParser) getBelongingSectionByLine(line uint32) *wireguardSection {
-	// Create a copy
-	sections := append([]wireguardSection{}, p.Sections...)
+func (p wireguardParser) getBelongingSectionByLine(line uint32) *wireguardSection {
+	for index := range p.Sections {
+		section := p.Sections[len(p.Sections)-index-1]
 
-	slices.Reverse(sections)
-
-	for _, section := range sections {
 		if section.StartLine <= line && section.Name != nil {
 			return &section
 		}
