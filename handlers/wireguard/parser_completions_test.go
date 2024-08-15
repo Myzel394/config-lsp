@@ -117,8 +117,8 @@ DNS
 		t.Fatalf("getCompletionsForPropertyLine: Expected 1 completion, but got %v", len(completions))
 	}
 
-	if *completions[0].InsertText != " = " {
-		t.Fatalf("getCompletionsForPropertyLine: Expected completion to be ' = ', but got '%v'", completions[0].Label)
+	if *completions[0].InsertText != "DNS = " {
+		t.Fatalf("getCompletionsForPropertyLine: Expected completion to be 'DNS = ', but got '%v'", completions[0].Label)
 	}
 }
 

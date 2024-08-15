@@ -57,7 +57,7 @@ func (s wireguardSection) getCompletionsForEmptyLine() ([]protocol.CompletionIte
 		return nil, nil
 	}
 
-	options := make(map[docvalues.EnumString]docvalues.Value)
+	options := make(map[string]docvalues.DocumentationValue)
 
 	switch *s.Name {
 	case "Interface":
@@ -69,13 +69,7 @@ func (s wireguardSection) getCompletionsForEmptyLine() ([]protocol.CompletionIte
 				continue
 			}
 
-			// Remove the option from the available options
-			maps.DeleteFunc(
-				options,
-				func(key docvalues.EnumString, value docvalues.Value) bool {
-					return key.DescriptionText == property.Key.Name
-				},
-			)
+			delete(options, property.Key.Name)
 		}
 	case "Peer":
 		maps.Copy(options, peerOptions)
@@ -86,13 +80,7 @@ func (s wireguardSection) getCompletionsForEmptyLine() ([]protocol.CompletionIte
 				continue
 			}
 
-			// Remove the option from the available options
-			maps.DeleteFunc(
-				options,
-				func(key docvalues.EnumString, value docvalues.Value) bool {
-					return key.DescriptionText == property.Key.Name
-				},
-			)
+			delete(options, property.Key.Name)
 		}
 	}
 
@@ -100,14 +88,14 @@ func (s wireguardSection) getCompletionsForEmptyLine() ([]protocol.CompletionIte
 
 	return utils.MapMapToSlice(
 		options,
-		func(key docvalues.EnumString, value docvalues.Value) protocol.CompletionItem {
-			insertText := key.InsertText + " = "
+		func(optionName string, value docvalues.DocumentationValue) protocol.CompletionItem {
+			insertText := optionName + " = "
 
 			return protocol.CompletionItem{
-				Label:         key.InsertText,
-				InsertText:    &insertText,
-				Documentation: key.Documentation,
 				Kind:          &kind,
+				Documentation: value.Documentation,
+				Label:         optionName,
+				InsertText:    &insertText,
 			}
 		},
 	), nil
@@ -151,19 +139,9 @@ func (p wireguardSection) getCompletionsForPropertyLine(
 
 	switch *p.Name {
 	case "Interface":
-		for enum, opt := range interfaceOptions {
-			if enum.InsertText == property.Key.Name {
-				option = opt
-				break
-			}
-		}
+		option = interfaceOptions[property.Key.Name]
 	case "Peer":
-		for enum, opt := range peerOptions {
-			if enum.InsertText == property.Key.Name {
-				option = opt
-				break
-			}
-		}
+		option = peerOptions[property.Key.Name]
 	}
 
 	if option == nil {

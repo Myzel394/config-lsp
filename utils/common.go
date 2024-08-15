@@ -128,6 +128,16 @@ func KeysOfMap[T comparable, O any](values map[T]O) []T {
 	return keys
 }
 
+func ValuesOfMap[T comparable, O any](values map[T]O) []O {
+	keys := make([]O, 0)
+
+	for _, value := range values {
+		keys = append(keys, value)
+	}
+
+	return keys
+}
+
 func DoesPathExist(path string) bool {
 	_, err := os.Stat(path)
 
