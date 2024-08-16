@@ -31,11 +31,11 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 
 		completions, err := section.getCompletionsForPropertyLine(lineNumber, params.Position.Character)
 
-		if err != nil {
+		if completions == nil && err != nil {
 			switch err.(type) {
 			// Ignore
 			case propertyNotFullyTypedError:
-				break
+				return section.getCompletionsForEmptyLine()
 			default:
 				return nil, err
 			}

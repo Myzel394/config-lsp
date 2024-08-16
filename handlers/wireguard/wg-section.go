@@ -132,7 +132,23 @@ func (p wireguardSection) getCompletionsForPropertyLine(
 	}
 
 	if property.Separator == nil {
-		return getSeparatorCompletion(*property, character)
+		if p.Name != nil {
+			switch *p.Name {
+			case "Interface":
+				if _, found := interfaceOptions[property.Key.Name]; found {
+					return getSeparatorCompletion(*property, character)
+				}
+			case "Peer":
+				if _, found := peerOptions[property.Key.Name]; found {
+					return getSeparatorCompletion(*property, character)
+				}
+			}
+
+			// Get empty line completions
+			return nil, propertyNotFullyTypedError{}
+		}
+
+		return nil, propertyNotFoundError{}
 	}
 
 	var option docvalues.Value
@@ -161,7 +177,12 @@ func (p wireguardSection) getCompletionsForPropertyLine(
 
 var validHeaderPattern = regexp.MustCompile(`^\s*\[(?P<header>.+?)\]\s*$`)
 
-func createWireguardSection(startLine uint32, endLine uint32, headerLine string, props wireguardProperties) wireguardSection {
+func createWireguardSection(
+	startLine uint32,
+	endLine uint32,
+	headerLine string,
+	props wireguardProperties,
+) wireguardSection {
 	match := validHeaderPattern.FindStringSubmatch(headerLine)
 
 	var header string
