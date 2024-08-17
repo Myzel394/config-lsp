@@ -214,10 +214,6 @@ Remove the iptables rule that forwards packets on the WireGuard interface
 	`,
 		Value: docvalues.StringValue{},
 	},
-	"PreSharedKey": {
-		Documentation: "Optionally defines a pre-shared key for the peer, used to authenticate the connection. This is not necessary, but strongly recommended for security.",
-		Value:         docvalues.StringValue{},
-	},
 }
 
 var interfaceAllowedDuplicateFields = map[string]struct{}{
@@ -309,10 +305,12 @@ Oocal NAT-ed node to remote public node
 `,
 		Value: docvalues.PositiveNumberValue(),
 	},
-	"PreSharedKey": {
+	"PresharedKey": {
 		Documentation: "Optionally defines a pre-shared key for the peer, used to authenticate the connection. This is not necessary, but strongly recommended for security.",
 		Value:         docvalues.StringValue{},
 	},
 }
 
-var peerAllowedDuplicateFields = map[string]struct{}{}
+var peerAllowedDuplicateFields = map[string]struct{}{
+	"AllowedIPs": {},
+}

@@ -19,30 +19,22 @@ type characterLocation struct {
 }
 
 type wireguardParser struct {
-	Sections []wireguardSection
+	GlobalSection *wireguardSection
+	// <key = name>: if nil then does not belong to a section
+	Sections map[string]wireguardSection
 	// Used to identify where not to show diagnostics
 	CommentLines map[uint32]struct{}
 }
 
 func (p *wireguardParser) clear() {
-	p.Sections = []wireguardSection{}
+	p.Sections = map[string]wireguardSection{}
 	p.CommentLines = map[uint32]struct{}{}
-}
-
-func (p wireguardParser) hasInterfaceSection() bool {
-	for _, section := range p.Sections {
-		if section.Name != nil && *section.Name == "Interface" {
-			return true
-		}
-	}
-
-	return false
 }
 
 func (p wireguardParser) getRootCompletionsForEmptyLine() []protocol.CompletionItem {
 	completions := []protocol.CompletionItem{}
 
-	if !p.hasInterfaceSection() {
+	if _, found := p.Sections["Interface"]; !found {
 		completions = append(completions, headerInterfaceEnum.ToCompletionItem())
 	}
 
@@ -134,13 +126,14 @@ func (p *wireguardParser) parseFromString(input string) []common.ParseError {
 				lastLine = *lastPropertyLine
 			}
 
-			section := createWireguardSection(
+			name, section := createWireguardSection(
 				currentLineNumber,
 				lastLine,
 				line,
 				collectedProperties,
 			)
-			p.Sections = append(p.Sections, section)
+
+			p.Sections[name] = section
 
 			// Reset
 			collectedProperties = wireguardProperties{}
@@ -149,17 +142,12 @@ func (p *wireguardParser) parseFromString(input string) []common.ParseError {
 	}
 
 	if len(collectedProperties) > 0 {
-		p.Sections = append(p.Sections, wireguardSection{
+		p.GlobalSection = &wireguardSection{
 			StartLine:  *earliestPropertyLine,
 			EndLine:    *lastPropertyLine,
-			Name:       nil,
 			Properties: collectedProperties,
-		})
+		}
 	}
-
-	// Since we parse the content from bottom to top,
-	// we need to reverse the order
-	slices.Reverse(p.Sections)
 
 	return errors
 }
