@@ -20,13 +20,13 @@ func (p wireguardParser) checkForDuplicateProperties() []protocol.Diagnostic {
 	diagnostics := []protocol.Diagnostic{}
 
 	for _, section := range p.Sections {
-		diagnostics = append(diagnostics, section.analyDuplicateProperties()...)
+		diagnostics = append(diagnostics, section.analyzeDuplicateProperties()...)
 	}
 
 	return diagnostics
 }
 
-func (p wireguardSection) analyDuplicateProperties() []protocol.Diagnostic {
+func (p wireguardSection) analyzeDuplicateProperties() []protocol.Diagnostic {
 	diagnostics := []protocol.Diagnostic{}
 
 	existingProperties := make(map[string]uint32)

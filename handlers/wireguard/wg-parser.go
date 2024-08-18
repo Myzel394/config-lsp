@@ -49,14 +49,29 @@ func (p wireguardParser) getInterfaceSection() (*wireguardSection, bool) {
 	return nil, false
 }
 
+func getHeaderCompletion(name string, documentation string) protocol.CompletionItem {
+	textFormat := protocol.InsertTextFormatPlainText
+	kind := protocol.CompletionItemKindEnum
+
+	insertText := "[" + name + "]\n"
+
+	return protocol.CompletionItem{
+		Label:            "[" + name + "]",
+		InsertTextFormat: &textFormat,
+		InsertText:       &insertText,
+		Kind:             &kind,
+		Documentation:    &documentation,
+	}
+}
+
 func (p wireguardParser) getRootCompletionsForEmptyLine() []protocol.CompletionItem {
 	completions := []protocol.CompletionItem{}
 
 	if _, found := p.getInterfaceSection(); !found {
-		completions = append(completions, headerInterfaceEnum.ToCompletionItem())
+		completions = append(completions, getHeaderCompletion("Interface", headerInterfaceEnum.Documentation))
 	}
 
-	completions = append(completions, headerPeerEnum.ToCompletionItem())
+	completions = append(completions, getHeaderCompletion("Peer", headerPeerEnum.Documentation))
 
 	return completions
 }
@@ -175,9 +190,17 @@ func (p *wireguardParser) parseFromString(input string) []common.ParseError {
 	var emptySection *wireguardSection
 
 	if len(collectedProperties) > 0 {
+		var endLine uint32
+
+		if len(p.Sections) == 0 {
+			endLine = uint32(len(lines))
+		} else {
+			endLine = p.Sections[len(p.Sections)-1].StartLine
+		}
+
 		emptySection = &wireguardSection{
 			StartLine:  0,
-			EndLine:    p.Sections[len(p.Sections)-1].StartLine - 1,
+			EndLine:    endLine,
 			Properties: collectedProperties,
 		}
 

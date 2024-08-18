@@ -19,7 +19,8 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 	case LineTypeHeader:
 		return parser.getRootCompletionsForEmptyLine(), nil
 	case LineTypeEmpty:
-		if section == nil {
+		if section.Name == nil {
+			// Root completions
 			return parser.getRootCompletionsForEmptyLine(), nil
 		}
 

@@ -146,3 +146,24 @@ DNS
 		t.Fatalf("getCompletionsForPropertyLine: Expected completion to be '= ', but got '%v'", completions[0].Label)
 	}
 }
+
+func TestHeaderButNoProperty(
+	t *testing.T,
+) {
+	sample := dedent(`
+[Interface]
+
+`)
+	parser := createWireguardParser()
+	parser.parseFromString(sample)
+
+	completions, err := parser.Sections[0].getCompletionsForEmptyLine()
+
+	if err != nil {
+		t.Fatalf("getCompletionsForEmptyLine failed with error: %v", err)
+	}
+
+	if len(completions) != len(interfaceOptions) {
+		t.Fatalf("getCompletionsForEmptyLine: Expected %v completions, but got %v", len(interfaceOptions), len(completions))
+	}
+}
