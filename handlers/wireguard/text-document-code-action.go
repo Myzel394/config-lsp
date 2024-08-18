@@ -39,6 +39,29 @@ func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionPa
 				Command: &command,
 			},
 		}, nil
+	case "PresharedKey":
+		if !areWireguardToolsAvailable() {
+			return nil, nil
+		}
+
+		commandID := "wireguard." + codeActionGeneratePresharedKey
+		command := protocol.Command{
+			Title:   "Generate PresharedKey",
+			Command: string(commandID),
+			Arguments: []any{
+				codeActionGeneratePresharedKeyArgs{
+					URI:  params.TextDocument.URI,
+					Line: line,
+				},
+			},
+		}
+
+		return []protocol.CodeAction{
+			{
+				Title:   "Generate PresharedKey",
+				Command: &command,
+			},
+		}, nil
 	}
 
 	return nil, nil

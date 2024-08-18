@@ -331,7 +331,7 @@ func (p *wireguardParser) getBelongingSectionByLine(line uint32) *wireguardSecti
 func (p *wireguardParser) getPropertyByLine(line uint32) (*wireguardSection, *wireguardProperty) {
 	section := p.getSectionByLine(line)
 
-	if section.Name == nil {
+	if section == nil || section.Name == nil {
 		return nil, nil
 	}
 

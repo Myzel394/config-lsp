@@ -2,8 +2,11 @@ package wireguard
 
 import (
 	"os/exec"
+	"regexp"
 	"strings"
 )
+
+var whitespacePattern = regexp.MustCompile(`[\s\n]+`)
 
 func areWireguardToolsAvailable() bool {
 	_, err := exec.LookPath("wg")
@@ -20,7 +23,7 @@ func createNewPrivateKey() (string, error) {
 		return "", err
 	}
 
-	return string(bytes), nil
+	return string(whitespacePattern.ReplaceAll(bytes, []byte(""))), nil
 }
 
 func createPublicKey(privateKey string) (string, error) {
@@ -33,5 +36,17 @@ func createPublicKey(privateKey string) (string, error) {
 		return "", err
 	}
 
-	return strings.ReplaceAll(string(bytes), "\n", ""), nil
+	return string(whitespacePattern.ReplaceAll(bytes, []byte(""))), nil
+}
+
+func createPresharedKey() (string, error) {
+	cmd := exec.Command("wg", "genpsk")
+
+	bytes, err := cmd.Output()
+
+	if err != nil {
+		return "", err
+	}
+
+	return string(whitespacePattern.ReplaceAll(bytes, []byte(""))), nil
 }

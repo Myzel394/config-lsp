@@ -17,6 +17,12 @@ func WorkspaceExecuteCommand(context *glsp.Context, params *protocol.ExecuteComm
 		parser := documentParserMap[args.URI]
 
 		return parser.runGeneratePrivateKey(args)
+	case string(codeActionGeneratePresharedKey):
+		args := codeActionGeneratePresharedKeyArgsFromArguments(params.Arguments[0].(map[string]any))
+
+		parser := documentParserMap[args.URI]
+
+		return parser.runGeneratePresharedKey(args)
 	}
 
 	return nil, nil

@@ -7,7 +7,8 @@ import (
 type codeActionName string
 
 const (
-	codeActionGeneratePrivateKey codeActionName = "generatePrivateKey"
+	codeActionGeneratePrivateKey   codeActionName = "generatePrivateKey"
+	codeActionGeneratePresharedKey codeActionName = "generatePresharedKey"
 )
 
 type codeActionGeneratePrivateKeyArgs struct {
@@ -22,13 +23,26 @@ func codeActionGeneratePrivateKeyArgsFromArguments(arguments map[string]any) cod
 	}
 }
 
+type codeActionGeneratePresharedKeyArgs struct {
+	URI  protocol.DocumentUri
+	Line uint32
+}
+
+func codeActionGeneratePresharedKeyArgsFromArguments(arguments map[string]any) codeActionGeneratePresharedKeyArgs {
+	return codeActionGeneratePresharedKeyArgs{
+		URI:  arguments["URI"].(protocol.DocumentUri),
+		Line: uint32(arguments["Line"].(float64)),
+	}
+}
+
 func (p wireguardProperty) getInsertRange(line uint32) protocol.Range {
-	insertPosition := p.Separator.Location.End
+	var insertPosition uint32 = p.Separator.Location.End
 	var length uint32 = 0
 
 	if p.Value != nil {
-		// Length of the value
-		length = p.Value.Location.End - p.Value.Location.Start
+		insertPosition = p.Value.Location.Start - 1
+		// Length of the value; +1 because of the starting space
+		length = (p.Value.Location.End - p.Value.Location.Start) + 1
 	}
 
 	return protocol.Range{
@@ -64,6 +78,35 @@ func (p *wireguardParser) runGeneratePrivateKey(args codeActionGeneratePrivateKe
 				args.URI: {
 					{
 						NewText: " " + privateKey,
+						Range:   property.getInsertRange(args.Line),
+					},
+				},
+			},
+		},
+	}, nil
+}
+
+func (p *wireguardParser) runGeneratePresharedKey(args codeActionGeneratePresharedKeyArgs) (*protocol.ApplyWorkspaceEditParams, error) {
+	presharedKey, err := createPresharedKey()
+
+	if err != nil {
+		return &protocol.ApplyWorkspaceEditParams{}, err
+	}
+
+	section, property := p.getPropertyByLine(args.Line)
+
+	if section == nil || property == nil {
+		return nil, nil
+	}
+
+	label := "Generate Preshared Key"
+	return &protocol.ApplyWorkspaceEditParams{
+		Label: &label,
+		Edit: protocol.WorkspaceEdit{
+			Changes: map[protocol.DocumentUri][]protocol.TextEdit{
+				args.URI: {
+					{
+						NewText: " " + presharedKey,
 						Range:   property.getInsertRange(args.Line),
 					},
 				},
