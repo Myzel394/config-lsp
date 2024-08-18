@@ -11,6 +11,12 @@ import (
 )
 
 func (p wireguardParser) analyze() []protocol.Diagnostic {
+	sectionsErrors := p.analyzeSections()
+
+	if len(sectionsErrors) > 0 {
+		return sectionsErrors
+	}
+
 	validCheckErrors := p.checkIfValuesAreValid()
 
 	if len(validCheckErrors) > 0 {
@@ -20,6 +26,55 @@ func (p wireguardParser) analyze() []protocol.Diagnostic {
 	diagnostics := []protocol.Diagnostic{}
 	diagnostics = append(diagnostics, p.checkForDuplicateProperties()...)
 	diagnostics = append(diagnostics, p.analyzeDNSContainsFallback()...)
+
+	return diagnostics
+}
+
+func (p wireguardParser) analyzeSections() []protocol.Diagnostic {
+	diagnostics := []protocol.Diagnostic{}
+
+	for _, section := range p.Sections {
+		sectionDiagnostics := section.analyzeSection()
+
+		if len(sectionDiagnostics) > 0 {
+			diagnostics = append(diagnostics, sectionDiagnostics...)
+		}
+	}
+
+	if len(diagnostics) > 0 {
+		return diagnostics
+	}
+
+	return p.analyzeOnlyOneInterfaceSectionSpecified()
+}
+
+func (p wireguardParser) analyzeOnlyOneInterfaceSectionSpecified() []protocol.Diagnostic {
+	diagnostics := []protocol.Diagnostic{}
+	alreadyFound := false
+
+	for _, section := range p.Sections {
+		if *section.Name == "Interface" {
+			if alreadyFound {
+				severity := protocol.DiagnosticSeverityError
+				diagnostics = append(diagnostics, protocol.Diagnostic{
+					Message:  "Only one [Interface] section is allowed",
+					Severity: &severity,
+					Range: protocol.Range{
+						Start: protocol.Position{
+							Line:      section.StartLine,
+							Character: 0,
+						},
+						End: protocol.Position{
+							Line:      section.StartLine,
+							Character: 99999999,
+						},
+					},
+				})
+			}
+
+			alreadyFound = true
+		}
+	}
 
 	return diagnostics
 }
@@ -56,17 +111,12 @@ func (p wireguardParser) analyzeDNSContainsFallback() []protocol.Diagnostic {
 	return []protocol.Diagnostic{}
 }
 
+// Check if the values are valid.
+// Assumes that sections have been analyzed already.
 func (p wireguardParser) checkIfValuesAreValid() []protocol.Diagnostic {
 	diagnostics := []protocol.Diagnostic{}
 
 	for _, section := range p.Sections {
-		sectionDiagnostics := section.analyzeSection()
-
-		if len(sectionDiagnostics) > 0 {
-			diagnostics = append(diagnostics, sectionDiagnostics...)
-			continue
-		}
-
 		for lineNumber, property := range section.Properties {
 			diagnostics = append(
 				diagnostics,
@@ -249,12 +299,6 @@ func (p wireguardSection) analyzeDuplicateProperties() []protocol.Diagnostic {
 			existingProperties[property.Key.Name] = currentLineNumber
 		}
 	}
-
-	return diagnostics
-}
-
-func (p wireguardSection) analyzeInterfaceSection() []protocol.Diagnostic {
-	diagnostics := []protocol.Diagnostic{}
 
 	return diagnostics
 }

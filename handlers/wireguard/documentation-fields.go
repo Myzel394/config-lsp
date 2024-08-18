@@ -49,7 +49,7 @@ You can also specify multiple subnets or IPv6 subnets like so:
 		},
 	},
 	"ListenPort": {
-		Documentation: `When the node is acting as a public bounce server, it should hardcode a port to listen for incoming VPN connections from the public internet. Clients not acting as relays should not set this value.
+		Documentation: `When the node is acting as a public bounce server, it should hardcode a port to listen for incoming VPN connections from the public internet. Clients not acting as relays should not set this value. If not specified, chosen randomly.
 
 ## Examples
 Using default WireGuard port
@@ -213,6 +213,10 @@ Remove the iptables rule that forwards packets on the WireGuard interface
     PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
 	`,
 		Value: docvalues.StringValue{},
+	},
+	"FwMark": {
+		Documentation: "a 32-bit fwmark for outgoing packets. If set to 0 or \"off\", this option is disabled. May be specified in hexadecimal by prepending \"0x\". Optional",
+		Value:         docvalues.StringValue{},
 	},
 }
 

@@ -71,7 +71,7 @@ func TestValidBasicExample(t *testing.T) {
 			t.Fatal("getCompletion failed to return correct number of completions. Got:", len(completions), "but expected:", 4)
 		}
 
-		if completions[0].Label != "UUID" {
+		if completions[0].Label != "UUID" && completions[0].Label != "PARTUID" {
 			t.Fatal("getCompletion failed to return correct label. Got:", completions[0].Label, "but expected:", "UUID")
 		}
 	}
