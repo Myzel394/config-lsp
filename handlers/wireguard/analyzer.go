@@ -5,6 +5,7 @@ import (
 	"config-lsp/utils"
 	"fmt"
 	"slices"
+	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -18,8 +19,41 @@ func (p wireguardParser) analyze() []protocol.Diagnostic {
 
 	diagnostics := []protocol.Diagnostic{}
 	diagnostics = append(diagnostics, p.checkForDuplicateProperties()...)
+	diagnostics = append(diagnostics, p.analyzeDNSContainsFallback()...)
 
 	return diagnostics
+}
+
+func (p wireguardParser) analyzeDNSContainsFallback() []protocol.Diagnostic {
+	lineNumber, property := p.fetchPropertyByName("DNS")
+
+	if property == nil {
+		return []protocol.Diagnostic{}
+	}
+
+	dnsAmount := len(strings.Split(property.Value.Value, ","))
+
+	if dnsAmount == 1 {
+		severity := protocol.DiagnosticSeverityWarning
+		return []protocol.Diagnostic{
+			{
+				Message:  "There is one DNS server specified. It is recommended to set up fallback DNS servers",
+				Severity: &severity,
+				Range: protocol.Range{
+					Start: protocol.Position{
+						Line:      *lineNumber,
+						Character: property.Value.Location.Start,
+					},
+					End: protocol.Position{
+						Line:      *lineNumber,
+						Character: property.Value.Location.End,
+					},
+				},
+			},
+		}
+	}
+
+	return []protocol.Diagnostic{}
 }
 
 func (p wireguardParser) checkIfValuesAreValid() []protocol.Diagnostic {
