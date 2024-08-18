@@ -33,6 +33,16 @@ type wireguardParser struct {
 	LineIndexes map[uint32]wireguardLineIndex
 }
 
+func (p *wireguardParser) getSectionByLine(line uint32) *wireguardSection {
+	for _, section := range p.Sections {
+		if section.StartLine <= line && section.EndLine >= line {
+			return section
+		}
+	}
+
+	return nil
+}
+
 // Search for a property by name
 // Returns (line number, property)
 func (p *wireguardParser) fetchPropertyByName(name string) (*uint32, *wireguardProperty) {
