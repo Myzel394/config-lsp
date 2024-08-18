@@ -3,6 +3,8 @@ package wireguard
 import (
 	"strings"
 	"testing"
+
+	"github.com/k0kubun/pp"
 )
 
 func dedent(s string) string {
@@ -65,6 +67,22 @@ PublicKey = 5555
 
 	if !(parser.Sections[2].Properties[10].Key.Name == "PublicKey") {
 		t.Fatalf("parseFromString failed to collect properties of section 2 %v", parser.Sections[2].Properties)
+	}
+
+	// Check if line indexes are correct
+	if !(parser.LineIndexes[0].Type == LineTypeHeader &&
+		parser.LineIndexes[1].Type == LineTypeProperty &&
+		parser.LineIndexes[2].Type == LineTypeProperty &&
+		parser.LineIndexes[3].Type == LineTypeEmpty &&
+		parser.LineIndexes[4].Type == LineTypeComment &&
+		parser.LineIndexes[5].Type == LineTypeHeader &&
+		parser.LineIndexes[6].Type == LineTypeProperty &&
+		parser.LineIndexes[7].Type == LineTypeProperty &&
+		parser.LineIndexes[8].Type == LineTypeEmpty &&
+		parser.LineIndexes[9].Type == LineTypeHeader &&
+		parser.LineIndexes[10].Type == LineTypeProperty) {
+		pp.Println(parser.LineIndexes)
+		t.Fatal("parseFromString: Invalid line indexes")
 	}
 }
 
@@ -138,7 +156,7 @@ func TestEmptyFileWorksFine(
 		t.Fatalf("parseFromString failed with error %v", errors)
 	}
 
-	if !(len(parser.Sections) == 0) {
+	if !(len(parser.Sections) == 1) {
 		t.Fatalf("parseFromString failed to collect sections %v", parser.Sections)
 	}
 }
@@ -221,7 +239,7 @@ func TestFileWithOnlyComments(
 		t.Fatalf("parseFromString failed with error: %v", errors)
 	}
 
-	if !(len(parser.Sections) == 0) {
+	if !(len(parser.Sections) == 1) {
 		t.Fatalf("parseFromString failed to collect sections: %v", parser.Sections)
 	}
 

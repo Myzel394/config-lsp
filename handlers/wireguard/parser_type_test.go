@@ -79,38 +79,46 @@ PublicKey = 1234567890
 
 	section := parser.getBelongingSectionByLine(0)
 
+	// Comment
 	if section != nil {
 		t.Fatalf("getBelongingSectionByLine: Expected line 0 to be in no section, but it is in %v", section)
 	}
 
 	section = parser.getBelongingSectionByLine(1)
 
-	if section != nil {
-		t.Fatalf("getBelongingSectionByLine: Expected line 1 to be in no section, but it is in %v", section)
+	if section != parser.Sections[1] {
+		t.Fatalf("getBelongingSectionByLine: Expected line 1 to be in global section, but it is in %v", section)
 	}
 
 	section = parser.getBelongingSectionByLine(2)
-	if section != nil {
-		t.Fatalf("getBelongingSectionByLine: Expected line 2 to be in no section, but it is in %v", section)
+	if section != parser.Sections[1] {
+		t.Fatalf("getBelongingSectionByLine: Expected line 2 to be in global section, but it is in %v", section)
 	}
 
 	section = parser.getBelongingSectionByLine(3)
-	if section == nil || *section.Name != "Interface" {
+	if section != parser.Sections[2] {
 		t.Fatalf("getBelongingSectionByLine: Expected line 3 to be in section Interface, but it is in %v", section)
 	}
 
 	section = parser.getBelongingSectionByLine(4)
-	if section == nil || *section.Name != "Interface" {
+	if section != parser.Sections[2] {
 		t.Fatalf("getBelongingSectionByLine: Expected line 4 to be in section Interface, but it is in %v", section)
 	}
 
 	section = parser.getBelongingSectionByLine(6)
-	if section == nil || *section.Name != "Interface" {
+	if section != parser.Sections[2] {
 		t.Fatalf("getBelongingSectionByLine: Expected line 6 to be in section Interface, but it is in %v", section)
 	}
 
 	section = parser.getBelongingSectionByLine(10)
-	if section == nil || *section.Name != "Peer" {
+	if section != parser.Sections[3] {
 		t.Fatalf("getBelongingSectionByLine: Expected line 10 to be in section Peer, but it is in %v", section)
+	}
+
+	section = parser.getBelongingSectionByLine(12)
+
+	// Comment
+	if section != nil {
+		t.Fatalf("getBelongingSectionByLine: Expected line 12 to be in no section, but it is in %v", section)
 	}
 }

@@ -86,5 +86,7 @@ func (p wireguardSection) analyzeInterfaceSection() []protocol.Diagnostic {
 }
 
 func (p wireguardParser) analyzeAllowedIPIsInRange() []protocol.Diagnostic {
+	diagnostics := []protocol.Diagnostic{}
 
+	return diagnostics
 }

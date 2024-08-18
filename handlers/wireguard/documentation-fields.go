@@ -314,3 +314,8 @@ Oocal NAT-ed node to remote public node
 var peerAllowedDuplicateFields = map[string]struct{}{
 	"AllowedIPs": {},
 }
+
+var optionsHeaderMap = map[string](map[string]docvalues.DocumentationValue){
+	"Interface": interfaceOptions,
+	"Peer":      peerOptions,
+}

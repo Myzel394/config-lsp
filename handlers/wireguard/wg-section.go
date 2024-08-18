@@ -5,7 +5,6 @@ import (
 	"config-lsp/utils"
 	"fmt"
 	"maps"
-	"math"
 	"regexp"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -23,9 +22,18 @@ func (e propertyNotFullyTypedError) Error() string {
 	return "Property not fully typed"
 }
 
+type wireguardSectionType uint
+
+const (
+	wireguardSectionUnknownType   wireguardSectionType = 0
+	wireguardSectionInterfaceType wireguardSectionType = 1
+	wireguardSectionPeerType      wireguardSectionType = 2
+)
+
 type wireguardSection struct {
-	StartLine uint32
-	EndLine   uint32
+	Name       *string
+	StartLine  uint32
+	EndLine    uint32
 	Properties wireguardProperties
 }
 
@@ -130,36 +138,27 @@ func (p wireguardSection) getCompletionsForPropertyLine(
 		return nil, err
 	}
 
-	if property.Separator == nil {
-		if p.Name != nil {
-			switch *p.Name {
-			case "Interface":
-				if _, found := interfaceOptions[property.Key.Name]; found {
-					return getSeparatorCompletion(*property, character)
-				}
-			case "Peer":
-				if _, found := peerOptions[property.Key.Name]; found {
-					return getSeparatorCompletion(*property, character)
-				}
-			}
-
-			// Get empty line completions
-			return nil, propertyNotFullyTypedError{}
-		}
-
+	if p.Name == nil {
 		return nil, propertyNotFoundError{}
 	}
 
-	var option docvalues.Value
+	options, found := optionsHeaderMap[*p.Name]
 
-	switch *p.Name {
-	case "Interface":
-		option = interfaceOptions[property.Key.Name]
-	case "Peer":
-		option = peerOptions[property.Key.Name]
+	if !found {
+		return nil, propertyNotFoundError{}
 	}
 
-	if option == nil {
+	if property.Separator == nil {
+		if _, found := options[property.Key.Name]; found {
+			return getSeparatorCompletion(*property, character)
+		}
+		// Get empty line completions
+		return nil, propertyNotFullyTypedError{}
+	}
+
+	option, found := options[property.Key.Name]
+
+	if !found {
 		return nil, propertyNotFoundError{}
 	}
 
@@ -183,7 +182,7 @@ func createWireguardSection(
 	endLine uint32,
 	headerLine string,
 	props wireguardProperties,
-) (string, wireguardSection) {
+) wireguardSection {
 	match := validHeaderPattern.FindStringSubmatch(headerLine)
 
 	var header string
@@ -195,7 +194,8 @@ func createWireguardSection(
 		header = match[1]
 	}
 
-	return header, wireguardSection{
+	return wireguardSection{
+		Name:       &header,
 		StartLine:  startLine,
 		EndLine:    endLine,
 		Properties: props,

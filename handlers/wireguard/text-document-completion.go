@@ -25,10 +25,6 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 
 		return section.getCompletionsForEmptyLine()
 	case LineTypeProperty:
-		if section == nil {
-			return nil, nil
-		}
-
 		completions, err := section.getCompletionsForPropertyLine(lineNumber, params.Position.Character)
 
 		if completions == nil && err != nil {
