@@ -62,6 +62,16 @@ func (s wireguardSection) String() string {
 	return fmt.Sprintf("[%s]; %d-%d: %v", name, s.StartLine, s.EndLine, s.Properties)
 }
 
+func (s *wireguardSection) fetchFirstProperty(name string) *wireguardProperty {
+	for _, property := range s.Properties {
+		if property.Key.Name == name {
+			return &property
+		}
+	}
+
+	return nil
+}
+
 func (s *wireguardSection) findProperty(lineNumber uint32) (*wireguardProperty, error) {
 	property, found := s.Properties[lineNumber]
 

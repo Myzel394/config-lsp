@@ -26,6 +26,7 @@ func (p wireguardParser) analyze() []protocol.Diagnostic {
 	diagnostics := []protocol.Diagnostic{}
 	diagnostics = append(diagnostics, p.checkForDuplicateProperties()...)
 	diagnostics = append(diagnostics, p.analyzeDNSContainsFallback()...)
+	diagnostics = append(diagnostics, p.analyzeKeepAliveIsSet()...)
 
 	return diagnostics
 }
@@ -89,7 +90,8 @@ func (p wireguardParser) analyzeDNSContainsFallback() []protocol.Diagnostic {
 	dnsAmount := len(strings.Split(property.Value.Value, ","))
 
 	if dnsAmount == 1 {
-		severity := protocol.DiagnosticSeverityWarning
+		severity := protocol.DiagnosticSeverityHint
+
 		return []protocol.Diagnostic{
 			{
 				Message:  "There is one DNS server specified. It is recommended to set up fallback DNS servers",
@@ -109,6 +111,37 @@ func (p wireguardParser) analyzeDNSContainsFallback() []protocol.Diagnostic {
 	}
 
 	return []protocol.Diagnostic{}
+}
+
+func (p wireguardParser) analyzeKeepAliveIsSet() []protocol.Diagnostic {
+	diagnostics := make([]protocol.Diagnostic, 0)
+
+	for _, section := range p.Sections {
+		if section.Name != nil && *section.Name == "Peer" {
+			// If an endpoint is set, then we should only check for the keepalive property
+			if section.fetchFirstProperty("Endpoint") != nil {
+				if section.fetchFirstProperty("PersistentKeepalive") == nil {
+					severity := protocol.DiagnosticSeverityHint
+					diagnostics = append(diagnostics, protocol.Diagnostic{
+						Message:  "PersistentKeepalive is not set. It is recommended to set this property, as it helps to maintain the connection when users are behind NAT",
+						Severity: &severity,
+						Range: protocol.Range{
+							Start: protocol.Position{
+								Line:      section.StartLine,
+								Character: 0,
+							},
+							End: protocol.Position{
+								Line:      section.StartLine,
+								Character: 99999999,
+							},
+						},
+					})
+				}
+			}
+		}
+	}
+
+	return diagnostics
 }
 
 // Check if the values are valid.
