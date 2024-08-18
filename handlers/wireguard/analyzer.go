@@ -1,6 +1,7 @@
 package wireguard
 
 import (
+	docvalues "config-lsp/doc-values"
 	"config-lsp/utils"
 	"fmt"
 	"slices"
@@ -9,11 +10,150 @@ import (
 )
 
 func (p wireguardParser) analyze() []protocol.Diagnostic {
-	diagnostics := []protocol.Diagnostic{}
+	validCheckErrors := p.checkIfValuesAreValid()
 
+	if len(validCheckErrors) > 0 {
+		return validCheckErrors
+	}
+
+	diagnostics := []protocol.Diagnostic{}
 	diagnostics = append(diagnostics, p.checkForDuplicateProperties()...)
 
 	return diagnostics
+}
+
+func (p wireguardParser) checkIfValuesAreValid() []protocol.Diagnostic {
+	diagnostics := []protocol.Diagnostic{}
+
+	for _, section := range p.Sections {
+		sectionDiagnostics := section.analyzeSection()
+
+		if len(sectionDiagnostics) > 0 {
+			diagnostics = append(diagnostics, sectionDiagnostics...)
+			continue
+		}
+
+		for lineNumber, property := range section.Properties {
+			diagnostics = append(
+				diagnostics,
+				property.analyzeProperty(section, lineNumber)...,
+			)
+		}
+	}
+
+	return diagnostics
+}
+
+func (p wireguardSection) analyzeSection() []protocol.Diagnostic {
+	diagnostics := []protocol.Diagnostic{}
+
+	if p.Name == nil {
+		// No section name
+		severity := protocol.DiagnosticSeverityError
+		diagnostics = append(diagnostics, protocol.Diagnostic{
+			Message:  "This section is missing a name",
+			Severity: &severity,
+			Range:    p.getRange(),
+		})
+		return diagnostics
+	}
+
+	if _, found := optionsHeaderMap[*p.Name]; !found {
+		// Unknown section
+		severity := protocol.DiagnosticSeverityError
+		diagnostics = append(diagnostics, protocol.Diagnostic{
+			Message:  fmt.Sprintf("Unknown section '%s'. It must be one of: [Interface], [Peer]", *p.Name),
+			Severity: &severity,
+			Range: protocol.Range{
+				Start: protocol.Position{
+					Line:      p.StartLine,
+					Character: 0,
+				},
+				End: protocol.Position{
+					Line:      p.StartLine,
+					Character: 99999999,
+				},
+			},
+		})
+
+		return diagnostics
+	}
+
+	return diagnostics
+}
+
+// Check if the property is valid.
+// Returns a list of diagnostics.
+// `belongingSection` is the section to which the property belongs. This value is
+// expected to be non-nil and expected to be a valid Wireguard section.
+func (p wireguardProperty) analyzeProperty(
+	belongingSection *wireguardSection,
+	propertyLine uint32,
+) []protocol.Diagnostic {
+	sectionOptions := optionsHeaderMap[*belongingSection.Name]
+	option, found := sectionOptions[p.Key.Name]
+
+	if !found {
+		// Unknown property
+		severity := protocol.DiagnosticSeverityError
+		return []protocol.Diagnostic{
+			{
+				Message:  fmt.Sprintf("Unknown property '%s'", p.Key.Name),
+				Severity: &severity,
+				Range: protocol.Range{
+					Start: protocol.Position{
+						Line:      propertyLine,
+						Character: p.Key.Location.Start,
+					},
+					End: protocol.Position{
+						Line:      propertyLine,
+						Character: p.Key.Location.End,
+					},
+				},
+			},
+		}
+	}
+
+	if p.Value == nil {
+		// No value to check
+		severity := protocol.DiagnosticSeverityWarning
+		return []protocol.Diagnostic{
+			{
+				Message:  "Property is missing a value",
+				Severity: &severity,
+				Range: protocol.Range{
+					Start: protocol.Position{
+						Line:      propertyLine,
+						Character: 0,
+					},
+					End: protocol.Position{
+						Line:      propertyLine,
+						Character: 99999999,
+					},
+				},
+			},
+		}
+	}
+
+	errors := option.CheckIsValid(p.Value.Value)
+
+	return utils.Map(errors, func(err *docvalues.InvalidValue) protocol.Diagnostic {
+		severity := protocol.DiagnosticSeverityError
+		return protocol.Diagnostic{
+			Message:  err.GetMessage(),
+			Severity: &severity,
+			Range: protocol.Range{
+				Start: protocol.Position{
+					Line:      propertyLine,
+					Character: p.Value.Location.Start + err.Start,
+				},
+				End: protocol.Position{
+					Line:      propertyLine,
+					Character: p.Value.Location.Start + err.End,
+				},
+			},
+		}
+	})
 }
 
 func (p wireguardParser) checkForDuplicateProperties() []protocol.Diagnostic {

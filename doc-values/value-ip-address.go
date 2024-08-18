@@ -4,6 +4,8 @@ import (
 	"config-lsp/utils"
 	"fmt"
 	net "net/netip"
+	"strconv"
+	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -159,6 +161,24 @@ func (v IPAddressValue) FetchCompletions(line string, cursor uint32) []protocol.
 				Kind:  &kind,
 			}
 		})
+	}
+
+	if v.AllowRange {
+		slashIndex := strings.LastIndex(line, "/")
+
+		if slashIndex > -1 && cursor >= uint32(slashIndex) {
+			completions := make([]protocol.CompletionItem, 33)
+
+			for i := 0; i < len(completions); i++ {
+				kind := protocol.CompletionItemKindValue
+				completions[i] = protocol.CompletionItem{
+					Label: strconv.Itoa(i),
+					Kind:  &kind,
+				}
+			}
+
+			return completions
+		}
 	}
 
 	return []protocol.CompletionItem{}

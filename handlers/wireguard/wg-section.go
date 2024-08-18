@@ -37,6 +37,19 @@ type wireguardSection struct {
 	Properties wireguardProperties
 }
 
+func (s wireguardSection) getRange() protocol.Range {
+	return protocol.Range{
+		Start: protocol.Position{
+			Line:      s.StartLine,
+			Character: 0,
+		},
+		End: protocol.Position{
+			Line:      s.EndLine,
+			Character: 99999999,
+		},
+	}
+}
+
 func (s wireguardSection) String() string {
 	var name string
 
