@@ -11,8 +11,6 @@ func TextDocumentHover(
 	context *glsp.Context,
 	params *protocol.HoverParams,
 ) (*protocol.Hover, error) {
-	// cursor := params.Position.Character
-
 	parser := documentParserMap[params.TextDocument.URI]
 
 	switch parser.getTypeByLine(params.Position.Line) {
