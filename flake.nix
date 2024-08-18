@@ -29,10 +29,13 @@
           pname = "github.com/Myzel394/config-lsp";
           version = "v0.0.1";
           src = ./.;
-          vendorHash = "sha256-gv73FvSEhNKPnlyfTgSxum1T2T711+xrhJFmKMuCAQs=";
+          vendorHash = "sha256-KhyqogTyb3jNrGP+0Zmn/nfx+WxzjgcrFOp2vivFgT0=";
         };
         devShell = pkgs.mkShell {
-          buildInputs = [ pkgs.go_1_22 ];
+          buildInputs = [
+            pkgs.go_1_22
+            pkgs.wireguard-tools
+          ];
         };
       }
     );
