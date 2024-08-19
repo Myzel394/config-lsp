@@ -274,7 +274,7 @@ func (p wireguardProperty) analyzeProperty(
 }
 
 func (p wireguardParser) checkForDuplicateProperties() []protocol.Diagnostic {
-	diagnostics := []protocol.Diagnostic{}
+	diagnostics := make([]protocol.Diagnostic, 0)
 
 	for _, section := range p.Sections {
 		diagnostics = append(diagnostics, section.analyzeDuplicateProperties()...)
@@ -284,7 +284,7 @@ func (p wireguardParser) checkForDuplicateProperties() []protocol.Diagnostic {
 }
 
 func (p wireguardSection) analyzeDuplicateProperties() []protocol.Diagnostic {
-	diagnostics := []protocol.Diagnostic{}
+	diagnostics := make([]protocol.Diagnostic, 0)
 
 	existingProperties := make(map[string]uint32)
 
@@ -337,7 +337,7 @@ func (p wireguardSection) analyzeDuplicateProperties() []protocol.Diagnostic {
 }
 
 func (p wireguardParser) analyzeAllowedIPIsInRange() []protocol.Diagnostic {
-	diagnostics := []protocol.Diagnostic{}
+	diagnostics := make([]protocol.Diagnostic, 0)
 
 	return diagnostics
 }

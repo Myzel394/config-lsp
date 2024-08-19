@@ -9,6 +9,7 @@ type codeActionName string
 const (
 	codeActionGeneratePrivateKey   codeActionName = "generatePrivateKey"
 	codeActionGeneratePresharedKey codeActionName = "generatePresharedKey"
+	codeActionAddKeepalive         codeActionName = "addKeepalive"
 )
 
 type codeActionGeneratePrivateKeyArgs struct {
@@ -32,6 +33,18 @@ func codeActionGeneratePresharedKeyArgsFromArguments(arguments map[string]any) c
 	return codeActionGeneratePresharedKeyArgs{
 		URI:  arguments["URI"].(protocol.DocumentUri),
 		Line: uint32(arguments["Line"].(float64)),
+	}
+}
+
+type codeActionAddKeepaliveArgs struct {
+	URI          protocol.DocumentUri
+	SectionIndex uint32
+}
+
+func codeActionAddKeepaliveArgsFromArguments(arguments map[string]any) codeActionAddKeepaliveArgs {
+	return codeActionAddKeepaliveArgs{
+		URI:          arguments["URI"].(protocol.DocumentUri),
+		SectionIndex: uint32(arguments["SectionIndex"].(float64)),
 	}
 }
 
@@ -108,6 +121,34 @@ func (p *wireguardParser) runGeneratePresharedKey(args codeActionGeneratePreshar
 					{
 						NewText: " " + presharedKey,
 						Range:   property.getInsertRange(args.Line),
+					},
+				},
+			},
+		},
+	}, nil
+}
+
+func (p *wireguardParser) runAddKeepalive(args codeActionAddKeepaliveArgs) (*protocol.ApplyWorkspaceEditParams, error) {
+	section := p.Sections[args.SectionIndex]
+
+	label := "Add PersistentKeepalive"
+	return &protocol.ApplyWorkspaceEditParams{
+		Label: &label,
+		Edit: protocol.WorkspaceEdit{
+			Changes: map[protocol.DocumentUri][]protocol.TextEdit{
+				args.URI: {
+					{
+						NewText: "PersistentKeepalive = 25\n",
+						Range: protocol.Range{
+							Start: protocol.Position{
+								Line:      section.EndLine + 1,
+								Character: 0,
+							},
+							End: protocol.Position{
+								Line:      section.EndLine + 1,
+								Character: 0,
+							},
+						},
 					},
 				},
 			},

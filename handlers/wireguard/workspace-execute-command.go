@@ -23,6 +23,12 @@ func WorkspaceExecuteCommand(context *glsp.Context, params *protocol.ExecuteComm
 		parser := documentParserMap[args.URI]
 
 		return parser.runGeneratePresharedKey(args)
+	case string(codeActionAddKeepalive):
+		args := codeActionAddKeepaliveArgsFromArguments(params.Arguments[0].(map[string]any))
+
+		parser := documentParserMap[args.URI]
+
+		return parser.runAddKeepalive(args)
 	}
 
 	return nil, nil
