@@ -201,7 +201,11 @@ func (p wireguardSection) getCompletionsForPropertyLine(
 	option, found := options[property.Key.Name]
 
 	if !found {
-		return nil, propertyNotFoundError{}
+		if character < property.Separator.Location.Start {
+			return nil, propertyNotFullyTypedError{}
+		} else {
+			return nil, propertyNotFoundError{}
+		}
 	}
 
 	if property.Value == nil {
