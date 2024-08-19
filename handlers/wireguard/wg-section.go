@@ -37,6 +37,19 @@ type wireguardSection struct {
 	Properties wireguardProperties
 }
 
+func (s wireguardSection) getHeaderLineRange() protocol.Range {
+	return protocol.Range{
+		Start: protocol.Position{
+			Line:      s.StartLine,
+			Character: 0,
+		},
+		End: protocol.Position{
+			Line:      s.StartLine,
+			Character: 99999999,
+		},
+	}
+}
+
 func (s wireguardSection) getRange() protocol.Range {
 	return protocol.Range{
 		Start: protocol.Position{
@@ -62,14 +75,20 @@ func (s wireguardSection) String() string {
 	return fmt.Sprintf("[%s]; %d-%d: %v", name, s.StartLine, s.EndLine, s.Properties)
 }
 
-func (s *wireguardSection) fetchFirstProperty(name string) *wireguardProperty {
-	for _, property := range s.Properties {
+func (s *wireguardSection) fetchFirstProperty(name string) (*uint32, *wireguardProperty) {
+	for line, property := range s.Properties {
 		if property.Key.Name == name {
-			return &property
+			return &line, &property
 		}
 	}
 
-	return nil
+	return nil, nil
+}
+
+func (s *wireguardSection) existsProperty(name string) bool {
+	_, property := s.fetchFirstProperty(name)
+
+	return property != nil
 }
 
 func (s *wireguardSection) findProperty(lineNumber uint32) (*wireguardProperty, error) {

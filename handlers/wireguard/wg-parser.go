@@ -343,3 +343,15 @@ func (p *wireguardParser) getPropertyByLine(line uint32) (*wireguardSection, *wi
 
 	return section, property
 }
+
+func (p *wireguardParser) getSectionsByName(name string) []*wireguardSection {
+	var sections []*wireguardSection
+
+	for _, section := range p.Sections {
+		if section.Name != nil && *section.Name == name {
+			sections = append(sections, section)
+		}
+	}
+
+	return sections
+}

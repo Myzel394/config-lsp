@@ -53,28 +53,17 @@ func (p wireguardParser) analyzeOnlyOneInterfaceSectionSpecified() []protocol.Di
 	diagnostics := []protocol.Diagnostic{}
 	alreadyFound := false
 
-	for _, section := range p.Sections {
-		if *section.Name == "Interface" {
-			if alreadyFound {
-				severity := protocol.DiagnosticSeverityError
-				diagnostics = append(diagnostics, protocol.Diagnostic{
-					Message:  "Only one [Interface] section is allowed",
-					Severity: &severity,
-					Range: protocol.Range{
-						Start: protocol.Position{
-							Line:      section.StartLine,
-							Character: 0,
-						},
-						End: protocol.Position{
-							Line:      section.StartLine,
-							Character: 99999999,
-						},
-					},
-				})
-			}
-
-			alreadyFound = true
+	for _, section := range p.getSectionsByName("Interface") {
+		if alreadyFound {
+			severity := protocol.DiagnosticSeverityError
+			diagnostics = append(diagnostics, protocol.Diagnostic{
+				Message:  "Only one [Interface] section is allowed",
+				Severity: &severity,
+				Range:    section.getHeaderLineRange(),
+			})
 		}
+
+		alreadyFound = true
 	}
 
 	return diagnostics
@@ -116,28 +105,15 @@ func (p wireguardParser) analyzeDNSContainsFallback() []protocol.Diagnostic {
 func (p wireguardParser) analyzeKeepAliveIsSet() []protocol.Diagnostic {
 	diagnostics := make([]protocol.Diagnostic, 0)
 
-	for _, section := range p.Sections {
-		if section.Name != nil && *section.Name == "Peer" {
-			// If an endpoint is set, then we should only check for the keepalive property
-			if section.fetchFirstProperty("Endpoint") != nil {
-				if section.fetchFirstProperty("PersistentKeepalive") == nil {
-					severity := protocol.DiagnosticSeverityHint
-					diagnostics = append(diagnostics, protocol.Diagnostic{
-						Message:  "PersistentKeepalive is not set. It is recommended to set this property, as it helps to maintain the connection when users are behind NAT",
-						Severity: &severity,
-						Range: protocol.Range{
-							Start: protocol.Position{
-								Line:      section.StartLine,
-								Character: 0,
-							},
-							End: protocol.Position{
-								Line:      section.StartLine,
-								Character: 99999999,
-							},
-						},
-					})
-				}
-			}
+	for _, section := range p.getSectionsByName("Peer") {
+		// If an endpoint is set, then we should only check for the keepalive property
+		if section.existsProperty("Endpoint") && !section.existsProperty("PersistentKeepalive") {
+			severity := protocol.DiagnosticSeverityHint
+			diagnostics = append(diagnostics, protocol.Diagnostic{
+				Message:  "PersistentKeepalive is not set. It is recommended to set this property, as it helps to maintain the connection when users are behind NAT",
+				Severity: &severity,
+				Range:    section.getRange(),
+			})
 		}
 	}
 
@@ -161,36 +137,27 @@ func (p wireguardParser) checkIfValuesAreValid() []protocol.Diagnostic {
 	return diagnostics
 }
 
-func (p wireguardSection) analyzeSection() []protocol.Diagnostic {
+func (s wireguardSection) analyzeSection() []protocol.Diagnostic {
 	diagnostics := []protocol.Diagnostic{}
 
-	if p.Name == nil {
+	if s.Name == nil {
 		// No section name
 		severity := protocol.DiagnosticSeverityError
 		diagnostics = append(diagnostics, protocol.Diagnostic{
 			Message:  "This section is missing a name",
 			Severity: &severity,
-			Range:    p.getRange(),
+			Range:    s.getRange(),
 		})
 		return diagnostics
 	}
 
-	if _, found := optionsHeaderMap[*p.Name]; !found {
+	if _, found := optionsHeaderMap[*s.Name]; !found {
 		// Unknown section
 		severity := protocol.DiagnosticSeverityError
 		diagnostics = append(diagnostics, protocol.Diagnostic{
-			Message:  fmt.Sprintf("Unknown section '%s'. It must be one of: [Interface], [Peer]", *p.Name),
+			Message:  fmt.Sprintf("Unknown section '%s'. It must be one of: [Interface], [Peer]", *s.Name),
 			Severity: &severity,
-			Range: protocol.Range{
-				Start: protocol.Position{
-					Line:      p.StartLine,
-					Character: 0,
-				},
-				End: protocol.Position{
-					Line:      p.StartLine,
-					Character: 99999999,
-				},
-			},
+			Range:    s.getHeaderLineRange(),
 		})
 
 		return diagnostics
@@ -238,16 +205,7 @@ func (p wireguardProperty) analyzeProperty(
 			{
 				Message:  "Property is missing a value",
 				Severity: &severity,
-				Range: protocol.Range{
-					Start: protocol.Position{
-						Line:      propertyLine,
-						Character: 0,
-					},
-					End: protocol.Position{
-						Line:      propertyLine,
-						Character: 99999999,
-					},
-				},
+				Range:    p.getLineRange(propertyLine),
 			},
 		}
 	}

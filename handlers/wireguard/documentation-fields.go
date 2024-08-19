@@ -44,8 +44,9 @@ You can also specify multiple subnets or IPv6 subnets like so:
 	Address = 192.0.2.1/24,2001:DB8::/64
 `,
 		Value: docvalues.IPAddressValue{
-			AllowIPv4: true,
-			AllowIPv6: true,
+			AllowIPv4:  true,
+			AllowIPv6:  true,
+			AllowRange: true,
 		},
 	},
 	"ListenPort": {

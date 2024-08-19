@@ -5,6 +5,8 @@ import (
 	"config-lsp/utils"
 	"regexp"
 	"strings"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 var linePattern = regexp.MustCompile(`^\s*(?P<key>.+?)\s*(?P<separator>=)\s*(?P<value>\S.*?)?\s*(?:(?:;|#).*)?\s*$`)
@@ -35,6 +37,19 @@ func (p wireguardProperty) String() string {
 	}
 
 	return p.Key.Name + "=" + p.Value.Value
+}
+
+func (p wireguardProperty) getLineRange(line uint32) protocol.Range {
+	return protocol.Range{
+		Start: protocol.Position{
+			Line:      line,
+			Character: p.Key.Location.Start,
+		},
+		End: protocol.Position{
+			Line:      line,
+			Character: p.Key.Location.End,
+		},
+	}
 }
 
 func createWireguardProperty(line string) (*wireguardProperty, error) {

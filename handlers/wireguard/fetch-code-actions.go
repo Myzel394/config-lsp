@@ -10,7 +10,7 @@ func getKeepaliveCodeActions(
 
 	for index, section := range parser.Sections {
 		if section.StartLine >= line && line <= section.EndLine && section.Name != nil && *section.Name == "Peer" {
-			if section.fetchFirstProperty("Endpoint") != nil && section.fetchFirstProperty("PersistentKeepalive") == nil {
+			if section.existsProperty("Endpoint") && !section.existsProperty("PersistentKeepalive") {
 				commandID := "wireguard." + codeActionAddKeepalive
 				command := protocol.Command{
 					Title:   "Add PersistentKeepalive",
