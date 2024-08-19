@@ -15,27 +15,34 @@
     utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
-            inherit system;
-            overlays = [
-              (final: prev: {
-                go = prev.go_1_22;
-                buildGoModule = prev.buildGo122Module;
-              })
-              gomod2nix.overlays.default
-            ];
-          };
-      in {
-        defaultPackage = pkgs.buildGoModule {
-          pname = "github.com/Myzel394/config-lsp";
-          version = "v0.0.1";
-          src = ./.;
-          vendorHash = "sha256-KhyqogTyb3jNrGP+0Zmn/nfx+WxzjgcrFOp2vivFgT0=";
-        };
-        devShell = pkgs.mkShell {
-          buildInputs = [
-            pkgs.go_1_22
-            pkgs.wireguard-tools
+          inherit system;
+          overlays = [
+            (final: prev: {
+              go = prev.go_1_22;
+              buildGoModule = prev.buildGo122Module;
+            })
+            gomod2nix.overlays.default
           ];
+        };
+        inputs = [
+          pkgs.go_1_22
+          pkgs.wireguard-tools
+        ];
+      in {
+        packages = {
+          default = pkgs.buildGoModule {
+            nativeBuildInputs = inputs;
+            pname = "github.com/Myzel394/config-lsp";
+            version = "v0.0.1";
+            src = ./.;
+            vendorHash = "sha256-KhyqogTyb3jNrGP+0Zmn/nfx+WxzjgcrFOp2vivFgT0=";
+            checkPhase = ''
+              go test -v $(pwd)/...
+            '';
+          };
+        };
+        devShells.default = pkgs.mkShell {
+          buildInputs = inputs;
         };
       }
     );
