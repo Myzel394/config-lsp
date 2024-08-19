@@ -27,6 +27,7 @@ func (p wireguardParser) analyze() []protocol.Diagnostic {
 	diagnostics = append(diagnostics, p.checkForDuplicateProperties()...)
 	diagnostics = append(diagnostics, p.analyzeDNSContainsFallback()...)
 	diagnostics = append(diagnostics, p.analyzeKeepAliveIsSet()...)
+	diagnostics = append(diagnostics, p.analyzeSymmetricPropertiesExist()...)
 
 	return diagnostics
 }
@@ -296,6 +297,49 @@ func (p wireguardSection) analyzeDuplicateProperties() []protocol.Diagnostic {
 
 func (p wireguardParser) analyzeAllowedIPIsInRange() []protocol.Diagnostic {
 	diagnostics := make([]protocol.Diagnostic, 0)
+
+	return diagnostics
+}
+
+func (p wireguardParser) analyzeSymmetricPropertiesExist() []protocol.Diagnostic {
+	diagnostics := make([]protocol.Diagnostic, 0, 4)
+	severity := protocol.DiagnosticSeverityHint
+
+	for _, section := range p.getSectionsByName("Interface") {
+		preUpLine, preUpProperty := section.fetchFirstProperty("PreUp")
+		preDownLine, preDownProperty := section.fetchFirstProperty("PreDown")
+
+		postUpLine, postUpProperty := section.fetchFirstProperty("PostUp")
+		postDownLine, postDownProperty := section.fetchFirstProperty("PostDown")
+
+		if preUpProperty != nil && preDownProperty == nil {
+			diagnostics = append(diagnostics, protocol.Diagnostic{
+				Message:  "PreUp is set, but PreDown is not. It is recommended to set both properties symmetrically",
+				Range:    preUpProperty.getLineRange(*preUpLine),
+				Severity: &severity,
+			})
+		} else if preUpProperty == nil && preDownProperty != nil {
+			diagnostics = append(diagnostics, protocol.Diagnostic{
+				Message:  "PreDown is set, but PreUp is not. It is recommended to set both properties symmetrically",
+				Range:    preDownProperty.getLineRange(*preDownLine),
+				Severity: &severity,
+			})
+		}
+
+		if postUpProperty != nil && postDownProperty == nil {
+			diagnostics = append(diagnostics, protocol.Diagnostic{
+				Message:  "PostUp is set, but PostDown is not. It is recommended to set both properties symmetrically",
+				Range:    postUpProperty.getLineRange(*postUpLine),
+				Severity: &severity,
+			})
+		} else if postUpProperty == nil && postDownProperty != nil {
+			diagnostics = append(diagnostics, protocol.Diagnostic{
+				Message:  "PostDown is set, but PostUp is not. It is recommended to set both properties symmetrically",
+				Range:    postDownProperty.getLineRange(*postDownLine),
+				Severity: &severity,
+			})
+		}
+	}
 
 	return diagnostics
 }
