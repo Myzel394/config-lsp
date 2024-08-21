@@ -119,22 +119,22 @@ func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32)
 		return line, cursor
 	}
 
-	if cursor == uint32(len(line)) {
-		cursor--
-	}
-
 	var start uint32
 	var end uint32
 
 	relativePosition, found := utils.FindPreviousCharacter(
 		line,
 		v.Separator,
-		int(cursor),
+		// defaults
+		min(len(line)-1, int(cursor)),
 	)
 
 	if found {
 		// +1 to skip the separator
-		start = uint32(relativePosition + 1)
+		start = min(
+			min(uint32(len(line)), uint32(relativePosition+1)),
+			uint32(relativePosition+1),
+		)
 	} else {
 		start = 0
 	}
@@ -142,12 +142,15 @@ func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32)
 	relativePosition, found = utils.FindNextCharacter(
 		line,
 		v.Separator,
-		int(cursor),
+		int(start),
 	)
 
 	if found {
 		// -1 to skip the separator
-		end = uint32(relativePosition - 1)
+		end = min(
+			min(uint32(len(line)), uint32(relativePosition)),
+			cursor,
+		)
 	} else {
 		end = uint32(len(line))
 	}
@@ -157,6 +160,7 @@ func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32)
 
 func (v ArrayValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	value, cursor := v.getCurrentValue(line, cursor)
+	println(fmt.Sprintf("Value: %s, Cursor: %d", value, cursor))
 
 	return v.SubValue.FetchCompletions(value, cursor)
 }

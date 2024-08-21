@@ -170,7 +170,11 @@ func (v KeyEnumAssignmentValue) FetchCompletions(line string, cursor uint32) []p
 		return v.FetchEnumCompletions()
 	}
 
-	relativePosition, found := utils.FindPreviousCharacter(line, v.Separator, int(cursor-1))
+	relativePosition, found := utils.FindPreviousCharacter(
+		line,
+		v.Separator,
+		max(0, int(cursor-1)),
+	)
 
 	if found {
 		selectedKey := line[:uint32(relativePosition)]

@@ -108,7 +108,11 @@ func (v KeyValueAssignmentValue) FetchCompletions(line string, cursor uint32) []
 		return v.Key.FetchCompletions(line, cursor)
 	}
 
-	relativePosition, found := utils.FindPreviousCharacter(line, v.Separator, int(cursor-1))
+	relativePosition, found := utils.FindPreviousCharacter(
+		line,
+		v.Separator,
+		max(0, int(cursor-1)),
+	)
 
 	if found {
 		selectedKey := line[:uint32(relativePosition)]
