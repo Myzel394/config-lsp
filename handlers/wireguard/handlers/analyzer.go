@@ -5,7 +5,9 @@ import (
 	"config-lsp/handlers/wireguard/fields"
 	"config-lsp/handlers/wireguard/parser"
 	"config-lsp/utils"
+	"context"
 	"fmt"
+	"net/netip"
 	"slices"
 	"strings"
 
@@ -16,7 +18,7 @@ func Analyze(
 	p parser.WireguardParser,
 ) []protocol.Diagnostic {
 	sectionsErrors := analyzeSections(p.Sections)
-	sectionsErrors = append(analyzeOnlyOneInterfaceSectionSpecified(p))
+	sectionsErrors = append(sectionsErrors, analyzeOnlyOneInterfaceSectionSpecified(p)...)
 
 	if len(sectionsErrors) > 0 {
 		return sectionsErrors
@@ -33,6 +35,7 @@ func Analyze(
 	diagnostics = append(diagnostics, analyzeDNSContainsFallback(p)...)
 	diagnostics = append(diagnostics, analyzeKeepAliveIsSet(p)...)
 	diagnostics = append(diagnostics, analyzeSymmetricPropertiesExist(p)...)
+	diagnostics = append(diagnostics, analyzeDuplicateAllowedIPs(p)...)
 
 	return diagnostics
 }
@@ -317,16 +320,91 @@ func analyzeDuplicateProperties(
 	return diagnostics
 }
 
+type propertyWithLine struct {
+	Line     uint32
+	Property parser.WireguardProperty
+	IpPrefix netip.Prefix
+}
+
+func mapAllowedIPsToMasks(p parser.WireguardParser) map[uint8][]propertyWithLine {
+	ips := make(map[uint8][]propertyWithLine)
+
+	for _, section := range p.GetSectionsByName("Peer") {
+		for lineNumber, property := range section.Properties {
+			if property.Key.Name == "AllowedIPs" {
+				ipAddress, err := netip.ParsePrefix(property.Value.Value)
+
+				if err != nil {
+					// This should not happen...
+					continue
+				}
+
+				hostBits := uint8(ipAddress.Bits())
+
+				if _, found := ips[uint8(hostBits)]; !found {
+					ips[hostBits] = make([]propertyWithLine, 0)
+				}
+
+				ips[hostBits] = append(ips[hostBits], propertyWithLine{
+					Line:     uint32(lineNumber),
+					Property: property,
+					IpPrefix: ipAddress,
+				})
+			}
+		}
+	}
+
+	return ips
+}
+
 // Strategy
 // Simply compare the host bits of the IP addresses.
 // Use a binary tree to store the host bits.
-/*
-func (p wireguardParser) analyzeAllowedIPIsInRange() []protocol.Diagnostic {
+func analyzeDuplicateAllowedIPs(p parser.WireguardParser) []protocol.Diagnostic {
 	diagnostics := make([]protocol.Diagnostic, 0)
+
+	maskedIPs := mapAllowedIPsToMasks(p)
+	hostBits := utils.KeysOfMap(maskedIPs)
+	slices.Sort(hostBits)
+
+	ipHostSet := utils.CreateIPv4HostSet()
+
+	for _, hostBit := range hostBits {
+		ips := maskedIPs[hostBit]
+
+		for _, ipInfo := range ips {
+			if ctx, _ := ipHostSet.ContainsIP(ipInfo.IpPrefix); ctx != nil {
+				severity := protocol.DiagnosticSeverityError
+				definedLine := (*ctx).Value("line").(uint32)
+
+				diagnostics = append(diagnostics, protocol.Diagnostic{
+					Message:  fmt.Sprintf("This IP range is already covered on line %d", definedLine),
+					Severity: &severity,
+					Range: protocol.Range{
+						Start: protocol.Position{
+							Line:      ipInfo.Line,
+							Character: ipInfo.Property.Key.Location.Start,
+						},
+						End: protocol.Position{
+							Line:      ipInfo.Line,
+							Character: ipInfo.Property.Value.Location.End,
+						},
+					},
+				})
+			} else {
+				humanLineNumber := ipInfo.Line + 1
+				ctx := context.WithValue(context.Background(), "line", humanLineNumber)
+
+				ipHostSet.AddIP(
+					ipInfo.IpPrefix,
+					ctx,
+				)
+			}
+		}
+	}
 
 	return diagnostics
 }
-*/
 
 func analyzeSymmetricPropertiesExist(
 	p parser.WireguardParser,

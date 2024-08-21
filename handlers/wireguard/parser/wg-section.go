@@ -64,7 +64,7 @@ func (s WireguardSection) GetRange() protocol.Range {
 	}
 }
 
-func (s *WireguardSection) FetchFirstProperty(name string) (*uint32, *WireguardProperty) {
+func (s WireguardSection) FetchFirstProperty(name string) (*uint32, *WireguardProperty) {
 	for line, property := range s.Properties {
 		if property.Key.Name == name {
 			return &line, &property
@@ -74,13 +74,13 @@ func (s *WireguardSection) FetchFirstProperty(name string) (*uint32, *WireguardP
 	return nil, nil
 }
 
-func (s *WireguardSection) ExistsProperty(name string) bool {
+func (s WireguardSection) ExistsProperty(name string) bool {
 	_, property := s.FetchFirstProperty(name)
 
 	return property != nil
 }
 
-func (s *WireguardSection) GetPropertyByLine(lineNumber uint32) (*WireguardProperty, error) {
+func (s WireguardSection) GetPropertyByLine(lineNumber uint32) (*WireguardProperty, error) {
 	property, found := s.Properties[lineNumber]
 
 	if !found {
