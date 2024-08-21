@@ -11,16 +11,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Go ${{ matrix.go-version }}
-        uses: actions/setup-go@v5
-        with:
-          go-version: ${{ matrix.go-version }}
-      # You can test your matrix by printing the current Go version
-      - name: Display Go version
-        run: go version
 
-      - name: Get dependencies
-        run: go mod download
+      - uses: cachix/install-nix-action@v27
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check Nix flake
+        run: nix flake check
 
       - name: Run tests
-        run: go test -v ./...
+        run: nix develop --command bash -c 'go test ./...'
+

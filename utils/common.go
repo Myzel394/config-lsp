@@ -29,6 +29,26 @@ func Map[T any, O any](values []T, f func(T) O) []O {
 	return result
 }
 
+func MapMap[T comparable, O any, P any](values map[T]O, f func(T, O) P) map[T]P {
+	result := make(map[T]P)
+
+	for key, value := range values {
+		result[key] = f(key, value)
+	}
+
+	return result
+}
+
+func MapMapToSlice[T comparable, O any, P any](values map[T]O, f func(T, O) P) []P {
+	result := make([]P, 0)
+
+	for key, value := range values {
+		result = append(result, f(key, value))
+	}
+
+	return result
+}
+
 func SliceToSet[T comparable](values []T) map[T]struct{} {
 	set := make(map[T]struct{})
 
@@ -103,6 +123,16 @@ func KeysOfMap[T comparable, O any](values map[T]O) []T {
 
 	for key := range values {
 		keys = append(keys, key)
+	}
+
+	return keys
+}
+
+func ValuesOfMap[T comparable, O any](values map[T]O) []O {
+	keys := make([]O, 0)
+
+	for _, value := range values {
+		keys = append(keys, value)
 	}
 
 	return keys

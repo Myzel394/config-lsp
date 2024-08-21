@@ -3,6 +3,7 @@ package roothandler
 import (
 	"config-lsp/common"
 	fstab "config-lsp/handlers/fstab"
+	wireguard "config-lsp/handlers/wireguard/lsp"
 	"fmt"
 
 	"github.com/tliron/glsp"
@@ -27,6 +28,8 @@ func TextDocumentDidOpen(context *glsp.Context, params *protocol.DidOpenTextDocu
 		return parseError.Err
 	}
 
+	openedFiles[params.TextDocument.URI] = struct{}{}
+
 	// Everything okay, now we can handle the file
 	rootHandler.AddDocument(params.TextDocument.URI, language)
 
@@ -34,11 +37,12 @@ func TextDocumentDidOpen(context *glsp.Context, params *protocol.DidOpenTextDocu
 	case LanguageFstab:
 		return fstab.TextDocumentDidOpen(context, params)
 	case LanguageSSHDConfig:
-	default:
-		panic(fmt.Sprintf("unexpected roothandler.SupportedLanguage: %#v", language))
+		break
+	case LanguageWireguard:
+		return wireguard.TextDocumentDidOpen(context, params)
 	}
 
-	return nil
+	panic(fmt.Sprintf("unexpected roothandler.SupportedLanguage: %#v", language))
 }
 
 func showParseError(

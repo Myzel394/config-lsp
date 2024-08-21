@@ -25,3 +25,6 @@ go.work.sum
 .env
 
 test.lua
+config-lsp
+result
+bin
