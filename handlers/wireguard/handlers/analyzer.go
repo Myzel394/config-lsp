@@ -98,7 +98,7 @@ func analyzeDNSContainsFallback(
 
 		return []protocol.Diagnostic{
 			{
-				Message:  "There is one DNS server specified. It is recommended to set up fallback DNS servers",
+				Message:  "There is only one DNS server specified. It is recommended to set up fallback DNS servers",
 				Severity: &severity,
 				Range: protocol.Range{
 					Start: protocol.Position{
