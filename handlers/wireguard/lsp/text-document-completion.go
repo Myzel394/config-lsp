@@ -26,7 +26,20 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 			return handlers.GetRootCompletionsForEmptyLine(*p)
 		}
 
-		return handlers.GetCompletionsForSectionEmptyLine(*section)
+		completions, err := handlers.GetCompletionsForSectionEmptyLine(*section)
+
+		// === Smart rules ===
+
+		// If previous line is empty too, maybe new section?
+		if lineNumber >= 1 && p.GetTypeByLine(lineNumber-1) == parser.LineTypeEmpty && len(p.GetBelongingSectionByLine(lineNumber).Properties) > 0 {
+			rootCompletions, err := handlers.GetRootCompletionsForEmptyLine(*p)
+
+			if err == nil {
+				completions = append(completions, rootCompletions...)
+			}
+		}
+
+		return completions, err
 	case parser.LineTypeProperty:
 		completions, err := handlers.GetCompletionsForSectionPropertyLine(*section, lineNumber, params.Position.Character)
 
