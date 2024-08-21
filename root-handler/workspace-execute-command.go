@@ -1,7 +1,7 @@
 package roothandler
 
 import (
-	"config-lsp/handlers/wireguard"
+	wireguard "config-lsp/handlers/wireguard/lsp"
 	"strings"
 
 	"github.com/tliron/glsp"

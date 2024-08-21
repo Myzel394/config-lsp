@@ -2,7 +2,7 @@ package roothandler
 
 import (
 	"config-lsp/handlers/fstab"
-	"config-lsp/handlers/wireguard"
+	wireguard "config-lsp/handlers/wireguard/lsp"
 
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
