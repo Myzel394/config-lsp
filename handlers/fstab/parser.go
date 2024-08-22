@@ -183,7 +183,6 @@ func (e FstabLine) GetFieldAtPosition(cursor uint32) FstabField {
 		return FstabFieldOptions
 	}
 
-	println(fmt.Sprintf("cursor: %v, freq: %v", cursor, e.Fields.Freq))
 	if e.Fields.Freq == nil || (cursor >= e.Fields.Freq.Start && cursor <= e.Fields.Freq.End) {
 		return FstabFieldFreq
 	}

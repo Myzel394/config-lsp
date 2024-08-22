@@ -160,7 +160,6 @@ func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32)
 
 func (v ArrayValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	value, cursor := v.getCurrentValue(line, cursor)
-	println(fmt.Sprintf("Value: %s, Cursor: %d", value, cursor))
 
 	return v.SubValue.FetchCompletions(value, cursor)
 }

@@ -2,7 +2,6 @@ package docvalues
 
 import (
 	"config-lsp/utils"
-	"fmt"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -61,7 +60,6 @@ func (v OrValue) FetchCompletions(line string, cursor uint32) []protocol.Complet
 				// the values of the KeyEnumAssignment
 				keyEnumValue := v.Values[0].(KeyEnumAssignmentValue)
 
-				println(fmt.Sprintf("cursor: %d; line=%s", cursor, line))
 				_, found := utils.FindPreviousCharacter(
 					line,
 					keyEnumValue.Separator,
