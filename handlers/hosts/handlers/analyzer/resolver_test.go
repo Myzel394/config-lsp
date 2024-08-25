@@ -1,4 +1,4 @@
-package handlers
+package analyzer
 
 import (
 	"config-lsp/handlers/hosts/tree"
