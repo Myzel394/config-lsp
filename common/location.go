@@ -30,6 +30,14 @@ func (l *LocationRange) ChangeBothLines(newLine uint32) {
 	l.End.Line = newLine
 }
 
+func (l LocationRange) ContainsCursor(line uint32, character uint32) bool {
+	return line == l.Start.Line && character >= l.Start.Character && character <= l.End.Character
+}
+
+func (l LocationRange) ContainsCursorByCharacter(character uint32) bool {
+	return character >= l.Start.Character && character <= l.End.Character
+}
+
 func CreateFullLineRange(line uint32) LocationRange {
 	return LocationRange{
 		Start: Location{

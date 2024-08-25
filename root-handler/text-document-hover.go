@@ -2,6 +2,7 @@ package roothandler
 
 import (
 	"config-lsp/handlers/fstab"
+	hosts "config-lsp/handlers/hosts/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 
 	"github.com/tliron/glsp"
@@ -23,7 +24,7 @@ func TextDocumentHover(context *glsp.Context, params *protocol.HoverParams) (*pr
 
 	switch *language {
 	case LanguageHosts:
-		fallthrough
+		return hosts.TextDocumentHover(context, params)
 	case LanguageSSHDConfig:
 		return nil, nil
 	case LanguageFstab:

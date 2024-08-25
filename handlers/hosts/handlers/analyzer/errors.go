@@ -8,7 +8,7 @@ type DuplicateHostEntry struct {
 }
 
 func (d DuplicateHostEntry) Error() string {
-	return fmt.Sprintf("'%s' already defined on line %d", d.Hostname, d.AlreadyFoundAt)
+	return fmt.Sprintf("'%s' already defined on line %d", d.Hostname, d.AlreadyFoundAt+1)
 }
 
 type DuplicateIPDeclaration struct {
@@ -16,5 +16,5 @@ type DuplicateIPDeclaration struct {
 }
 
 func (d DuplicateIPDeclaration) Error() string {
-	return fmt.Sprintf("This IP address is already defined on line %d", d.AlreadyFoundAt)
+	return fmt.Sprintf("This IP address is already defined on line %d", d.AlreadyFoundAt+1)
 }

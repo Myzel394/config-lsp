@@ -1,4 +1,4 @@
-package tree
+package analyzer
 
 import (
 	"config-lsp/utils"
@@ -48,8 +48,8 @@ func TestValidSimpleExampleWorks(
 		t.Errorf("Expected start to be 0, but got %v", parser.Tree.Entries[0].Location.Start)
 	}
 
-	if !(parser.Tree.Entries[0].Location.End.Character == 16) {
-		t.Errorf("Expected end to be 16, but got %v", parser.Tree.Entries[0].Location.End.Character)
+	if !(parser.Tree.Entries[0].Location.End.Character == 17) {
+		t.Errorf("Expected end to be 17, but got %v", parser.Tree.Entries[0].Location.End.Character)
 	}
 
 	if !(parser.Tree.Entries[0].IPAddress.Location.Start.Line == 0) {
@@ -60,8 +60,8 @@ func TestValidSimpleExampleWorks(
 		t.Errorf("Expected IP address start to be 0, but got %v", parser.Tree.Entries[0].IPAddress.Location.Start.Character)
 	}
 
-	if !(parser.Tree.Entries[0].IPAddress.Location.End.Character == 6) {
-		t.Errorf("Expected IP address end to be 6, but got %v", parser.Tree.Entries[0].IPAddress.Location.End.Character)
+	if !(parser.Tree.Entries[0].IPAddress.Location.End.Character == 7) {
+		t.Errorf("Expected IP address end to be 7, but got %v", parser.Tree.Entries[0].IPAddress.Location.End.Character)
 	}
 
 	if !(len(parser.CommentLines) == 0) {

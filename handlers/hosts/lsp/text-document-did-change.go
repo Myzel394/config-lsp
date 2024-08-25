@@ -31,7 +31,7 @@ func TextDocumentDidChange(
 		)...)
 	}
 
-	diagnostics = append(diagnostics, analyzer.Analyze(*parser)...)
+	diagnostics = append(diagnostics, analyzer.Analyze(parser)...)
 
 	if len(diagnostics) > 0 {
 		common.SendDiagnostics(context, params.TextDocument.URI, diagnostics)

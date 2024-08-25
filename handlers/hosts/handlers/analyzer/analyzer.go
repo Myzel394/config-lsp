@@ -2,14 +2,24 @@ package analyzer
 
 import (
 	"config-lsp/common"
-	"config-lsp/handlers/hosts/tree"
 	"config-lsp/utils"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-func Analyze(parser tree.HostsParser) []protocol.Diagnostic {
-	errors := analyzeEntriesAreValid(parser)
+func Analyze(parser *HostsParser) []protocol.Diagnostic {
+	errors := analyzeEntriesSetCorrectly(*parser)
+
+	if len(errors) > 0 {
+		return utils.Map(
+			errors,
+			func(err common.LSPError) protocol.Diagnostic {
+				return err.ToDiagnostic()
+			},
+		)
+	}
+
+	errors = analyzeEntriesAreValid(*parser)
 
 	if len(errors) > 0 {
 		return utils.Map(

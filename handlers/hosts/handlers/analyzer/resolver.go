@@ -2,7 +2,6 @@ package analyzer
 
 import (
 	"config-lsp/common"
-	"config-lsp/handlers/hosts/tree"
 	"config-lsp/utils"
 	"net"
 )
@@ -11,6 +10,14 @@ type ResolverEntry struct {
 	IPv4Address net.IP
 	IPv6Address net.IP
 	Line        uint32
+}
+
+func (e ResolverEntry) GetInfo() string {
+	if e.IPv4Address != nil {
+		return e.IPv4Address.String()
+	}
+
+	return e.IPv6Address.String()
 }
 
 type Resolver struct {
@@ -39,7 +46,7 @@ type hostnameEntry struct {
 	HostName string
 }
 
-func createResolverFromParser(p tree.HostsParser) (Resolver, []common.LSPError) {
+func createResolverFromParser(p HostsParser) (Resolver, []common.LSPError) {
 	errors := make([]common.LSPError, 0)
 	resolver := Resolver{
 		Entries: make(map[string]ResolverEntry),
@@ -56,7 +63,7 @@ func createResolverFromParser(p tree.HostsParser) (Resolver, []common.LSPError) 
 				},
 				utils.Map(
 					entry.Aliases,
-					func(alias *tree.HostsHostname) hostnameEntry {
+					func(alias *HostsHostname) hostnameEntry {
 						return hostnameEntry{
 							Location: alias.Location,
 							HostName: alias.Value,
@@ -92,8 +99,10 @@ func createResolverFromParser(p tree.HostsParser) (Resolver, []common.LSPError) 
 	return resolver, errors
 }
 
-func analyzeDoubleHostNames(p tree.HostsParser) []common.LSPError {
-	_, errors := createResolverFromParser(p)
+func analyzeDoubleHostNames(p *HostsParser) []common.LSPError {
+	resolver, errors := createResolverFromParser(*p)
+
+	p.Resolver = &resolver
 
 	return errors
 }

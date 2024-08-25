@@ -1,4 +1,4 @@
-package tree
+package analyzer
 
 import (
 	"config-lsp/common"
@@ -22,7 +22,7 @@ func characterRangeFromCtx(
 		},
 		End: common.Location{
 			Line:      line,
-			Character: end,
+			Character: end + 1,
 		},
 	}
 }
@@ -30,6 +30,9 @@ func characterRangeFromCtx(
 type HostsParser struct {
 	Tree         HostsTree
 	CommentLines map[uint32]struct{}
+	Resolver     *Resolver
+	// [line]error
+	DoubleIPs map[uint32]DuplicateIPDeclaration
 }
 
 type HostsTree struct {

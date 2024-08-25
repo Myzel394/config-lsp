@@ -3,7 +3,6 @@ package lsp
 import (
 	"config-lsp/common"
 	"config-lsp/handlers/hosts/handlers/analyzer"
-	"config-lsp/handlers/hosts/tree"
 	"config-lsp/utils"
 
 	"github.com/tliron/glsp"
@@ -16,7 +15,7 @@ func TextDocumentDidOpen(
 ) error {
 	common.ClearDiagnostics(context, params.TextDocument.URI)
 
-	parser := tree.CreateNewHostsParser()
+	parser := analyzer.CreateNewHostsParser()
 	documentParserMap[params.TextDocument.URI] = &parser
 
 	errors := parser.Parse(params.TextDocument.Text)
@@ -30,7 +29,7 @@ func TextDocumentDidOpen(
 
 	diagnostics = append(
 		diagnostics,
-		analyzer.Analyze(parser)...,
+		analyzer.Analyze(&parser)...,
 	)
 
 	if len(diagnostics) > 0 {

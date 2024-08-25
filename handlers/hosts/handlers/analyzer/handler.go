@@ -1,4 +1,4 @@
-package tree
+package analyzer
 
 import (
 	"config-lsp/common"

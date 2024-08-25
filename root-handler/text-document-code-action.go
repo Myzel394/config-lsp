@@ -1,7 +1,9 @@
 package roothandler
 
 import (
+	hosts "config-lsp/handlers/hosts/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
+
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -23,7 +25,7 @@ func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionPa
 	case LanguageFstab:
 		fallthrough
 	case LanguageHosts:
-		fallthrough
+		return hosts.TextDocumentCodeAction(context, params)
 	case LanguageSSHDConfig:
 		return nil, nil
 	case LanguageWireguard:
