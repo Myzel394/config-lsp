@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	github.com/antlr4-go/antlr/v4 v4.13.1 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/iancoleman/strcase v0.3.0 // indirect
