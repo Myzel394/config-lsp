@@ -9,14 +9,26 @@ import (
 func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionParams) (any, error) {
 	language := rootHandler.GetLanguageForDocument(params.TextDocument.URI)
 
-	switch language {
+	if language == nil {
+		showParseError(
+			context,
+			params.TextDocument.URI,
+			undetectableError,
+		)
+
+		return nil, undetectableError.Err
+	}
+
+	switch *language {
 	case LanguageFstab:
-		return nil, nil
+		fallthrough
+	case LanguageHosts:
+		fallthrough
 	case LanguageSSHDConfig:
 		return nil, nil
 	case LanguageWireguard:
 		return wireguard.TextDocumentCodeAction(context, params)
 	}
 
-	panic("root-handler/TextDocumentCompletion: unexpected language" + language)
+	panic("root-handler/TextDocumentCompletion: unexpected language" + *language)
 }

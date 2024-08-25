@@ -3,8 +3,8 @@ package tree
 import (
 	"config-lsp/common"
 	"config-lsp/handlers/hosts/parser"
+	"config-lsp/utils"
 	"regexp"
-	"strings"
 
 	"github.com/antlr4-go/antlr/v4"
 )
@@ -51,10 +51,10 @@ func (p *HostsParser) parseStatement(
 
 func (p *HostsParser) Parse(input string) []common.LSPError {
 	errors := make([]common.LSPError, 0)
-	lines := strings.Split(input, "\n")
+	lines := utils.SplitIntoLines(input)
 
 	for rawLineNumber, line := range lines {
-		lineNumber := uint32(rawLineNumber + 1)
+		lineNumber := uint32(rawLineNumber)
 
 		if commentPattern.MatchString(line) {
 			p.CommentLines[lineNumber] = struct{}{}

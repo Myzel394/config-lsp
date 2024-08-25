@@ -16,12 +16,14 @@ const (
 	LanguageSSHDConfig SupportedLanguage = "sshd_config"
 	LanguageFstab      SupportedLanguage = "fstab"
 	LanguageWireguard  SupportedLanguage = "languagewireguard"
+	LanguageHosts      SupportedLanguage = "hosts"
 )
 
 var AllSupportedLanguages = []string{
 	string(LanguageSSHDConfig),
 	string(LanguageFstab),
 	string(LanguageWireguard),
+	string(LanguageHosts),
 }
 
 type FatalFileNotReadableError struct {
@@ -59,10 +61,18 @@ var valueToLanguageMap = map[string]SupportedLanguage{
 	"wireguard":         LanguageWireguard,
 	"wg":                LanguageWireguard,
 	"languagewireguard": LanguageWireguard,
+	"host":              LanguageHosts,
+	"hosts":             LanguageHosts,
+	"etc/hosts":         LanguageHosts,
 }
 
-var typeOverwriteRegex = regexp.MustCompile(`^#\?\s*lsp\.language\s*=\s*(\w+)\s*$`)
+var typeOverwriteRegex = regexp.MustCompile(`#\?\s*lsp\.language\s*=\s*(\w+)\s*`)
 var wireguardPattern = regexp.MustCompile(`/wg\d+\.conf$`)
+
+var undetectableError = common.ParseError{
+	Line: 0,
+	Err:  LanguageUndetectableError{},
+}
 
 func DetectLanguage(
 	content string,
@@ -99,14 +109,13 @@ func DetectLanguage(
 		return LanguageSSHDConfig, nil
 	case "file:///etc/fstab":
 		return LanguageFstab, nil
+	case "file:///etc/hosts":
+		return LanguageHosts, nil
 	}
 
 	if strings.HasPrefix(uri, "file:///etc/wireguard/") || wireguardPattern.MatchString(uri) {
 		return LanguageWireguard, nil
 	}
 
-	return "", common.ParseError{
-		Line: 0,
-		Err:  LanguageUndetectableError{},
-	}
+	return "", undetectableError
 }

@@ -21,7 +21,7 @@ func TestResolverEntriesWorksWithNonOverlapping(
 		t.Fatalf("PARER FAILED! Expected no errors, but got %v", errors)
 	}
 
-	resolver, errors := CreateResolverFromParser(parser)
+	resolver, errors := createResolverFromParser(parser)
 
 	if len(errors) != 0 {
 		t.Errorf("Expected no errors, but got %v", errors)
@@ -63,7 +63,7 @@ func TestResolverEntriesWithSimpleOverlapping(
 		t.Fatalf("PARER FAILED! Expected no errors, but got %v", errors)
 	}
 
-	resolver, errors := CreateResolverFromParser(parser)
+	resolver, errors := createResolverFromParser(parser)
 
 	if !(len(errors) == 1) {
 		t.Errorf("Expected 1 error, but got %v", len(errors))
@@ -93,7 +93,7 @@ func TestResolverEntriesWithComplexOverlapping(
 		t.Fatalf("PARER FAILED! Expected no errors, but got %v", errors)
 	}
 
-	resolver, errors := CreateResolverFromParser(parser)
+	resolver, errors := createResolverFromParser(parser)
 
 	if !(len(errors) == 1) {
 		t.Errorf("Expected 1 error, but got %v", len(errors))

@@ -3,6 +3,7 @@ package roothandler
 import (
 	"config-lsp/common"
 	fstab "config-lsp/handlers/fstab"
+	hosts "config-lsp/handlers/hosts/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 	"fmt"
 
@@ -15,31 +16,26 @@ func TextDocumentDidOpen(context *glsp.Context, params *protocol.DidOpenTextDocu
 
 	// Find the file type
 	content := params.TextDocument.Text
-	language, err := DetectLanguage(content, params.TextDocument.LanguageID, params.TextDocument.URI)
+	language, err := initFile(
+		context,
+		content,
+		params.TextDocument.URI,
+		params.TextDocument.LanguageID,
+	)
 
 	if err != nil {
-		parseError := err.(common.ParseError)
-		showParseError(
-			context,
-			params.TextDocument.URI,
-			parseError,
-		)
-
-		return parseError.Err
+		return err
 	}
 
-	openedFiles[params.TextDocument.URI] = struct{}{}
-
-	// Everything okay, now we can handle the file
-	rootHandler.AddDocument(params.TextDocument.URI, language)
-
-	switch language {
+	switch *language {
 	case LanguageFstab:
 		return fstab.TextDocumentDidOpen(context, params)
 	case LanguageSSHDConfig:
 		break
 	case LanguageWireguard:
 		return wireguard.TextDocumentDidOpen(context, params)
+	case LanguageHosts:
+		return hosts.TextDocumentDidOpen(context, params)
 	}
 
 	panic(fmt.Sprintf("unexpected roothandler.SupportedLanguage: %#v", language))
@@ -72,4 +68,31 @@ func showParseError(
 			},
 		},
 	)
+}
+
+func initFile(
+	context *glsp.Context,
+	content string,
+	uri protocol.DocumentUri,
+	advertisedLanguage string,
+) (*SupportedLanguage, error) {
+	language, err := DetectLanguage(content, advertisedLanguage, uri)
+
+	if err != nil {
+		parseError := err.(common.ParseError)
+		showParseError(
+			context,
+			uri,
+			parseError,
+		)
+
+		return nil, parseError.Err
+	}
+
+	openedFiles[uri] = struct{}{}
+
+	// Everything okay, now we can handle the file
+	rootHandler.AddDocument(uri, language)
+
+	return &language, nil
 }

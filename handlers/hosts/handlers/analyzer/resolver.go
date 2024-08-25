@@ -39,7 +39,7 @@ type hostnameEntry struct {
 	HostName string
 }
 
-func CreateResolverFromParser(p tree.HostsParser) (Resolver, []common.LSPError) {
+func createResolverFromParser(p tree.HostsParser) (Resolver, []common.LSPError) {
 	errors := make([]common.LSPError, 0)
 	resolver := Resolver{
 		Entries: make(map[string]ResolverEntry),
@@ -90,4 +90,10 @@ func CreateResolverFromParser(p tree.HostsParser) (Resolver, []common.LSPError) 
 	}
 
 	return resolver, errors
+}
+
+func analyzeDoubleHostNames(p tree.HostsParser) []common.LSPError {
+	_, errors := createResolverFromParser(p)
+
+	return errors
 }

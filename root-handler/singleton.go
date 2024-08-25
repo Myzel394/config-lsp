@@ -20,8 +20,14 @@ func (h *RootHandler) AddDocument(uri protocol.DocumentUri, language SupportedLa
 	h.languageMap[uri] = language
 }
 
-func (h *RootHandler) GetLanguageForDocument(uri protocol.DocumentUri) SupportedLanguage {
-	return h.languageMap[uri]
+func (h *RootHandler) GetLanguageForDocument(uri protocol.DocumentUri) *SupportedLanguage {
+	language, found := h.languageMap[uri]
+
+	if !found {
+		return nil
+	}
+
+	return &language
 }
 
 func (h *RootHandler) RemoveDocument(uri protocol.DocumentUri) {
