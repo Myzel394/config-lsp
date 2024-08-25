@@ -2,6 +2,7 @@ package tree
 
 import (
 	"config-lsp/utils"
+	"net"
 	"testing"
 )
 
@@ -27,7 +28,7 @@ func TestValidSimpleExampleWorks(
 		t.Errorf("Expected IP address to be present, but got nil")
 	}
 
-	if !(parser.Tree.Entries[1].IPAddress.Value == "1.2.3.4") {
+	if !(parser.Tree.Entries[1].IPAddress.Value.String() == net.ParseIP("1.2.3.4").String()) {
 		t.Errorf("Expected IP address to be 1.2.3.4, but got %v", parser.Tree.Entries[1].IPAddress.Value)
 	}
 
@@ -94,7 +95,7 @@ func TestValidComplexExampleWorks(
 		t.Errorf("Expected IP address to be present, but got nil")
 	}
 
-	if !(parser.Tree.Entries[3].IPAddress.Value == "1.2.3.4") {
+	if !(parser.Tree.Entries[3].IPAddress.Value.String() == net.ParseIP("1.2.3.4").String()) {
 		t.Errorf("Expected IP address to be 1.2.3.4, but got %v", parser.Tree.Entries[2].IPAddress.Value)
 	}
 
@@ -129,7 +130,7 @@ func TestInvalidExampleWorks(
 		t.Errorf("Expected no comment lines, but got %v", len(parser.CommentLines))
 	}
 
-	if !(parser.Tree.Entries[1].IPAddress.Value == "1.2.3.4") {
+	if !(parser.Tree.Entries[1].IPAddress.Value.String() == net.ParseIP("1.2.3.4").String()) {
 		t.Errorf("Expected IP address to be nil, but got %v", parser.Tree.Entries[1].IPAddress)
 	}
 

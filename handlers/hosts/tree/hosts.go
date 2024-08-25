@@ -3,6 +3,7 @@ package tree
 import (
 	"config-lsp/common"
 	"fmt"
+	"net"
 
 	"github.com/antlr4-go/antlr/v4"
 )
@@ -48,7 +49,7 @@ func (p HostsEntry) String() string {
 	str := fmt.Sprintf("HostsEntry(%v)", p.Location)
 
 	if p.IPAddress != nil {
-		str += " " + p.IPAddress.Value
+		str += " " + p.IPAddress.Value.String()
 	}
 
 	if p.Hostname != nil {
@@ -64,7 +65,7 @@ func (p HostsEntry) String() string {
 
 type HostsIPAddress struct {
 	Location common.LocationRange
-	Value    string
+	Value    net.IPAddr
 }
 
 type HostsHostname struct {

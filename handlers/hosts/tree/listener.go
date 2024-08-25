@@ -2,7 +2,9 @@ package tree
 
 import (
 	"config-lsp/common"
+	docvalues "config-lsp/doc-values"
 	"config-lsp/handlers/hosts/parser"
+	"net"
 
 	"github.com/antlr4-go/antlr/v4"
 )
@@ -14,6 +16,7 @@ type hostsListenerContext struct {
 type hostsParserListener struct {
 	*parser.BaseHostsListener
 	Parser       *HostsParser
+	Errors       []common.LSPError
 	hostsContext hostsListenerContext
 }
 
@@ -35,11 +38,30 @@ func (s *hostsParserListener) EnterIpAddress(ctx *parser.IpAddressContext) {
 	location := characterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.hostsContext.line)
 
+	ip := net.ParseIP(ctx.GetText())
+
+	if ip == nil {
+		s.Errors = append(s.Errors, common.LSPError{
+			Range: location,
+			Err:   docvalues.InvalidIPAddress{},
+		})
+		return
+	}
+
+	ipAddr, err := net.ResolveIPAddr("ip", ip.String())
+
+	if err != nil {
+		s.Errors = append(s.Errors, common.LSPError{
+			Range: location,
+			Err:   docvalues.InvalidIPAddress{},
+		})
+	}
+
 	entry := s.Parser.Tree.Entries[location.Start.Line]
 
 	entry.IPAddress = &HostsIPAddress{
 		Location: location,
-		Value:    ctx.GetText(),
+		Value:    *ipAddr,
 	}
 }
 
@@ -91,6 +113,7 @@ func createHostsFileListener(
 		hostsContext: hostsListenerContext{
 			line: line,
 		},
+		Errors: make([]common.LSPError, 0),
 	}
 }
 
