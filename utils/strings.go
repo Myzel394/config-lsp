@@ -15,3 +15,7 @@ func GetTrimIndex(s string) []int {
 
 	return indexes[2:4]
 }
+
+func SplitIntoLines(s string) []string {
+	return regexp.MustCompile("\r?\n").Split(s, -1)
+}

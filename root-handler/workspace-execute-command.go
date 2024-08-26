@@ -1,6 +1,7 @@
 package roothandler
 
 import (
+	hosts "config-lsp/handlers/hosts/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 	"strings"
 
@@ -17,6 +18,8 @@ func WorkspaceExecuteCommand(context *glsp.Context, params *protocol.ExecuteComm
 	switch commandSection {
 	case "wireguard":
 		edit, err = wireguard.WorkspaceExecuteCommand(context, params)
+	case "hosts":
+		edit, err = hosts.WorkspaceExecuteCommand(context, params)
 	}
 
 	if err != nil {

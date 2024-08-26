@@ -3,6 +3,7 @@ package docvalues
 import (
 	"config-lsp/utils"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -171,5 +172,11 @@ func SingleEnumValue(value string) EnumValue {
 		Values: []EnumString{
 			CreateEnumString(value),
 		},
+	}
+}
+
+func DomainValue() Value {
+	return RegexValue{
+		Regex: *regexp.MustCompile(`^.+?\..+$`),
 	}
 }
