@@ -1,6 +1,7 @@
 package analyzer
 
 import (
+	"config-lsp/handlers/hosts/handlers/ast"
 	"config-lsp/utils"
 	"net"
 	"testing"
@@ -13,7 +14,7 @@ func TestValidSimpleExampleWorks(
 1.2.3.4 hello.com
 	`)
 
-	parser := CreateNewHostsParser()
+	parser := ast.NewHostsParser()
 	errors := parser.Parse(input)
 
 	if len(errors) != 0 {
@@ -80,7 +81,7 @@ func TestValidComplexExampleWorks(
 1.2.3.4 example.com check.com
 `)
 
-	parser := CreateNewHostsParser()
+	parser := ast.NewHostsParser()
 	errors := parser.Parse(input)
 
 	if len(errors) != 0 {
@@ -115,7 +116,7 @@ func TestInvalidExampleWorks(
 1.2.3.4
 	`)
 
-	parser := CreateNewHostsParser()
+	parser := ast.NewHostsParser()
 	errors := parser.Parse(input)
 
 	if len(errors) == 0 {

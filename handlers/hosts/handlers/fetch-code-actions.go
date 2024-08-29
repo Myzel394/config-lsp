@@ -1,17 +1,17 @@
 package handlers
 
 import (
-	"config-lsp/handlers/hosts/handlers/analyzer"
+	"config-lsp/handlers/hosts"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func GetInlineAliasesCodeAction(
-	p analyzer.HostsParser,
+	d hosts.HostsDocument,
 	params *protocol.CodeActionParams,
 ) []protocol.CodeAction {
 	line := params.Range.Start.Line
 
-	if duplicateInfo, found := p.DoubleIPs[line]; found {
+	if duplicateInfo, found := d.Indexes.DoubleIPs[line]; found {
 		commandID := "hosts." + CodeActionInlineAliases
 		command := protocol.Command{
 			Title:   "Inline Aliases",

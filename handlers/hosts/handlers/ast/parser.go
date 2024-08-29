@@ -1,4 +1,4 @@
-package analyzer
+package ast
 
 import (
 	"config-lsp/common"
@@ -74,7 +74,7 @@ func (p *HostsParser) Parse(input string) []common.LSPError {
 	return errors
 }
 
-func CreateNewHostsParser() HostsParser {
+func NewHostsParser() HostsParser {
 	p := HostsParser{}
 	p.Clear()
 

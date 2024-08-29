@@ -2,33 +2,19 @@ package analyzer
 
 import (
 	"config-lsp/common"
+	"config-lsp/handlers/hosts"
+	"config-lsp/handlers/hosts/handlers/ast"
+	"config-lsp/handlers/hosts/indexes"
+	"config-lsp/handlers/hosts/shared"
 	"config-lsp/utils"
 	"net"
 )
 
-type ResolverEntry struct {
-	IPv4Address net.IP
-	IPv6Address net.IP
-	Line        uint32
-}
-
-func (e ResolverEntry) GetInfo() string {
-	if e.IPv4Address != nil {
-		return e.IPv4Address.String()
-	}
-
-	return e.IPv6Address.String()
-}
-
-type Resolver struct {
-	Entries map[string]ResolverEntry
-}
-
 func createEntry(
 	line uint32,
 	ip net.IP,
-) ResolverEntry {
-	entry := ResolverEntry{
+) indexes.ResolverEntry {
+	entry := indexes.ResolverEntry{
 		Line: line,
 	}
 
@@ -46,10 +32,10 @@ type hostnameEntry struct {
 	HostName string
 }
 
-func createResolverFromParser(p HostsParser) (Resolver, []common.LSPError) {
+func createResolverFromParser(p ast.HostsParser) (indexes.Resolver, []common.LSPError) {
 	errors := make([]common.LSPError, 0)
-	resolver := Resolver{
-		Entries: make(map[string]ResolverEntry),
+	resolver := indexes.Resolver{
+		Entries: make(map[string]indexes.ResolverEntry),
 	}
 
 	for lineNumber, entry := range p.Tree.Entries {
@@ -63,7 +49,7 @@ func createResolverFromParser(p HostsParser) (Resolver, []common.LSPError) {
 				},
 				utils.Map(
 					entry.Aliases,
-					func(alias *HostsHostname) hostnameEntry {
+					func(alias *ast.HostsHostname) hostnameEntry {
 						return hostnameEntry{
 							Location: alias.Location,
 							HostName: alias.Value,
@@ -83,7 +69,7 @@ func createResolverFromParser(p HostsParser) (Resolver, []common.LSPError) {
 						errors,
 						common.LSPError{
 							Range: hostName.Location,
-							Err: DuplicateHostEntry{
+							Err: shared.DuplicateHostEntry{
 								AlreadyFoundAt: resolv.Line,
 								Hostname:       hostName.HostName,
 							},
@@ -99,10 +85,10 @@ func createResolverFromParser(p HostsParser) (Resolver, []common.LSPError) {
 	return resolver, errors
 }
 
-func analyzeDoubleHostNames(p *HostsParser) []common.LSPError {
-	resolver, errors := createResolverFromParser(*p)
+func analyzeDoubleHostNames(d *hosts.HostsDocument) []common.LSPError {
+	resolver, errors := createResolverFromParser(*d.Parser)
 
-	p.Resolver = &resolver
+	d.Indexes.Resolver = &resolver
 
 	return errors
 }

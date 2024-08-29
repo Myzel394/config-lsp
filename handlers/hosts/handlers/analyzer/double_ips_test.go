@@ -1,6 +1,10 @@
 package analyzer
 
 import (
+	"config-lsp/handlers/hosts"
+	"config-lsp/handlers/hosts/handlers/ast"
+	"config-lsp/handlers/hosts/indexes"
+	"config-lsp/handlers/hosts/shared"
 	"config-lsp/utils"
 	"testing"
 )
@@ -15,14 +19,19 @@ func TestWorksWithNonDoubleIPs(
 1.2.3.6 bar.com
 `)
 
-	parser := CreateNewHostsParser()
+	parser := ast.NewHostsParser()
+	i := indexes.NewHostsIndexes()
+	document := hosts.HostsDocument{
+		Parser:  &parser,
+		Indexes: &i,
+	}
 	errors := parser.Parse(input)
 
 	if len(errors) != 0 {
 		t.Fatalf("PARER FAILED! Expected no errors, but got %v", errors)
 	}
 
-	errors = analyzeDoubleIPs(&parser)
+	errors = analyzeDoubleIPs(&document)
 
 	if len(errors) != 0 {
 		t.Errorf("Expected no errors, but got %v", errors)
@@ -38,14 +47,19 @@ func TestWorksWithDoubleIPs(
 1.2.3.4 foo.com
 `)
 
-	parser := CreateNewHostsParser()
+	parser := ast.NewHostsParser()
+	i := indexes.NewHostsIndexes()
+	document := hosts.HostsDocument{
+		Parser:  &parser,
+		Indexes: &i,
+	}
 	errors := parser.Parse(input)
 
 	if len(errors) != 0 {
 		t.Fatalf("PARER FAILED! Expected no errors, but got %v", errors)
 	}
 
-	errors = analyzeDoubleIPs(&parser)
+	errors = analyzeDoubleIPs(&document)
 
 	if !(len(errors) == 1) {
 		t.Errorf("Expected 1 error, but got %v", len(errors))
@@ -55,7 +69,7 @@ func TestWorksWithDoubleIPs(
 		t.Errorf("Expected error on line 2, but got %v", errors[0].Range.Start.Line)
 	}
 
-	if !(errors[0].Err.(DuplicateIPDeclaration).AlreadyFoundAt == 0) {
-		t.Errorf("Expected error on line 0, but got %v", errors[0].Err.(DuplicateIPDeclaration).AlreadyFoundAt)
+	if !(errors[0].Err.(shared.DuplicateIPDeclaration).AlreadyFoundAt == 0) {
+		t.Errorf("Expected error on line 0, but got %v", errors[0].Err.(shared.DuplicateIPDeclaration).AlreadyFoundAt)
 	}
 }

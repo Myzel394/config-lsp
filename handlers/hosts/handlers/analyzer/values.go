@@ -4,12 +4,13 @@ import (
 	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
 	"config-lsp/handlers/hosts/fields"
+	"config-lsp/handlers/hosts/handlers/ast"
 	"config-lsp/utils"
 	"errors"
 )
 
 func analyzeEntriesSetCorrectly(
-	parser HostsParser,
+	parser ast.HostsParser,
 ) []common.LSPError {
 	err := make([]common.LSPError, 0)
 
@@ -35,7 +36,7 @@ func analyzeEntriesSetCorrectly(
 }
 
 func analyzeEntriesAreValid(
-	parser HostsParser,
+	parser ast.HostsParser,
 ) []common.LSPError {
 	err := make([]common.LSPError, 0)
 

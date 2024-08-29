@@ -1,6 +1,7 @@
 package analyzer
 
 import (
+	"config-lsp/handlers/hosts/handlers/ast"
 	"config-lsp/utils"
 	"testing"
 )
@@ -13,7 +14,7 @@ func TestResolverEntriesWorksWithNonOverlapping(
 5.5.5.5 world.com
 `)
 
-	parser := CreateNewHostsParser()
+	parser := ast.NewHostsParser()
 	errors := parser.Parse(input)
 
 	if len(errors) != 0 {
@@ -55,7 +56,7 @@ func TestResolverEntriesWithSimpleOverlapping(
 5.5.5.5 hello.com
 `)
 
-	parser := CreateNewHostsParser()
+	parser := ast.NewHostsParser()
 	errors := parser.Parse(input)
 
 	if len(errors) != 0 {
@@ -85,7 +86,7 @@ func TestResolverEntriesWithComplexOverlapping(
 5.5.5.5 check.com test.com
 `)
 
-	parser := CreateNewHostsParser()
+	parser := ast.NewHostsParser()
 	errors := parser.Parse(input)
 
 	if len(errors) != 0 {

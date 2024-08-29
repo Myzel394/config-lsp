@@ -1,6 +1,7 @@
 package lsp
 
 import (
+	"config-lsp/handlers/hosts"
 	"config-lsp/handlers/hosts/handlers"
 	"strings"
 
@@ -15,9 +16,9 @@ func WorkspaceExecuteCommand(context *glsp.Context, params *protocol.ExecuteComm
 	case string(handlers.CodeActionInlineAliases):
 		args := handlers.CodeActionInlineAliasesArgsFromArguments(params.Arguments[0].(map[string]any))
 
-		parser := documentParserMap[args.URI]
+		document := hosts.DocumentParserMap[args.URI]
 
-		return args.RunCommand(*parser)
+		return args.RunCommand(*document.Parser)
 	}
 
 	return nil, nil

@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"config-lsp/handlers/hosts/handlers/analyzer"
+	"config-lsp/handlers/hosts/handlers/ast"
 	"config-lsp/utils"
 	"fmt"
 	"strings"
@@ -16,7 +16,7 @@ const (
 )
 
 type CodeAction interface {
-	RunCommand(analyzer.HostsParser) (*protocol.ApplyWorkspaceEditParams, error)
+	RunCommand(ast.HostsParser) (*protocol.ApplyWorkspaceEditParams, error)
 }
 
 type CodeActionArgs interface{}
@@ -35,7 +35,7 @@ func CodeActionInlineAliasesArgsFromArguments(arguments map[string]any) CodeActi
 	}
 }
 
-func (args CodeActionInlineAliasesArgs) RunCommand(hostsParser analyzer.HostsParser) (*protocol.ApplyWorkspaceEditParams, error) {
+func (args CodeActionInlineAliasesArgs) RunCommand(hostsParser ast.HostsParser) (*protocol.ApplyWorkspaceEditParams, error) {
 	fromEntry := hostsParser.Tree.Entries[args.FromLine]
 	toEntry := hostsParser.Tree.Entries[args.ToLine]
 
@@ -58,7 +58,7 @@ func (args CodeActionInlineAliasesArgs) RunCommand(hostsParser analyzer.HostsPar
 		},
 		utils.Map(
 			fromEntry.Aliases,
-			func(alias *analyzer.HostsHostname) string {
+			func(alias *ast.HostsHostname) string {
 				return alias.Value
 			},
 		)...,

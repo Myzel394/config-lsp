@@ -1,7 +1,8 @@
 package handlers
 
 import (
-	"config-lsp/handlers/hosts/handlers/analyzer"
+	"config-lsp/handlers/hosts"
+	"config-lsp/handlers/hosts/handlers/ast"
 	"fmt"
 )
 
@@ -14,7 +15,7 @@ const (
 )
 
 func GetHoverTargetInEntry(
-	e analyzer.HostsEntry,
+	e ast.HostsEntry,
 	cursor uint32,
 ) *HoverTarget {
 	if e.IPAddress != nil && e.IPAddress.Location.ContainsCursorByCharacter(cursor) {
@@ -38,11 +39,11 @@ func GetHoverTargetInEntry(
 }
 
 func GetHoverInfoForHostname(
-	parser analyzer.HostsParser,
-	hostname analyzer.HostsHostname,
+	d hosts.HostsDocument,
+	hostname ast.HostsHostname,
 	cursor uint32,
 ) []string {
-	ipAddress := parser.Resolver.Entries[hostname.Value]
+	ipAddress := d.Indexes.Resolver.Entries[hostname.Value]
 
 	return []string{
 		fmt.Sprintf("**%s** maps to _%s_", hostname.Value, ipAddress.GetInfo()),

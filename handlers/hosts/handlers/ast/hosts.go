@@ -1,4 +1,4 @@
-package analyzer
+package ast
 
 import (
 	"config-lsp/common"
@@ -9,9 +9,6 @@ import (
 type HostsParser struct {
 	Tree         HostsTree
 	CommentLines map[uint32]struct{}
-	Resolver     *Resolver
-	// [line]error
-	DoubleIPs map[uint32]DuplicateIPDeclaration
 }
 
 type HostsTree struct {
