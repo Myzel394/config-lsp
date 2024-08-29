@@ -3,7 +3,7 @@ package lsp
 import (
 	"config-lsp/common"
 	"config-lsp/handlers/hosts"
-	"config-lsp/handlers/hosts/handlers/analyzer"
+	"config-lsp/handlers/hosts/analyzer"
 	"config-lsp/utils"
 
 	"github.com/tliron/glsp"

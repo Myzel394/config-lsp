@@ -2,7 +2,7 @@ package analyzer
 
 import (
 	"config-lsp/handlers/hosts"
-	"config-lsp/handlers/hosts/handlers/ast"
+	"config-lsp/handlers/hosts/ast"
 	"config-lsp/handlers/hosts/indexes"
 	"config-lsp/handlers/hosts/shared"
 	"config-lsp/utils"

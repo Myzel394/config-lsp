@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"config-lsp/handlers/hosts"
-	"config-lsp/handlers/hosts/handlers/ast"
+	"config-lsp/handlers/hosts/ast"
 	"fmt"
 )
 

@@ -2,9 +2,9 @@ package lsp
 
 import (
 	"config-lsp/handlers/hosts"
+	"config-lsp/handlers/hosts/ast"
 	"config-lsp/handlers/hosts/fields"
 	"config-lsp/handlers/hosts/handlers"
-	"config-lsp/handlers/hosts/handlers/ast"
 	"strings"
 
 	"github.com/tliron/glsp"

@@ -1,6 +1,8 @@
 package indexes
 
-import "config-lsp/handlers/hosts/shared"
+import (
+	"config-lsp/handlers/hosts/shared"
+)
 
 type HostsIndexes struct {
 	Resolver *Resolver

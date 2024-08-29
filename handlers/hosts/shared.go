@@ -1,9 +1,8 @@
 package hosts
 
 import (
-	"config-lsp/handlers/hosts/handlers/ast"
+	"config-lsp/handlers/hosts/ast"
 	"config-lsp/handlers/hosts/indexes"
-
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 

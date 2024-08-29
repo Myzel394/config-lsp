@@ -3,8 +3,8 @@ package lsp
 import (
 	"config-lsp/common"
 	"config-lsp/handlers/hosts"
-	"config-lsp/handlers/hosts/handlers/analyzer"
-	"config-lsp/handlers/hosts/handlers/ast"
+	"config-lsp/handlers/hosts/analyzer"
+	"config-lsp/handlers/hosts/ast"
 	"config-lsp/handlers/hosts/indexes"
 	"config-lsp/utils"
 

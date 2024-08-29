@@ -3,7 +3,7 @@ package ast
 import (
 	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
-	"config-lsp/handlers/hosts/parser"
+	parser2 "config-lsp/handlers/hosts/ast/parser"
 	"net"
 
 	"github.com/antlr4-go/antlr/v4"
@@ -14,18 +14,18 @@ type hostsListenerContext struct {
 }
 
 type hostsParserListener struct {
-	*parser.BaseHostsListener
+	*parser2.BaseHostsListener
 	Parser       *HostsParser
 	Errors       []common.LSPError
 	hostsContext hostsListenerContext
 }
 
-func (s *hostsParserListener) EnterComment(ctx *parser.CommentContext) {
+func (s *hostsParserListener) EnterComment(ctx *parser2.CommentContext) {
 	line := uint32(s.hostsContext.line)
 	s.Parser.CommentLines[line] = struct{}{}
 }
 
-func (s *hostsParserListener) EnterEntry(ctx *parser.EntryContext) {
+func (s *hostsParserListener) EnterEntry(ctx *parser2.EntryContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.hostsContext.line)
 
@@ -34,7 +34,7 @@ func (s *hostsParserListener) EnterEntry(ctx *parser.EntryContext) {
 	}
 }
 
-func (s *hostsParserListener) EnterIpAddress(ctx *parser.IpAddressContext) {
+func (s *hostsParserListener) EnterIpAddress(ctx *parser2.IpAddressContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.hostsContext.line)
 
@@ -65,7 +65,7 @@ func (s *hostsParserListener) EnterIpAddress(ctx *parser.IpAddressContext) {
 	}
 }
 
-func (s *hostsParserListener) EnterHostname(ctx *parser.HostnameContext) {
+func (s *hostsParserListener) EnterHostname(ctx *parser2.HostnameContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.hostsContext.line)
 
@@ -79,7 +79,7 @@ func (s *hostsParserListener) EnterHostname(ctx *parser.HostnameContext) {
 	s.Parser.Tree.Entries[location.Start.Line] = entry
 }
 
-func (s *hostsParserListener) EnterAliases(ctx *parser.AliasesContext) {
+func (s *hostsParserListener) EnterAliases(ctx *parser2.AliasesContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.hostsContext.line)
 
@@ -90,7 +90,7 @@ func (s *hostsParserListener) EnterAliases(ctx *parser.AliasesContext) {
 	entry.Aliases = aliases
 }
 
-func (s *hostsParserListener) EnterAlias(ctx *parser.AliasContext) {
+func (s *hostsParserListener) EnterAlias(ctx *parser2.AliasContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.hostsContext.line)
 

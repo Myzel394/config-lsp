@@ -3,8 +3,8 @@ package analyzer
 import (
 	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
+	"config-lsp/handlers/hosts/ast"
 	"config-lsp/handlers/hosts/fields"
-	"config-lsp/handlers/hosts/handlers/ast"
 	"config-lsp/utils"
 	"errors"
 )

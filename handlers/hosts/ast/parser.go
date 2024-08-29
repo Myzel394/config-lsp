@@ -2,7 +2,7 @@ package ast
 
 import (
 	"config-lsp/common"
-	"config-lsp/handlers/hosts/parser"
+	parser2 "config-lsp/handlers/hosts/ast/parser"
 	"config-lsp/utils"
 	"regexp"
 
@@ -26,7 +26,7 @@ func (p *HostsParser) parseStatement(
 	stream := antlr.NewInputStream(input)
 
 	errorListener := createErrorListener(line)
-	lexer := parser.NewHostsLexer(stream)
+	lexer := parser2.NewHostsLexer(stream)
 	lexer.RemoveErrorListeners()
 	lexer.AddErrorListener(&errorListener)
 
@@ -34,7 +34,7 @@ func (p *HostsParser) parseStatement(
 
 	errorListener = createErrorListener(line)
 	tokenStream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
-	antlrParser := parser.NewHostsParser(tokenStream)
+	antlrParser := parser2.NewHostsParser(tokenStream)
 	antlrParser.RemoveErrorListeners()
 	antlrParser.AddErrorListener(&errorListener)
 
