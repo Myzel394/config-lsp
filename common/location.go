@@ -1,6 +1,9 @@
 package common
 
-import protocol "github.com/tliron/glsp/protocol_3_16"
+import (
+	"github.com/antlr4-go/antlr/v4"
+	protocol "github.com/tliron/glsp/protocol_3_16"
+)
 
 type Location struct {
 	Line      uint32
@@ -60,6 +63,25 @@ func CreateSingleCharRange(line uint32, character uint32) LocationRange {
 		End: Location{
 			Line:      line,
 			Character: character,
+		},
+	}
+}
+
+func CharacterRangeFromCtx(
+	ctx antlr.BaseParserRuleContext,
+) LocationRange {
+	line := uint32(ctx.GetStart().GetLine())
+	start := uint32(ctx.GetStart().GetStart())
+	end := uint32(ctx.GetStop().GetStop())
+
+	return LocationRange{
+		Start: Location{
+			Line:      line,
+			Character: start,
+		},
+		End: Location{
+			Line:      line,
+			Character: end + 1,
 		},
 	}
 }

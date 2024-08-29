@@ -4,28 +4,7 @@ import (
 	"config-lsp/common"
 	"fmt"
 	"net"
-
-	"github.com/antlr4-go/antlr/v4"
 )
-
-func characterRangeFromCtx(
-	ctx antlr.BaseParserRuleContext,
-) common.LocationRange {
-	line := uint32(ctx.GetStart().GetLine())
-	start := uint32(ctx.GetStart().GetStart())
-	end := uint32(ctx.GetStop().GetStop())
-
-	return common.LocationRange{
-		Start: common.Location{
-			Line:      line,
-			Character: start,
-		},
-		End: common.Location{
-			Line:      line,
-			Character: end + 1,
-		},
-	}
-}
 
 type HostsParser struct {
 	Tree         HostsTree

@@ -26,7 +26,7 @@ func (s *hostsParserListener) EnterComment(ctx *parser.CommentContext) {
 }
 
 func (s *hostsParserListener) EnterEntry(ctx *parser.EntryContext) {
-	location := characterRangeFromCtx(ctx.BaseParserRuleContext)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.hostsContext.line)
 
 	s.Parser.Tree.Entries[location.Start.Line] = &HostsEntry{
@@ -35,7 +35,7 @@ func (s *hostsParserListener) EnterEntry(ctx *parser.EntryContext) {
 }
 
 func (s *hostsParserListener) EnterIpAddress(ctx *parser.IpAddressContext) {
-	location := characterRangeFromCtx(ctx.BaseParserRuleContext)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.hostsContext.line)
 
 	ip := net.ParseIP(ctx.GetText())
@@ -66,7 +66,7 @@ func (s *hostsParserListener) EnterIpAddress(ctx *parser.IpAddressContext) {
 }
 
 func (s *hostsParserListener) EnterHostname(ctx *parser.HostnameContext) {
-	location := characterRangeFromCtx(ctx.BaseParserRuleContext)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.hostsContext.line)
 
 	entry := s.Parser.Tree.Entries[location.Start.Line]
@@ -80,7 +80,7 @@ func (s *hostsParserListener) EnterHostname(ctx *parser.HostnameContext) {
 }
 
 func (s *hostsParserListener) EnterAliases(ctx *parser.AliasesContext) {
-	location := characterRangeFromCtx(ctx.BaseParserRuleContext)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.hostsContext.line)
 
 	entry := s.Parser.Tree.Entries[location.Start.Line]
@@ -91,7 +91,7 @@ func (s *hostsParserListener) EnterAliases(ctx *parser.AliasesContext) {
 }
 
 func (s *hostsParserListener) EnterAlias(ctx *parser.AliasContext) {
-	location := characterRangeFromCtx(ctx.BaseParserRuleContext)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.hostsContext.line)
 
 	entry := s.Parser.Tree.Entries[location.Start.Line]
@@ -123,17 +123,6 @@ type errorListener struct {
 	hostsContext hostsListenerContext
 }
 
-func createErrorListener(
-	line uint32,
-) errorListener {
-	return errorListener{
-		Errors: make([]common.LSPError, 0),
-		hostsContext: hostsListenerContext{
-			line: line,
-		},
-	}
-}
-
 func (d *errorListener) SyntaxError(
 	recognizer antlr.Recognizer,
 	offendingSymbol interface{},
@@ -149,4 +138,15 @@ func (d *errorListener) SyntaxError(
 			Message: message,
 		},
 	})
+}
+
+func createErrorListener(
+	line uint32,
+) errorListener {
+	return errorListener{
+		Errors: make([]common.LSPError, 0),
+		hostsContext: hostsListenerContext{
+			line: line,
+		},
+	}
 }
