@@ -1,4 +1,4 @@
-package tree
+package ast
 
 import (
 	"config-lsp/common"
@@ -23,16 +23,21 @@ func (s *aliasesParserListener) EnterEntry(ctx *parser.EntryContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.aliasContext.line)
 
-	s.Parser.Aliases[location.Start.Line] = &AliasEntry{
-		Location: location,
-	}
+	s.Parser.Aliases.Put(
+		location.Start.Line,
+		&AliasEntry{
+			Location: location,
+		},
+	)
 }
 
 func (s *aliasesParserListener) EnterSeparator(ctx *parser.SeparatorContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.aliasContext.line)
 
-	entry := s.Parser.Aliases[location.Start.Line]
+	rawEntry, _ := s.Parser.Aliases.Get(location.Start.Line)
+	entry := rawEntry.(*AliasEntry)
+
 	entry.Separator = &location
 }
 
@@ -40,7 +45,9 @@ func (s *aliasesParserListener) EnterKey(ctx *parser.KeyContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.aliasContext.line)
 
-	entry := s.Parser.Aliases[location.Start.Line]
+	rawEntry, _ := s.Parser.Aliases.Get(location.Start.Line)
+	entry := rawEntry.(*AliasEntry)
+
 	entry.Key = &AliasKey{
 		Location: location,
 		Value:    ctx.GetText(),
@@ -51,7 +58,9 @@ func (s *aliasesParserListener) EnterValues(ctx *parser.ValuesContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.aliasContext.line)
 
-	entry := s.Parser.Aliases[location.Start.Line]
+	rawEntry, _ := s.Parser.Aliases.Get(location.Start.Line)
+	entry := rawEntry.(*AliasEntry)
+
 	entry.Values = &AliasValues{
 		Location: location,
 		Values:   make([]AliasValueInterface, 0, 5),
@@ -71,7 +80,9 @@ func (s *aliasesParserListener) EnterUser(ctx *parser.UserContext) {
 		},
 	}
 
-	entry := s.Parser.Aliases[location.Start.Line]
+	rawEntry, _ := s.Parser.Aliases.Get(location.Start.Line)
+	entry := rawEntry.(*AliasEntry)
+
 	entry.Values.Values = append(entry.Values.Values, user)
 }
 
@@ -79,9 +90,12 @@ func (s *aliasesParserListener) EnterFile(ctx *parser.FileContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.aliasContext.line)
 
+	rawEntry, _ := s.Parser.Aliases.Get(location.Start.Line)
+	entry := rawEntry.(*AliasEntry)
+
 	if s.aliasContext.currentIncludeIndex != nil {
 		// This `file` is inside an `include`, so we need to set the path on the include
-		values := s.Parser.Aliases[location.Start.Line].Values
+		values := entry.Values
 		rawValue := values.Values[*s.aliasContext.currentIncludeIndex]
 
 		// Set the path
@@ -107,7 +121,6 @@ func (s *aliasesParserListener) EnterFile(ctx *parser.FileContext) {
 		Path: path(ctx.GetText()),
 	}
 
-	entry := s.Parser.Aliases[location.Start.Line]
 	entry.Values.Values = append(entry.Values.Values, file)
 }
 
@@ -123,7 +136,9 @@ func (s *aliasesParserListener) EnterCommand(ctx *parser.CommandContext) {
 		Command: ctx.GetText()[1:],
 	}
 
-	entry := s.Parser.Aliases[location.Start.Line]
+	rawEntry, _ := s.Parser.Aliases.Get(location.Start.Line)
+	entry := rawEntry.(*AliasEntry)
+
 	entry.Values.Values = append(entry.Values.Values, command)
 }
 
@@ -138,7 +153,9 @@ func (s *aliasesParserListener) EnterInclude(ctx *parser.IncludeContext) {
 		},
 	}
 
-	entry := s.Parser.Aliases[location.Start.Line]
+	rawEntry, _ := s.Parser.Aliases.Get(location.Start.Line)
+	entry := rawEntry.(*AliasEntry)
+
 	entry.Values.Values = append(entry.Values.Values, include)
 
 	index := uint32(len(entry.Values.Values) - 1)
@@ -156,7 +173,9 @@ func (s *aliasesParserListener) EnterEmail(ctx *parser.EmailContext) {
 		},
 	}
 
-	entry := s.Parser.Aliases[location.Start.Line]
+	rawEntry, _ := s.Parser.Aliases.Get(location.Start.Line)
+	entry := rawEntry.(*AliasEntry)
+
 	entry.Values.Values = append(entry.Values.Values, email)
 }
 

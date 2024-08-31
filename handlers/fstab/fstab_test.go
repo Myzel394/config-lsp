@@ -13,6 +13,8 @@ var sampleInvalidOptionsExample = `
 LABEL=test /mnt/test btrfs subvol=backup,fat=32 0 0
 `
 
+// TODO: Improve `entries`, sometimes the indexes seem
+// to be wrong. Use a treemap instead of a map.
 func TestValidBasicExample(t *testing.T) {
 	// Arrange
 	parser := FstabParser{}

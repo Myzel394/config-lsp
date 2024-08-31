@@ -1,11 +1,14 @@
-package tree
+package ast
 
 import (
 	"config-lsp/common"
 	"config-lsp/handlers/aliases/parser"
 	"config-lsp/utils"
-	"github.com/antlr4-go/antlr/v4"
 	"regexp"
+
+	"github.com/antlr4-go/antlr/v4"
+	"github.com/emirpasic/gods/maps/treemap"
+	gods "github.com/emirpasic/gods/utils"
 )
 
 func NewAliasesParser() AliasesParser {
@@ -17,7 +20,7 @@ func NewAliasesParser() AliasesParser {
 
 func (p *AliasesParser) Clear() {
 	p.CommentLines = make(map[uint32]struct{})
-	p.Aliases = make(map[uint32]*AliasEntry)
+	p.Aliases = treemap.NewWith(gods.UInt32Comparator)
 }
 
 var commentPattern = regexp.MustCompile(`^\s*#.*$`)

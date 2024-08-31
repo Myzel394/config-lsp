@@ -1,7 +1,8 @@
-package tree
+package ast
 
 import (
 	"config-lsp/common"
+	"github.com/emirpasic/gods/maps/treemap"
 )
 
 // Procedure
@@ -34,6 +35,6 @@ type AliasEntry struct {
 }
 
 type AliasesParser struct {
-	Aliases      map[uint32]*AliasEntry
+	Aliases      *treemap.Map
 	CommentLines map[uint32]struct{}
 }
