@@ -11,6 +11,10 @@ type AliasesIndexes struct {
 	Keys map[string]*ast.AliasKey
 }
 
+func NormalizeKey(key string) string {
+	return strings.ToLower(key)
+}
+
 func CreateIndexes(parser ast.AliasesParser) (AliasesIndexes, []common.LSPError) {
 	errors := make([]common.LSPError, 0)
 	indexes := &AliasesIndexes{
@@ -22,7 +26,7 @@ func CreateIndexes(parser ast.AliasesParser) (AliasesIndexes, []common.LSPError)
 	for it.Next() {
 		entry := it.Value().(*ast.AliasEntry)
 
-		normalizedAlias := strings.ToLower(entry.Key.Value)
+		normalizedAlias := NormalizeKey(entry.Key.Value)
 
 		if existingEntry, found := indexes.Keys[normalizedAlias]; found {
 			errors = append(errors, common.LSPError{

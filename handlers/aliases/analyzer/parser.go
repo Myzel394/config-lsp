@@ -20,7 +20,7 @@ func analyzeValuesAreValid(
 		if entry.Key == nil {
 			errors = append(errors, common.LSPError{
 				Range: entry.Location,
-				Err:   ers.New("A name is required"),
+				Err:   ers.New("An alias is required"),
 			})
 
 			continue

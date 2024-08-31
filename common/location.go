@@ -15,6 +15,17 @@ type LocationRange struct {
 	End   Location
 }
 
+var GlobalLocationRange = LocationRange{
+	Start: Location{
+		Line:      0,
+		Character: 0,
+	},
+	End: Location{
+		Line:      0,
+		Character: 0,
+	},
+}
+
 func (l LocationRange) ToLSPRange() protocol.Range {
 	return protocol.Range{
 		Start: protocol.Position{
