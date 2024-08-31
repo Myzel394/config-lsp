@@ -26,7 +26,7 @@ func CreateIndexes(parser ast.AliasesParser) (AliasesIndexes, []common.LSPError)
 
 		if existingEntry, found := indexes.Keys[normalizedAlias]; found {
 			errors = append(errors, common.LSPError{
-				Range: entry.Location,
+				Range: entry.Key.Location,
 				Err: shared.DuplicateKeyEntry{
 					AlreadyFoundAt: existingEntry.Location.Start.Line,
 					Key:            entry.Key.Value,

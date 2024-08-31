@@ -1,6 +1,7 @@
 package roothandler
 
 import (
+	aliases "config-lsp/handlers/aliases/lsp"
 	"config-lsp/handlers/fstab"
 	hosts "config-lsp/handlers/hosts/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
@@ -31,6 +32,8 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 		return wireguard.TextDocumentCompletion(context, params)
 	case LanguageHosts:
 		return hosts.TextDocumentCompletion(context, params)
+	case LanguageAliases:
+		return aliases.TextDocumentCompletion(context, params)
 	}
 
 	panic("root-handler/TextDocumentCompletion: unexpected language" + *language)

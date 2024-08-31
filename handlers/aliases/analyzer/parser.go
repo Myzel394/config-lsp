@@ -29,7 +29,7 @@ func analyzeValuesAreValid(
 		if entry.Separator == nil {
 			errors = append(errors, common.LSPError{
 				Range: entry.Location,
-				Err:   ers.New("The separator is required"),
+				Err:   ers.New("A ':' is required as a separator"),
 			})
 
 			continue

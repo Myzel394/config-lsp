@@ -1,6 +1,7 @@
 package roothandler
 
 import (
+	aliases "config-lsp/handlers/aliases/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 
@@ -31,6 +32,8 @@ func TextDocumentDidClose(context *glsp.Context, params *protocol.DidCloseTextDo
 		return wireguard.TextDocumentDidClose(context, params)
 	case LanguageHosts:
 		return hosts.TextDocumentDidClose(context, params)
+	case LanguageAliases:
+		return aliases.TextDocumentDidClose(context, params)
 	default:
 	}
 

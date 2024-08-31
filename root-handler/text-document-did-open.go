@@ -2,6 +2,7 @@ package roothandler
 
 import (
 	"config-lsp/common"
+	aliases "config-lsp/handlers/aliases/lsp"
 	fstab "config-lsp/handlers/fstab"
 	hosts "config-lsp/handlers/hosts/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
@@ -36,6 +37,8 @@ func TextDocumentDidOpen(context *glsp.Context, params *protocol.DidOpenTextDocu
 		return wireguard.TextDocumentDidOpen(context, params)
 	case LanguageHosts:
 		return hosts.TextDocumentDidOpen(context, params)
+	case LanguageAliases:
+		return aliases.TextDocumentDidOpen(context, params)
 	}
 
 	panic(fmt.Sprintf("unexpected roothandler.SupportedLanguage: %#v", language))
