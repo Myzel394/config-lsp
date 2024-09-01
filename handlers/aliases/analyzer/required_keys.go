@@ -9,7 +9,7 @@ import (
 	ers "errors"
 )
 
-var requiredFields = []string{
+var RequiredAliases = []string{
 	indexes.NormalizeKey("mailer-daemon"),
 	indexes.NormalizeKey("hostmaster"),
 	indexes.NormalizeKey("postmaster"),
@@ -20,7 +20,7 @@ func analyzeContainsRequiredKeys(
 ) []common.LSPError {
 	errors := make([]common.LSPError, 0)
 
-	for _, requiredField := range requiredFields {
+	for _, requiredField := range RequiredAliases {
 		if _, found := d.Indexes.Keys[requiredField]; !found {
 			errors = append(errors, common.LSPError{
 				Range: common.GlobalLocationRange,

@@ -8,8 +8,13 @@ import (
 )
 
 type AliasValueInterface interface {
+	GetAliasValue() AliasValue
 	FetchCompletions(line string, cursor uint32) []protocol.CompletionItem
 	CheckIsValid() []*docvalues.InvalidValue
+}
+
+func (a AliasValue) GetAliasValue() AliasValue {
+	return a
 }
 
 func (a AliasValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {

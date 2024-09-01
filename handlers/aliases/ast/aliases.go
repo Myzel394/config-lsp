@@ -35,6 +35,7 @@ type AliasEntry struct {
 }
 
 type AliasesParser struct {
+	// uint32 -> *AliasEntry
 	Aliases      *treemap.Map
 	CommentLines map[uint32]struct{}
 }
