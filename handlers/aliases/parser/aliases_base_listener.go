@@ -99,12 +99,6 @@ func (s *BaseAliasesListener) EnterError(ctx *ErrorContext) {}
 // ExitError is called when production error is exited.
 func (s *BaseAliasesListener) ExitError(ctx *ErrorContext) {}
 
-// EnterErrorStatus is called when production errorStatus is entered.
-func (s *BaseAliasesListener) EnterErrorStatus(ctx *ErrorStatusContext) {}
-
-// ExitErrorStatus is called when production errorStatus is exited.
-func (s *BaseAliasesListener) ExitErrorStatus(ctx *ErrorStatusContext) {}
-
 // EnterErrorCode is called when production errorCode is entered.
 func (s *BaseAliasesListener) EnterErrorCode(ctx *ErrorCodeContext) {}
 

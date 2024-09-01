@@ -8,8 +8,9 @@ import (
 )
 
 type aliasesListenerContext struct {
-	line                uint32
-	currentIncludeIndex *uint32
+	line                   uint32
+	currentIncludeIndex    *uint32
+	currentErrorValueIndex *uint32
 }
 
 type aliasesParserListener struct {
@@ -176,7 +177,77 @@ func (s *aliasesParserListener) EnterEmail(ctx *parser.EmailContext) {
 	rawEntry, _ := s.Parser.Aliases.Get(location.Start.Line)
 	entry := rawEntry.(*AliasEntry)
 
-	entry.Values.Values = append(entry.Values.Values, email)
+	entry.Values.Values = append(entry.Values.Values, &email)
+}
+
+func (s *aliasesParserListener) EnterError(ctx *parser.ErrorContext) {
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
+	location.ChangeBothLines(s.aliasContext.line)
+
+	errorValue := AliasValueError{
+		AliasValue: AliasValue{
+			Location: location,
+			Value:    ctx.GetText(),
+		},
+	}
+
+	rawEntry, _ := s.Parser.Aliases.Get(location.Start.Line)
+	entry := rawEntry.(*AliasEntry)
+
+	entry.Values.Values = append(entry.Values.Values, errorValue)
+
+	index := uint32(len(entry.Values.Values) - 1)
+	s.aliasContext.currentErrorValueIndex = &index
+}
+
+func (s *aliasesParserListener) ExitError(ctx *parser.ErrorContext) {
+	s.aliasContext.currentErrorValueIndex = nil
+}
+
+// EnterErrorCode is called when production errorCode is entered.
+func (s *aliasesParserListener) EnterErrorCode(ctx *parser.ErrorCodeContext) {
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
+	location.ChangeBothLines(s.aliasContext.line)
+
+	rawEntry, _ := s.Parser.Aliases.Get(location.Start.Line)
+	entry := rawEntry.(*AliasEntry)
+
+	values := entry.Values.Values
+
+	rawValue := values[*s.aliasContext.currentErrorValueIndex]
+	value := rawValue.(AliasValueError)
+
+	value.Code = &AliasValueErrorCode{
+		AliasValue: AliasValue{
+			Location: location,
+			Value:    ctx.GetText(),
+		},
+	}
+
+	values[*s.aliasContext.currentErrorValueIndex] = value
+}
+
+// EnterErrorMessage is called when production errorMessage is entered.
+func (s *aliasesParserListener) EnterErrorMessage(ctx *parser.ErrorMessageContext) {
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
+	location.ChangeBothLines(s.aliasContext.line)
+
+	rawEntry, _ := s.Parser.Aliases.Get(location.Start.Line)
+	entry := rawEntry.(*AliasEntry)
+
+	values := entry.Values.Values
+
+	rawValue := values[*s.aliasContext.currentErrorValueIndex]
+	value := rawValue.(AliasValueError)
+
+	value.Message = &AliasValueErrorMessage{
+		AliasValue: AliasValue{
+			Location: location,
+			Value:    ctx.GetText(),
+		},
+	}
+
+	values[*s.aliasContext.currentErrorValueIndex] = value
 }
 
 func createListener(

@@ -47,9 +47,6 @@ type AliasesListener interface {
 	// EnterError is called when entering the error production.
 	EnterError(c *ErrorContext)
 
-	// EnterErrorStatus is called when entering the errorStatus production.
-	EnterErrorStatus(c *ErrorStatusContext)
-
 	// EnterErrorCode is called when entering the errorCode production.
 	EnterErrorCode(c *ErrorCodeContext)
 
@@ -94,9 +91,6 @@ type AliasesListener interface {
 
 	// ExitError is called when exiting the error production.
 	ExitError(c *ErrorContext)
-
-	// ExitErrorStatus is called when exiting the errorStatus production.
-	ExitErrorStatus(c *ErrorStatusContext)
 
 	// ExitErrorCode is called when exiting the errorCode production.
 	ExitErrorCode(c *ErrorCodeContext)

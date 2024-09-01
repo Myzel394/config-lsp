@@ -54,6 +54,7 @@ func GetCompletionsForEntry(
 	if value == nil {
 		completions = append(completions, getCommandCompletion())
 		completions = append(completions, getIncludeCompletion())
+		completions = append(completions, getErrorCompletion())
 
 		completions = append(completions, getUserCompletions(
 			i,
@@ -103,6 +104,20 @@ func getIncludeCompletion() protocol.CompletionItem {
 	return protocol.CompletionItem{
 		Label:            ":include:<path>",
 		Documentation:    " Include any definitions in file as alias entries. The format of the file is identical to this one.",
+		Kind:             &kind,
+		InsertTextFormat: &textFormat,
+		InsertText:       &insertText,
+	}
+}
+
+func getErrorCompletion() protocol.CompletionItem {
+	kind := protocol.CompletionItemKindKeyword
+	textFormat := protocol.InsertTextFormatSnippet
+	insertText := "error:"
+
+	return protocol.CompletionItem{
+		Label:            "error:<message>",
+		Documentation:    "A status code and message to return. The code must be 3 digits, starting 4XX (TempFail) or 5XX (PermFail). The message must be present and can be freely chosen.",
 		Kind:             &kind,
 		InsertTextFormat: &textFormat,
 		InsertText:       &insertText,

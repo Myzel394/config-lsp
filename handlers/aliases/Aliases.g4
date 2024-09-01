@@ -1,7 +1,7 @@
 grammar Aliases;
 
 lineStatement
-    : entry SEPARATOR? comment? EOF
+    : entry EOF
     ;
 
 entry
@@ -22,7 +22,7 @@ values
     ;
 
 value
-    : (user | file | command | include | email)
+    : (user | file | command | include | email | error)
     ;
 
 user
@@ -50,19 +50,23 @@ email
     ;
 
 error
-    : errorStatus COLON errorCode SEPARATOR errorMessage
-    ;
-
-errorStatus
-    : STRING
+    : ERROR COLON errorCode? SEPARATOR? errorMessage?
     ;
 
 errorCode
-    : STRING
+    : DIGITS
     ;
 
 errorMessage
     : STRING
+    ;
+
+DIGITS
+    : [0-9]+
+    ;
+
+ERROR
+    : 'e' 'r' 'r' 'o' 'r'
     ;
 
 SEPARATOR

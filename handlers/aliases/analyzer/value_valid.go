@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/mail"
 	"path"
+	"strconv"
 
 	ers "errors"
 )
@@ -96,6 +97,31 @@ func checkValue(
 			return []common.LSPError{{
 				Range: fileValue.Location,
 				Err:   ers.New("This path must be absolute"),
+			}}
+		}
+	case ast.AliasValueError:
+		errorValue := value.(ast.AliasValueError)
+
+		if errorValue.Code == nil {
+			return []common.LSPError{{
+				Range: errorValue.Location,
+				Err:   ers.New("An error code in the form of 4XX or 5XX is required"),
+			}}
+		}
+
+		errorCode, err := strconv.Atoi(errorValue.Code.Value)
+
+		if err != nil || (errorCode < 400 || errorCode > 599) {
+			return []common.LSPError{{
+				Range: errorValue.Code.Location,
+				Err:   ers.New("This error code is invalid. It must be in the form of 4XX or 5XX"),
+			}}
+		}
+
+		if errorValue.Message == nil || errorValue.Message.Value == "" {
+			return []common.LSPError{{
+				Range: errorValue.Location,
+				Err:   ers.New("An error message is required"),
 			}}
 		}
 	}

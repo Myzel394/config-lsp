@@ -90,3 +90,18 @@ func (a AliasValueEmail) CheckIsValid() []common.LSPError {
 		},
 	)
 }
+
+type AliasValueError struct {
+	AliasValue
+
+	Code    *AliasValueErrorCode
+	Message *AliasValueErrorMessage
+}
+
+type AliasValueErrorCode struct {
+	AliasValue
+}
+
+type AliasValueErrorMessage struct {
+	AliasValue
+}
