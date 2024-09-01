@@ -30,15 +30,15 @@ user
     ;
 
 file
-    : (SLASH STRING)+ SLASH?
+    : SLASH (STRING SLASH)* STRING?
     ;
 
 command
-    : VERTLINE STRING
+    : VERTLINE STRING?
     ;
 
 include
-    : COLON INCLUDE COLON file
+    : COLON INCLUDE COLON file?
     ;
 
 comment

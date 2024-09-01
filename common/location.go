@@ -1,6 +1,8 @@
 package common
 
 import (
+	"fmt"
+
 	"github.com/antlr4-go/antlr/v4"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -13,6 +15,27 @@ type Location struct {
 type LocationRange struct {
 	Start Location
 	End   Location
+}
+
+func (l LocationRange) ShiftHorizontal(offset uint32) LocationRange {
+	return LocationRange{
+		Start: Location{
+			Line:      l.Start.Line,
+			Character: l.Start.Character + offset,
+		},
+		End: Location{
+			Line:      l.End.Line,
+			Character: l.End.Character + offset,
+		},
+	}
+}
+
+func (l LocationRange) String() string {
+	if l.Start.Line == l.End.Line {
+		return fmt.Sprintf("%d:%d-%d", l.Start.Line, l.Start.Character, l.End.Character)
+	}
+
+	return fmt.Sprintf("%d:%d-%d:%d", l.Start.Line, l.Start.Character, l.End.Line, l.End.Character)
 }
 
 var GlobalLocationRange = LocationRange{

@@ -1,7 +1,6 @@
 package openssh
 
 import (
-	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
 	"config-lsp/utils"
 
@@ -29,7 +28,7 @@ func DiagnoseParser(
 	diagnostics = append(
 		diagnostics,
 		utils.Map(
-			common.AnalyzeValues(Parser, Options),
+			AnalyzeValues(Parser, Options),
 			func(err docvalues.ValueError) protocol.Diagnostic {
 				return err.GetPublishDiagnosticsParams()
 			},

@@ -1,7 +1,6 @@
 package openssh
 
 import (
-	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
 	"errors"
 
@@ -44,7 +43,7 @@ func getRootCompletions() []protocol.CompletionItem {
 
 		completions[index] = protocol.CompletionItem{
 			Label:            label,
-			Documentation:    common.GetDocumentation(&option),
+			Documentation:    GetDocumentation(&option),
 			InsertText:       &insertText,
 			InsertTextFormat: &format,
 			Kind:             &kind,

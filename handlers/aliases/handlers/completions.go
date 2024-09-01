@@ -3,7 +3,9 @@ package handlers
 import (
 	"config-lsp/handlers/aliases/analyzer"
 	"config-lsp/handlers/aliases/ast"
+	"config-lsp/handlers/aliases/fetchers"
 	"config-lsp/handlers/aliases/indexes"
+	"config-lsp/utils"
 	"fmt"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -26,9 +28,9 @@ func GetAliasesCompletions(
 
 		text := fmt.Sprintf("%s: ", alias)
 		completions = append(completions, protocol.CompletionItem{
-			Label: alias,
-			Kind: &kind,
-			InsertText: &text,
+			Label:         alias,
+			Kind:          &kind,
+			InsertText:    &text,
 			Documentation: "This alias is required by the aliases file",
 		})
 	}
@@ -48,9 +50,76 @@ func GetCompletionsForEntry(
 	}
 
 	value := getValueAtCursor(cursor, entry)
+	relativeCursor := cursor - entry.Key.Location.Start.Character
 
-	println(fmt.Sprintf("Value: %v", value))
+	if value == nil {
+		completions = append(completions, getCommandCompletion())
+		completions = append(completions, getIncludeCompletion())
+
+		completions = append(completions, getUserCompletions(i, "", 0)...)
+
+		println("la completions etaient", completions)
+		return completions, nil
+	}
+
+	switch (*value).(type) {
+	case ast.AliasValueUser:
+		userValue := (*value).(ast.AliasValueUser)
+
+		return getUserCompletions(
+			i,
+			userValue.Value,
+			relativeCursor,
+		), nil
+	}
 
 	return completions, nil
 }
 
+func getCommandCompletion() protocol.CompletionItem {
+	kind := protocol.CompletionItemKindKeyword
+	textFormat := protocol.InsertTextFormatSnippet
+	insertText := "|"
+
+	return protocol.CompletionItem{
+		Label:            "|<command>",
+		Documentation:    "Pipe the message to command on its standard input. The command is run under the privileges of the daemon's unprivileged account.",
+		Kind:             &kind,
+		InsertTextFormat: &textFormat,
+		InsertText:       &insertText,
+	}
+}
+
+func getIncludeCompletion() protocol.CompletionItem {
+	kind := protocol.CompletionItemKindKeyword
+	textFormat := protocol.InsertTextFormatSnippet
+	insertText := ":include:"
+
+	return protocol.CompletionItem{
+		Label:            ":include:<path>",
+		Documentation:    " Include any definitions in file as alias entries. The format of the file is identical to this one.",
+		Kind:             &kind,
+		InsertTextFormat: &textFormat,
+		InsertText:       &insertText,
+	}
+}
+
+func getUserCompletions(
+	i *indexes.AliasesIndexes,
+	line string,
+	cursor uint32,
+) []protocol.CompletionItem {
+	users := fetchers.GetAvailableUserValues(i)
+
+	kind := protocol.CompletionItemKindValue
+	return utils.MapMapToSlice(
+		users,
+		func(name string, user fetchers.User) protocol.CompletionItem {
+			return protocol.CompletionItem{
+				Label:         name,
+				Kind:          &kind,
+				Documentation: user.Documentation(),
+			}
+		},
+	)
+}

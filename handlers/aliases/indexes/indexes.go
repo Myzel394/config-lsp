@@ -26,6 +26,10 @@ func CreateIndexes(parser ast.AliasesParser) (AliasesIndexes, []common.LSPError)
 	for it.Next() {
 		entry := it.Value().(*ast.AliasEntry)
 
+		if entry.Key == nil || entry.Key.Value == "" {
+			continue
+		}
+
 		normalizedAlias := NormalizeKey(entry.Key.Value)
 
 		if existingEntry, found := indexes.Keys[normalizedAlias]; found {

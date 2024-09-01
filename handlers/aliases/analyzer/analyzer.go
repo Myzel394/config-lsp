@@ -11,7 +11,11 @@ import (
 func Analyze(
 	d *aliases.AliasesDocument,
 ) []protocol.Diagnostic {
-	errors := analyzeValuesAreValid(*d.Parser)
+	// Double keys must be checked first so
+	// that the index is populated for the
+	// other checks
+	errors := analyzeDoubleKeys(d)
+	errors = append(errors, analyzeValuesAreValid(d)...)
 
 	if len(errors) > 0 {
 		return utils.Map(
@@ -22,7 +26,6 @@ func Analyze(
 		)
 	}
 
-	errors = append(errors, analyzeDoubleKeys(d)...)
 	errors = append(errors, analyzeContainsRequiredKeys(*d)...)
 
 	return utils.Map(

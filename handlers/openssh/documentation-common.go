@@ -1,4 +1,4 @@
-package common
+package openssh
 
 import (
 	docvalues "config-lsp/doc-values"

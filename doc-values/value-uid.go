@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
 	"fmt"
 	"strconv"
@@ -54,7 +55,7 @@ func (v UIDValue) CheckIsValid(value string) []*InvalidValue {
 	}
 
 	if v.EnforceUsingExisting {
-		infos, err := fetchPasswdInfo()
+		infos, err := common.FetchPasswdInfo()
 
 		if err != nil {
 			return []*InvalidValue{}
@@ -90,7 +91,7 @@ var defaultUIDsExplanation = []EnumString{
 }
 
 func (v UIDValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
-	infos, err := fetchPasswdInfo()
+	infos, err := common.FetchPasswdInfo()
 
 	if err != nil {
 		return utils.Map(defaultUIDsExplanation, func(enum EnumString) protocol.CompletionItem {
@@ -135,7 +136,7 @@ func (v UIDValue) FetchHoverInfo(line string, cursor uint32) []string {
 		return []string{}
 	}
 
-	infos, err := fetchPasswdInfo()
+	infos, err := common.FetchPasswdInfo()
 
 	if err != nil {
 		return []string{}

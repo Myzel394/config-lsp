@@ -19,12 +19,13 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 	}
 
 	rawEntry, found := d.Parser.Aliases.Get(line)
-	entry := rawEntry.(*ast.AliasEntry)
 
 	if !found {
 		// For the key there are no completions available
 		return handlers.GetAliasesCompletions(d.Indexes), nil
 	}
+
+	entry := rawEntry.(*ast.AliasEntry)
 
 	return handlers.GetCompletionsForEntry(
 		cursor,

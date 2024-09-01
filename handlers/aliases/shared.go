@@ -13,4 +13,3 @@ type AliasesDocument struct {
 }
 
 var DocumentParserMap = map[protocol.DocumentUri]*AliasesDocument{}
-

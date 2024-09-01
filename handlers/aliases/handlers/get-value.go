@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"config-lsp/handlers/aliases/ast"
-	"fmt"
 	"slices"
 )
 
@@ -14,19 +13,17 @@ func getValueAtCursor(
 		return nil
 	}
 
-	println(fmt.Sprintf("Values: %v", entry.Values.Values))
 	index, found := slices.BinarySearchFunc(
 		entry.Values.Values,
 		cursor,
 		func(entry ast.AliasValueInterface, pos uint32) int {
-			println(fmt.Sprintf("Entry: %v", entry))
-			value := entry.(ast.AliasValue)
+			value := entry.GetAliasValue()
 
-			if value.Location.End.Character > pos {
+			if pos > value.Location.End.Character {
 				return 1
 			}
 
-			if value.Location.Start.Character < pos {
+			if pos < value.Location.Start.Character {
 				return -1
 			}
 
@@ -40,4 +37,3 @@ func getValueAtCursor(
 
 	return &entry.Values.Values[index]
 }
-

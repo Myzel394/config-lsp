@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"fmt"
 	"unicode/utf8"
 
@@ -94,4 +95,23 @@ type LineNotFoundError struct{}
 
 func (e LineNotFoundError) Error() string {
 	return "Line not found"
+}
+
+func LSPErrorFromInvalidValue(
+	line uint32,
+	invaludValue InvalidValue,
+) common.LSPError {
+	return common.LSPError{
+		Range: common.LocationRange{
+			Start: common.Location{
+				Line:      line,
+				Character: invaludValue.Start,
+			},
+			End: common.Location{
+				Line:      line,
+				Character: invaludValue.End,
+			},
+		},
+		Err: invaludValue.Err,
+	}
 }

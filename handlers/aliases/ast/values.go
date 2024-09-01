@@ -3,25 +3,21 @@ package ast
 import (
 	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
+	"config-lsp/handlers/aliases/fields"
+	"config-lsp/utils"
+	"fmt"
 )
 
 type AliasValueInterface interface {
 	GetAliasValue() AliasValue
-	FetchCompletions(line string, cursor uint32) []protocol.CompletionItem
-	CheckIsValid() []*docvalues.InvalidValue
+}
+
+func (a AliasValue) String() string {
+	return fmt.Sprintf("%s %s", a.Location, a.Value)
 }
 
 func (a AliasValue) GetAliasValue() AliasValue {
 	return a
-}
-
-func (a AliasValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
-	return nil
-}
-func (a AliasValue) CheckIsValid() []*docvalues.InvalidValue {
-	return nil
 }
 
 type AliasValue struct {
@@ -40,9 +36,27 @@ type AliasValueFile struct {
 	Path path
 }
 
+func (a AliasValueFile) CheckIsValid() []common.LSPError {
+	return utils.Map(
+		fields.PathField.CheckIsValid(string(a.Path)),
+		func(invalidValue *docvalues.InvalidValue) common.LSPError {
+			return docvalues.LSPErrorFromInvalidValue(a.Location.Start.Line, *invalidValue)
+		},
+	)
+}
+
 type AliasValueCommand struct {
 	AliasValue
 	Command string
+}
+
+func (a AliasValueCommand) CheckIsValid() []common.LSPError {
+	return utils.Map(
+		fields.CommandField.CheckIsValid(a.Command),
+		func(invalidValue *docvalues.InvalidValue) common.LSPError {
+			return docvalues.LSPErrorFromInvalidValue(a.Location.Start.Line, *invalidValue)
+		},
+	)
 }
 
 type AliasValueIncludePath struct {
@@ -55,6 +69,24 @@ type AliasValueInclude struct {
 	Path AliasValueIncludePath
 }
 
+func (a AliasValueInclude) CheckIsValid() []common.LSPError {
+	return utils.Map(
+		fields.PathField.CheckIsValid(string(a.Path.Path)),
+		func(invalidValue *docvalues.InvalidValue) common.LSPError {
+			return docvalues.LSPErrorFromInvalidValue(a.Location.Start.Line, *invalidValue)
+		},
+	)
+}
+
 type AliasValueEmail struct {
 	AliasValue
+}
+
+func (a AliasValueEmail) CheckIsValid() []common.LSPError {
+	return utils.Map(
+		fields.PathField.CheckIsValid(a.Value),
+		func(invalidValue *docvalues.InvalidValue) common.LSPError {
+			return docvalues.LSPErrorFromInvalidValue(a.Location.Start.Line, *invalidValue)
+		},
+	)
 }
