@@ -27,9 +27,25 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 
 	entry := rawEntry.(*ast.AliasEntry)
 
-	return handlers.GetCompletionsForEntry(
-		cursor,
-		entry,
-		d.Indexes,
-	)
+	if entry.Key == nil {
+		return handlers.GetAliasesCompletions(d.Indexes), nil
+	}
+
+	if cursor >= entry.Key.Location.Start.Character && cursor <= entry.Key.Location.End.Character {
+		return handlers.GetAliasesCompletions(d.Indexes), nil
+	}
+
+	if entry.Separator == nil && cursor > entry.Key.Location.End.Character {
+		return nil, nil
+	}
+
+	if cursor > entry.Separator.End.Character {
+		return handlers.GetCompletionsForEntry(
+			cursor,
+			entry,
+			d.Indexes,
+		)
+	}
+
+	return nil, nil
 }

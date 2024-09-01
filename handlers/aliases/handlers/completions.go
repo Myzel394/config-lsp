@@ -5,7 +5,6 @@ import (
 	"config-lsp/handlers/aliases/ast"
 	"config-lsp/handlers/aliases/fetchers"
 	"config-lsp/handlers/aliases/indexes"
-	"config-lsp/utils"
 	"fmt"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -56,7 +55,12 @@ func GetCompletionsForEntry(
 		completions = append(completions, getCommandCompletion())
 		completions = append(completions, getIncludeCompletion())
 
-		completions = append(completions, getUserCompletions(i, "", 0)...)
+		completions = append(completions, getUserCompletions(
+			i,
+			indexes.NormalizeKey(entry.Key.Value),
+			"",
+			0,
+		)...)
 
 		println("la completions etaient", completions)
 		return completions, nil
@@ -68,6 +72,7 @@ func GetCompletionsForEntry(
 
 		return getUserCompletions(
 			i,
+			indexes.NormalizeKey(entry.Key.Value),
 			userValue.Value,
 			relativeCursor,
 		), nil
@@ -106,20 +111,27 @@ func getIncludeCompletion() protocol.CompletionItem {
 
 func getUserCompletions(
 	i *indexes.AliasesIndexes,
+	excludeKey string,
 	line string,
 	cursor uint32,
 ) []protocol.CompletionItem {
 	users := fetchers.GetAvailableUserValues(i)
 
 	kind := protocol.CompletionItemKindValue
-	return utils.MapMapToSlice(
-		users,
-		func(name string, user fetchers.User) protocol.CompletionItem {
-			return protocol.CompletionItem{
-				Label:         name,
-				Kind:          &kind,
-				Documentation: user.Documentation(),
-			}
-		},
-	)
+
+	completions := make([]protocol.CompletionItem, 0)
+
+	for name, user := range users {
+		if name == excludeKey {
+			continue
+		}
+
+		completions = append(completions, protocol.CompletionItem{
+			Label:         name,
+			Kind:          &kind,
+			Documentation: user.Documentation(),
+		})
+	}
+
+	return completions
 }

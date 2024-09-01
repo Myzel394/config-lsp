@@ -6,8 +6,9 @@ import (
 	"config-lsp/handlers/aliases/ast"
 	"config-lsp/handlers/aliases/fetchers"
 	"config-lsp/handlers/aliases/indexes"
-	"config-lsp/utils"
 	"fmt"
+	"net/mail"
+	"path"
 
 	ers "errors"
 )
@@ -51,13 +52,6 @@ func analyzeValuesAreValid(
 
 		for _, value := range entry.Values.Values {
 			newErrors := checkValue(d.Indexes, value)
-			newErrors = utils.Map(
-				newErrors,
-				func(e common.LSPError) common.LSPError {
-					startPosition := value.GetAliasValue().Location.Start.Character
-					return e.ShiftCharacter(-startPosition)
-				},
-			)
 
 			errors = append(errors, newErrors...)
 		}
@@ -80,6 +74,28 @@ func checkValue(
 			return []common.LSPError{{
 				Range: aliasValue.Location,
 				Err:   ers.New(fmt.Sprintf("User '%s' not found", aliasValue.Value)),
+			}}
+		}
+	case ast.AliasValueEmail:
+		emailValue := value.(ast.AliasValueEmail)
+
+		if _, error := mail.ParseAddress(emailValue.Value); error != nil {
+			return []common.LSPError{{
+				Range: emailValue.Location,
+				Err:   ers.New(fmt.Sprintf("This does not seem to be a valid email: %s", error.Error())),
+			}}
+		}
+	case ast.AliasValueFile:
+		fileValue := value.(ast.AliasValueFile)
+
+		// I'm not sure if the path really needs to be absolute
+		// The docs say:
+		// "Append messages to file, specified by its absolute pathname."
+		//
+		if !path.IsAbs(fileValue.Value) {
+			return []common.LSPError{{
+				Range: fileValue.Location,
+				Err:   ers.New("This path must be absolute"),
 			}}
 		}
 	}
