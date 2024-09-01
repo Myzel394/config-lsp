@@ -66,7 +66,7 @@ type AliasValueIncludePath struct {
 
 type AliasValueInclude struct {
 	AliasValue
-	Path AliasValueIncludePath
+	Path *AliasValueIncludePath
 }
 
 func (a AliasValueInclude) CheckIsValid() []common.LSPError {

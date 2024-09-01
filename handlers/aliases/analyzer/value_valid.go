@@ -124,6 +124,23 @@ func checkValue(
 				Err:   ers.New("An error message is required"),
 			}}
 		}
+	case ast.AliasValueInclude:
+		incldueValue := value.(ast.AliasValueInclude)
+
+		if incldueValue.Path == nil {
+			return []common.LSPError{{
+				Range: incldueValue.Location,
+				Err:   ers.New("A path is required"),
+			}}
+		}
+
+		// Again, I'm not sure if the path really needs to be absolute
+		if !path.IsAbs(string(incldueValue.Path.Path)) {
+			return []common.LSPError{{
+				Range: incldueValue.Path.Location,
+				Err:   ers.New("This path must be absolute"),
+			}}
+		}
 	}
 	return nil
 }

@@ -101,7 +101,7 @@ func (s *aliasesParserListener) EnterFile(ctx *parser.FileContext) {
 
 		// Set the path
 		include := rawValue.(AliasValueInclude)
-		include.Path = AliasValueIncludePath{
+		include.Path = &AliasValueIncludePath{
 			Location: location,
 			Path:     path(ctx.GetText()),
 		}
