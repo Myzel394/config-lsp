@@ -5,7 +5,7 @@ import (
 	"slices"
 )
 
-func getValueAtCursor(
+func GetValueAtCursor(
 	cursor uint32,
 	entry *ast.AliasEntry,
 ) *ast.AliasValueInterface {

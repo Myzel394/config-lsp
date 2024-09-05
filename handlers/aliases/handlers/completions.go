@@ -48,7 +48,7 @@ func GetCompletionsForEntry(
 		return completions, nil
 	}
 
-	value := getValueAtCursor(cursor, entry)
+	value := GetValueAtCursor(cursor, entry)
 	relativeCursor := cursor - entry.Key.Location.Start.Character
 
 	if value == nil {

@@ -42,7 +42,10 @@
           };
         };
         devShells.default = pkgs.mkShell {
-          buildInputs = inputs;
+          buildInputs = inputs ++ (with pkgs; [
+            mailutils
+            swaks
+          ]);
         };
       }
     );

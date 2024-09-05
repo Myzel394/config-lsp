@@ -6,6 +6,7 @@ import (
 	"config-lsp/handlers/aliases/fields"
 	"config-lsp/utils"
 	"fmt"
+	"strconv"
 )
 
 type AliasValueInterface interface {
@@ -100,6 +101,16 @@ type AliasValueError struct {
 
 type AliasValueErrorCode struct {
 	AliasValue
+}
+
+func (a AliasValueErrorCode) ErrorCodeAsInt() uint16 {
+	code, err := strconv.Atoi(a.Value)
+
+	if err != nil {
+		return 0
+	}
+
+	return uint16(code)
 }
 
 type AliasValueErrorMessage struct {
