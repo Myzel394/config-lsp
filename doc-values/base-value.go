@@ -2,7 +2,6 @@ package docvalues
 
 import (
 	"config-lsp/utils"
-
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 

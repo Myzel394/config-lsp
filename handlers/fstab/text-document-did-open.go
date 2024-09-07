@@ -3,7 +3,6 @@ package fstab
 import (
 	"config-lsp/common"
 	"config-lsp/utils"
-
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )

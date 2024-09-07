@@ -4,7 +4,6 @@ import (
 	"config-lsp/common"
 	"config-lsp/handlers/aliases"
 	"config-lsp/utils"
-
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 

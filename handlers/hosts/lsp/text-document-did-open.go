@@ -7,7 +7,6 @@ import (
 	"config-lsp/handlers/hosts/ast"
 	"config-lsp/handlers/hosts/indexes"
 	"config-lsp/utils"
-
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )

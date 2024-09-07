@@ -3,7 +3,6 @@ package openssh
 import (
 	docvalues "config-lsp/doc-values"
 	"config-lsp/utils"
-
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )

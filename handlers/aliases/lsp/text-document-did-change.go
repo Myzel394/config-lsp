@@ -5,7 +5,6 @@ import (
 	"config-lsp/handlers/aliases"
 	"config-lsp/handlers/aliases/analyzer"
 	"config-lsp/utils"
-
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )

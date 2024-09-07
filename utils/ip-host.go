@@ -74,7 +74,7 @@ func CreateIPv4HostSet() IPv4HostSet {
 	}
 }
 
-// Add a new ip to the host set
+// AddIP Add a new ip to the host set
 // `hostAmount`: Amount of host bits
 // Return: (<Whether the ip has been added>, <error>)
 func (h *IPv4HostSet) AddIP(
