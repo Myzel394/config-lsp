@@ -10,6 +10,7 @@ type PasswdInfo struct {
 	UID      string
 	GID      string
 	HomePath string
+	Line     uint32
 }
 
 var _cachedPasswdInfo []PasswdInfo
@@ -28,7 +29,7 @@ func FetchPasswdInfo() ([]PasswdInfo, error) {
 	lines := strings.Split(string(readBytes), "\n")
 	infos := make([]PasswdInfo, 0)
 
-	for _, line := range lines {
+	for lineNumber, line := range lines {
 		splitted := strings.Split(line, ":")
 
 		if len(splitted) < 6 {
@@ -40,6 +41,7 @@ func FetchPasswdInfo() ([]PasswdInfo, error) {
 			UID:      splitted[2],
 			GID:      splitted[3],
 			HomePath: splitted[5],
+			Line:     uint32(lineNumber),
 		}
 
 		infos = append(infos, info)

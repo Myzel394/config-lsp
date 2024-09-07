@@ -164,7 +164,7 @@ func getUsersFromEntry(
 			switch (value).(type) {
 			case ast.AliasValueUser:
 				userValue := value.(ast.AliasValueUser)
-				
+
 				users[indexes.NormalizeKey(userValue.Value)] = struct{}{}
 			}
 		}
@@ -172,4 +172,3 @@ func getUsersFromEntry(
 
 	return users
 }
-

@@ -27,6 +27,7 @@ func SetUpRootHandler() {
 		TextDocumentHover:       TextDocumentHover,
 		TextDocumentDidClose:    TextDocumentDidClose,
 		TextDocumentCodeAction:  TextDocumentCodeAction,
+		TextDocumentDefinition:  TextDocumentDefinition,
 		WorkspaceExecuteCommand: WorkspaceExecuteCommand,
 	}
 
