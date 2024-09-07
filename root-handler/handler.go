@@ -29,6 +29,7 @@ func SetUpRootHandler() {
 		TextDocumentCodeAction:  TextDocumentCodeAction,
 		TextDocumentDefinition:  TextDocumentDefinition,
 		WorkspaceExecuteCommand: WorkspaceExecuteCommand,
+		TextDocumentRename:      TextDocumentRename,
 	}
 
 	server := server.NewServer(&lspHandler, lsName, false)

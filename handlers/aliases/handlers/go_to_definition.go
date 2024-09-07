@@ -23,7 +23,7 @@ func GetDefinitionLocationForValue(
 			return []protocol.Location{
 				{
 					URI:   params.TextDocument.URI,
-					Range: entry.Location.ToLSPRange(),
+					Range: entry.Key.Location.ToLSPRange(),
 				},
 			}
 		}

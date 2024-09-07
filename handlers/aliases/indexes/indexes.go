@@ -8,7 +8,8 @@ import (
 )
 
 type AliasesIndexes struct {
-	Keys map[string]*ast.AliasKey
+	Keys            map[string]*ast.AliasEntry
+	UserOccurrences map[string][]*ast.AliasValueUser
 }
 
 func NormalizeKey(key string) string {
@@ -18,13 +19,28 @@ func NormalizeKey(key string) string {
 func CreateIndexes(parser ast.AliasesParser) (AliasesIndexes, []common.LSPError) {
 	errors := make([]common.LSPError, 0)
 	indexes := &AliasesIndexes{
-		Keys: make(map[string]*ast.AliasKey),
+		Keys:            make(map[string]*ast.AliasEntry),
+		UserOccurrences: make(map[string][]*ast.AliasValueUser),
 	}
 
 	it := parser.Aliases.Iterator()
 
 	for it.Next() {
 		entry := it.Value().(*ast.AliasEntry)
+
+		if entry.Values != nil {
+			for _, value := range entry.Values.Values {
+				switch value.(type) {
+				case ast.AliasValueUser:
+					userValue := value.(ast.AliasValueUser)
+
+					indexes.UserOccurrences[userValue.Value] = append(
+						indexes.UserOccurrences[userValue.Value],
+						&userValue,
+					)
+				}
+			}
+		}
 
 		if entry.Key == nil || entry.Key.Value == "" {
 			continue
@@ -44,7 +60,7 @@ func CreateIndexes(parser ast.AliasesParser) (AliasesIndexes, []common.LSPError)
 			continue
 		}
 
-		indexes.Keys[normalizedAlias] = entry.Key
+		indexes.Keys[normalizedAlias] = entry
 	}
 
 	return *indexes, errors
