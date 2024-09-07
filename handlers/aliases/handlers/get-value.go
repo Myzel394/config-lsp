@@ -20,11 +20,11 @@ func GetValueAtCursor(
 			value := entry.GetAliasValue()
 
 			if pos > value.Location.End.Character {
-				return 1
+				return -1
 			}
 
 			if pos < value.Location.Start.Character {
-				return -1
+				return 1
 			}
 
 			return 0

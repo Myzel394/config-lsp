@@ -177,7 +177,7 @@ func (s *aliasesParserListener) EnterEmail(ctx *parser.EmailContext) {
 	rawEntry, _ := s.Parser.Aliases.Get(location.Start.Line)
 	entry := rawEntry.(*AliasEntry)
 
-	entry.Values.Values = append(entry.Values.Values, &email)
+	entry.Values.Values = append(entry.Values.Values, email)
 }
 
 func (s *aliasesParserListener) EnterError(ctx *parser.ErrorContext) {

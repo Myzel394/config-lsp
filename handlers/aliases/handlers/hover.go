@@ -95,6 +95,7 @@ func GetAliasValueHoverInfo(
 func GetAliasValueTypeInfo(
 	value ast.AliasValueInterface,
 ) []string {
+	println(fmt.Sprintf("value: %v, value type: %T", value, value))
 	switch value.(type) {
 	case ast.AliasValueUser:
 		return []string{
