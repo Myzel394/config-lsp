@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestComplexExample(
+func TestRenameSimpleExample(
 	t *testing.T,
 ) {
 	input := utils.Dedent(`

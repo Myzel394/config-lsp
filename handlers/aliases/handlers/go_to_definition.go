@@ -12,7 +12,7 @@ import (
 func GetDefinitionLocationForValue(
 	i indexes.AliasesIndexes,
 	value ast.AliasValueInterface,
-	params *protocol.DefinitionParams,
+	documentURI string,
 ) []protocol.Location {
 	switch value.(type) {
 	case ast.AliasValueUser:
@@ -22,7 +22,7 @@ func GetDefinitionLocationForValue(
 		if entry, found := i.Keys[indexes.NormalizeKey(userValue.Value)]; found {
 			return []protocol.Location{
 				{
-					URI:   params.TextDocument.URI,
+					URI:   documentURI,
 					Range: entry.Key.Location.ToLSPRange(),
 				},
 			}
