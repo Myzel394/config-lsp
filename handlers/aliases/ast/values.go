@@ -11,6 +11,7 @@ import (
 
 type AliasValueInterface interface {
 	GetAliasValue() AliasValue
+	GetStructName() string
 }
 
 func (a AliasValue) String() string {
@@ -19,6 +20,10 @@ func (a AliasValue) String() string {
 
 func (a AliasValue) GetAliasValue() AliasValue {
 	return a
+}
+
+func (a AliasValue) GetStructName() string {
+	return "AliasValue"
 }
 
 type AliasValue struct {
@@ -30,6 +35,10 @@ type AliasValueUser struct {
 	AliasValue
 }
 
+func (a AliasValueUser) GetStructName() string {
+	return "AliasValueUser"
+}
+
 type path string
 
 type AliasValueFile struct {
@@ -37,13 +46,8 @@ type AliasValueFile struct {
 	Path path
 }
 
-func (a AliasValueFile) CheckIsValid() []common.LSPError {
-	return utils.Map(
-		fields.PathField.CheckIsValid(string(a.Path)),
-		func(invalidValue *docvalues.InvalidValue) common.LSPError {
-			return docvalues.LSPErrorFromInvalidValue(a.Location.Start.Line, *invalidValue)
-		},
-	)
+func (a AliasValueFile) GetStructName() string {
+	return "AliasValueFile"
 }
 
 type AliasValueCommand struct {
@@ -51,13 +55,8 @@ type AliasValueCommand struct {
 	Command string
 }
 
-func (a AliasValueCommand) CheckIsValid() []common.LSPError {
-	return utils.Map(
-		fields.CommandField.CheckIsValid(a.Command),
-		func(invalidValue *docvalues.InvalidValue) common.LSPError {
-			return docvalues.LSPErrorFromInvalidValue(a.Location.Start.Line, *invalidValue)
-		},
-	)
+func (a AliasValueCommand) GetStructName() string {
+	return "AliasValueCommand"
 }
 
 type AliasValueIncludePath struct {
@@ -79,6 +78,10 @@ func (a AliasValueInclude) CheckIsValid() []common.LSPError {
 	)
 }
 
+func (a AliasValueInclude) GetStructName() string {
+	return "AliasValueInclude"
+}
+
 type AliasValueEmail struct {
 	AliasValue
 }
@@ -92,6 +95,10 @@ func (a AliasValueEmail) CheckIsValid() []common.LSPError {
 	)
 }
 
+func (a AliasValueEmail) GetStructName() string {
+	return "AliasValueEmail"
+}
+
 type AliasValueError struct {
 	AliasValue
 
@@ -101,6 +108,10 @@ type AliasValueError struct {
 
 type AliasValueErrorCode struct {
 	AliasValue
+}
+
+func (a AliasValueError) GetStructName() string {
+	return "AliasValueError"
 }
 
 func (a AliasValueErrorCode) ErrorCodeAsInt() uint16 {

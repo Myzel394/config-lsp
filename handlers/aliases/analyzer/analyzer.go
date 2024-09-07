@@ -27,6 +27,7 @@ func Analyze(
 	}
 
 	errors = append(errors, analyzeContainsRequiredKeys(*d)...)
+	errors = append(errors, analyzeContainsNoDoubleValues(*d.Parser)...)
 
 	return utils.Map(
 		errors,
