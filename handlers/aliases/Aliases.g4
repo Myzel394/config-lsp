@@ -58,7 +58,7 @@ errorCode
     ;
 
 errorMessage
-    : STRING
+    : (STRING SEPARATOR)* STRING
     ;
 
 DIGITS
