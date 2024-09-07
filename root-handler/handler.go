@@ -30,6 +30,7 @@ func SetUpRootHandler() {
 		TextDocumentDefinition:  TextDocumentDefinition,
 		WorkspaceExecuteCommand: WorkspaceExecuteCommand,
 		TextDocumentRename:      TextDocumentRename,
+		TextDocumentPrepareRename: TextDocumentPrepareRename,
 	}
 
 	server := server.NewServer(&lspHandler, lsName, false)
@@ -40,6 +41,14 @@ func SetUpRootHandler() {
 func initialize(context *glsp.Context, params *protocol.InitializeParams) (any, error) {
 	capabilities := lspHandler.CreateServerCapabilities()
 	capabilities.TextDocumentSync = protocol.TextDocumentSyncKindFull
+
+	if (*params.Capabilities.TextDocument.Rename.PrepareSupport) == true {
+		// Client supports rename preparation
+		prepareRename := true
+		capabilities.RenameProvider = protocol.RenameOptions{
+			PrepareProvider: &prepareRename,
+		}
+	}
 
 	return protocol.InitializeResult{
 		Capabilities: capabilities,
