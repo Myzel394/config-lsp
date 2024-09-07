@@ -78,6 +78,38 @@ func GetCompletionsForEntry(
 			userValue.Value,
 			relativeCursor,
 		), nil
+	case ast.AliasValueError:
+		errorValue := (*value).(ast.AliasValueError)
+
+		isAtErrorCode := errorValue.Code == nil &&
+			relativeCursor >= errorValue.Location.Start.Character &&
+			(errorValue.Message == nil ||
+				relativeCursor <= errorValue.Message.Location.Start.Character)
+
+		if isAtErrorCode {
+			kind := protocol.CompletionItemKindValue
+
+			detail_4 := "4XX (TempFail)"
+			insertText_4 := "400"
+
+			detail_5 := "5XX (PermFail)"
+			insertText_5 := "500"
+
+			return []protocol.CompletionItem{
+				{
+					Label:      "4XX",
+					InsertText: &insertText_4,
+					Kind:       &kind,
+					Detail:     &detail_4,
+				},
+				{
+					Label:      "5XX",
+					InsertText: &insertText_5,
+					Kind:       &kind,
+					Detail:     &detail_5,
+				},
+			}, nil
+		}
 	}
 
 	return completions, nil
