@@ -51,6 +51,8 @@ func GetCompletionsForEntry(
 	value := GetValueAtCursor(cursor, entry)
 	relativeCursor := cursor - entry.Key.Location.Start.Character
 
+	excludedUsers := getUsersFromEntry(entry)
+
 	if value == nil {
 		completions = append(completions, getCommandCompletion())
 		completions = append(completions, getIncludeCompletion())
@@ -58,12 +60,11 @@ func GetCompletionsForEntry(
 
 		completions = append(completions, getUserCompletions(
 			i,
-			indexes.NormalizeKey(entry.Key.Value),
+			excludedUsers,
 			"",
 			0,
 		)...)
 
-		println("la completions etaient", completions)
 		return completions, nil
 	}
 
@@ -73,7 +74,7 @@ func GetCompletionsForEntry(
 
 		return getUserCompletions(
 			i,
-			indexes.NormalizeKey(entry.Key.Value),
+			excludedUsers,
 			userValue.Value,
 			relativeCursor,
 		), nil
@@ -126,7 +127,7 @@ func getErrorCompletion() protocol.CompletionItem {
 
 func getUserCompletions(
 	i *indexes.AliasesIndexes,
-	excludeKey string,
+	excluded map[string]struct{},
 	line string,
 	cursor uint32,
 ) []protocol.CompletionItem {
@@ -137,7 +138,7 @@ func getUserCompletions(
 	completions := make([]protocol.CompletionItem, 0)
 
 	for name, user := range users {
-		if name == excludeKey {
+		if _, found := excluded[name]; found {
 			continue
 		}
 
@@ -150,3 +151,25 @@ func getUserCompletions(
 
 	return completions
 }
+
+func getUsersFromEntry(
+	entry *ast.AliasEntry,
+) map[string]struct{} {
+	users := map[string]struct{}{
+		indexes.NormalizeKey(entry.Key.Value): {},
+	}
+
+	if entry.Values != nil {
+		for _, value := range entry.Values.Values {
+			switch (value).(type) {
+			case ast.AliasValueUser:
+				userValue := value.(ast.AliasValueUser)
+				
+				users[indexes.NormalizeKey(userValue.Value)] = struct{}{}
+			}
+		}
+	}
+
+	return users
+}
+
