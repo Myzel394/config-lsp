@@ -115,3 +115,36 @@ func TestResolverEntriesWithComplexOverlapping(
 		t.Errorf("Expected test.com to have no IPv4 address, but got %v", resolver.Entries["test.com"].IPv4Address)
 	}
 }
+
+func TestResolverEntriesWithDoubleHostNameButDifferentIPs(
+	t *testing.T,
+) {
+	input := utils.Dedent(`
+127.0.0.1 hello.com
+::1 hello.com
+`)
+	parser := ast.NewHostsParser()
+	errors := parser.Parse(input)
+
+	if len(errors) != 0 {
+		t.Fatalf("PARER FAILED! Expected no errors, but got %v", errors)
+	}
+
+	resolver, errors := createResolverFromParser(parser)
+
+	if len(errors) != 0 {
+		t.Fatalf("Expected no errors, but got %v", errors)
+	}
+
+	if len(resolver.Entries) != 1 {
+		t.Errorf("Expected 1 entry, but got %v", len(resolver.Entries))
+	}
+
+	if !(resolver.Entries["hello.com"].IPv4Address.String() == "127.0.0.1") {
+		t.Errorf("Expected hello.com's ipv4 address to be 127.0.0.1, but got %v", resolver.Entries["hello.com"].IPv4Address)
+	}
+
+	if !(resolver.Entries["hello.com"].IPv6Address.String() == "::1") {
+		t.Errorf("Expected hello.com's ipv6 address to be ::1, but got %v", resolver.Entries["hello.com"].IPv6Address)
+	}
+}

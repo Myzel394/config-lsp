@@ -5,8 +5,8 @@ import (
 )
 
 type ResolverEntry struct {
-	IPv4Address net.IP
-	IPv6Address net.IP
+	IPv4Address *net.IP
+	IPv6Address *net.IP
 	Line        uint32
 }
 
@@ -19,5 +19,5 @@ func (e ResolverEntry) GetInfo() string {
 }
 
 type Resolver struct {
-	Entries map[string]ResolverEntry
+	Entries map[string]*ResolverEntry
 }

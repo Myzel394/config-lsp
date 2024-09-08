@@ -19,9 +19,9 @@ func createEntry(
 	}
 
 	if ipv4 := ip.To4(); ipv4 != nil {
-		entry.IPv4Address = ipv4
+		entry.IPv4Address = &ipv4
 	} else if ipv6 := ip.To16(); ipv6 != nil {
-		entry.IPv6Address = ipv6
+		entry.IPv6Address = &ipv6
 	}
 
 	return entry
@@ -35,7 +35,7 @@ type hostnameEntry struct {
 func createResolverFromParser(p ast.HostsParser) (indexes.Resolver, []common.LSPError) {
 	errors := make([]common.LSPError, 0)
 	resolver := indexes.Resolver{
-		Entries: make(map[string]indexes.ResolverEntry),
+		Entries: make(map[string]*indexes.ResolverEntry),
 	}
 
 	it := p.Tree.Entries.Iterator()
@@ -64,12 +64,22 @@ func createResolverFromParser(p ast.HostsParser) (indexes.Resolver, []common.LSP
 			)
 
 			for _, hostName := range hostNames {
-				entry := createEntry(
+				newResolv := createEntry(
 					lineNumber,
 					entry.IPAddress.Value.IP,
 				)
 
 				if resolv, found := resolver.Entries[hostName.HostName]; found {
+					if resolv.IPv4Address == nil && newResolv.IPv4Address != nil {
+						resolv.IPv4Address = newResolv.IPv4Address
+						continue
+					}
+
+					if resolv.IPv6Address == nil && newResolv.IPv6Address != nil {
+						resolv.IPv6Address = newResolv.IPv6Address
+						continue
+					}
+
 					errors = append(
 						errors,
 						common.LSPError{
@@ -80,9 +90,10 @@ func createResolverFromParser(p ast.HostsParser) (indexes.Resolver, []common.LSP
 							},
 						},
 					)
-				} else {
-					resolver.Entries[hostName.HostName] = entry
+					continue
 				}
+
+				resolver.Entries[hostName.HostName] = &newResolv
 			}
 		}
 	}
