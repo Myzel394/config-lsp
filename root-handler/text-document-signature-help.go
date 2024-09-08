@@ -2,12 +2,12 @@ package roothandler
 
 import (
 	aliases "config-lsp/handlers/aliases/lsp"
-	"github.com/tliron/glsp"
 
+	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-func TextDocumentPrepareRename(context *glsp.Context, params *protocol.PrepareRenameParams) (any, error) {
+func TextDocumentSignatureHelp(context *glsp.Context, params *protocol.SignatureHelpParams) (*protocol.SignatureHelp, error) {
 	language := rootHandler.GetLanguageForDocument(params.TextDocument.URI)
 
 	if language == nil {
@@ -30,8 +30,8 @@ func TextDocumentPrepareRename(context *glsp.Context, params *protocol.PrepareRe
 	case LanguageWireguard:
 		return nil, nil
 	case LanguageAliases:
-		return aliases.TextDocumentPrepareRename(context, params)
+		return aliases.TextDocumentSignatureHelp(context, params)
 	}
 
-	panic("root-handler/TextDocumentPrepareRename: unexpected language" + *language)
+	panic("root-handler/TextDocumentSignatureHelp: unexpected language" + *language)
 }

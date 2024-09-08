@@ -17,20 +17,21 @@ var lspHandler protocol.Handler
 func SetUpRootHandler() {
 	rootHandler = NewRootHandler()
 	lspHandler = protocol.Handler{
-		Initialize:              initialize,
-		Initialized:             initialized,
-		Shutdown:                shutdown,
-		SetTrace:                setTrace,
-		TextDocumentDidOpen:     TextDocumentDidOpen,
-		TextDocumentDidChange:   TextDocumentDidChange,
-		TextDocumentCompletion:  TextDocumentCompletion,
-		TextDocumentHover:       TextDocumentHover,
-		TextDocumentDidClose:    TextDocumentDidClose,
-		TextDocumentCodeAction:  TextDocumentCodeAction,
-		TextDocumentDefinition:  TextDocumentDefinition,
-		WorkspaceExecuteCommand: WorkspaceExecuteCommand,
-		TextDocumentRename:      TextDocumentRename,
+		Initialize:                initialize,
+		Initialized:               initialized,
+		Shutdown:                  shutdown,
+		SetTrace:                  setTrace,
+		TextDocumentDidOpen:       TextDocumentDidOpen,
+		TextDocumentDidChange:     TextDocumentDidChange,
+		TextDocumentCompletion:    TextDocumentCompletion,
+		TextDocumentHover:         TextDocumentHover,
+		TextDocumentDidClose:      TextDocumentDidClose,
+		TextDocumentCodeAction:    TextDocumentCodeAction,
+		TextDocumentDefinition:    TextDocumentDefinition,
+		WorkspaceExecuteCommand:   WorkspaceExecuteCommand,
+		TextDocumentRename:        TextDocumentRename,
 		TextDocumentPrepareRename: TextDocumentPrepareRename,
+		TextDocumentSignatureHelp: TextDocumentSignatureHelp,
 	}
 
 	server := server.NewServer(&lspHandler, lsName, false)
@@ -41,6 +42,15 @@ func SetUpRootHandler() {
 func initialize(context *glsp.Context, params *protocol.InitializeParams) (any, error) {
 	capabilities := lspHandler.CreateServerCapabilities()
 	capabilities.TextDocumentSync = protocol.TextDocumentSyncKindFull
+	capabilities.SignatureHelpProvider = &protocol.SignatureHelpOptions{
+		TriggerCharacters: []string{
+			"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+			"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+			"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+			"_", "-", ".", "/", ":", "@", "#", "!", "$", "%", "^", "&", "*", "(", ")", "+", "=", "[", "]", "{", "}", "<", ">", "?", ";", ",", "|",
+			" ",
+		},
+	}
 
 	if (*params.Capabilities.TextDocument.Rename.PrepareSupport) == true {
 		// Client supports rename preparation

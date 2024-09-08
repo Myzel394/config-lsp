@@ -51,3 +51,9 @@ func CountCharacterOccurrences(line string, character rune) int {
 
 	return count
 }
+
+var emptyRegex = regexp.MustCompile(`^\s*$`)
+
+func IsEmpty(s string) bool {
+	return emptyRegex.MatchString(s)
+}

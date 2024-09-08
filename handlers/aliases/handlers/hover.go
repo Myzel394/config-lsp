@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"config-lsp/handlers/aliases/ast"
+	"config-lsp/handlers/aliases/fields"
 	"config-lsp/handlers/aliases/indexes"
 	"config-lsp/utils"
 	"fmt"
@@ -100,44 +101,44 @@ func GetAliasValueTypeInfo(
 	case ast.AliasValueUser:
 		return []string{
 			"### User",
-			"`user`",
+			fields.UserDeclaration,
 			"",
-			"A user on the host machine. The user must have a valid entry in the passwd(5) database file.",
+			fields.UserField.Documentation,
 		}
 	case ast.AliasValueEmail:
 		return []string{
 			"### Email",
-			"`user-part@domain-part`",
+			fields.EmailDeclaration,
 			"",
-			"An email address in RFC 5322 format. If an address extension is appended to the user-part, it is first compared for an exact match.  It is then stripped so that an address such as user+ext@example.com will only use the part that precedes ‘+’ as a key.",
+			fields.EmailField.Documentation,
 		}
 	case ast.AliasValueInclude:
 		return []string{
 			"### Include",
-			"`include:/path/to/file`",
+			fields.IncludeDeclaration,
 			"",
-			"Include any definitions in file as alias entries. The format of the file is identical to this one.",
+			fields.IncludeField.Documentation,
 		}
 	case ast.AliasValueFile:
 		return []string{
 			"### File",
-			"`/path/to/file`",
+			fields.PathDeclaration,
 			"",
-			"Append messages to file, specified by its absolute pathname.",
+			fields.PathField.Documentation,
 		}
 	case ast.AliasValueCommand:
 		return []string{
 			"### Command",
-			"`|command`",
+			fields.CommandDeclaration,
 			"",
-			"Pipe the message to command on its standard input. The command is run under the privileges of the daemon's unprivileged account.",
+			fields.CommandField.Documentation,
 		}
 	case ast.AliasValueError:
 		return []string{
 			"### Error",
-			"`error:code message`",
+			fields.ErrorDeclaration,
 			"",
-			"A status code and message to return. The code must be 3 digits, starting 4XX (TempFail) or 5XX (PermFail). The message must be present and can be freely chosen.",
+			fields.ErrorMessageField.Documentation,
 		}
 	}
 
