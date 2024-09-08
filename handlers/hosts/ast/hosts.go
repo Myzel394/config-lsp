@@ -1,0 +1,53 @@
+package ast
+
+import (
+	"config-lsp/common"
+	"fmt"
+	"net"
+)
+
+type HostsParser struct {
+	Tree         HostsTree
+	CommentLines map[uint32]struct{}
+}
+
+type HostsTree struct {
+	// [line]entry
+	Entries map[uint32]*HostsEntry
+}
+
+type HostsEntry struct {
+	Location common.LocationRange
+
+	IPAddress *HostsIPAddress
+	Hostname  *HostsHostname
+	Aliases   []*HostsHostname
+}
+
+func (p HostsEntry) String() string {
+	str := fmt.Sprintf("HostsEntry(%v)", p.Location)
+
+	if p.IPAddress != nil {
+		str += " " + p.IPAddress.Value.String()
+	}
+
+	if p.Hostname != nil {
+		str += " " + p.Hostname.Value
+	}
+
+	if p.Aliases != nil {
+		str += " " + fmt.Sprintf("%v", p.Aliases)
+	}
+
+	return str
+}
+
+type HostsIPAddress struct {
+	Location common.LocationRange
+	Value    net.IPAddr
+}
+
+type HostsHostname struct {
+	Location common.LocationRange
+	Value    string
+}

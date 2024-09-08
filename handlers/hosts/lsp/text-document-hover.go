@@ -1,9 +1,10 @@
 package lsp
 
 import (
+	"config-lsp/handlers/hosts"
+	"config-lsp/handlers/hosts/ast"
 	"config-lsp/handlers/hosts/fields"
 	"config-lsp/handlers/hosts/handlers"
-	"config-lsp/handlers/hosts/handlers/analyzer"
 	"strings"
 
 	"github.com/tliron/glsp"
@@ -14,17 +15,17 @@ func TextDocumentHover(
 	context *glsp.Context,
 	params *protocol.HoverParams,
 ) (*protocol.Hover, error) {
-	parser := documentParserMap[params.TextDocument.URI]
+	document := hosts.DocumentParserMap[params.TextDocument.URI]
 
 	line := params.Position.Line
 	character := params.Position.Character
 
-	if _, found := parser.CommentLines[line]; found {
+	if _, found := document.Parser.CommentLines[line]; found {
 		// Comment
 		return nil, nil
 	}
 
-	entry, found := parser.Tree.Entries[line]
+	entry, found := document.Parser.Tree.Entries[line]
 
 	if !found {
 		// Empty line
@@ -33,7 +34,7 @@ func TextDocumentHover(
 
 	target := handlers.GetHoverTargetInEntry(*entry, character)
 
-	var hostname *analyzer.HostsHostname
+	var hostname *ast.HostsHostname
 
 	switch *target {
 	case handlers.HoverTargetIPAddress:
@@ -74,7 +75,7 @@ func TextDocumentHover(
 		)
 		contents = append(
 			contents,
-			handlers.GetHoverInfoForHostname(*parser, *hostname, character)...,
+			handlers.GetHoverInfoForHostname(*document, *hostname, character)...,
 		)
 
 		return &protocol.Hover{

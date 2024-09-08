@@ -1,6 +1,7 @@
 package roothandler
 
 import (
+	aliases "config-lsp/handlers/aliases/lsp"
 	"config-lsp/handlers/fstab"
 	hosts "config-lsp/handlers/hosts/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
@@ -31,6 +32,8 @@ func TextDocumentHover(context *glsp.Context, params *protocol.HoverParams) (*pr
 		return fstab.TextDocumentHover(context, params)
 	case LanguageWireguard:
 		return wireguard.TextDocumentHover(context, params)
+	case LanguageAliases:
+		return aliases.TextDocumentHover(context, params)
 	}
 
 	panic("root-handler/TextDocumentHover: unexpected language" + *language)

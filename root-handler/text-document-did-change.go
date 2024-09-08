@@ -1,6 +1,7 @@
 package roothandler
 
 import (
+	aliases "config-lsp/handlers/aliases/lsp"
 	"config-lsp/handlers/fstab"
 	hosts "config-lsp/handlers/hosts/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
@@ -45,6 +46,8 @@ func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeText
 			return wireguard.TextDocumentDidOpen(context, params)
 		case LanguageHosts:
 			return hosts.TextDocumentDidOpen(context, params)
+		case LanguageAliases:
+			return aliases.TextDocumentDidOpen(context, params)
 		}
 	}
 
@@ -57,6 +60,8 @@ func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeText
 		return wireguard.TextDocumentDidChange(context, params)
 	case LanguageHosts:
 		return hosts.TextDocumentDidChange(context, params)
+	case LanguageAliases:
+		return aliases.TextDocumentDidChange(context, params)
 	}
 
 	panic("root-handler/TextDocumentDidChange: unexpected language" + *language)

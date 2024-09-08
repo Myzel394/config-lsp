@@ -17,6 +17,7 @@ const (
 	LanguageFstab      SupportedLanguage = "fstab"
 	LanguageWireguard  SupportedLanguage = "languagewireguard"
 	LanguageHosts      SupportedLanguage = "hosts"
+	LanguageAliases    SupportedLanguage = "aliases"
 )
 
 var AllSupportedLanguages = []string{
@@ -24,6 +25,7 @@ var AllSupportedLanguages = []string{
 	string(LanguageFstab),
 	string(LanguageWireguard),
 	string(LanguageHosts),
+	string(LanguageAliases),
 }
 
 type FatalFileNotReadableError struct {
@@ -64,6 +66,9 @@ var valueToLanguageMap = map[string]SupportedLanguage{
 	"host":              LanguageHosts,
 	"hosts":             LanguageHosts,
 	"etc/hosts":         LanguageHosts,
+
+	"aliases":     LanguageAliases,
+	"etc/aliases": LanguageAliases,
 }
 
 var typeOverwriteRegex = regexp.MustCompile(`#\?\s*lsp\.language\s*=\s*(\w+)\s*`)
@@ -111,6 +116,8 @@ func DetectLanguage(
 		return LanguageFstab, nil
 	case "file:///etc/hosts":
 		return LanguageHosts, nil
+	case "file:///etc/aliases":
+		return LanguageAliases, nil
 	}
 
 	if strings.HasPrefix(uri, "file:///etc/wireguard/") || wireguardPattern.MatchString(uri) {

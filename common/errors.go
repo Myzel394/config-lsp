@@ -16,6 +16,13 @@ func (l LSPError) ToDiagnostic() protocol.Diagnostic {
 	}
 }
 
+func (l LSPError) ShiftCharacter(offset uint32) LSPError {
+	return LSPError{
+		Range: l.Range.ShiftHorizontal(offset),
+		Err:   l.Err,
+	}
+}
+
 type SyntaxError struct {
 	Message string
 }

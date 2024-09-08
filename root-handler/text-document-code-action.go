@@ -1,6 +1,7 @@
 package roothandler
 
 import (
+	aliases "config-lsp/handlers/aliases/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 
@@ -30,6 +31,8 @@ func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionPa
 		return nil, nil
 	case LanguageWireguard:
 		return wireguard.TextDocumentCodeAction(context, params)
+	case LanguageAliases:
+		return aliases.TextDocumentCodeAction(context, params)
 	}
 
 	panic("root-handler/TextDocumentCompletion: unexpected language" + *language)
