@@ -126,7 +126,7 @@ func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32)
 		line,
 		v.Separator,
 		// defaults
-		min(len(line)-1, int(cursor)),
+		min(len(line)-1, int(cursor)-1),
 	)
 
 	if found {

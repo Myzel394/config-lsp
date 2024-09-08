@@ -2,6 +2,8 @@ package fstab
 
 import (
 	fstabdocumentation "config-lsp/handlers/fstab/documentation"
+	handlers "config-lsp/handlers/fstab/handlers"
+	"config-lsp/handlers/fstab/parser"
 	"config-lsp/utils"
 	"testing"
 )
@@ -17,53 +19,55 @@ LABEL=test /mnt/test btrfs subvol=backup,fat=32 0 0
 // to be wrong. Use a treemap instead of a map.
 func TestValidBasicExample(t *testing.T) {
 	// Arrange
-	parser := FstabParser{}
+	p := parser.FstabParser{}
+	p.Clear()
 
-	errors := parser.ParseFromContent(sampleValidBasicExample)
+	errors := p.ParseFromContent(sampleValidBasicExample)
 
 	if len(errors) > 0 {
 		t.Fatal("ParseFromContent failed with error", errors)
 	}
 
 	// Get hover for first field
-	entry := parser.entries[0]
+	rawEntry, _ := p.Entries.Get(uint32(0))
+	entry := rawEntry.(parser.FstabEntry)
 
 	println("Getting hover info")
 	{
-		hover, err := getHoverInfo(&entry, uint32(0))
+		hover, err := handlers.GetHoverInfo(&entry, uint32(0))
 
 		if err != nil {
 			t.Fatal("getHoverInfo failed with error", err)
 		}
 
-		if hover.Contents != SpecHoverField.Contents {
-			t.Fatal("getHoverInfo failed to return correct hover content. Got:", hover.Contents, "but expected:", SpecHoverField.Contents)
+		if hover.Contents != handlers.SpecHoverField.Contents {
+			t.Fatal("getHoverInfo failed to return correct hover content. Got:", hover.Contents, "but expected:", handlers.SpecHoverField.Contents)
 		}
 
 		// Get hover for second field
-		hover, err = getHoverInfo(&entry, uint32(11))
+		hover, err = handlers.GetHoverInfo(&entry, uint32(11))
 		if err != nil {
 			t.Fatal("getHoverInfo failed with error", err)
 		}
 
-		if hover.Contents != MountPointHoverField.Contents {
-			t.Fatal("getHoverInfo failed to return correct hover content. Got:", hover.Contents, "but expected:", MountPointHoverField.Contents)
+		if hover.Contents != handlers.MountPointHoverField.Contents {
+			t.Fatal("getHoverInfo failed to return correct hover content. Got:", hover.Contents, "but expected:", handlers.MountPointHoverField.Contents)
 		}
 
-		hover, err = getHoverInfo(&entry, uint32(20))
+		hover, err = handlers.GetHoverInfo(&entry, uint32(20))
 
 		if err != nil {
 			t.Fatal("getHoverInfo failed with error", err)
 		}
 
-		if hover.Contents != MountPointHoverField.Contents {
-			t.Fatal("getHoverInfo failed to return correct hover content. Got:", hover.Contents, "but expected:", MountPointHoverField.Contents)
+		if hover.Contents != handlers.MountPointHoverField.Contents {
+			t.Fatal("getHoverInfo failed to return correct hover content. Got:", hover.Contents, "but expected:", handlers.MountPointHoverField.Contents)
 		}
 	}
 
 	println("Getting completions")
 	{
-		completions, err := getCompletion(entry.Line, uint32(0))
+		completions, err := handlers.GetCompletion(entry.Line, uint32(0))
 
 		if err != nil {
 			t.Fatal("getCompletion failed with error", err)
@@ -79,7 +83,7 @@ func TestValidBasicExample(t *testing.T) {
 	}
 
 	{
-		completions, err := getCompletion(entry.Line, uint32(21))
+		completions, err := handlers.GetCompletion(entry.Line, uint32(21))
 
 		if err != nil {
 			t.Fatal("getCompletion failed with error", err)
@@ -93,7 +97,7 @@ func TestValidBasicExample(t *testing.T) {
 
 	println("Checking values")
 	{
-		diagnostics := parser.AnalyzeValues()
+		diagnostics := p.AnalyzeValues()
 
 		if len(diagnostics) > 0 {
 			t.Fatal("AnalyzeValues failed with error", diagnostics)
@@ -103,9 +107,10 @@ func TestValidBasicExample(t *testing.T) {
 
 func TestInvalidOptionsExample(t *testing.T) {
 	// Arrange
-	parser := FstabParser{}
+	p := parser.FstabParser{}
+	p.Clear()
 
-	errors := parser.ParseFromContent(sampleInvalidOptionsExample)
+	errors := p.ParseFromContent(sampleInvalidOptionsExample)
 
 	if len(errors) > 0 {
 		t.Fatal("ParseFromContent returned error", errors)
@@ -114,7 +119,7 @@ func TestInvalidOptionsExample(t *testing.T) {
 	// Get hover for first field
 	println("Checking values")
 	{
-		diagnostics := parser.AnalyzeValues()
+		diagnostics := p.AnalyzeValues()
 
 		if len(diagnostics) == 0 {
 			t.Fatal("AnalyzeValues should have returned error")

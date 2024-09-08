@@ -24,7 +24,7 @@ func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionPa
 
 	switch *language {
 	case LanguageFstab:
-		fallthrough
+		return nil, nil
 	case LanguageHosts:
 		return hosts.TextDocumentCodeAction(context, params)
 	case LanguageSSHDConfig:

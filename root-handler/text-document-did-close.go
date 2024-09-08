@@ -2,6 +2,7 @@ package roothandler
 
 import (
 	aliases "config-lsp/handlers/aliases/lsp"
+	fstab "config-lsp/handlers/fstab/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 
@@ -26,8 +27,9 @@ func TextDocumentDidClose(context *glsp.Context, params *protocol.DidCloseTextDo
 	rootHandler.RemoveDocument(params.TextDocument.URI)
 
 	switch *language {
-	case LanguageFstab:
 	case LanguageSSHDConfig:
+	case LanguageFstab:
+		return fstab.TextDocumentDidClose(context, params)
 	case LanguageWireguard:
 		return wireguard.TextDocumentDidClose(context, params)
 	case LanguageHosts:

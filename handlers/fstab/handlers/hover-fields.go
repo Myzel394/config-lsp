@@ -1,4 +1,4 @@
-package fstab
+package handlers
 
 import protocol "github.com/tliron/glsp/protocol_3_16"
 

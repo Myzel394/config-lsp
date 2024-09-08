@@ -1,46 +1,25 @@
-package fstab
+package handlers
 
 import (
-	docvalues "config-lsp/doc-values"
-	fstabdocumentation "config-lsp/handlers/fstab/documentation"
+	"config-lsp/doc-values"
+	"config-lsp/handlers/fstab/documentation"
+	"config-lsp/handlers/fstab/parser"
+	"github.com/tliron/glsp/protocol_3_16"
 	"strings"
-
-	"github.com/tliron/glsp"
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-func TextDocumentHover(context *glsp.Context, params *protocol.HoverParams) (*protocol.Hover, error) {
-	cursor := params.Position.Character
-
-	parser := documentParserMap[params.TextDocument.URI]
-
-	entry, found := parser.GetEntry(params.Position.Line)
-
-	// Empty line
-	if !found {
-		return nil, nil
-	}
-
-	// Comment line
-	if entry.Type == FstabEntryTypeComment {
-		return nil, nil
-	}
-
-	return getHoverInfo(entry, cursor)
-}
-
-func getHoverInfo(entry *FstabEntry, cursor uint32) (*protocol.Hover, error) {
+func GetHoverInfo(entry *parser.FstabEntry, cursor uint32) (*protocol.Hover, error) {
 	line := entry.Line
 	targetField := line.GetFieldAtPosition(cursor)
 
 	switch targetField {
-	case FstabFieldSpec:
+	case parser.FstabFieldSpec:
 		return &SpecHoverField, nil
-	case FstabFieldMountPoint:
+	case parser.FstabFieldMountPoint:
 		return &MountPointHoverField, nil
-	case FstabFieldFileSystemType:
+	case parser.FstabFieldFileSystemType:
 		return &FileSystemTypeField, nil
-	case FstabFieldOptions:
+	case parser.FstabFieldOptions:
 		fileSystemType := line.Fields.FilesystemType.Value
 		var optionsField docvalues.Value
 
@@ -61,9 +40,9 @@ func getHoverInfo(entry *FstabEntry, cursor uint32) (*protocol.Hover, error) {
 		}
 
 		return &hover, nil
-	case FstabFieldFreq:
+	case parser.FstabFieldFreq:
 		return &FreqHoverField, nil
-	case FstabFieldPass:
+	case parser.FstabFieldPass:
 		return &PassHoverField, nil
 	}
 

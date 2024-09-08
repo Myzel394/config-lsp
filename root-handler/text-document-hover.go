@@ -2,7 +2,7 @@ package roothandler
 
 import (
 	aliases "config-lsp/handlers/aliases/lsp"
-	"config-lsp/handlers/fstab"
+	fstab "config-lsp/handlers/fstab/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 

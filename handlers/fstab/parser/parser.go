@@ -1,4 +1,4 @@
-package fstab
+package parser
 
 import (
 	"config-lsp/common"
@@ -6,10 +6,12 @@ import (
 	fstabdocumentation "config-lsp/handlers/fstab/documentation"
 	"fmt"
 	"regexp"
-	"slices"
 	"strings"
 
+	"github.com/emirpasic/gods/maps/treemap"
 	protocol "github.com/tliron/glsp/protocol_3_16"
+
+	gods "github.com/emirpasic/gods/utils"
 )
 
 var commentPattern = regexp.MustCompile(`^\s*#`)
@@ -203,7 +205,8 @@ type FstabEntry struct {
 }
 
 type FstabParser struct {
-	entries []FstabEntry
+	// [uint32]FstabEntry - line number to entry mapping
+	Entries *treemap.Map
 }
 
 func (p *FstabParser) AddLine(line string, lineNumber int) error {
@@ -302,7 +305,7 @@ func (p *FstabParser) AddLine(line string, lineNumber int) error {
 			},
 		},
 	}
-	p.entries = append(p.entries, entry)
+	p.Entries.Put(entry.Line.Line, entry)
 
 	return nil
 }
@@ -311,7 +314,7 @@ func (p *FstabParser) AddCommentLine(line string, lineNumber int) {
 	entry := FstabLine{
 		Line: uint32(lineNumber),
 	}
-	p.entries = append(p.entries, FstabEntry{
+	p.Entries.Put(entry.Line, FstabEntry{
 		Type: FstabEntryTypeComment,
 		Line: entry,
 	})
@@ -345,33 +348,29 @@ func (p *FstabParser) ParseFromContent(content string) []common.ParseError {
 }
 
 func (p *FstabParser) GetEntry(line uint32) (*FstabEntry, bool) {
-	index, found := slices.BinarySearchFunc(p.entries, line, func(entry FstabEntry, line uint32) int {
-		if entry.Line.Line < line {
-			return -1
-		}
-
-		if entry.Line.Line > line {
-			return 1
-		}
-
-		return 0
-	})
+	rawEntry, found := p.Entries.Get(line)
 
 	if !found {
 		return nil, false
 	}
 
-	return &p.entries[index], true
+	entry := rawEntry.(FstabEntry)
+
+	return &entry, true
 }
 
 func (p *FstabParser) Clear() {
-	p.entries = []FstabEntry{}
+	p.Entries = treemap.NewWith(gods.UInt32Comparator)
 }
 
 func (p *FstabParser) AnalyzeValues() []protocol.Diagnostic {
 	diagnostics := []protocol.Diagnostic{}
 
-	for _, entry := range p.entries {
+	it := p.Entries.Iterator()
+
+	for it.Next() {
+		entry := it.Value().(FstabEntry)
+
 		switch entry.Type {
 		case FstabEntryTypeLine:
 			newDiagnostics := entry.Line.CheckIsValid()

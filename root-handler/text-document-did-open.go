@@ -2,11 +2,12 @@ package roothandler
 
 import (
 	"config-lsp/common"
+	"fmt"
+
 	aliases "config-lsp/handlers/aliases/lsp"
-	fstab "config-lsp/handlers/fstab"
+	fstab "config-lsp/handlers/fstab/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
-	"fmt"
 
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"

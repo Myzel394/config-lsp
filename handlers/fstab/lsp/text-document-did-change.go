@@ -1,7 +1,8 @@
-package fstab
+package lsp
 
 import (
 	"config-lsp/common"
+	"config-lsp/handlers/fstab/shared"
 	"config-lsp/utils"
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -14,11 +15,11 @@ func TextDocumentDidChange(
 	content := params.ContentChanges[0].(protocol.TextDocumentContentChangeEventWhole).Text
 	common.ClearDiagnostics(context, params.TextDocument.URI)
 
-	parser := documentParserMap[params.TextDocument.URI]
-	parser.Clear()
+	p := shared.DocumentParserMap[params.TextDocument.URI]
+	p.Clear()
 
 	diagnostics := make([]protocol.Diagnostic, 0)
-	errors := parser.ParseFromContent(content)
+	errors := p.ParseFromContent(content)
 
 	if len(errors) > 0 {
 		diagnostics = append(diagnostics, utils.Map(
@@ -27,9 +28,9 @@ func TextDocumentDidChange(
 				return err.ToDiagnostic()
 			},
 		)...)
+	} else {
+		diagnostics = append(diagnostics, p.AnalyzeValues()...)
 	}
-
-	diagnostics = append(diagnostics, parser.AnalyzeValues()...)
 
 	if len(diagnostics) > 0 {
 		common.SendDiagnostics(context, params.TextDocument.URI, diagnostics)
