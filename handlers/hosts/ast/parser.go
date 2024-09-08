@@ -45,6 +45,7 @@ func (p *HostsParser) parseStatement(
 	)
 
 	errors = append(errors, errorListener.Errors...)
+	errors = append(errors, listener.Errors...)
 
 	return errors
 }

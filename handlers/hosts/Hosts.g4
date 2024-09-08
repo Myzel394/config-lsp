@@ -13,7 +13,7 @@ aliases
     ;
 
 alias
-    : DOMAIN
+    : domain
     ;
 
 hostname
@@ -21,7 +21,7 @@ hostname
     ;
 
 domain
-    : DOMAIN
+    : (STRING)+ (DOT STRING*)*
     ;
 
 ipAddress
@@ -29,9 +29,18 @@ ipAddress
     ;
 
 ipv4Address
+    : (STRING DOT)+ STRING (ipRange? | ipPort?)
+    ;
+
+ipv6Address
+    : (((STRING COLON)+ STRING) | (STRING? COLON COLON STRING)) (ipRange? | ipPort?)
+    ;
+
+/*
+ipv4Address
     : singleIPv4Address
         // Allow optional range to tell user ranges are not allowed
-        ipRange?
+        (ipRange? | ipPort?)
     ;
 
 singleIPv4Address
@@ -42,7 +51,7 @@ singleIPv4Address
 ipv6Address
     : singleIPv6Address
         // Allow optional range to tell user ranges are not allowed
-        ipRange?
+        (ipRange? | ipPort?)
     ;
 
 singleIPv6Address
@@ -50,19 +59,24 @@ singleIPv6Address
     ;
 
 ipv4Digit
-    : DIGITS
+    : STRING
     ;
 
 ipv6Octet
-    : OCTETS
+    : STRING
     ;
+*/
 
 ipRange
     : SLASH ipRangeBits
     ;
 
 ipRangeBits
-    : DIGITS
+    : STRING
+    ;
+
+ipPort
+    : COLON STRING
     ;
 
 comment
@@ -101,26 +115,6 @@ NEWLINE
     :  [\r]? [\n]
     ;
 
-DIGITS
-    : DIGIT+
-    ;
-
-fragment DIGIT
-    : [0-9]
-    ;
-
-OCTETS
-    : OCTET+
-    ;
-
-fragment OCTET
-    : [0-9a-fA-F]
-    ;
-
-DOMAIN
-    : ((STRING)+ (DOT [a-zA-Z]+)*)
-    ;
-
-fragment STRING
-    : ~(' ' | '\t' | '\n' | '\r' | '#' | '.')
+STRING
+    : [a-zA-Z0-9_\-]+
     ;

@@ -37,57 +37,70 @@ func hostsParserInit() {
 	}
 	staticData.SymbolicNames = []string{
 		"", "COMMENTLINE", "SLASH", "DOT", "COLON", "HASHTAG", "SEPARATOR",
-		"NEWLINE", "DIGITS", "OCTETS", "DOMAIN",
+		"NEWLINE", "STRING",
 	}
 	staticData.RuleNames = []string{
 		"lineStatement", "entry", "aliases", "alias", "hostname", "domain",
-		"ipAddress", "ipv4Address", "singleIPv4Address", "ipv6Address", "singleIPv6Address",
-		"ipv4Digit", "ipv6Octet", "ipRange", "ipRangeBits", "comment", "leadingComment",
+		"ipAddress", "ipv4Address", "ipv6Address", "ipRange", "ipRangeBits",
+		"ipPort", "comment", "leadingComment",
 	}
 	staticData.PredictionContextCache = antlr.NewPredictionContextCache()
 	staticData.serializedATN = []int32{
-		4, 1, 10, 110, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7,
+		4, 1, 8, 131, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7,
 		4, 2, 5, 7, 5, 2, 6, 7, 6, 2, 7, 7, 7, 2, 8, 7, 8, 2, 9, 7, 9, 2, 10, 7,
-		10, 2, 11, 7, 11, 2, 12, 7, 12, 2, 13, 7, 13, 2, 14, 7, 14, 2, 15, 7, 15,
-		2, 16, 7, 16, 1, 0, 3, 0, 36, 8, 0, 1, 0, 1, 0, 3, 0, 40, 8, 0, 1, 0, 3,
-		0, 43, 8, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 52, 8, 1,
-		1, 2, 1, 2, 3, 2, 56, 8, 2, 4, 2, 58, 8, 2, 11, 2, 12, 2, 59, 1, 3, 1,
-		3, 1, 4, 1, 4, 1, 5, 1, 5, 1, 6, 1, 6, 3, 6, 70, 8, 6, 1, 7, 1, 7, 3, 7,
-		74, 8, 7, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 8, 1, 9, 1, 9, 3,
-		9, 86, 8, 9, 1, 10, 1, 10, 1, 10, 4, 10, 91, 8, 10, 11, 10, 12, 10, 92,
-		1, 10, 1, 10, 1, 11, 1, 11, 1, 12, 1, 12, 1, 13, 1, 13, 1, 13, 1, 14, 1,
-		14, 1, 15, 1, 15, 1, 16, 1, 16, 1, 16, 0, 0, 17, 0, 2, 4, 6, 8, 10, 12,
-		14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 0, 0, 102, 0, 35, 1, 0, 0, 0, 2,
-		46, 1, 0, 0, 0, 4, 57, 1, 0, 0, 0, 6, 61, 1, 0, 0, 0, 8, 63, 1, 0, 0, 0,
-		10, 65, 1, 0, 0, 0, 12, 69, 1, 0, 0, 0, 14, 71, 1, 0, 0, 0, 16, 75, 1,
-		0, 0, 0, 18, 83, 1, 0, 0, 0, 20, 90, 1, 0, 0, 0, 22, 96, 1, 0, 0, 0, 24,
-		98, 1, 0, 0, 0, 26, 100, 1, 0, 0, 0, 28, 103, 1, 0, 0, 0, 30, 105, 1, 0,
-		0, 0, 32, 107, 1, 0, 0, 0, 34, 36, 5, 6, 0, 0, 35, 34, 1, 0, 0, 0, 35,
-		36, 1, 0, 0, 0, 36, 37, 1, 0, 0, 0, 37, 39, 3, 2, 1, 0, 38, 40, 5, 6, 0,
-		0, 39, 38, 1, 0, 0, 0, 39, 40, 1, 0, 0, 0, 40, 42, 1, 0, 0, 0, 41, 43,
-		3, 32, 16, 0, 42, 41, 1, 0, 0, 0, 42, 43, 1, 0, 0, 0, 43, 44, 1, 0, 0,
-		0, 44, 45, 5, 0, 0, 1, 45, 1, 1, 0, 0, 0, 46, 47, 3, 12, 6, 0, 47, 48,
-		5, 6, 0, 0, 48, 51, 3, 8, 4, 0, 49, 50, 5, 6, 0, 0, 50, 52, 3, 4, 2, 0,
-		51, 49, 1, 0, 0, 0, 51, 52, 1, 0, 0, 0, 52, 3, 1, 0, 0, 0, 53, 55, 3, 6,
-		3, 0, 54, 56, 5, 6, 0, 0, 55, 54, 1, 0, 0, 0, 55, 56, 1, 0, 0, 0, 56, 58,
-		1, 0, 0, 0, 57, 53, 1, 0, 0, 0, 58, 59, 1, 0, 0, 0, 59, 57, 1, 0, 0, 0,
-		59, 60, 1, 0, 0, 0, 60, 5, 1, 0, 0, 0, 61, 62, 5, 10, 0, 0, 62, 7, 1, 0,
-		0, 0, 63, 64, 3, 10, 5, 0, 64, 9, 1, 0, 0, 0, 65, 66, 5, 10, 0, 0, 66,
-		11, 1, 0, 0, 0, 67, 70, 3, 14, 7, 0, 68, 70, 3, 18, 9, 0, 69, 67, 1, 0,
-		0, 0, 69, 68, 1, 0, 0, 0, 70, 13, 1, 0, 0, 0, 71, 73, 3, 16, 8, 0, 72,
-		74, 3, 26, 13, 0, 73, 72, 1, 0, 0, 0, 73, 74, 1, 0, 0, 0, 74, 15, 1, 0,
-		0, 0, 75, 76, 3, 22, 11, 0, 76, 77, 5, 3, 0, 0, 77, 78, 3, 22, 11, 0, 78,
-		79, 5, 3, 0, 0, 79, 80, 3, 22, 11, 0, 80, 81, 5, 3, 0, 0, 81, 82, 3, 22,
-		11, 0, 82, 17, 1, 0, 0, 0, 83, 85, 3, 20, 10, 0, 84, 86, 3, 26, 13, 0,
-		85, 84, 1, 0, 0, 0, 85, 86, 1, 0, 0, 0, 86, 19, 1, 0, 0, 0, 87, 88, 3,
-		24, 12, 0, 88, 89, 5, 4, 0, 0, 89, 91, 1, 0, 0, 0, 90, 87, 1, 0, 0, 0,
-		91, 92, 1, 0, 0, 0, 92, 90, 1, 0, 0, 0, 92, 93, 1, 0, 0, 0, 93, 94, 1,
-		0, 0, 0, 94, 95, 3, 24, 12, 0, 95, 21, 1, 0, 0, 0, 96, 97, 5, 8, 0, 0,
-		97, 23, 1, 0, 0, 0, 98, 99, 5, 9, 0, 0, 99, 25, 1, 0, 0, 0, 100, 101, 5,
-		2, 0, 0, 101, 102, 3, 28, 14, 0, 102, 27, 1, 0, 0, 0, 103, 104, 5, 8, 0,
-		0, 104, 29, 1, 0, 0, 0, 105, 106, 5, 1, 0, 0, 106, 31, 1, 0, 0, 0, 107,
-		108, 5, 1, 0, 0, 108, 33, 1, 0, 0, 0, 10, 35, 39, 42, 51, 55, 59, 69, 73,
-		85, 92,
+		10, 2, 11, 7, 11, 2, 12, 7, 12, 2, 13, 7, 13, 1, 0, 3, 0, 30, 8, 0, 1,
+		0, 1, 0, 3, 0, 34, 8, 0, 1, 0, 3, 0, 37, 8, 0, 1, 0, 1, 0, 1, 1, 1, 1,
+		1, 1, 1, 1, 1, 1, 3, 1, 46, 8, 1, 1, 2, 1, 2, 3, 2, 50, 8, 2, 4, 2, 52,
+		8, 2, 11, 2, 12, 2, 53, 1, 3, 1, 3, 1, 4, 1, 4, 1, 5, 4, 5, 61, 8, 5, 11,
+		5, 12, 5, 62, 1, 5, 1, 5, 5, 5, 67, 8, 5, 10, 5, 12, 5, 70, 9, 5, 5, 5,
+		72, 8, 5, 10, 5, 12, 5, 75, 9, 5, 1, 6, 1, 6, 3, 6, 79, 8, 6, 1, 7, 1,
+		7, 4, 7, 83, 8, 7, 11, 7, 12, 7, 84, 1, 7, 1, 7, 3, 7, 89, 8, 7, 1, 7,
+		3, 7, 92, 8, 7, 3, 7, 94, 8, 7, 1, 8, 1, 8, 4, 8, 98, 8, 8, 11, 8, 12,
+		8, 99, 1, 8, 1, 8, 3, 8, 104, 8, 8, 1, 8, 1, 8, 1, 8, 3, 8, 109, 8, 8,
+		1, 8, 3, 8, 112, 8, 8, 1, 8, 3, 8, 115, 8, 8, 3, 8, 117, 8, 8, 1, 9, 1,
+		9, 1, 9, 1, 10, 1, 10, 1, 11, 1, 11, 1, 11, 1, 12, 1, 12, 1, 13, 1, 13,
+		1, 13, 0, 0, 14, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 0,
+		0, 136, 0, 29, 1, 0, 0, 0, 2, 40, 1, 0, 0, 0, 4, 51, 1, 0, 0, 0, 6, 55,
+		1, 0, 0, 0, 8, 57, 1, 0, 0, 0, 10, 60, 1, 0, 0, 0, 12, 78, 1, 0, 0, 0,
+		14, 82, 1, 0, 0, 0, 16, 108, 1, 0, 0, 0, 18, 118, 1, 0, 0, 0, 20, 121,
+		1, 0, 0, 0, 22, 123, 1, 0, 0, 0, 24, 126, 1, 0, 0, 0, 26, 128, 1, 0, 0,
+		0, 28, 30, 5, 6, 0, 0, 29, 28, 1, 0, 0, 0, 29, 30, 1, 0, 0, 0, 30, 31,
+		1, 0, 0, 0, 31, 33, 3, 2, 1, 0, 32, 34, 5, 6, 0, 0, 33, 32, 1, 0, 0, 0,
+		33, 34, 1, 0, 0, 0, 34, 36, 1, 0, 0, 0, 35, 37, 3, 26, 13, 0, 36, 35, 1,
+		0, 0, 0, 36, 37, 1, 0, 0, 0, 37, 38, 1, 0, 0, 0, 38, 39, 5, 0, 0, 1, 39,
+		1, 1, 0, 0, 0, 40, 41, 3, 12, 6, 0, 41, 42, 5, 6, 0, 0, 42, 45, 3, 8, 4,
+		0, 43, 44, 5, 6, 0, 0, 44, 46, 3, 4, 2, 0, 45, 43, 1, 0, 0, 0, 45, 46,
+		1, 0, 0, 0, 46, 3, 1, 0, 0, 0, 47, 49, 3, 6, 3, 0, 48, 50, 5, 6, 0, 0,
+		49, 48, 1, 0, 0, 0, 49, 50, 1, 0, 0, 0, 50, 52, 1, 0, 0, 0, 51, 47, 1,
+		0, 0, 0, 52, 53, 1, 0, 0, 0, 53, 51, 1, 0, 0, 0, 53, 54, 1, 0, 0, 0, 54,
+		5, 1, 0, 0, 0, 55, 56, 3, 10, 5, 0, 56, 7, 1, 0, 0, 0, 57, 58, 3, 10, 5,
+		0, 58, 9, 1, 0, 0, 0, 59, 61, 5, 8, 0, 0, 60, 59, 1, 0, 0, 0, 61, 62, 1,
+		0, 0, 0, 62, 60, 1, 0, 0, 0, 62, 63, 1, 0, 0, 0, 63, 73, 1, 0, 0, 0, 64,
+		68, 5, 3, 0, 0, 65, 67, 5, 8, 0, 0, 66, 65, 1, 0, 0, 0, 67, 70, 1, 0, 0,
+		0, 68, 66, 1, 0, 0, 0, 68, 69, 1, 0, 0, 0, 69, 72, 1, 0, 0, 0, 70, 68,
+		1, 0, 0, 0, 71, 64, 1, 0, 0, 0, 72, 75, 1, 0, 0, 0, 73, 71, 1, 0, 0, 0,
+		73, 74, 1, 0, 0, 0, 74, 11, 1, 0, 0, 0, 75, 73, 1, 0, 0, 0, 76, 79, 3,
+		14, 7, 0, 77, 79, 3, 16, 8, 0, 78, 76, 1, 0, 0, 0, 78, 77, 1, 0, 0, 0,
+		79, 13, 1, 0, 0, 0, 80, 81, 5, 8, 0, 0, 81, 83, 5, 3, 0, 0, 82, 80, 1,
+		0, 0, 0, 83, 84, 1, 0, 0, 0, 84, 82, 1, 0, 0, 0, 84, 85, 1, 0, 0, 0, 85,
+		86, 1, 0, 0, 0, 86, 93, 5, 8, 0, 0, 87, 89, 3, 18, 9, 0, 88, 87, 1, 0,
+		0, 0, 88, 89, 1, 0, 0, 0, 89, 94, 1, 0, 0, 0, 90, 92, 3, 22, 11, 0, 91,
+		90, 1, 0, 0, 0, 91, 92, 1, 0, 0, 0, 92, 94, 1, 0, 0, 0, 93, 88, 1, 0, 0,
+		0, 93, 91, 1, 0, 0, 0, 94, 15, 1, 0, 0, 0, 95, 96, 5, 8, 0, 0, 96, 98,
+		5, 4, 0, 0, 97, 95, 1, 0, 0, 0, 98, 99, 1, 0, 0, 0, 99, 97, 1, 0, 0, 0,
+		99, 100, 1, 0, 0, 0, 100, 101, 1, 0, 0, 0, 101, 109, 5, 8, 0, 0, 102, 104,
+		5, 8, 0, 0, 103, 102, 1, 0, 0, 0, 103, 104, 1, 0, 0, 0, 104, 105, 1, 0,
+		0, 0, 105, 106, 5, 4, 0, 0, 106, 107, 5, 4, 0, 0, 107, 109, 5, 8, 0, 0,
+		108, 97, 1, 0, 0, 0, 108, 103, 1, 0, 0, 0, 109, 116, 1, 0, 0, 0, 110, 112,
+		3, 18, 9, 0, 111, 110, 1, 0, 0, 0, 111, 112, 1, 0, 0, 0, 112, 117, 1, 0,
+		0, 0, 113, 115, 3, 22, 11, 0, 114, 113, 1, 0, 0, 0, 114, 115, 1, 0, 0,
+		0, 115, 117, 1, 0, 0, 0, 116, 111, 1, 0, 0, 0, 116, 114, 1, 0, 0, 0, 117,
+		17, 1, 0, 0, 0, 118, 119, 5, 2, 0, 0, 119, 120, 3, 20, 10, 0, 120, 19,
+		1, 0, 0, 0, 121, 122, 5, 8, 0, 0, 122, 21, 1, 0, 0, 0, 123, 124, 5, 4,
+		0, 0, 124, 125, 5, 8, 0, 0, 125, 23, 1, 0, 0, 0, 126, 127, 5, 1, 0, 0,
+		127, 25, 1, 0, 0, 0, 128, 129, 5, 1, 0, 0, 129, 27, 1, 0, 0, 0, 20, 29,
+		33, 36, 45, 49, 53, 62, 68, 73, 78, 84, 88, 91, 93, 99, 103, 108, 111,
+		114, 116,
 	}
 	deserializer := antlr.NewATNDeserializer(nil)
 	staticData.atn = deserializer.Deserialize(staticData.serializedATN)
@@ -133,30 +146,25 @@ const (
 	HostsParserHASHTAG     = 5
 	HostsParserSEPARATOR   = 6
 	HostsParserNEWLINE     = 7
-	HostsParserDIGITS      = 8
-	HostsParserOCTETS      = 9
-	HostsParserDOMAIN      = 10
+	HostsParserSTRING      = 8
 )
 
 // HostsParser rules.
 const (
-	HostsParserRULE_lineStatement     = 0
-	HostsParserRULE_entry             = 1
-	HostsParserRULE_aliases           = 2
-	HostsParserRULE_alias             = 3
-	HostsParserRULE_hostname          = 4
-	HostsParserRULE_domain            = 5
-	HostsParserRULE_ipAddress         = 6
-	HostsParserRULE_ipv4Address       = 7
-	HostsParserRULE_singleIPv4Address = 8
-	HostsParserRULE_ipv6Address       = 9
-	HostsParserRULE_singleIPv6Address = 10
-	HostsParserRULE_ipv4Digit         = 11
-	HostsParserRULE_ipv6Octet         = 12
-	HostsParserRULE_ipRange           = 13
-	HostsParserRULE_ipRangeBits       = 14
-	HostsParserRULE_comment           = 15
-	HostsParserRULE_leadingComment    = 16
+	HostsParserRULE_lineStatement  = 0
+	HostsParserRULE_entry          = 1
+	HostsParserRULE_aliases        = 2
+	HostsParserRULE_alias          = 3
+	HostsParserRULE_hostname       = 4
+	HostsParserRULE_domain         = 5
+	HostsParserRULE_ipAddress      = 6
+	HostsParserRULE_ipv4Address    = 7
+	HostsParserRULE_ipv6Address    = 8
+	HostsParserRULE_ipRange        = 9
+	HostsParserRULE_ipRangeBits    = 10
+	HostsParserRULE_ipPort         = 11
+	HostsParserRULE_comment        = 12
+	HostsParserRULE_leadingComment = 13
 )
 
 // ILineStatementContext is an interface to support dynamic dispatch.
@@ -279,7 +287,7 @@ func (p *HostsParser) LineStatement() (localctx ILineStatementContext) {
 	var _la int
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(35)
+	p.SetState(29)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -288,7 +296,7 @@ func (p *HostsParser) LineStatement() (localctx ILineStatementContext) {
 
 	if _la == HostsParserSEPARATOR {
 		{
-			p.SetState(34)
+			p.SetState(28)
 			p.Match(HostsParserSEPARATOR)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -298,10 +306,10 @@ func (p *HostsParser) LineStatement() (localctx ILineStatementContext) {
 
 	}
 	{
-		p.SetState(37)
+		p.SetState(31)
 		p.Entry()
 	}
-	p.SetState(39)
+	p.SetState(33)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -310,7 +318,7 @@ func (p *HostsParser) LineStatement() (localctx ILineStatementContext) {
 
 	if _la == HostsParserSEPARATOR {
 		{
-			p.SetState(38)
+			p.SetState(32)
 			p.Match(HostsParserSEPARATOR)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -319,7 +327,7 @@ func (p *HostsParser) LineStatement() (localctx ILineStatementContext) {
 		}
 
 	}
-	p.SetState(42)
+	p.SetState(36)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -328,13 +336,13 @@ func (p *HostsParser) LineStatement() (localctx ILineStatementContext) {
 
 	if _la == HostsParserCOMMENTLINE {
 		{
-			p.SetState(41)
+			p.SetState(35)
 			p.LeadingComment()
 		}
 
 	}
 	{
-		p.SetState(44)
+		p.SetState(38)
 		p.Match(HostsParserEOF)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -486,11 +494,11 @@ func (p *HostsParser) Entry() (localctx IEntryContext) {
 	p.EnterRule(localctx, 2, HostsParserRULE_entry)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(46)
+		p.SetState(40)
 		p.IpAddress()
 	}
 	{
-		p.SetState(47)
+		p.SetState(41)
 		p.Match(HostsParserSEPARATOR)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -498,15 +506,15 @@ func (p *HostsParser) Entry() (localctx IEntryContext) {
 		}
 	}
 	{
-		p.SetState(48)
+		p.SetState(42)
 		p.Hostname()
 	}
-	p.SetState(51)
+	p.SetState(45)
 	p.GetErrorHandler().Sync(p)
 
 	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 3, p.GetParserRuleContext()) == 1 {
 		{
-			p.SetState(49)
+			p.SetState(43)
 			p.Match(HostsParserSEPARATOR)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -514,7 +522,7 @@ func (p *HostsParser) Entry() (localctx IEntryContext) {
 			}
 		}
 		{
-			p.SetState(50)
+			p.SetState(44)
 			p.Aliases()
 		}
 
@@ -659,24 +667,24 @@ func (p *HostsParser) Aliases() (localctx IAliasesContext) {
 	var _la int
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(57)
+	p.SetState(51)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
 	}
 	_la = p.GetTokenStream().LA(1)
 
-	for ok := true; ok; ok = _la == HostsParserDOMAIN {
+	for ok := true; ok; ok = _la == HostsParserSTRING {
 		{
-			p.SetState(53)
+			p.SetState(47)
 			p.Alias()
 		}
-		p.SetState(55)
+		p.SetState(49)
 		p.GetErrorHandler().Sync(p)
 
 		if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 4, p.GetParserRuleContext()) == 1 {
 			{
-				p.SetState(54)
+				p.SetState(48)
 				p.Match(HostsParserSEPARATOR)
 				if p.HasError() {
 					// Recognition error - abort rule
@@ -688,7 +696,7 @@ func (p *HostsParser) Aliases() (localctx IAliasesContext) {
 			goto errorExit
 		}
 
-		p.SetState(59)
+		p.SetState(53)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
@@ -717,7 +725,7 @@ type IAliasContext interface {
 	GetParser() antlr.Parser
 
 	// Getter signatures
-	DOMAIN() antlr.TerminalNode
+	Domain() IDomainContext
 
 	// IsAliasContext differentiates from other interfaces.
 	IsAliasContext()
@@ -755,8 +763,20 @@ func NewAliasContext(parser antlr.Parser, parent antlr.ParserRuleContext, invoki
 
 func (s *AliasContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *AliasContext) DOMAIN() antlr.TerminalNode {
-	return s.GetToken(HostsParserDOMAIN, 0)
+func (s *AliasContext) Domain() IDomainContext {
+	var t antlr.RuleContext
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IDomainContext); ok {
+			t = ctx.(antlr.RuleContext)
+			break
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IDomainContext)
 }
 
 func (s *AliasContext) GetRuleContext() antlr.RuleContext {
@@ -784,12 +804,8 @@ func (p *HostsParser) Alias() (localctx IAliasContext) {
 	p.EnterRule(localctx, 6, HostsParserRULE_alias)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(61)
-		p.Match(HostsParserDOMAIN)
-		if p.HasError() {
-			// Recognition error - abort rule
-			goto errorExit
-		}
+		p.SetState(55)
+		p.Domain()
 	}
 
 errorExit:
@@ -892,7 +908,7 @@ func (p *HostsParser) Hostname() (localctx IHostnameContext) {
 	p.EnterRule(localctx, 8, HostsParserRULE_hostname)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(63)
+		p.SetState(57)
 		p.Domain()
 	}
 
@@ -917,7 +933,10 @@ type IDomainContext interface {
 	GetParser() antlr.Parser
 
 	// Getter signatures
-	DOMAIN() antlr.TerminalNode
+	AllSTRING() []antlr.TerminalNode
+	STRING(i int) antlr.TerminalNode
+	AllDOT() []antlr.TerminalNode
+	DOT(i int) antlr.TerminalNode
 
 	// IsDomainContext differentiates from other interfaces.
 	IsDomainContext()
@@ -955,8 +974,20 @@ func NewDomainContext(parser antlr.Parser, parent antlr.ParserRuleContext, invok
 
 func (s *DomainContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *DomainContext) DOMAIN() antlr.TerminalNode {
-	return s.GetToken(HostsParserDOMAIN, 0)
+func (s *DomainContext) AllSTRING() []antlr.TerminalNode {
+	return s.GetTokens(HostsParserSTRING)
+}
+
+func (s *DomainContext) STRING(i int) antlr.TerminalNode {
+	return s.GetToken(HostsParserSTRING, i)
+}
+
+func (s *DomainContext) AllDOT() []antlr.TerminalNode {
+	return s.GetTokens(HostsParserDOT)
+}
+
+func (s *DomainContext) DOT(i int) antlr.TerminalNode {
+	return s.GetToken(HostsParserDOT, i)
 }
 
 func (s *DomainContext) GetRuleContext() antlr.RuleContext {
@@ -982,14 +1013,95 @@ func (s *DomainContext) ExitRule(listener antlr.ParseTreeListener) {
 func (p *HostsParser) Domain() (localctx IDomainContext) {
 	localctx = NewDomainContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 10, HostsParserRULE_domain)
+	var _la int
+
+	var _alt int
+
 	p.EnterOuterAlt(localctx, 1)
-	{
-		p.SetState(65)
-		p.Match(HostsParserDOMAIN)
-		if p.HasError() {
-			// Recognition error - abort rule
+	p.SetState(60)
+	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
+	_alt = 1
+	for ok := true; ok; ok = _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
+		switch _alt {
+		case 1:
+			{
+				p.SetState(59)
+				p.Match(HostsParserSTRING)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
+			}
+
+		default:
+			p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
 			goto errorExit
 		}
+
+		p.SetState(62)
+		p.GetErrorHandler().Sync(p)
+		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 6, p.GetParserRuleContext())
+		if p.HasError() {
+			goto errorExit
+		}
+	}
+	p.SetState(73)
+	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
+	_la = p.GetTokenStream().LA(1)
+
+	for _la == HostsParserDOT {
+		{
+			p.SetState(64)
+			p.Match(HostsParserDOT)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
+		}
+		p.SetState(68)
+		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
+		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 7, p.GetParserRuleContext())
+		if p.HasError() {
+			goto errorExit
+		}
+		for _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
+			if _alt == 1 {
+				{
+					p.SetState(65)
+					p.Match(HostsParserSTRING)
+					if p.HasError() {
+						// Recognition error - abort rule
+						goto errorExit
+					}
+				}
+
+			}
+			p.SetState(70)
+			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
+			_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 7, p.GetParserRuleContext())
+			if p.HasError() {
+				goto errorExit
+			}
+		}
+
+		p.SetState(75)
+		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
+		_la = p.GetTokenStream().LA(1)
 	}
 
 errorExit:
@@ -1108,27 +1220,26 @@ func (p *HostsParser) IpAddress() (localctx IIpAddressContext) {
 	localctx = NewIpAddressContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 12, HostsParserRULE_ipAddress)
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(69)
+	p.SetState(78)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
 	}
 
-	switch p.GetTokenStream().LA(1) {
-	case HostsParserDIGITS:
+	switch p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 9, p.GetParserRuleContext()) {
+	case 1:
 		{
-			p.SetState(67)
+			p.SetState(76)
 			p.Ipv4Address()
 		}
 
-	case HostsParserOCTETS:
+	case 2:
 		{
-			p.SetState(68)
+			p.SetState(77)
 			p.Ipv6Address()
 		}
 
-	default:
-		p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+	case antlr.ATNInvalidAltNumber:
 		goto errorExit
 	}
 
@@ -1153,8 +1264,12 @@ type IIpv4AddressContext interface {
 	GetParser() antlr.Parser
 
 	// Getter signatures
-	SingleIPv4Address() ISingleIPv4AddressContext
+	AllSTRING() []antlr.TerminalNode
+	STRING(i int) antlr.TerminalNode
+	AllDOT() []antlr.TerminalNode
+	DOT(i int) antlr.TerminalNode
 	IpRange() IIpRangeContext
+	IpPort() IIpPortContext
 
 	// IsIpv4AddressContext differentiates from other interfaces.
 	IsIpv4AddressContext()
@@ -1192,20 +1307,20 @@ func NewIpv4AddressContext(parser antlr.Parser, parent antlr.ParserRuleContext, 
 
 func (s *Ipv4AddressContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *Ipv4AddressContext) SingleIPv4Address() ISingleIPv4AddressContext {
-	var t antlr.RuleContext
-	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(ISingleIPv4AddressContext); ok {
-			t = ctx.(antlr.RuleContext)
-			break
-		}
-	}
+func (s *Ipv4AddressContext) AllSTRING() []antlr.TerminalNode {
+	return s.GetTokens(HostsParserSTRING)
+}
 
-	if t == nil {
-		return nil
-	}
+func (s *Ipv4AddressContext) STRING(i int) antlr.TerminalNode {
+	return s.GetToken(HostsParserSTRING, i)
+}
 
-	return t.(ISingleIPv4AddressContext)
+func (s *Ipv4AddressContext) AllDOT() []antlr.TerminalNode {
+	return s.GetTokens(HostsParserDOT)
+}
+
+func (s *Ipv4AddressContext) DOT(i int) antlr.TerminalNode {
+	return s.GetToken(HostsParserDOT, i)
 }
 
 func (s *Ipv4AddressContext) IpRange() IIpRangeContext {
@@ -1222,6 +1337,22 @@ func (s *Ipv4AddressContext) IpRange() IIpRangeContext {
 	}
 
 	return t.(IIpRangeContext)
+}
+
+func (s *Ipv4AddressContext) IpPort() IIpPortContext {
+	var t antlr.RuleContext
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IIpPortContext); ok {
+			t = ctx.(antlr.RuleContext)
+			break
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IIpPortContext)
 }
 
 func (s *Ipv4AddressContext) GetRuleContext() antlr.RuleContext {
@@ -1249,200 +1380,96 @@ func (p *HostsParser) Ipv4Address() (localctx IIpv4AddressContext) {
 	p.EnterRule(localctx, 14, HostsParserRULE_ipv4Address)
 	var _la int
 
+	var _alt int
+
 	p.EnterOuterAlt(localctx, 1)
-	{
-		p.SetState(71)
-		p.SingleIPv4Address()
-	}
-	p.SetState(73)
+	p.SetState(82)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
 	}
-	_la = p.GetTokenStream().LA(1)
-
-	if _la == HostsParserSLASH {
-		{
-			p.SetState(72)
-			p.IpRange()
-		}
-
-	}
-
-errorExit:
-	if p.HasError() {
-		v := p.GetError()
-		localctx.SetException(v)
-		p.GetErrorHandler().ReportError(p, v)
-		p.GetErrorHandler().Recover(p, v)
-		p.SetError(nil)
-	}
-	p.ExitRule()
-	return localctx
-	goto errorExit // Trick to prevent compiler error if the label is not used
-}
-
-// ISingleIPv4AddressContext is an interface to support dynamic dispatch.
-type ISingleIPv4AddressContext interface {
-	antlr.ParserRuleContext
-
-	// GetParser returns the parser.
-	GetParser() antlr.Parser
-
-	// Getter signatures
-	AllIpv4Digit() []IIpv4DigitContext
-	Ipv4Digit(i int) IIpv4DigitContext
-	AllDOT() []antlr.TerminalNode
-	DOT(i int) antlr.TerminalNode
-
-	// IsSingleIPv4AddressContext differentiates from other interfaces.
-	IsSingleIPv4AddressContext()
-}
-
-type SingleIPv4AddressContext struct {
-	antlr.BaseParserRuleContext
-	parser antlr.Parser
-}
-
-func NewEmptySingleIPv4AddressContext() *SingleIPv4AddressContext {
-	var p = new(SingleIPv4AddressContext)
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = HostsParserRULE_singleIPv4Address
-	return p
-}
-
-func InitEmptySingleIPv4AddressContext(p *SingleIPv4AddressContext) {
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = HostsParserRULE_singleIPv4Address
-}
-
-func (*SingleIPv4AddressContext) IsSingleIPv4AddressContext() {}
-
-func NewSingleIPv4AddressContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *SingleIPv4AddressContext {
-	var p = new(SingleIPv4AddressContext)
-
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
-
-	p.parser = parser
-	p.RuleIndex = HostsParserRULE_singleIPv4Address
-
-	return p
-}
-
-func (s *SingleIPv4AddressContext) GetParser() antlr.Parser { return s.parser }
-
-func (s *SingleIPv4AddressContext) AllIpv4Digit() []IIpv4DigitContext {
-	children := s.GetChildren()
-	len := 0
-	for _, ctx := range children {
-		if _, ok := ctx.(IIpv4DigitContext); ok {
-			len++
-		}
-	}
-
-	tst := make([]IIpv4DigitContext, len)
-	i := 0
-	for _, ctx := range children {
-		if t, ok := ctx.(IIpv4DigitContext); ok {
-			tst[i] = t.(IIpv4DigitContext)
-			i++
-		}
-	}
-
-	return tst
-}
-
-func (s *SingleIPv4AddressContext) Ipv4Digit(i int) IIpv4DigitContext {
-	var t antlr.RuleContext
-	j := 0
-	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IIpv4DigitContext); ok {
-			if j == i {
-				t = ctx.(antlr.RuleContext)
-				break
+	_alt = 1
+	for ok := true; ok; ok = _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
+		switch _alt {
+		case 1:
+			{
+				p.SetState(80)
+				p.Match(HostsParserSTRING)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
 			}
-			j++
+			{
+				p.SetState(81)
+				p.Match(HostsParserDOT)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
+			}
+
+		default:
+			p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+			goto errorExit
+		}
+
+		p.SetState(84)
+		p.GetErrorHandler().Sync(p)
+		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 10, p.GetParserRuleContext())
+		if p.HasError() {
+			goto errorExit
 		}
 	}
-
-	if t == nil {
-		return nil
-	}
-
-	return t.(IIpv4DigitContext)
-}
-
-func (s *SingleIPv4AddressContext) AllDOT() []antlr.TerminalNode {
-	return s.GetTokens(HostsParserDOT)
-}
-
-func (s *SingleIPv4AddressContext) DOT(i int) antlr.TerminalNode {
-	return s.GetToken(HostsParserDOT, i)
-}
-
-func (s *SingleIPv4AddressContext) GetRuleContext() antlr.RuleContext {
-	return s
-}
-
-func (s *SingleIPv4AddressContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
-	return antlr.TreesStringTree(s, ruleNames, recog)
-}
-
-func (s *SingleIPv4AddressContext) EnterRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(HostsListener); ok {
-		listenerT.EnterSingleIPv4Address(s)
-	}
-}
-
-func (s *SingleIPv4AddressContext) ExitRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(HostsListener); ok {
-		listenerT.ExitSingleIPv4Address(s)
-	}
-}
-
-func (p *HostsParser) SingleIPv4Address() (localctx ISingleIPv4AddressContext) {
-	localctx = NewSingleIPv4AddressContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 16, HostsParserRULE_singleIPv4Address)
-	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(75)
-		p.Ipv4Digit()
-	}
-	{
-		p.SetState(76)
-		p.Match(HostsParserDOT)
+		p.SetState(86)
+		p.Match(HostsParserSTRING)
 		if p.HasError() {
 			// Recognition error - abort rule
 			goto errorExit
 		}
 	}
-	{
-		p.SetState(77)
-		p.Ipv4Digit()
+	p.SetState(93)
+	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
 	}
-	{
-		p.SetState(78)
-		p.Match(HostsParserDOT)
+
+	switch p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 13, p.GetParserRuleContext()) {
+	case 1:
+		p.SetState(88)
+		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
-			// Recognition error - abort rule
 			goto errorExit
 		}
-	}
-	{
-		p.SetState(79)
-		p.Ipv4Digit()
-	}
-	{
-		p.SetState(80)
-		p.Match(HostsParserDOT)
+		_la = p.GetTokenStream().LA(1)
+
+		if _la == HostsParserSLASH {
+			{
+				p.SetState(87)
+				p.IpRange()
+			}
+
+		}
+
+	case 2:
+		p.SetState(91)
+		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
-			// Recognition error - abort rule
 			goto errorExit
 		}
-	}
-	{
-		p.SetState(81)
-		p.Ipv4Digit()
+		_la = p.GetTokenStream().LA(1)
+
+		if _la == HostsParserCOLON {
+			{
+				p.SetState(90)
+				p.IpPort()
+			}
+
+		}
+
+	case antlr.ATNInvalidAltNumber:
+		goto errorExit
 	}
 
 errorExit:
@@ -1466,8 +1493,12 @@ type IIpv6AddressContext interface {
 	GetParser() antlr.Parser
 
 	// Getter signatures
-	SingleIPv6Address() ISingleIPv6AddressContext
+	AllSTRING() []antlr.TerminalNode
+	STRING(i int) antlr.TerminalNode
+	AllCOLON() []antlr.TerminalNode
+	COLON(i int) antlr.TerminalNode
 	IpRange() IIpRangeContext
+	IpPort() IIpPortContext
 
 	// IsIpv6AddressContext differentiates from other interfaces.
 	IsIpv6AddressContext()
@@ -1505,20 +1536,20 @@ func NewIpv6AddressContext(parser antlr.Parser, parent antlr.ParserRuleContext, 
 
 func (s *Ipv6AddressContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *Ipv6AddressContext) SingleIPv6Address() ISingleIPv6AddressContext {
-	var t antlr.RuleContext
-	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(ISingleIPv6AddressContext); ok {
-			t = ctx.(antlr.RuleContext)
-			break
-		}
-	}
+func (s *Ipv6AddressContext) AllSTRING() []antlr.TerminalNode {
+	return s.GetTokens(HostsParserSTRING)
+}
 
-	if t == nil {
-		return nil
-	}
+func (s *Ipv6AddressContext) STRING(i int) antlr.TerminalNode {
+	return s.GetToken(HostsParserSTRING, i)
+}
 
-	return t.(ISingleIPv6AddressContext)
+func (s *Ipv6AddressContext) AllCOLON() []antlr.TerminalNode {
+	return s.GetTokens(HostsParserCOLON)
+}
+
+func (s *Ipv6AddressContext) COLON(i int) antlr.TerminalNode {
+	return s.GetToken(HostsParserCOLON, i)
 }
 
 func (s *Ipv6AddressContext) IpRange() IIpRangeContext {
@@ -1535,6 +1566,22 @@ func (s *Ipv6AddressContext) IpRange() IIpRangeContext {
 	}
 
 	return t.(IIpRangeContext)
+}
+
+func (s *Ipv6AddressContext) IpPort() IIpPortContext {
+	var t antlr.RuleContext
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IIpPortContext); ok {
+			t = ctx.(antlr.RuleContext)
+			break
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IIpPortContext)
 }
 
 func (s *Ipv6AddressContext) GetRuleContext() antlr.RuleContext {
@@ -1559,395 +1606,155 @@ func (s *Ipv6AddressContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *HostsParser) Ipv6Address() (localctx IIpv6AddressContext) {
 	localctx = NewIpv6AddressContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 18, HostsParserRULE_ipv6Address)
+	p.EnterRule(localctx, 16, HostsParserRULE_ipv6Address)
 	var _la int
 
-	p.EnterOuterAlt(localctx, 1)
-	{
-		p.SetState(83)
-		p.SingleIPv6Address()
-	}
-	p.SetState(85)
-	p.GetErrorHandler().Sync(p)
-	if p.HasError() {
-		goto errorExit
-	}
-	_la = p.GetTokenStream().LA(1)
-
-	if _la == HostsParserSLASH {
-		{
-			p.SetState(84)
-			p.IpRange()
-		}
-
-	}
-
-errorExit:
-	if p.HasError() {
-		v := p.GetError()
-		localctx.SetException(v)
-		p.GetErrorHandler().ReportError(p, v)
-		p.GetErrorHandler().Recover(p, v)
-		p.SetError(nil)
-	}
-	p.ExitRule()
-	return localctx
-	goto errorExit // Trick to prevent compiler error if the label is not used
-}
-
-// ISingleIPv6AddressContext is an interface to support dynamic dispatch.
-type ISingleIPv6AddressContext interface {
-	antlr.ParserRuleContext
-
-	// GetParser returns the parser.
-	GetParser() antlr.Parser
-
-	// Getter signatures
-	AllIpv6Octet() []IIpv6OctetContext
-	Ipv6Octet(i int) IIpv6OctetContext
-	AllCOLON() []antlr.TerminalNode
-	COLON(i int) antlr.TerminalNode
-
-	// IsSingleIPv6AddressContext differentiates from other interfaces.
-	IsSingleIPv6AddressContext()
-}
-
-type SingleIPv6AddressContext struct {
-	antlr.BaseParserRuleContext
-	parser antlr.Parser
-}
-
-func NewEmptySingleIPv6AddressContext() *SingleIPv6AddressContext {
-	var p = new(SingleIPv6AddressContext)
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = HostsParserRULE_singleIPv6Address
-	return p
-}
-
-func InitEmptySingleIPv6AddressContext(p *SingleIPv6AddressContext) {
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = HostsParserRULE_singleIPv6Address
-}
-
-func (*SingleIPv6AddressContext) IsSingleIPv6AddressContext() {}
-
-func NewSingleIPv6AddressContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *SingleIPv6AddressContext {
-	var p = new(SingleIPv6AddressContext)
-
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
-
-	p.parser = parser
-	p.RuleIndex = HostsParserRULE_singleIPv6Address
-
-	return p
-}
-
-func (s *SingleIPv6AddressContext) GetParser() antlr.Parser { return s.parser }
-
-func (s *SingleIPv6AddressContext) AllIpv6Octet() []IIpv6OctetContext {
-	children := s.GetChildren()
-	len := 0
-	for _, ctx := range children {
-		if _, ok := ctx.(IIpv6OctetContext); ok {
-			len++
-		}
-	}
-
-	tst := make([]IIpv6OctetContext, len)
-	i := 0
-	for _, ctx := range children {
-		if t, ok := ctx.(IIpv6OctetContext); ok {
-			tst[i] = t.(IIpv6OctetContext)
-			i++
-		}
-	}
-
-	return tst
-}
-
-func (s *SingleIPv6AddressContext) Ipv6Octet(i int) IIpv6OctetContext {
-	var t antlr.RuleContext
-	j := 0
-	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IIpv6OctetContext); ok {
-			if j == i {
-				t = ctx.(antlr.RuleContext)
-				break
-			}
-			j++
-		}
-	}
-
-	if t == nil {
-		return nil
-	}
-
-	return t.(IIpv6OctetContext)
-}
-
-func (s *SingleIPv6AddressContext) AllCOLON() []antlr.TerminalNode {
-	return s.GetTokens(HostsParserCOLON)
-}
-
-func (s *SingleIPv6AddressContext) COLON(i int) antlr.TerminalNode {
-	return s.GetToken(HostsParserCOLON, i)
-}
-
-func (s *SingleIPv6AddressContext) GetRuleContext() antlr.RuleContext {
-	return s
-}
-
-func (s *SingleIPv6AddressContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
-	return antlr.TreesStringTree(s, ruleNames, recog)
-}
-
-func (s *SingleIPv6AddressContext) EnterRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(HostsListener); ok {
-		listenerT.EnterSingleIPv6Address(s)
-	}
-}
-
-func (s *SingleIPv6AddressContext) ExitRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(HostsListener); ok {
-		listenerT.ExitSingleIPv6Address(s)
-	}
-}
-
-func (p *HostsParser) SingleIPv6Address() (localctx ISingleIPv6AddressContext) {
-	localctx = NewSingleIPv6AddressContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 20, HostsParserRULE_singleIPv6Address)
 	var _alt int
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(90)
+	p.SetState(108)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
 	}
-	_alt = 1
-	for ok := true; ok; ok = _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
-		switch _alt {
-		case 1:
-			{
-				p.SetState(87)
-				p.Ipv6Octet()
+
+	switch p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 16, p.GetParserRuleContext()) {
+	case 1:
+		p.SetState(97)
+		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
+		_alt = 1
+		for ok := true; ok; ok = _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
+			switch _alt {
+			case 1:
+				{
+					p.SetState(95)
+					p.Match(HostsParserSTRING)
+					if p.HasError() {
+						// Recognition error - abort rule
+						goto errorExit
+					}
+				}
+				{
+					p.SetState(96)
+					p.Match(HostsParserCOLON)
+					if p.HasError() {
+						// Recognition error - abort rule
+						goto errorExit
+					}
+				}
+
+			default:
+				p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+				goto errorExit
 			}
+
+			p.SetState(99)
+			p.GetErrorHandler().Sync(p)
+			_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 14, p.GetParserRuleContext())
+			if p.HasError() {
+				goto errorExit
+			}
+		}
+		{
+			p.SetState(101)
+			p.Match(HostsParserSTRING)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
+		}
+
+	case 2:
+		p.SetState(103)
+		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
+		_la = p.GetTokenStream().LA(1)
+
+		if _la == HostsParserSTRING {
 			{
-				p.SetState(88)
-				p.Match(HostsParserCOLON)
+				p.SetState(102)
+				p.Match(HostsParserSTRING)
 				if p.HasError() {
 					// Recognition error - abort rule
 					goto errorExit
 				}
 			}
 
-		default:
-			p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
-			goto errorExit
+		}
+		{
+			p.SetState(105)
+			p.Match(HostsParserCOLON)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
+		}
+		{
+			p.SetState(106)
+			p.Match(HostsParserCOLON)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
+		}
+		{
+			p.SetState(107)
+			p.Match(HostsParserSTRING)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
 		}
 
-		p.SetState(92)
+	case antlr.ATNInvalidAltNumber:
+		goto errorExit
+	}
+	p.SetState(116)
+	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
+
+	switch p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 19, p.GetParserRuleContext()) {
+	case 1:
+		p.SetState(111)
 		p.GetErrorHandler().Sync(p)
-		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 9, p.GetParserRuleContext())
 		if p.HasError() {
 			goto errorExit
 		}
-	}
-	{
-		p.SetState(94)
-		p.Ipv6Octet()
-	}
+		_la = p.GetTokenStream().LA(1)
 
-errorExit:
-	if p.HasError() {
-		v := p.GetError()
-		localctx.SetException(v)
-		p.GetErrorHandler().ReportError(p, v)
-		p.GetErrorHandler().Recover(p, v)
-		p.SetError(nil)
-	}
-	p.ExitRule()
-	return localctx
-	goto errorExit // Trick to prevent compiler error if the label is not used
-}
+		if _la == HostsParserSLASH {
+			{
+				p.SetState(110)
+				p.IpRange()
+			}
 
-// IIpv4DigitContext is an interface to support dynamic dispatch.
-type IIpv4DigitContext interface {
-	antlr.ParserRuleContext
+		}
 
-	// GetParser returns the parser.
-	GetParser() antlr.Parser
-
-	// Getter signatures
-	DIGITS() antlr.TerminalNode
-
-	// IsIpv4DigitContext differentiates from other interfaces.
-	IsIpv4DigitContext()
-}
-
-type Ipv4DigitContext struct {
-	antlr.BaseParserRuleContext
-	parser antlr.Parser
-}
-
-func NewEmptyIpv4DigitContext() *Ipv4DigitContext {
-	var p = new(Ipv4DigitContext)
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = HostsParserRULE_ipv4Digit
-	return p
-}
-
-func InitEmptyIpv4DigitContext(p *Ipv4DigitContext) {
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = HostsParserRULE_ipv4Digit
-}
-
-func (*Ipv4DigitContext) IsIpv4DigitContext() {}
-
-func NewIpv4DigitContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *Ipv4DigitContext {
-	var p = new(Ipv4DigitContext)
-
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
-
-	p.parser = parser
-	p.RuleIndex = HostsParserRULE_ipv4Digit
-
-	return p
-}
-
-func (s *Ipv4DigitContext) GetParser() antlr.Parser { return s.parser }
-
-func (s *Ipv4DigitContext) DIGITS() antlr.TerminalNode {
-	return s.GetToken(HostsParserDIGITS, 0)
-}
-
-func (s *Ipv4DigitContext) GetRuleContext() antlr.RuleContext {
-	return s
-}
-
-func (s *Ipv4DigitContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
-	return antlr.TreesStringTree(s, ruleNames, recog)
-}
-
-func (s *Ipv4DigitContext) EnterRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(HostsListener); ok {
-		listenerT.EnterIpv4Digit(s)
-	}
-}
-
-func (s *Ipv4DigitContext) ExitRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(HostsListener); ok {
-		listenerT.ExitIpv4Digit(s)
-	}
-}
-
-func (p *HostsParser) Ipv4Digit() (localctx IIpv4DigitContext) {
-	localctx = NewIpv4DigitContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 22, HostsParserRULE_ipv4Digit)
-	p.EnterOuterAlt(localctx, 1)
-	{
-		p.SetState(96)
-		p.Match(HostsParserDIGITS)
+	case 2:
+		p.SetState(114)
+		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
-			// Recognition error - abort rule
 			goto errorExit
 		}
-	}
+		_la = p.GetTokenStream().LA(1)
 
-errorExit:
-	if p.HasError() {
-		v := p.GetError()
-		localctx.SetException(v)
-		p.GetErrorHandler().ReportError(p, v)
-		p.GetErrorHandler().Recover(p, v)
-		p.SetError(nil)
-	}
-	p.ExitRule()
-	return localctx
-	goto errorExit // Trick to prevent compiler error if the label is not used
-}
+		if _la == HostsParserCOLON {
+			{
+				p.SetState(113)
+				p.IpPort()
+			}
 
-// IIpv6OctetContext is an interface to support dynamic dispatch.
-type IIpv6OctetContext interface {
-	antlr.ParserRuleContext
-
-	// GetParser returns the parser.
-	GetParser() antlr.Parser
-
-	// Getter signatures
-	OCTETS() antlr.TerminalNode
-
-	// IsIpv6OctetContext differentiates from other interfaces.
-	IsIpv6OctetContext()
-}
-
-type Ipv6OctetContext struct {
-	antlr.BaseParserRuleContext
-	parser antlr.Parser
-}
-
-func NewEmptyIpv6OctetContext() *Ipv6OctetContext {
-	var p = new(Ipv6OctetContext)
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = HostsParserRULE_ipv6Octet
-	return p
-}
-
-func InitEmptyIpv6OctetContext(p *Ipv6OctetContext) {
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = HostsParserRULE_ipv6Octet
-}
-
-func (*Ipv6OctetContext) IsIpv6OctetContext() {}
-
-func NewIpv6OctetContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *Ipv6OctetContext {
-	var p = new(Ipv6OctetContext)
-
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
-
-	p.parser = parser
-	p.RuleIndex = HostsParserRULE_ipv6Octet
-
-	return p
-}
-
-func (s *Ipv6OctetContext) GetParser() antlr.Parser { return s.parser }
-
-func (s *Ipv6OctetContext) OCTETS() antlr.TerminalNode {
-	return s.GetToken(HostsParserOCTETS, 0)
-}
-
-func (s *Ipv6OctetContext) GetRuleContext() antlr.RuleContext {
-	return s
-}
-
-func (s *Ipv6OctetContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
-	return antlr.TreesStringTree(s, ruleNames, recog)
-}
-
-func (s *Ipv6OctetContext) EnterRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(HostsListener); ok {
-		listenerT.EnterIpv6Octet(s)
-	}
-}
-
-func (s *Ipv6OctetContext) ExitRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(HostsListener); ok {
-		listenerT.ExitIpv6Octet(s)
-	}
-}
-
-func (p *HostsParser) Ipv6Octet() (localctx IIpv6OctetContext) {
-	localctx = NewIpv6OctetContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 24, HostsParserRULE_ipv6Octet)
-	p.EnterOuterAlt(localctx, 1)
-	{
-		p.SetState(98)
-		p.Match(HostsParserOCTETS)
-		if p.HasError() {
-			// Recognition error - abort rule
-			goto errorExit
 		}
+
+	case antlr.ATNInvalidAltNumber:
+		goto errorExit
 	}
 
 errorExit:
@@ -2052,10 +1859,10 @@ func (s *IpRangeContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *HostsParser) IpRange() (localctx IIpRangeContext) {
 	localctx = NewIpRangeContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 26, HostsParserRULE_ipRange)
+	p.EnterRule(localctx, 18, HostsParserRULE_ipRange)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(100)
+		p.SetState(118)
 		p.Match(HostsParserSLASH)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -2063,7 +1870,7 @@ func (p *HostsParser) IpRange() (localctx IIpRangeContext) {
 		}
 	}
 	{
-		p.SetState(101)
+		p.SetState(119)
 		p.IpRangeBits()
 	}
 
@@ -2088,7 +1895,7 @@ type IIpRangeBitsContext interface {
 	GetParser() antlr.Parser
 
 	// Getter signatures
-	DIGITS() antlr.TerminalNode
+	STRING() antlr.TerminalNode
 
 	// IsIpRangeBitsContext differentiates from other interfaces.
 	IsIpRangeBitsContext()
@@ -2126,8 +1933,8 @@ func NewIpRangeBitsContext(parser antlr.Parser, parent antlr.ParserRuleContext, 
 
 func (s *IpRangeBitsContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *IpRangeBitsContext) DIGITS() antlr.TerminalNode {
-	return s.GetToken(HostsParserDIGITS, 0)
+func (s *IpRangeBitsContext) STRING() antlr.TerminalNode {
+	return s.GetToken(HostsParserSTRING, 0)
 }
 
 func (s *IpRangeBitsContext) GetRuleContext() antlr.RuleContext {
@@ -2152,11 +1959,120 @@ func (s *IpRangeBitsContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *HostsParser) IpRangeBits() (localctx IIpRangeBitsContext) {
 	localctx = NewIpRangeBitsContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 28, HostsParserRULE_ipRangeBits)
+	p.EnterRule(localctx, 20, HostsParserRULE_ipRangeBits)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(103)
-		p.Match(HostsParserDIGITS)
+		p.SetState(121)
+		p.Match(HostsParserSTRING)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
+	}
+
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
+	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
+}
+
+// IIpPortContext is an interface to support dynamic dispatch.
+type IIpPortContext interface {
+	antlr.ParserRuleContext
+
+	// GetParser returns the parser.
+	GetParser() antlr.Parser
+
+	// Getter signatures
+	COLON() antlr.TerminalNode
+	STRING() antlr.TerminalNode
+
+	// IsIpPortContext differentiates from other interfaces.
+	IsIpPortContext()
+}
+
+type IpPortContext struct {
+	antlr.BaseParserRuleContext
+	parser antlr.Parser
+}
+
+func NewEmptyIpPortContext() *IpPortContext {
+	var p = new(IpPortContext)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = HostsParserRULE_ipPort
+	return p
+}
+
+func InitEmptyIpPortContext(p *IpPortContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = HostsParserRULE_ipPort
+}
+
+func (*IpPortContext) IsIpPortContext() {}
+
+func NewIpPortContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *IpPortContext {
+	var p = new(IpPortContext)
+
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
+
+	p.parser = parser
+	p.RuleIndex = HostsParserRULE_ipPort
+
+	return p
+}
+
+func (s *IpPortContext) GetParser() antlr.Parser { return s.parser }
+
+func (s *IpPortContext) COLON() antlr.TerminalNode {
+	return s.GetToken(HostsParserCOLON, 0)
+}
+
+func (s *IpPortContext) STRING() antlr.TerminalNode {
+	return s.GetToken(HostsParserSTRING, 0)
+}
+
+func (s *IpPortContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *IpPortContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+	return antlr.TreesStringTree(s, ruleNames, recog)
+}
+
+func (s *IpPortContext) EnterRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(HostsListener); ok {
+		listenerT.EnterIpPort(s)
+	}
+}
+
+func (s *IpPortContext) ExitRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(HostsListener); ok {
+		listenerT.ExitIpPort(s)
+	}
+}
+
+func (p *HostsParser) IpPort() (localctx IIpPortContext) {
+	localctx = NewIpPortContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 22, HostsParserRULE_ipPort)
+	p.EnterOuterAlt(localctx, 1)
+	{
+		p.SetState(123)
+		p.Match(HostsParserCOLON)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
+	}
+	{
+		p.SetState(124)
+		p.Match(HostsParserSTRING)
 		if p.HasError() {
 			// Recognition error - abort rule
 			goto errorExit
@@ -2248,10 +2164,10 @@ func (s *CommentContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *HostsParser) Comment() (localctx ICommentContext) {
 	localctx = NewCommentContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 30, HostsParserRULE_comment)
+	p.EnterRule(localctx, 24, HostsParserRULE_comment)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(105)
+		p.SetState(126)
 		p.Match(HostsParserCOMMENTLINE)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -2344,10 +2260,10 @@ func (s *LeadingCommentContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *HostsParser) LeadingComment() (localctx ILeadingCommentContext) {
 	localctx = NewLeadingCommentContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 32, HostsParserRULE_leadingComment)
+	p.EnterRule(localctx, 26, HostsParserRULE_leadingComment)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(107)
+		p.SetState(128)
 		p.Match(HostsParserCOMMENTLINE)
 		if p.HasError() {
 			// Recognition error - abort rule

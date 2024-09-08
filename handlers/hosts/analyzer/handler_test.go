@@ -18,7 +18,7 @@ func TestValidSimpleExampleWorks(
 	errors := parser.Parse(input)
 
 	if len(errors) != 0 {
-		t.Errorf("Expected no errors, but got %v", errors)
+		t.Fatalf("Expected no errors, but got %v", errors)
 	}
 
 	if !(len(parser.Tree.Entries) == 1) {
@@ -85,7 +85,7 @@ func TestValidComplexExampleWorks(
 	errors := parser.Parse(input)
 
 	if len(errors) != 0 {
-		t.Errorf("Expected no errors, but got %v", errors)
+		t.Fatalf("Expected no errors, but got %v", errors)
 	}
 
 	if !(len(parser.Tree.Entries) == 3) {
@@ -120,7 +120,7 @@ func TestInvalidExampleWorks(
 	errors := parser.Parse(input)
 
 	if len(errors) == 0 {
-		t.Errorf("Expected errors, but got none")
+		t.Fatalf("Expected errors, but got none")
 	}
 
 	if !(len(parser.Tree.Entries) == 1) {

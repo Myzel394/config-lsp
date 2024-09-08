@@ -77,6 +77,7 @@ func (p *AliasesParser) parseStatement(
 
 	errors := lexerErrorListener.Errors
 	errors = append(errors, parserErrorListener.Errors...)
+	errors = append(errors, listener.Errors...)
 
 	return errors
 }

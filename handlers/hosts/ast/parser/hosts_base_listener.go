@@ -69,35 +69,11 @@ func (s *BaseHostsListener) EnterIpv4Address(ctx *Ipv4AddressContext) {}
 // ExitIpv4Address is called when production ipv4Address is exited.
 func (s *BaseHostsListener) ExitIpv4Address(ctx *Ipv4AddressContext) {}
 
-// EnterSingleIPv4Address is called when production singleIPv4Address is entered.
-func (s *BaseHostsListener) EnterSingleIPv4Address(ctx *SingleIPv4AddressContext) {}
-
-// ExitSingleIPv4Address is called when production singleIPv4Address is exited.
-func (s *BaseHostsListener) ExitSingleIPv4Address(ctx *SingleIPv4AddressContext) {}
-
 // EnterIpv6Address is called when production ipv6Address is entered.
 func (s *BaseHostsListener) EnterIpv6Address(ctx *Ipv6AddressContext) {}
 
 // ExitIpv6Address is called when production ipv6Address is exited.
 func (s *BaseHostsListener) ExitIpv6Address(ctx *Ipv6AddressContext) {}
-
-// EnterSingleIPv6Address is called when production singleIPv6Address is entered.
-func (s *BaseHostsListener) EnterSingleIPv6Address(ctx *SingleIPv6AddressContext) {}
-
-// ExitSingleIPv6Address is called when production singleIPv6Address is exited.
-func (s *BaseHostsListener) ExitSingleIPv6Address(ctx *SingleIPv6AddressContext) {}
-
-// EnterIpv4Digit is called when production ipv4Digit is entered.
-func (s *BaseHostsListener) EnterIpv4Digit(ctx *Ipv4DigitContext) {}
-
-// ExitIpv4Digit is called when production ipv4Digit is exited.
-func (s *BaseHostsListener) ExitIpv4Digit(ctx *Ipv4DigitContext) {}
-
-// EnterIpv6Octet is called when production ipv6Octet is entered.
-func (s *BaseHostsListener) EnterIpv6Octet(ctx *Ipv6OctetContext) {}
-
-// ExitIpv6Octet is called when production ipv6Octet is exited.
-func (s *BaseHostsListener) ExitIpv6Octet(ctx *Ipv6OctetContext) {}
 
 // EnterIpRange is called when production ipRange is entered.
 func (s *BaseHostsListener) EnterIpRange(ctx *IpRangeContext) {}
@@ -110,6 +86,12 @@ func (s *BaseHostsListener) EnterIpRangeBits(ctx *IpRangeBitsContext) {}
 
 // ExitIpRangeBits is called when production ipRangeBits is exited.
 func (s *BaseHostsListener) ExitIpRangeBits(ctx *IpRangeBitsContext) {}
+
+// EnterIpPort is called when production ipPort is entered.
+func (s *BaseHostsListener) EnterIpPort(ctx *IpPortContext) {}
+
+// ExitIpPort is called when production ipPort is exited.
+func (s *BaseHostsListener) ExitIpPort(ctx *IpPortContext) {}
 
 // EnterComment is called when production comment is entered.
 func (s *BaseHostsListener) EnterComment(ctx *CommentContext) {}

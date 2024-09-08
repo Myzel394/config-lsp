@@ -96,7 +96,7 @@ func TestResolverEntriesWithComplexOverlapping(
 	resolver, errors := createResolverFromParser(parser)
 
 	if !(len(errors) == 1) {
-		t.Errorf("Expected 1 error, but got %v", len(errors))
+		t.Fatalf("Expected 1 error, but got %v", len(errors))
 	}
 
 	if len(resolver.Entries) != 3 {

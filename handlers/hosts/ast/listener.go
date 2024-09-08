@@ -4,7 +4,9 @@ import (
 	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
 	parser2 "config-lsp/handlers/hosts/ast/parser"
+	"errors"
 	"net"
+	"regexp"
 
 	"github.com/antlr4-go/antlr/v4"
 )
@@ -21,7 +23,7 @@ type hostsParserListener struct {
 }
 
 func (s *hostsParserListener) EnterComment(ctx *parser2.CommentContext) {
-	line := uint32(s.hostsContext.line)
+	line := s.hostsContext.line
 	s.Parser.CommentLines[line] = struct{}{}
 }
 
@@ -34,6 +36,8 @@ func (s *hostsParserListener) EnterEntry(ctx *parser2.EntryContext) {
 	}
 }
 
+var containsPortPattern = regexp.MustCompile(`:[0-9]+$`)
+
 func (s *hostsParserListener) EnterIpAddress(ctx *parser2.IpAddressContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.hostsContext.line)
@@ -41,10 +45,18 @@ func (s *hostsParserListener) EnterIpAddress(ctx *parser2.IpAddressContext) {
 	ip := net.ParseIP(ctx.GetText())
 
 	if ip == nil {
-		s.Errors = append(s.Errors, common.LSPError{
-			Range: location,
-			Err:   docvalues.InvalidIPAddress{},
-		})
+		if containsPortPattern.MatchString(ctx.GetText()) {
+			s.Errors = append(s.Errors, common.LSPError{
+				Range: location,
+				Err:   errors.New("Port numbers are not allowed in IP addresses"),
+			})
+		} else {
+			s.Errors = append(s.Errors, common.LSPError{
+				Range: location,
+				Err:   docvalues.InvalidIPAddress{},
+			})
+		}
+
 		return
 	}
 

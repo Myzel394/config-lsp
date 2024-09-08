@@ -7,6 +7,8 @@ import (
 	"config-lsp/handlers/hosts/ast"
 	"config-lsp/handlers/hosts/indexes"
 	"config-lsp/utils"
+	"fmt"
+
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -26,18 +28,22 @@ func TextDocumentDidOpen(
 	hosts.DocumentParserMap[params.TextDocument.URI] = &document
 
 	errors := parser.Parse(params.TextDocument.Text)
+	diagnostics := make([]protocol.Diagnostic, 0)
 
-	diagnostics := utils.Map(
-		errors,
-		func(err common.LSPError) protocol.Diagnostic {
-			return err.ToDiagnostic()
-		},
-	)
-
-	diagnostics = append(
-		diagnostics,
-		analyzer.Analyze(&document)...,
-	)
+	println(fmt.Sprintf("Errors: %v", errors))
+	if len(errors) > 0 {
+		diagnostics = utils.Map(
+			errors,
+			func(err common.LSPError) protocol.Diagnostic {
+				return err.ToDiagnostic()
+			},
+		)
+	} else {
+		diagnostics = append(
+			diagnostics,
+			analyzer.Analyze(&document)...,
+		)
+	}
 
 	if len(diagnostics) > 0 {
 		common.SendDiagnostics(context, params.TextDocument.URI, diagnostics)

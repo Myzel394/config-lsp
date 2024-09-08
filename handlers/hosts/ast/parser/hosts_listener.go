@@ -32,26 +32,17 @@ type HostsListener interface {
 	// EnterIpv4Address is called when entering the ipv4Address production.
 	EnterIpv4Address(c *Ipv4AddressContext)
 
-	// EnterSingleIPv4Address is called when entering the singleIPv4Address production.
-	EnterSingleIPv4Address(c *SingleIPv4AddressContext)
-
 	// EnterIpv6Address is called when entering the ipv6Address production.
 	EnterIpv6Address(c *Ipv6AddressContext)
-
-	// EnterSingleIPv6Address is called when entering the singleIPv6Address production.
-	EnterSingleIPv6Address(c *SingleIPv6AddressContext)
-
-	// EnterIpv4Digit is called when entering the ipv4Digit production.
-	EnterIpv4Digit(c *Ipv4DigitContext)
-
-	// EnterIpv6Octet is called when entering the ipv6Octet production.
-	EnterIpv6Octet(c *Ipv6OctetContext)
 
 	// EnterIpRange is called when entering the ipRange production.
 	EnterIpRange(c *IpRangeContext)
 
 	// EnterIpRangeBits is called when entering the ipRangeBits production.
 	EnterIpRangeBits(c *IpRangeBitsContext)
+
+	// EnterIpPort is called when entering the ipPort production.
+	EnterIpPort(c *IpPortContext)
 
 	// EnterComment is called when entering the comment production.
 	EnterComment(c *CommentContext)
@@ -83,26 +74,17 @@ type HostsListener interface {
 	// ExitIpv4Address is called when exiting the ipv4Address production.
 	ExitIpv4Address(c *Ipv4AddressContext)
 
-	// ExitSingleIPv4Address is called when exiting the singleIPv4Address production.
-	ExitSingleIPv4Address(c *SingleIPv4AddressContext)
-
 	// ExitIpv6Address is called when exiting the ipv6Address production.
 	ExitIpv6Address(c *Ipv6AddressContext)
-
-	// ExitSingleIPv6Address is called when exiting the singleIPv6Address production.
-	ExitSingleIPv6Address(c *SingleIPv6AddressContext)
-
-	// ExitIpv4Digit is called when exiting the ipv4Digit production.
-	ExitIpv4Digit(c *Ipv4DigitContext)
-
-	// ExitIpv6Octet is called when exiting the ipv6Octet production.
-	ExitIpv6Octet(c *Ipv6OctetContext)
 
 	// ExitIpRange is called when exiting the ipRange production.
 	ExitIpRange(c *IpRangeContext)
 
 	// ExitIpRangeBits is called when exiting the ipRangeBits production.
 	ExitIpRangeBits(c *IpRangeBitsContext)
+
+	// ExitIpPort is called when exiting the ipPort production.
+	ExitIpPort(c *IpPortContext)
 
 	// ExitComment is called when exiting the comment production.
 	ExitComment(c *CommentContext)
