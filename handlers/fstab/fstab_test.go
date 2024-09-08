@@ -8,21 +8,14 @@ import (
 	"testing"
 )
 
-var sampleValidBasicExample = `
-LABEL=test /mnt/test ext4 defaults 0 0
-`
-var sampleInvalidOptionsExample = `
-LABEL=test /mnt/test btrfs subvol=backup,fat=32 0 0
-`
-
-// TODO: Improve `entries`, sometimes the indexes seem
-// to be wrong. Use a treemap instead of a map.
 func TestValidBasicExample(t *testing.T) {
-	// Arrange
+	input := utils.Dedent(`
+LABEL=test /mnt/test ext4 defaults 0 0
+`)
 	p := parser.FstabParser{}
 	p.Clear()
 
-	errors := p.ParseFromContent(sampleValidBasicExample)
+	errors := p.ParseFromContent(input)
 
 	if len(errors) > 0 {
 		t.Fatal("ParseFromContent failed with error", errors)
@@ -77,8 +70,11 @@ func TestValidBasicExample(t *testing.T) {
 			t.Fatal("getCompletion failed to return correct number of completions. Got:", len(completions), "but expected:", 4)
 		}
 
-		if completions[0].Label != "UUID" && completions[0].Label != "PARTUID" {
-			t.Fatal("getCompletion failed to return correct label. Got:", completions[0].Label, "but expected:", "UUID")
+		if !(completions[0].Label == "LABEL" ||
+			completions[1].Label == "LABEL" ||
+			completions[2].Label == "LABEL" ||
+			completions[3].Label == "LABEL") {
+			t.Fatal("getCompletion failed to return correct label. Got:", completions[0].Label, "but expected:", "LABEL")
 		}
 	}
 
@@ -106,11 +102,13 @@ func TestValidBasicExample(t *testing.T) {
 }
 
 func TestInvalidOptionsExample(t *testing.T) {
-	// Arrange
+	input := utils.Dedent(`
+LABEL=test /mnt/test btrfs subvol=backup,fat=32 0 0
+`)
 	p := parser.FstabParser{}
 	p.Clear()
 
-	errors := p.ParseFromContent(sampleInvalidOptionsExample)
+	errors := p.ParseFromContent(input)
 
 	if len(errors) > 0 {
 		t.Fatal("ParseFromContent returned error", errors)
