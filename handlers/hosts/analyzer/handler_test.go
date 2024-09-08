@@ -21,48 +21,50 @@ func TestValidSimpleExampleWorks(
 		t.Fatalf("Expected no errors, but got %v", errors)
 	}
 
-	if !(len(parser.Tree.Entries) == 1) {
-		t.Errorf("Expected 1 entry, but got %v", len(parser.Tree.Entries))
+	if !(parser.Tree.Entries.Size() == 1) {
+		t.Errorf("Expected 1 entry, but got %v", parser.Tree.Entries.Size())
 	}
 
-	if parser.Tree.Entries[0].IPAddress == nil {
-		t.Errorf("Expected IP address to be present, but got nil")
+	rawEntry, found := parser.Tree.Entries.Get(uint32(0))
+	if !found {
+		t.Fatalf("Expected IP address to be present, but got nil")
 	}
 
-	if !(parser.Tree.Entries[0].IPAddress.Value.String() == net.ParseIP("1.2.3.4").String()) {
-		t.Errorf("Expected IP address to be 1.2.3.4, but got %v", parser.Tree.Entries[0].IPAddress.Value)
+	entry := rawEntry.(*ast.HostsEntry)
+	if !(entry.IPAddress.Value.String() == net.ParseIP("1.2.3.4").String()) {
+		t.Errorf("Expected IP address to be 1.2.3.4, but got %v", entry.IPAddress.Value)
 	}
 
-	if !(parser.Tree.Entries[0].Hostname.Value == "hello.com") {
-		t.Errorf("Expected hostname to be hello.com, but got %v", parser.Tree.Entries[0].Hostname.Value)
+	if !(entry.Hostname.Value == "hello.com") {
+		t.Errorf("Expected hostname to be hello.com, but got %v", entry.Hostname.Value)
 	}
 
-	if !(parser.Tree.Entries[0].Aliases == nil) {
-		t.Errorf("Expected no aliases, but got %v", parser.Tree.Entries[0].Aliases)
+	if !(entry.Aliases == nil) {
+		t.Errorf("Expected no aliases, but got %v", entry.Aliases)
 	}
 
-	if !(parser.Tree.Entries[0].Location.Start.Line == 0) {
-		t.Errorf("Expected line to be 1, but got %v", parser.Tree.Entries[0].Location.Start.Line)
+	if !(entry.Location.Start.Line == 0) {
+		t.Errorf("Expected line to be 1, but got %v", entry.Location.Start.Line)
 	}
 
-	if !(parser.Tree.Entries[0].Location.Start.Character == 0) {
-		t.Errorf("Expected start to be 0, but got %v", parser.Tree.Entries[0].Location.Start)
+	if !(entry.Location.Start.Character == 0) {
+		t.Errorf("Expected start to be 0, but got %v", entry.Location.Start)
 	}
 
-	if !(parser.Tree.Entries[0].Location.End.Character == 17) {
-		t.Errorf("Expected end to be 17, but got %v", parser.Tree.Entries[0].Location.End.Character)
+	if !(entry.Location.End.Character == 17) {
+		t.Errorf("Expected end to be 17, but got %v", entry.Location.End.Character)
 	}
 
-	if !(parser.Tree.Entries[0].IPAddress.Location.Start.Line == 0) {
-		t.Errorf("Expected IP address line to be 1, but got %v", parser.Tree.Entries[0].IPAddress.Location.Start.Line)
+	if !(entry.IPAddress.Location.Start.Line == 0) {
+		t.Errorf("Expected IP address line to be 1, but got %v", entry.IPAddress.Location.Start.Line)
 	}
 
-	if !(parser.Tree.Entries[0].IPAddress.Location.Start.Character == 0) {
-		t.Errorf("Expected IP address start to be 0, but got %v", parser.Tree.Entries[0].IPAddress.Location.Start.Character)
+	if !(entry.IPAddress.Location.Start.Character == 0) {
+		t.Errorf("Expected IP address start to be 0, but got %v", entry.IPAddress.Location.Start.Character)
 	}
 
-	if !(parser.Tree.Entries[0].IPAddress.Location.End.Character == 7) {
-		t.Errorf("Expected IP address end to be 7, but got %v", parser.Tree.Entries[0].IPAddress.Location.End.Character)
+	if !(entry.IPAddress.Location.End.Character == 7) {
+		t.Errorf("Expected IP address end to be 7, but got %v", entry.IPAddress.Location.End.Character)
 	}
 
 	if !(len(parser.CommentLines) == 0) {
@@ -88,16 +90,18 @@ func TestValidComplexExampleWorks(
 		t.Fatalf("Expected no errors, but got %v", errors)
 	}
 
-	if !(len(parser.Tree.Entries) == 3) {
-		t.Errorf("Expected 3 entries, but got %v", len(parser.Tree.Entries))
+	if !(parser.Tree.Entries.Size() == 3) {
+		t.Fatalf("Expected 3 entries, but got %v", parser.Tree.Entries.Size())
 	}
 
-	if parser.Tree.Entries[2].IPAddress == nil {
+	rawEntry, _ := parser.Tree.Entries.Get(uint32(2))
+	entry := rawEntry.(*ast.HostsEntry)
+	if entry.IPAddress == nil {
 		t.Errorf("Expected IP address to be present, but got nil")
 	}
 
-	if !(parser.Tree.Entries[2].IPAddress.Value.String() == net.ParseIP("1.2.3.4").String()) {
-		t.Errorf("Expected IP address to be 1.2.3.4, but got %v", parser.Tree.Entries[2].IPAddress.Value)
+	if !(entry.IPAddress.Value.String() == net.ParseIP("1.2.3.4").String()) {
+		t.Errorf("Expected IP address to be 1.2.3.4, but got %v", entry.IPAddress.Value)
 	}
 
 	if !(len(parser.CommentLines) == 1) {
@@ -123,23 +127,25 @@ func TestInvalidExampleWorks(
 		t.Fatalf("Expected errors, but got none")
 	}
 
-	if !(len(parser.Tree.Entries) == 1) {
-		t.Errorf("Expected 1 entries, but got %v", len(parser.Tree.Entries))
+	if !(parser.Tree.Entries.Size() == 1) {
+		t.Errorf("Expected 1 entries, but got %v", parser.Tree.Entries.Size())
 	}
 
 	if !(len(parser.CommentLines) == 0) {
 		t.Errorf("Expected no comment lines, but got %v", len(parser.CommentLines))
 	}
 
-	if !(parser.Tree.Entries[0].IPAddress.Value.String() == net.ParseIP("1.2.3.4").String()) {
-		t.Errorf("Expected IP address to be nil, but got %v", parser.Tree.Entries[0].IPAddress)
+	rawEntry, _ := parser.Tree.Entries.Get(uint32(0))
+	entry := rawEntry.(*ast.HostsEntry)
+	if !(entry.IPAddress.Value.String() == net.ParseIP("1.2.3.4").String()) {
+		t.Errorf("Expected IP address to be nil, but got %v", entry.IPAddress)
 	}
 
-	if !(parser.Tree.Entries[0].Hostname == nil) {
-		t.Errorf("Expected hostname to be nil, but got %v", parser.Tree.Entries[0].Hostname)
+	if !(entry.Hostname == nil) {
+		t.Errorf("Expected hostname to be nil, but got %v", entry.Hostname)
 	}
 
-	if !(parser.Tree.Entries[0].Aliases == nil) {
-		t.Errorf("Expected aliases to be nil, but got %v", parser.Tree.Entries[0].Aliases)
+	if !(entry.Aliases == nil) {
+		t.Errorf("Expected aliases to be nil, but got %v", entry.Aliases)
 	}
 }

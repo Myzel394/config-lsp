@@ -7,11 +7,14 @@ import (
 	"regexp"
 
 	"github.com/antlr4-go/antlr/v4"
+	"github.com/emirpasic/gods/maps/treemap"
+
+	gods "github.com/emirpasic/gods/utils"
 )
 
 func (p *HostsParser) Clear() {
 	p.Tree = HostsTree{
-		Entries: make(map[uint32]*HostsEntry),
+		Entries: treemap.NewWith(gods.UInt32Comparator),
 	}
 	p.CommentLines = make(map[uint32]struct{})
 }
@@ -44,8 +47,8 @@ func (p *HostsParser) parseStatement(
 		antlrParser.LineStatement(),
 	)
 
-	errors = append(errors, errorListener.Errors...)
 	errors = append(errors, listener.Errors...)
+	errors = append(errors, errorListener.Errors...)
 
 	return errors
 }

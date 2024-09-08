@@ -14,7 +14,12 @@ func analyzeEntriesSetCorrectly(
 ) []common.LSPError {
 	err := make([]common.LSPError, 0)
 
-	for lineNumber, entry := range parser.Tree.Entries {
+	it := parser.Tree.Entries.Iterator()
+
+	for it.Next() {
+		lineNumber := it.Key().(uint32)
+		entry := it.Value().(*ast.HostsEntry)
+
 		if entry.IPAddress == nil {
 			err = append(err, common.LSPError{
 				Range: common.CreateFullLineRange(lineNumber),
@@ -40,7 +45,11 @@ func analyzeEntriesAreValid(
 ) []common.LSPError {
 	err := make([]common.LSPError, 0)
 
-	for _, entry := range parser.Tree.Entries {
+	it := parser.Tree.Entries.Iterator()
+
+	for it.Next() {
+		entry := it.Value().(*ast.HostsEntry)
+
 		err = append(
 			err,
 			utils.Map(

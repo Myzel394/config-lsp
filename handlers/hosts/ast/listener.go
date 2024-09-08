@@ -31,9 +31,9 @@ func (s *hostsParserListener) EnterEntry(ctx *parser2.EntryContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.hostsContext.line)
 
-	s.Parser.Tree.Entries[location.Start.Line] = &HostsEntry{
+	s.Parser.Tree.Entries.Put(location.Start.Line, &HostsEntry{
 		Location: location,
-	}
+	})
 }
 
 var containsPortPattern = regexp.MustCompile(`:[0-9]+$`)
@@ -69,7 +69,8 @@ func (s *hostsParserListener) EnterIpAddress(ctx *parser2.IpAddressContext) {
 		})
 	}
 
-	entry := s.Parser.Tree.Entries[location.Start.Line]
+	rawEntry, _ := s.Parser.Tree.Entries.Get(location.Start.Line)
+	entry := rawEntry.(*HostsEntry)
 
 	entry.IPAddress = &HostsIPAddress{
 		Location: location,
@@ -81,21 +82,21 @@ func (s *hostsParserListener) EnterHostname(ctx *parser2.HostnameContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.hostsContext.line)
 
-	entry := s.Parser.Tree.Entries[location.Start.Line]
+	rawEntry, _ := s.Parser.Tree.Entries.Get(location.Start.Line)
+	entry := rawEntry.(*HostsEntry)
 
 	entry.Hostname = &HostsHostname{
 		Location: location,
 		Value:    ctx.GetText(),
 	}
-
-	s.Parser.Tree.Entries[location.Start.Line] = entry
 }
 
 func (s *hostsParserListener) EnterAliases(ctx *parser2.AliasesContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.hostsContext.line)
 
-	entry := s.Parser.Tree.Entries[location.Start.Line]
+	rawEntry, _ := s.Parser.Tree.Entries.Get(location.Start.Line)
+	entry := rawEntry.(*HostsEntry)
 
 	aliases := make([]*HostsHostname, 0)
 
@@ -106,7 +107,8 @@ func (s *hostsParserListener) EnterAlias(ctx *parser2.AliasContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.hostsContext.line)
 
-	entry := s.Parser.Tree.Entries[location.Start.Line]
+	rawEntry, _ := s.Parser.Tree.Entries.Get(location.Start.Line)
+	entry := rawEntry.(*HostsEntry)
 
 	alias := HostsHostname{
 		Location: location,

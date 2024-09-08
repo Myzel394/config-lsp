@@ -4,6 +4,8 @@ import (
 	"config-lsp/common"
 	"fmt"
 	"net"
+
+	"github.com/emirpasic/gods/maps/treemap"
 )
 
 type HostsParser struct {
@@ -13,7 +15,7 @@ type HostsParser struct {
 
 type HostsTree struct {
 	// [line]entry
-	Entries map[uint32]*HostsEntry
+	Entries *treemap.Map
 }
 
 type HostsEntry struct {

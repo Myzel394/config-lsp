@@ -25,13 +25,14 @@ func TextDocumentHover(
 		return nil, nil
 	}
 
-	entry, found := document.Parser.Tree.Entries[line]
+	rawEntry, found := document.Parser.Tree.Entries.Get(line)
 
 	if !found {
 		// Empty line
 		return nil, nil
 	}
 
+	entry := rawEntry.(*ast.HostsEntry)
 	target := handlers.GetHoverTargetInEntry(*entry, character)
 
 	var hostname *ast.HostsHostname

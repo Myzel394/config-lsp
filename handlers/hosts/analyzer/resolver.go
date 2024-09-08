@@ -38,7 +38,12 @@ func createResolverFromParser(p ast.HostsParser) (indexes.Resolver, []common.LSP
 		Entries: make(map[string]indexes.ResolverEntry),
 	}
 
-	for lineNumber, entry := range p.Tree.Entries {
+	it := p.Tree.Entries.Iterator()
+
+	for it.Next() {
+		lineNumber := it.Key().(uint32)
+		entry := it.Value().(*ast.HostsEntry)
+
 		if entry.IPAddress != nil && entry.Hostname != nil {
 			hostNames := append(
 				[]hostnameEntry{

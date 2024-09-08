@@ -3,10 +3,9 @@ package analyzer
 import (
 	"config-lsp/common"
 	"config-lsp/handlers/hosts"
+	"config-lsp/handlers/hosts/ast"
 	"config-lsp/handlers/hosts/shared"
-	"config-lsp/utils"
 	"net"
-	"slices"
 )
 
 func ipToString(ip net.IPAddr) string {
@@ -19,14 +18,11 @@ func analyzeDoubleIPs(d *hosts.HostsDocument) []common.LSPError {
 
 	d.Indexes.DoubleIPs = make(map[uint32]shared.DuplicateIPDeclaration)
 
-	// TODO: `range` does not seem to properly
-	// iterate in a sorted way.
-	// Instead, use a treemap
-	lines := utils.KeysOfMap(d.Parser.Tree.Entries)
-	slices.Sort(lines)
+	it := d.Parser.Tree.Entries.Iterator()
 
-	for _, lineNumber := range lines {
-		entry := d.Parser.Tree.Entries[lineNumber]
+	for it.Next() {
+		lineNumber := it.Key().(uint32)
+		entry := it.Value().(*ast.HostsEntry)
 
 		if entry.IPAddress != nil {
 			key := ipToString(entry.IPAddress.Value)

@@ -36,13 +36,16 @@ func CodeActionInlineAliasesArgsFromArguments(arguments map[string]any) CodeActi
 }
 
 func (args CodeActionInlineAliasesArgs) RunCommand(hostsParser ast.HostsParser) (*protocol.ApplyWorkspaceEditParams, error) {
-	fromEntry := hostsParser.Tree.Entries[args.FromLine]
-	toEntry := hostsParser.Tree.Entries[args.ToLine]
+	rawFromEntry, foundFromEntry := hostsParser.Tree.Entries.Get(args.FromLine)
+	rawToEntry, foundToEntry := hostsParser.Tree.Entries.Get(args.ToLine)
 
-	if fromEntry == nil || toEntry == nil {
+	if !foundFromEntry || !foundToEntry {
 		// Weird
 		return nil, nil
 	}
+
+	fromEntry := rawFromEntry.(*ast.HostsEntry)
+	toEntry := rawToEntry.(*ast.HostsEntry)
 
 	var insertCharacter uint32
 
