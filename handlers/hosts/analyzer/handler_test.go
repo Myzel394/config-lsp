@@ -51,7 +51,7 @@ func TestValidSimpleExampleWorks(
 		t.Errorf("Expected start to be 0, but got %v", entry.Location.Start)
 	}
 
-	if !(entry.Location.End.Character == 17) {
+	if !(entry.Location.End.Character == 16) {
 		t.Errorf("Expected end to be 17, but got %v", entry.Location.End.Character)
 	}
 
@@ -63,7 +63,7 @@ func TestValidSimpleExampleWorks(
 		t.Errorf("Expected IP address start to be 0, but got %v", entry.IPAddress.Location.Start.Character)
 	}
 
-	if !(entry.IPAddress.Location.End.Character == 7) {
+	if !(entry.IPAddress.Location.End.Character == 6) {
 		t.Errorf("Expected IP address end to be 7, but got %v", entry.IPAddress.Location.End.Character)
 	}
 

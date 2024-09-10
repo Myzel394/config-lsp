@@ -49,7 +49,7 @@ func TextDocumentHover(
 		hostname = entry.Hostname
 	case handlers.HoverTargetAlias:
 		for _, alias := range entry.Aliases {
-			if alias.Location.Start.Character <= character && character <= alias.Location.End.Character {
+			if character >= alias.Location.Start.Character && character <= alias.Location.End.Character {
 				hostname = alias
 				break
 			}

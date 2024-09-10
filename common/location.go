@@ -57,7 +57,7 @@ func (l LocationRange) ToLSPRange() protocol.Range {
 		},
 		End: protocol.Position{
 			Line:      l.End.Line,
-			Character: l.End.Character,
+			Character: l.End.Character + 1,
 		},
 	}
 }
@@ -115,7 +115,7 @@ func CharacterRangeFromCtx(
 		},
 		End: Location{
 			Line:      line,
-			Character: end + 1,
+			Character: end,
 		},
 	}
 }
