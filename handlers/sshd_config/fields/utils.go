@@ -4,8 +4,11 @@ import (
 	docvalues "config-lsp/doc-values"
 	"config-lsp/utils"
 	"os/exec"
+	"regexp"
 	"strings"
 )
+
+var isJustDigitsPattern = regexp.MustCompile(`^\d+$`)
 
 var booleanEnumValue = docvalues.EnumValue{
 	EnforceValues: true,
