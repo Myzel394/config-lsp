@@ -60,7 +60,7 @@ func (c *SSHConfig) parseStatement(
 	stream := antlr.NewInputStream(input)
 
 	lexerErrorListener := createErrorListener(context.line)
-	lexer := parser.NewConfigLexer(&stream)
+	lexer := parser.NewConfigLexer(stream)
 	lexer.RemoveErrorListeners()
 	lexer.AddErrorListener(&lexerErrorListener)
 
@@ -83,4 +83,3 @@ func (c *SSHConfig) parseStatement(
 
 	return errors
 }
-

@@ -11,15 +11,15 @@ func createListener(
 	context *sshListenerContext,
 ) sshParserListener {
 	return sshParserListener{
-		Config: config,
-		Errors: make([]common.LSPError, 0),
+		Config:     config,
+		Errors:     make([]common.LSPError, 0),
 		sshContext: context,
 	}
 }
 
 type sshListenerContext struct {
 	line              uint32
-	currentOption    *SSHOption
+	currentOption     *SSHOption
 	currentMatchBlock *SSHMatchBlock
 	isKeyAMatchBlock  bool
 }
@@ -94,14 +94,14 @@ func (s *sshParserListener) ExitValue(ctx *parser.ValueContext) {
 	if s.sshContext.isKeyAMatchBlock {
 		location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 		location.ChangeBothLines(s.sshContext.line)
-		
+
 		rawEntry, _ := s.Config.Options.Get(location.Start.Line)
 		entry := rawEntry.(*SSHOption)
 
 		// Overwrite the current match block
 		matchBlock := &SSHMatchBlock{
 			LocationRange: location,
-			MatchEntry: entry,
+			MatchEntry:    entry,
 		}
 		s.Config.Options.Put(
 			location.Start.Line,
@@ -114,4 +114,3 @@ func (s *sshParserListener) ExitValue(ctx *parser.ValueContext) {
 
 	s.sshContext.currentOption = nil
 }
-
