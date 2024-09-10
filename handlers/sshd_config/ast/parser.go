@@ -35,12 +35,12 @@ func (c *SSHConfig) Parse(input string) []common.LSPError {
 	for rawLineNumber, line := range lines {
 		context.line = uint32(rawLineNumber)
 
-		if commentPattern.MatchString(line) {
-			c.CommentLines[context.line] = struct{}{}
+		if emptyPattern.MatchString(line) {
 			continue
 		}
 
-		if emptyPattern.MatchString(line) {
+		if commentPattern.MatchString(line) {
+			c.CommentLines[context.line] = struct{}{}
 			continue
 		}
 

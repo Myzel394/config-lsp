@@ -3,6 +3,8 @@ package ast
 import (
 	"config-lsp/common"
 	"config-lsp/handlers/sshd_config/ast/parser"
+	"github.com/emirpasic/gods/maps/treemap"
+	gods "github.com/emirpasic/gods/utils"
 	"strings"
 )
 
@@ -47,21 +49,7 @@ func (s *sshParserListener) EnterEntry(ctx *parser.EntryContext) {
 		Value:         ctx.GetText(),
 	}
 
-	if s.sshContext.currentMatchBlock == nil {
-		s.Config.Options.Put(
-			location.Start.Line,
-			option,
-		)
-
-		s.sshContext.currentOption = option
-	} else {
-		s.sshContext.currentMatchBlock.Options.Put(
-			location.Start.Line,
-			option,
-		)
-
-		s.sshContext.currentOption = option
-	}
+	s.sshContext.currentOption = option
 }
 
 func (s *sshParserListener) EnterKey(ctx *parser.KeyContext) {
@@ -91,17 +79,16 @@ func (s *sshParserListener) EnterValue(ctx *parser.ValueContext) {
 }
 
 func (s *sshParserListener) ExitValue(ctx *parser.ValueContext) {
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
+	location.ChangeBothLines(s.sshContext.line)
+
+
 	if s.sshContext.isKeyAMatchBlock {
-		location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-		location.ChangeBothLines(s.sshContext.line)
-
-		rawEntry, _ := s.Config.Options.Get(location.Start.Line)
-		entry := rawEntry.(*SSHOption)
-
-		// Overwrite the current match block
+		// Add new match block
 		matchBlock := &SSHMatchBlock{
 			LocationRange: location,
-			MatchEntry:    entry,
+			MatchEntry:    s.sshContext.currentOption,
+			Options:       treemap.NewWith(gods.UInt32Comparator),
 		}
 		s.Config.Options.Put(
 			location.Start.Line,
@@ -110,6 +97,16 @@ func (s *sshParserListener) ExitValue(ctx *parser.ValueContext) {
 
 		s.sshContext.currentMatchBlock = matchBlock
 		s.sshContext.isKeyAMatchBlock = false
+	} else if s.sshContext.currentMatchBlock != nil {
+		s.sshContext.currentMatchBlock.Options.Put(
+			location.Start.Line,
+			s.sshContext.currentOption,
+		)
+	} else {
+		s.Config.Options.Put(
+			location.Start.Line,
+			s.sshContext.currentOption,
+		)
 	}
 
 	s.sshContext.currentOption = nil

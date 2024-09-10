@@ -13,20 +13,15 @@ key
     ;
 
 value
-    : STRING
+    : (STRING WHITESPACE)? STRING
     ;
 
 leadingComment
     : HASH WHITESPACE? (STRING WHITESPACE?)+
     ;
 
-
 HASH
     : '#'
-    ;
-
-MATCH
-    : ('M' | 'm') ('A' | 'a') ('T' | 't') ('C' | 'c') ('H' | 'h')
     ;
 
 WHITESPACE

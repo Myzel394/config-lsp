@@ -36,37 +36,39 @@ func configParserInit() {
 		"", "'#'",
 	}
 	staticData.SymbolicNames = []string{
-		"", "HASH", "MATCH", "WHITESPACE", "STRING", "NEWLINE",
+		"", "HASH", "WHITESPACE", "STRING", "NEWLINE",
 	}
 	staticData.RuleNames = []string{
 		"lineStatement", "entry", "key", "value", "leadingComment",
 	}
 	staticData.PredictionContextCache = antlr.NewPredictionContextCache()
 	staticData.serializedATN = []int32{
-		4, 1, 5, 55, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7, 4,
+		4, 1, 4, 59, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7, 4,
 		1, 0, 1, 0, 3, 0, 13, 8, 0, 1, 0, 1, 0, 3, 0, 17, 8, 0, 3, 0, 19, 8, 0,
 		1, 0, 1, 0, 1, 1, 3, 1, 24, 8, 1, 1, 1, 3, 1, 27, 8, 1, 1, 1, 1, 1, 3,
 		1, 31, 8, 1, 1, 1, 3, 1, 34, 8, 1, 1, 1, 3, 1, 37, 8, 1, 1, 2, 1, 2, 1,
-		3, 1, 3, 1, 4, 1, 4, 3, 4, 45, 8, 4, 1, 4, 1, 4, 3, 4, 49, 8, 4, 4, 4,
-		51, 8, 4, 11, 4, 12, 4, 52, 1, 4, 0, 0, 5, 0, 2, 4, 6, 8, 0, 0, 61, 0,
-		18, 1, 0, 0, 0, 2, 23, 1, 0, 0, 0, 4, 38, 1, 0, 0, 0, 6, 40, 1, 0, 0, 0,
-		8, 42, 1, 0, 0, 0, 10, 19, 3, 2, 1, 0, 11, 13, 5, 3, 0, 0, 12, 11, 1, 0,
-		0, 0, 12, 13, 1, 0, 0, 0, 13, 14, 1, 0, 0, 0, 14, 19, 3, 8, 4, 0, 15, 17,
-		5, 3, 0, 0, 16, 15, 1, 0, 0, 0, 16, 17, 1, 0, 0, 0, 17, 19, 1, 0, 0, 0,
-		18, 10, 1, 0, 0, 0, 18, 12, 1, 0, 0, 0, 18, 16, 1, 0, 0, 0, 19, 20, 1,
-		0, 0, 0, 20, 21, 5, 0, 0, 1, 21, 1, 1, 0, 0, 0, 22, 24, 5, 3, 0, 0, 23,
-		22, 1, 0, 0, 0, 23, 24, 1, 0, 0, 0, 24, 26, 1, 0, 0, 0, 25, 27, 3, 4, 2,
-		0, 26, 25, 1, 0, 0, 0, 26, 27, 1, 0, 0, 0, 27, 28, 1, 0, 0, 0, 28, 30,
-		5, 3, 0, 0, 29, 31, 3, 6, 3, 0, 30, 29, 1, 0, 0, 0, 30, 31, 1, 0, 0, 0,
-		31, 33, 1, 0, 0, 0, 32, 34, 5, 3, 0, 0, 33, 32, 1, 0, 0, 0, 33, 34, 1,
-		0, 0, 0, 34, 36, 1, 0, 0, 0, 35, 37, 3, 8, 4, 0, 36, 35, 1, 0, 0, 0, 36,
-		37, 1, 0, 0, 0, 37, 3, 1, 0, 0, 0, 38, 39, 5, 4, 0, 0, 39, 5, 1, 0, 0,
-		0, 40, 41, 5, 4, 0, 0, 41, 7, 1, 0, 0, 0, 42, 44, 5, 1, 0, 0, 43, 45, 5,
-		3, 0, 0, 44, 43, 1, 0, 0, 0, 44, 45, 1, 0, 0, 0, 45, 50, 1, 0, 0, 0, 46,
-		48, 5, 4, 0, 0, 47, 49, 5, 3, 0, 0, 48, 47, 1, 0, 0, 0, 48, 49, 1, 0, 0,
-		0, 49, 51, 1, 0, 0, 0, 50, 46, 1, 0, 0, 0, 51, 52, 1, 0, 0, 0, 52, 50,
-		1, 0, 0, 0, 52, 53, 1, 0, 0, 0, 53, 9, 1, 0, 0, 0, 11, 12, 16, 18, 23,
-		26, 30, 33, 36, 44, 48, 52,
+		3, 1, 3, 3, 3, 43, 8, 3, 1, 3, 1, 3, 1, 4, 1, 4, 3, 4, 49, 8, 4, 1, 4,
+		1, 4, 3, 4, 53, 8, 4, 4, 4, 55, 8, 4, 11, 4, 12, 4, 56, 1, 4, 0, 0, 5,
+		0, 2, 4, 6, 8, 0, 0, 66, 0, 18, 1, 0, 0, 0, 2, 23, 1, 0, 0, 0, 4, 38, 1,
+		0, 0, 0, 6, 42, 1, 0, 0, 0, 8, 46, 1, 0, 0, 0, 10, 19, 3, 2, 1, 0, 11,
+		13, 5, 2, 0, 0, 12, 11, 1, 0, 0, 0, 12, 13, 1, 0, 0, 0, 13, 14, 1, 0, 0,
+		0, 14, 19, 3, 8, 4, 0, 15, 17, 5, 2, 0, 0, 16, 15, 1, 0, 0, 0, 16, 17,
+		1, 0, 0, 0, 17, 19, 1, 0, 0, 0, 18, 10, 1, 0, 0, 0, 18, 12, 1, 0, 0, 0,
+		18, 16, 1, 0, 0, 0, 19, 20, 1, 0, 0, 0, 20, 21, 5, 0, 0, 1, 21, 1, 1, 0,
+		0, 0, 22, 24, 5, 2, 0, 0, 23, 22, 1, 0, 0, 0, 23, 24, 1, 0, 0, 0, 24, 26,
+		1, 0, 0, 0, 25, 27, 3, 4, 2, 0, 26, 25, 1, 0, 0, 0, 26, 27, 1, 0, 0, 0,
+		27, 28, 1, 0, 0, 0, 28, 30, 5, 2, 0, 0, 29, 31, 3, 6, 3, 0, 30, 29, 1,
+		0, 0, 0, 30, 31, 1, 0, 0, 0, 31, 33, 1, 0, 0, 0, 32, 34, 5, 2, 0, 0, 33,
+		32, 1, 0, 0, 0, 33, 34, 1, 0, 0, 0, 34, 36, 1, 0, 0, 0, 35, 37, 3, 8, 4,
+		0, 36, 35, 1, 0, 0, 0, 36, 37, 1, 0, 0, 0, 37, 3, 1, 0, 0, 0, 38, 39, 5,
+		3, 0, 0, 39, 5, 1, 0, 0, 0, 40, 41, 5, 3, 0, 0, 41, 43, 5, 2, 0, 0, 42,
+		40, 1, 0, 0, 0, 42, 43, 1, 0, 0, 0, 43, 44, 1, 0, 0, 0, 44, 45, 5, 3, 0,
+		0, 45, 7, 1, 0, 0, 0, 46, 48, 5, 1, 0, 0, 47, 49, 5, 2, 0, 0, 48, 47, 1,
+		0, 0, 0, 48, 49, 1, 0, 0, 0, 49, 54, 1, 0, 0, 0, 50, 52, 5, 3, 0, 0, 51,
+		53, 5, 2, 0, 0, 52, 51, 1, 0, 0, 0, 52, 53, 1, 0, 0, 0, 53, 55, 1, 0, 0,
+		0, 54, 50, 1, 0, 0, 0, 55, 56, 1, 0, 0, 0, 56, 54, 1, 0, 0, 0, 56, 57,
+		1, 0, 0, 0, 57, 9, 1, 0, 0, 0, 12, 12, 16, 18, 23, 26, 30, 33, 36, 42,
+		48, 52, 56,
 	}
 	deserializer := antlr.NewATNDeserializer(nil)
 	staticData.atn = deserializer.Deserialize(staticData.serializedATN)
@@ -106,10 +108,9 @@ func NewConfigParser(input antlr.TokenStream) *ConfigParser {
 const (
 	ConfigParserEOF        = antlr.TokenEOF
 	ConfigParserHASH       = 1
-	ConfigParserMATCH      = 2
-	ConfigParserWHITESPACE = 3
-	ConfigParserSTRING     = 4
-	ConfigParserNEWLINE    = 5
+	ConfigParserWHITESPACE = 2
+	ConfigParserSTRING     = 3
+	ConfigParserNEWLINE    = 4
 )
 
 // ConfigParser rules.
@@ -652,7 +653,9 @@ type IValueContext interface {
 	GetParser() antlr.Parser
 
 	// Getter signatures
-	STRING() antlr.TerminalNode
+	AllSTRING() []antlr.TerminalNode
+	STRING(i int) antlr.TerminalNode
+	WHITESPACE() antlr.TerminalNode
 
 	// IsValueContext differentiates from other interfaces.
 	IsValueContext()
@@ -690,8 +693,16 @@ func NewValueContext(parser antlr.Parser, parent antlr.ParserRuleContext, invoki
 
 func (s *ValueContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *ValueContext) STRING() antlr.TerminalNode {
-	return s.GetToken(ConfigParserSTRING, 0)
+func (s *ValueContext) AllSTRING() []antlr.TerminalNode {
+	return s.GetTokens(ConfigParserSTRING)
+}
+
+func (s *ValueContext) STRING(i int) antlr.TerminalNode {
+	return s.GetToken(ConfigParserSTRING, i)
+}
+
+func (s *ValueContext) WHITESPACE() antlr.TerminalNode {
+	return s.GetToken(ConfigParserWHITESPACE, 0)
 }
 
 func (s *ValueContext) GetRuleContext() antlr.RuleContext {
@@ -718,8 +729,32 @@ func (p *ConfigParser) Value() (localctx IValueContext) {
 	localctx = NewValueContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 6, ConfigParserRULE_value)
 	p.EnterOuterAlt(localctx, 1)
+	p.SetState(42)
+	p.GetErrorHandler().Sync(p)
+
+	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 8, p.GetParserRuleContext()) == 1 {
+		{
+			p.SetState(40)
+			p.Match(ConfigParserSTRING)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
+		}
+		{
+			p.SetState(41)
+			p.Match(ConfigParserWHITESPACE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
+		}
+
+	} else if p.HasError() { // JIM
+		goto errorExit
+	}
 	{
-		p.SetState(40)
+		p.SetState(44)
 		p.Match(ConfigParserSTRING)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -837,14 +872,14 @@ func (p *ConfigParser) LeadingComment() (localctx ILeadingCommentContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(42)
+		p.SetState(46)
 		p.Match(ConfigParserHASH)
 		if p.HasError() {
 			// Recognition error - abort rule
 			goto errorExit
 		}
 	}
-	p.SetState(44)
+	p.SetState(48)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -853,7 +888,7 @@ func (p *ConfigParser) LeadingComment() (localctx ILeadingCommentContext) {
 
 	if _la == ConfigParserWHITESPACE {
 		{
-			p.SetState(43)
+			p.SetState(47)
 			p.Match(ConfigParserWHITESPACE)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -862,7 +897,7 @@ func (p *ConfigParser) LeadingComment() (localctx ILeadingCommentContext) {
 		}
 
 	}
-	p.SetState(50)
+	p.SetState(54)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -871,14 +906,14 @@ func (p *ConfigParser) LeadingComment() (localctx ILeadingCommentContext) {
 
 	for ok := true; ok; ok = _la == ConfigParserSTRING {
 		{
-			p.SetState(46)
+			p.SetState(50)
 			p.Match(ConfigParserSTRING)
 			if p.HasError() {
 				// Recognition error - abort rule
 				goto errorExit
 			}
 		}
-		p.SetState(48)
+		p.SetState(52)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
@@ -887,7 +922,7 @@ func (p *ConfigParser) LeadingComment() (localctx ILeadingCommentContext) {
 
 		if _la == ConfigParserWHITESPACE {
 			{
-				p.SetState(47)
+				p.SetState(51)
 				p.Match(ConfigParserWHITESPACE)
 				if p.HasError() {
 					// Recognition error - abort rule
@@ -897,7 +932,7 @@ func (p *ConfigParser) LeadingComment() (localctx ILeadingCommentContext) {
 
 		}
 
-		p.SetState(52)
+		p.SetState(56)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
