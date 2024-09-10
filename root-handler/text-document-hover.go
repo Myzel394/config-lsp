@@ -4,6 +4,7 @@ import (
 	aliases "config-lsp/handlers/aliases/lsp"
 	fstab "config-lsp/handlers/fstab/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
+	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 
 	"github.com/tliron/glsp"
@@ -27,7 +28,7 @@ func TextDocumentHover(context *glsp.Context, params *protocol.HoverParams) (*pr
 	case LanguageHosts:
 		return hosts.TextDocumentHover(context, params)
 	case LanguageSSHDConfig:
-		return nil, nil
+		return sshdconfig.TextDocumentHover(context, params)
 	case LanguageFstab:
 		return fstab.TextDocumentHover(context, params)
 	case LanguageWireguard:

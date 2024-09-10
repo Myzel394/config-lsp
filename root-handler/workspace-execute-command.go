@@ -3,6 +3,7 @@ package roothandler
 import (
 	hosts "config-lsp/handlers/hosts/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
+
 	"strings"
 
 	"github.com/tliron/glsp"

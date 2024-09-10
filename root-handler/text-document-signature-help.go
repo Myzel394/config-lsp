@@ -2,6 +2,7 @@ package roothandler
 
 import (
 	aliases "config-lsp/handlers/aliases/lsp"
+	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -24,7 +25,7 @@ func TextDocumentSignatureHelp(context *glsp.Context, params *protocol.Signature
 	case LanguageHosts:
 		return nil, nil
 	case LanguageSSHDConfig:
-		return nil, nil
+		return sshdconfig.TextDocumentSignatureHelp(context, params)
 	case LanguageFstab:
 		return nil, nil
 	case LanguageWireguard:
