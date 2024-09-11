@@ -14,6 +14,9 @@ type ConfigListener interface {
 	// EnterEntry is called when entering the entry production.
 	EnterEntry(c *EntryContext)
 
+	// EnterSeparator is called when entering the separator production.
+	EnterSeparator(c *SeparatorContext)
+
 	// EnterKey is called when entering the key production.
 	EnterKey(c *KeyContext)
 
@@ -28,6 +31,9 @@ type ConfigListener interface {
 
 	// ExitEntry is called when exiting the entry production.
 	ExitEntry(c *EntryContext)
+
+	// ExitSeparator is called when exiting the separator production.
+	ExitSeparator(c *SeparatorContext)
 
 	// ExitKey is called when exiting the key production.
 	ExitKey(c *KeyContext)

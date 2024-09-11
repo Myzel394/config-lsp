@@ -3,10 +3,13 @@ package lsp
 import (
 	sshdconfig "config-lsp/handlers/sshd_config"
 	"config-lsp/handlers/sshd_config/handlers"
+	"regexp"
 
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
+
+var containsSeparatorPattern = regexp.MustCompile(`\s+$`)
 
 func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionParams) (any, error) {
 	line := params.Position.Line
@@ -21,7 +24,7 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 
 	entry, matchBlock := d.Config.FindOption(line)
 
-	if entry == nil {
+	if entry == nil || entry.Separator == nil {
 		// Empty line
 		return handlers.GetRootCompletions(
 			d,

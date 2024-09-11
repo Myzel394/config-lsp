@@ -27,11 +27,16 @@ type SSHEntry interface {
 	GetType() SSHEntryType
 }
 
+type SSHSeparator struct {
+	common.LocationRange
+}
+
 type SSHOption struct {
 	common.LocationRange
 	Value string
 
 	Key         *SSHKey
+	Separator   *SSHSeparator
 	OptionValue *SSHValue
 }
 

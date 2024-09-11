@@ -33,6 +33,12 @@ func (s *BaseConfigListener) EnterEntry(ctx *EntryContext) {}
 // ExitEntry is called when production entry is exited.
 func (s *BaseConfigListener) ExitEntry(ctx *EntryContext) {}
 
+// EnterSeparator is called when production separator is entered.
+func (s *BaseConfigListener) EnterSeparator(ctx *SeparatorContext) {}
+
+// ExitSeparator is called when production separator is exited.
+func (s *BaseConfigListener) ExitSeparator(ctx *SeparatorContext) {}
+
 // EnterKey is called when production key is entered.
 func (s *BaseConfigListener) EnterKey(ctx *KeyContext) {}
 
