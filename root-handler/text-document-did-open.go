@@ -7,6 +7,7 @@ import (
 	aliases "config-lsp/handlers/aliases/lsp"
 	fstab "config-lsp/handlers/fstab/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
+	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 
 	"github.com/tliron/glsp"
@@ -33,7 +34,7 @@ func TextDocumentDidOpen(context *glsp.Context, params *protocol.DidOpenTextDocu
 	case LanguageFstab:
 		return fstab.TextDocumentDidOpen(context, params)
 	case LanguageSSHDConfig:
-		break
+		return sshdconfig.TextDocumentDidOpen(context, params)
 	case LanguageWireguard:
 		return wireguard.TextDocumentDidOpen(context, params)
 	case LanguageHosts:
