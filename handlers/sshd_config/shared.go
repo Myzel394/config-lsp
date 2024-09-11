@@ -7,8 +7,7 @@ import (
 )
 
 type SSHDocument struct {
-	Config  *ast.SSHConfig
+	Config *ast.SSHConfig
 }
 
 var DocumentParserMap = map[protocol.DocumentUri]*SSHDocument{}
-

@@ -157,6 +157,62 @@ Match 192.168.0.2
 	if !(sixthEntry.Key.Value == "MaxAuthTries" && sixthEntry.OptionValue.Value == "3") {
 		t.Errorf("Expected sixth entry to be 'MaxAuthTries 3', but got: %v", sixthEntry.Value)
 	}
+
+	firstOption, firstMatchBlock := p.FindOption(uint32(4))
+
+	if !(firstOption.Key.Value == "PasswordAuthentication" && firstOption.OptionValue.Value == "yes" && firstMatchBlock.MatchEntry.Value == "Match 192.168.0.1") {
+		t.Errorf("Expected first option to be 'PasswordAuthentication yes' and first match block to be 'Match 192.168.0.1', but got: %v, %v", firstOption, firstMatchBlock)
+	}
+}
+
+func TestSimpleExampleWithComments(
+	t *testing.T,
+) {
+	input := utils.Dedent(`
+# Test
+PermitRootLogin no
+Port 22
+# Second test
+AddressFamily any
+Sample
+`)
+	p := NewSSHConfig()
+	errors := p.Parse(input)
+
+	if len(errors) != 0 {
+		t.Fatalf("Expected no errors, got %v", errors)
+	}
+
+	if !(p.Options.Size() == 4 &&
+		len(utils.KeysOfMap(p.CommentLines)) == 2) {
+		t.Errorf("Expected 3 options and 2 comment lines, but got: %v, %v", p.Options, p.CommentLines)
+	}
+
+	rawFirstEntry, _ := p.Options.Get(uint32(1))
+	firstEntry := rawFirstEntry.(*SSHOption)
+	if !(firstEntry.Value == "PermitRootLogin no") {
+		t.Errorf("Expected first entry to be 'PermitRootLogin no', but got: %v", firstEntry.Value)
+	}
+
+	if len(p.CommentLines) != 2 {
+		t.Errorf("Expected 2 comment lines, but got: %v", p.CommentLines)
+	}
+
+	if !utils.KeyExists(p.CommentLines, uint32(0)) {
+		t.Errorf("Expected comment line 0 to not exist, but it does")
+	}
+
+	if !(utils.KeyExists(p.CommentLines, uint32(3))) {
+		t.Errorf("Expected comment line 2 to exist, but it does not")
+	}
+
+	rawSecondEntry, _ := p.Options.Get(uint32(5))
+	secondEntry := rawSecondEntry.(*SSHOption)
+
+	if !(secondEntry.Value == "Sample") {
+		t.Errorf("Expected second entry to be 'Sample', but got: %v", secondEntry.Value)
+	}
+
 }
 
 func TestComplexExample(

@@ -2,8 +2,8 @@ package lsp
 
 import (
 	"config-lsp/common"
-	"config-lsp/handlers/sshd_config/analyzer"
 	"config-lsp/handlers/sshd_config"
+	"config-lsp/handlers/sshd_config/analyzer"
 	"config-lsp/utils"
 
 	"github.com/tliron/glsp"

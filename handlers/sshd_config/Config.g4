@@ -5,7 +5,7 @@ lineStatement
     ;
 
 entry
-    : WHITESPACE? key? WHITESPACE value? WHITESPACE? leadingComment?
+    : WHITESPACE? key? WHITESPACE? value? WHITESPACE? leadingComment?
     ;
 
 key

@@ -21,7 +21,7 @@ func NewSSHConfig() *SSHConfig {
 
 func (c *SSHConfig) Clear() {
 	c.Options = treemap.NewWith(gods.UInt32Comparator)
-	c.CommentLines = make(map[uint32]struct{})
+	c.CommentLines = map[uint32]struct{}{}
 }
 
 var commentPattern = regexp.MustCompile(`^\s*#.*$`)

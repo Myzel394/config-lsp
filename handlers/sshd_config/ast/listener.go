@@ -78,10 +78,9 @@ func (s *sshParserListener) EnterValue(ctx *parser.ValueContext) {
 	}
 }
 
-func (s *sshParserListener) ExitValue(ctx *parser.ValueContext) {
+func (s *sshParserListener) ExitEntry(ctx *parser.EntryContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.sshContext.line)
-
 
 	if s.sshContext.isKeyAMatchBlock {
 		// Add new match block
