@@ -1,14 +1,16 @@
 package lsp
 
 import (
+	"config-lsp/handlers/aliases"
+	"config-lsp/handlers/aliases/handlers"
+
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionParams) ([]protocol.CodeAction, error) {
-	// document := hosts.DocumentParserMap[params.TextDocument.URI]
-	//
-	// actions := make([]protocol.CodeAction, 0, 1)
+	d := aliases.DocumentParserMap[params.TextDocument.URI]
+	actions := handlers.FetchCodeActions(d, params)
 
-	return nil, nil
+	return actions, nil
 }
