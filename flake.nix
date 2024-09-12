@@ -26,7 +26,6 @@
         };
         inputs = [
           pkgs.go_1_22
-          pkgs.wireguard-tools
         ];
       in {
         packages = {
@@ -44,7 +43,8 @@
         devShells.default = pkgs.mkShell {
           buildInputs = inputs ++ (with pkgs; [
             mailutils
-            swaks
+            postfix
+            wireguard-tools
           ]);
         };
       }
