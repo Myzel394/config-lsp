@@ -13,16 +13,6 @@ func Analyze(
 	d *sshdconfig.SSHDocument,
 ) []protocol.Diagnostic {
 	errors := analyzeOptionsAreValid(d)
-
-	if len(errors) > 0 {
-		return utils.Map(
-			errors,
-			func(err common.LSPError) protocol.Diagnostic {
-				return err.ToDiagnostic()
-			},
-		)
-	}
-
 	indexes, indexErrors := indexes.CreateIndexes(*d.Config)
 	_ = indexes
 
