@@ -13,23 +13,51 @@ import (
 func GetRootCompletions(
 	d *sshdconfig.SSHDocument,
 	parentMatchBlock *ast.SSHMatchBlock,
+	suggestValue bool,
 ) ([]protocol.CompletionItem, error) {
 	kind := protocol.CompletionItemKindField
-	format := protocol.InsertTextFormatSnippet
 
 	return utils.MapMapToSlice(
 		fields.Options,
 		func(name string, rawValue docvalues.Value) protocol.CompletionItem {
 			doc := rawValue.(docvalues.DocumentationValue)
 
-			insertText := name + " " + "${1:value}"
-			return protocol.CompletionItem{
-				Label:            name,
-				Kind:             &kind,
-				Documentation:    doc.Documentation,
-				InsertText:       &insertText,
-				InsertTextFormat: &format,
+			completion := &protocol.CompletionItem{
+				Label:         name,
+				Kind:          &kind,
+				Documentation: doc.Documentation,
 			}
+
+			if suggestValue {
+				format := protocol.InsertTextFormatSnippet
+				insertText := name + " " + "${1:value}"
+
+				completion.InsertTextFormat = &format
+				completion.InsertText = &insertText
+			}
+
+			return *completion
 		},
 	), nil
+}
+
+func GetOptionCompletions(
+	d *sshdconfig.SSHDocument,
+	entry *ast.SSHOption,
+	cursor uint32,
+) ([]protocol.CompletionItem, error) {
+	option, found := fields.Options[entry.Key.Value]
+
+	if !found {
+		return nil, nil
+	}
+
+	if entry.OptionValue == nil {
+		return option.FetchCompletions("", 0), nil
+	}
+
+	relativeCursor := cursor - entry.OptionValue.Start.Character
+	line := entry.OptionValue.Value
+
+	return option.FetchCompletions(line, relativeCursor), nil
 }

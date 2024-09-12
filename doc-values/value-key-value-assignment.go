@@ -104,7 +104,7 @@ func (v KeyValueAssignmentValue) CheckIsValid(value string) []*InvalidValue {
 }
 
 func (v KeyValueAssignmentValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
-	if cursor == 0 {
+	if cursor == 0 || line == "" {
 		return v.Key.FetchCompletions(line, cursor)
 	}
 

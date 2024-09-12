@@ -25,6 +25,7 @@ const (
 
 type SSHEntry interface {
 	GetType() SSHEntryType
+	GetOption() SSHOption
 }
 
 type SSHSeparator struct {
@@ -44,6 +45,10 @@ func (o SSHOption) GetType() SSHEntryType {
 	return SSHEntryTypeOption
 }
 
+func (o SSHOption) GetOption() SSHOption {
+	return o
+}
+
 type SSHMatchBlock struct {
 	common.LocationRange
 	MatchEntry *SSHOption
@@ -54,6 +59,10 @@ type SSHMatchBlock struct {
 
 func (m SSHMatchBlock) GetType() SSHEntryType {
 	return SSHEntryTypeMatchBlock
+}
+
+func (m SSHMatchBlock) GetOption() SSHOption {
+	return *m.MatchEntry
 }
 
 type SSHConfig struct {
