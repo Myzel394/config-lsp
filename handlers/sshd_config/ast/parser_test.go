@@ -158,7 +158,7 @@ Match 192.168.0.2
 		t.Errorf("Expected sixth entry to be 'MaxAuthTries 3', but got: %v", sixthEntry.Value)
 	}
 
-	firstOption, firstMatchBlock := p.FindOption(uint32(4))
+	firstOption, firstMatchBlock := p.FindOption(uint32(3))
 
 	if !(firstOption.Key.Value == "PasswordAuthentication" && firstOption.OptionValue.Value == "yes" && firstMatchBlock.MatchEntry.Value == "Match 192.168.0.1") {
 		t.Errorf("Expected first option to be 'PasswordAuthentication yes' and first match block to be 'Match 192.168.0.1', but got: %v, %v", firstOption, firstMatchBlock)

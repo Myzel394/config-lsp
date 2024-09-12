@@ -103,7 +103,12 @@ func (c SSHConfig) FindOption(line uint32) (*SSHOption, *SSHMatchBlock) {
 	rawEntry, found := c.Options.Get(line)
 
 	if found {
-		return rawEntry.(*SSHOption), nil
+		switch rawEntry.(type) {
+		case *SSHMatchBlock:
+			return rawEntry.(*SSHMatchBlock).MatchEntry, rawEntry.(*SSHMatchBlock)
+		case *SSHOption:
+			return rawEntry.(*SSHOption), nil
+		}
 	}
 
 	return nil, nil
