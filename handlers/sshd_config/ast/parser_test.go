@@ -159,9 +159,13 @@ Match 192.168.0.2
 	}
 
 	firstOption, firstMatchBlock := p.FindOption(uint32(3))
-
 	if !(firstOption.Key.Value == "PasswordAuthentication" && firstOption.OptionValue.Value == "yes" && firstMatchBlock.MatchEntry.Value == "Match 192.168.0.1") {
 		t.Errorf("Expected first option to be 'PasswordAuthentication yes' and first match block to be 'Match 192.168.0.1', but got: %v, %v", firstOption, firstMatchBlock)
+	}
+
+	emptyOption, matchBlock := p.FindOption(uint32(5))
+	if !(emptyOption == nil && matchBlock.MatchEntry.Value == "Match 192.168.0.1") {
+		t.Errorf("Expected empty option and match block to be 'Match 192.168.0.1', but got: %v, %v", emptyOption, matchBlock)
 	}
 }
 

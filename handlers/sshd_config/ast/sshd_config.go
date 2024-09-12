@@ -97,6 +97,8 @@ func (c SSHConfig) FindOption(line uint32) (*SSHOption, *SSHMatchBlock) {
 
 		if found {
 			return rawEntry.(*SSHOption), matchBlock
+		} else {
+			return nil, matchBlock
 		}
 	}
 
