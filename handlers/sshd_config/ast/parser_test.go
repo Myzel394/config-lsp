@@ -167,6 +167,11 @@ Match 192.168.0.2
 	if !(emptyOption == nil && matchBlock.MatchEntry.Value == "Match 192.168.0.1") {
 		t.Errorf("Expected empty option and match block to be 'Match 192.168.0.1', but got: %v, %v", emptyOption, matchBlock)
 	}
+
+	matchOption, matchBlock := p.FindOption(uint32(2))
+	if !(matchOption.Value == "Match 192.168.0.1" && matchBlock.MatchEntry.Value == "Match 192.168.0.1") {
+		t.Errorf("Expected match option to be 'Match 192.160.0.1' and match block to be 'Match 192.168.0.1', but got: %v, %v", matchOption, matchBlock)
+	}
 }
 
 func TestSimpleExampleWithComments(

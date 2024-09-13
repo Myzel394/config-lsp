@@ -93,6 +93,10 @@ func (c SSHConfig) FindOption(line uint32) (*SSHOption, *SSHMatchBlock) {
 	matchBlock := c.FindMatchBlock(line)
 
 	if matchBlock != nil {
+		if line == matchBlock.MatchEntry.Start.Line {
+			return matchBlock.MatchEntry, matchBlock
+		}
+
 		rawEntry, found := matchBlock.Options.Get(line)
 
 		if found {
