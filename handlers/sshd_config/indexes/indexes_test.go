@@ -107,12 +107,12 @@ Match Address 192.168.0.1/24
 		indexes.AllOptionsPerName["PermitRootLogin"][0].Option.Value == "PermitRootLogin yes" &&
 		indexes.AllOptionsPerName["PermitRootLogin"][0].Option.Start.Line == 0 &&
 		indexes.AllOptionsPerName["PermitRootLogin"][0].MatchBlock == nil &&
-		indexes.AllOptionsPerName["PermitRootLogin"][1].Option.Value == "\tPermitRootLogin no" &&
-		indexes.AllOptionsPerName["PermitRootLogin"][1].Option.Start.Line == 6 &&
-		indexes.AllOptionsPerName["PermitRootLogin"][1].MatchBlock == firstMatchBlock &&
-		indexes.AllOptionsPerName["PermitRootLogin"][2].Option.Value == "\tPermitRootLogin yes" &&
-		indexes.AllOptionsPerName["PermitRootLogin"][2].Option.Start.Line == 8 &&
-		indexes.AllOptionsPerName["PermitRootLogin"][2].MatchBlock == firstMatchBlock) {
+		indexes.AllOptionsPerName["PermitRootLogin"][6].Option.Value == "\tPermitRootLogin no" &&
+		indexes.AllOptionsPerName["PermitRootLogin"][6].Option.Start.Line == 6 &&
+		indexes.AllOptionsPerName["PermitRootLogin"][6].MatchBlock == firstMatchBlock &&
+		indexes.AllOptionsPerName["PermitRootLogin"][8].Option.Value == "\tPermitRootLogin yes" &&
+		indexes.AllOptionsPerName["PermitRootLogin"][8].Option.Start.Line == 8 &&
+		indexes.AllOptionsPerName["PermitRootLogin"][8].MatchBlock == firstMatchBlock) {
 		t.Errorf("Expected 3 PermitRootLogin options, but got %v", indexes.AllOptionsPerName["PermitRootLogin"])
 	}
 }
