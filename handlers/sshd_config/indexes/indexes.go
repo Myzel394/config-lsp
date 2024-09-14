@@ -17,19 +17,19 @@ var allowedDoubleOptions = map[string]struct{}{
 	"Port":          {},
 }
 
-type SSHIndexEntry struct {
+type SSHIndexKey struct {
 	Option     string
 	MatchBlock *ast.SSHMatchBlock
 }
 
 type SSHIndexes struct {
-	EntriesPerKey map[SSHIndexEntry][]*ast.SSHOption
+	OptionsPerRelativeKey map[SSHIndexKey][]*ast.SSHOption
 }
 
 func CreateIndexes(config ast.SSHConfig) (*SSHIndexes, []common.LSPError) {
 	errs := make([]common.LSPError, 0)
 	indexes := &SSHIndexes{
-		EntriesPerKey: make(map[SSHIndexEntry][]*ast.SSHOption),
+		OptionsPerRelativeKey: make(map[SSHIndexKey][]*ast.SSHOption),
 	}
 
 	it := config.Options.Iterator()
@@ -65,15 +65,15 @@ func addOption(
 ) []common.LSPError {
 	var errs []common.LSPError
 
-	indexEntry := SSHIndexEntry{
+	indexEntry := SSHIndexKey{
 		Option:     option.Key.Value,
 		MatchBlock: matchBlock,
 	}
 
-	if existingEntry, found := i.EntriesPerKey[indexEntry]; found {
+	if existingEntry, found := i.OptionsPerRelativeKey[indexEntry]; found {
 		if _, found := allowedDoubleOptions[option.Key.Value]; found {
 			// Double value, but doubles are allowed
-			i.EntriesPerKey[indexEntry] = append(existingEntry, option)
+			i.OptionsPerRelativeKey[indexEntry] = append(existingEntry, option)
 		} else {
 			errs = append(errs, common.LSPError{
 				Range: option.Key.LocationRange,
@@ -81,7 +81,7 @@ func addOption(
 			})
 		}
 	} else {
-		i.EntriesPerKey[indexEntry] = []*ast.SSHOption{option}
+		i.OptionsPerRelativeKey[indexEntry] = []*ast.SSHOption{option}
 	}
 
 	return errs
