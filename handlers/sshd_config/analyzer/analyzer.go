@@ -13,19 +13,54 @@ func Analyze(
 	d *sshdconfig.SSHDocument,
 ) []protocol.Diagnostic {
 	errors := analyzeOptionsAreValid(d)
+
+	if len(errors) > 0 {
+		return errsToDiagnostics(errors)
+	}
+
 	indexes, indexErrors := indexes.CreateIndexes(*d.Config)
-	_ = indexes
+
+	d.Indexes = indexes
 
 	errors = append(errors, indexErrors...)
 
 	if len(errors) > 0 {
-		return utils.Map(
-			errors,
-			func(err common.LSPError) protocol.Diagnostic {
-				return err.ToDiagnostic()
-			},
-		)
+		return errsToDiagnostics(errors)
+	}
+
+	includeErrors := analyzeIncludeValues(d)
+
+	if len(includeErrors) > 0 {
+		errors = append(errors, includeErrors...)
+	} else {
+		for _, include := range d.Indexes.Includes {
+			for _, value := range include.Values {
+				for _, path := range value.Paths {
+					_, err := parseFile(string(path))
+
+					if err != nil {
+						errors = append(errors, common.LSPError{
+							Range: value.LocationRange,
+							Err:   err,
+						})
+					}
+				}
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return errsToDiagnostics(errors)
 	}
 
 	return nil
+}
+
+func errsToDiagnostics(errs []common.LSPError) []protocol.Diagnostic {
+	return utils.Map(
+		errs,
+		func(err common.LSPError) protocol.Diagnostic {
+			return err.ToDiagnostic()
+		},
+	)
 }

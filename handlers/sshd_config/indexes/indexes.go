@@ -5,6 +5,7 @@ import (
 	"config-lsp/handlers/sshd_config/ast"
 	"errors"
 	"fmt"
+	"regexp"
 )
 
 var allowedDoubleOptions = map[string]struct{}{
@@ -24,7 +25,26 @@ type SSHIndexKey struct {
 
 type SSHIndexAllOption struct {
 	MatchBlock *ast.SSHMatchBlock
-	Option   *ast.SSHOption
+	Option     *ast.SSHOption
+}
+
+type ValidPath string
+
+func (v ValidPath) AsURI() string {
+	return "file://" + string(v)
+}
+
+type SSHIndexIncludeValue struct {
+	common.LocationRange
+	Value string
+
+	// Actual valid paths, these will be set by the analyzer
+	Paths []ValidPath
+}
+
+type SSHIndexIncludeLine struct {
+	Values []*SSHIndexIncludeValue
+	Option *SSHIndexAllOption
 }
 
 type SSHIndexes struct {
@@ -35,18 +55,22 @@ type SSHIndexes struct {
 	OptionsPerRelativeKey map[SSHIndexKey][]*ast.SSHOption
 
 	// This is a map of `Option name` to a list of options with that name
-	AllOptionsPerName map[string][]*SSHIndexAllOption
+	AllOptionsPerName map[string]map[uint32]*SSHIndexAllOption
+
+	Includes map[uint32]*SSHIndexIncludeLine
 }
+
+var whitespacePattern = regexp.MustCompile(`\S+`)
 
 func CreateIndexes(config ast.SSHConfig) (*SSHIndexes, []common.LSPError) {
 	errs := make([]common.LSPError, 0)
 	indexes := &SSHIndexes{
 		OptionsPerRelativeKey: make(map[SSHIndexKey][]*ast.SSHOption),
-		AllOptionsPerName:     make(map[string][]*SSHIndexAllOption),
+		AllOptionsPerName:     make(map[string]map[uint32]*SSHIndexAllOption),
+		Includes:              make(map[uint32]*SSHIndexIncludeLine),
 	}
 
 	it := config.Options.Iterator()
-
 	for it.Next() {
 		entry := it.Value().(ast.SSHEntry)
 
@@ -59,12 +83,48 @@ func CreateIndexes(config ast.SSHConfig) (*SSHIndexes, []common.LSPError) {
 			matchBlock := entry.(*ast.SSHMatchBlock)
 
 			it := matchBlock.Options.Iterator()
-
 			for it.Next() {
 				option := it.Value().(*ast.SSHOption)
 
 				errs = append(errs, addOption(indexes, option, matchBlock)...)
 			}
+		}
+	}
+
+	// Add Includes
+	for _, includeOption := range indexes.AllOptionsPerName["Include"] {
+		rawValue := includeOption.Option.OptionValue.Value
+		pathIndexes := whitespacePattern.FindAllStringIndex(rawValue, -1)
+		paths := make([]*SSHIndexIncludeValue, 0)
+
+		for _, pathIndex := range pathIndexes {
+			startIndex := pathIndex[0]
+			endIndex := pathIndex[1]
+
+			rawPath := rawValue[startIndex:endIndex]
+
+			offset := includeOption.Option.OptionValue.Start.Character
+			path := SSHIndexIncludeValue{
+				LocationRange: common.LocationRange{
+					Start: common.Location{
+						Line:      includeOption.Option.Start.Line,
+						Character: uint32(startIndex) + offset,
+					},
+					End: common.Location{
+						Line:      includeOption.Option.Start.Line,
+						Character: uint32(endIndex) + offset - 1,
+					},
+				},
+				Value: rawPath,
+				Paths: make([]ValidPath, 0),
+			}
+
+			paths = append(paths, &path)
+		}
+
+		indexes.Includes[includeOption.Option.Start.Line] = &SSHIndexIncludeLine{
+			Values: paths,
+			Option: includeOption,
 		}
 	}
 
@@ -97,17 +157,16 @@ func addOption(
 		i.OptionsPerRelativeKey[indexEntry] = []*ast.SSHOption{option}
 	}
 
-
-	if existingEntry, found := i.AllOptionsPerName[option.Key.Value]; found {
-		i.AllOptionsPerName[option.Key.Value] = append(existingEntry, &SSHIndexAllOption{
+	if _, found := i.AllOptionsPerName[option.Key.Value]; found {
+		i.AllOptionsPerName[option.Key.Value][option.Start.Line] = &SSHIndexAllOption{
 			MatchBlock: matchBlock,
-			Option:    option,
-		})
+			Option:     option,
+		}
 	} else {
-		i.AllOptionsPerName[option.Key.Value] = []*SSHIndexAllOption{
-			{
+		i.AllOptionsPerName[option.Key.Value] = map[uint32]*SSHIndexAllOption{
+			option.Start.Line: {
 				MatchBlock: matchBlock,
-				Option:   option,
+				Option:     option,
 			},
 		}
 	}

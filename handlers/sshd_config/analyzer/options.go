@@ -60,24 +60,27 @@ func checkOption(
 			return errs
 		}
 
-		if option.OptionValue == nil {
-			return errs
+		if option.OptionValue == nil || option.OptionValue.Value == "" {
+			errs = append(errs, common.LSPError{
+				Range: option.Key.LocationRange,
+				Err:   errors.New(fmt.Sprintf("Option '%s' requires a value", option.Key.Value)),
+			})
+		} else {
+			invalidValues := docOption.CheckIsValid(option.OptionValue.Value)
+
+			errs = append(
+				errs,
+				utils.Map(
+					invalidValues,
+					func(invalidValue *docvalues.InvalidValue) common.LSPError {
+						err := docvalues.LSPErrorFromInvalidValue(option.Start.Line, *invalidValue)
+						err.ShiftCharacter(option.OptionValue.Start.Character)
+
+						return err
+					},
+				)...,
+			)
 		}
-
-		invalidValues := docOption.CheckIsValid(option.OptionValue.Value)
-
-		errs = append(
-			errs,
-			utils.Map(
-				invalidValues,
-				func(invalidValue *docvalues.InvalidValue) common.LSPError {
-					err := docvalues.LSPErrorFromInvalidValue(option.Start.Line, *invalidValue)
-					err.ShiftCharacter(option.OptionValue.Start.Character)
-
-					return err
-				},
-			)...,
-		)
 	}
 
 	return errs

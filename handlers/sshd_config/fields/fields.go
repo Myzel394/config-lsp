@@ -391,9 +391,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 		Value: docvalues.ArrayValue{
 			Separator:           " ",
 			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
-			SubValue: docvalues.PathValue{
-				RequiredType: docvalues.PathTypeFile,
-			},
+			SubValue:            docvalues.StringValue{},
 		},
 		// TODO: Add extra check
 	},
