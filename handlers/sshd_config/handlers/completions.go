@@ -17,7 +17,7 @@ func GetRootCompletions(
 ) ([]protocol.CompletionItem, error) {
 	kind := protocol.CompletionItemKindField
 
-	availableOptions := make(map[string]docvalues.Value)
+	availableOptions := make(map[string]docvalues.DocumentationValue)
 
 	if parentMatchBlock == nil {
 		availableOptions = fields.Options
@@ -31,9 +31,7 @@ func GetRootCompletions(
 
 	return utils.MapMapToSlice(
 		availableOptions,
-		func(name string, rawValue docvalues.Value) protocol.CompletionItem {
-			doc := rawValue.(docvalues.DocumentationValue)
-
+		func(name string, doc docvalues.DocumentationValue) protocol.CompletionItem {
 			completion := &protocol.CompletionItem{
 				Label:         name,
 				Kind:          &kind,
