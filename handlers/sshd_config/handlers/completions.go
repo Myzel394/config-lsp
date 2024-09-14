@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
 	sshdconfig "config-lsp/handlers/sshd_config"
 	"config-lsp/handlers/sshd_config/ast"
@@ -66,7 +67,7 @@ func GetOptionCompletions(
 		return option.FetchCompletions("", 0), nil
 	}
 
-	relativeCursor := cursor - entry.OptionValue.Start.Character
+	relativeCursor := common.CursorToCharacterIndex(cursor - entry.OptionValue.Start.Character)
 	line := entry.OptionValue.Value
 
 	return option.FetchCompletions(line, relativeCursor), nil

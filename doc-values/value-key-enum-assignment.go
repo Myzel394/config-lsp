@@ -173,7 +173,7 @@ func (v KeyEnumAssignmentValue) FetchCompletions(line string, cursor uint32) []p
 	relativePosition, found := utils.FindPreviousCharacter(
 		line,
 		v.Separator,
-		max(0, int(cursor-1)),
+		int(cursor),
 	)
 
 	if found {

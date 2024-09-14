@@ -63,7 +63,7 @@ func (v OrValue) FetchCompletions(line string, cursor uint32) []protocol.Complet
 				_, found := utils.FindPreviousCharacter(
 					line,
 					keyEnumValue.Separator,
-					int(cursor-1),
+					int(cursor),
 				)
 
 				if found {

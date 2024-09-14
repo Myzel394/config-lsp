@@ -5,7 +5,7 @@ lineStatement
     ;
 
 entry
-    : WHITESPACE? key? separator? value? WHITESPACE? leadingComment?
+    : WHITESPACE? key? separator? value? leadingComment?
     ;
 
 separator
@@ -17,7 +17,7 @@ key
     ;
 
 value
-    : (STRING WHITESPACE)? STRING
+    : (STRING WHITESPACE)? STRING WHITESPACE?
     ;
 
 leadingComment

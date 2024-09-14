@@ -572,8 +572,8 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 					SubValue: docvalues.KeyEnumAssignmentValue{
 						Separator: " ",
 						Values: map[docvalues.EnumString]docvalues.Value{
-							docvalues.CreateEnumString("User"):         docvalues.StringValue{},
-							docvalues.CreateEnumString("Group"):        docvalues.StringValue{},
+							docvalues.CreateEnumString("User"):         docvalues.UserValue("", false),
+							docvalues.CreateEnumString("Group"):        docvalues.GroupValue("", false),
 							docvalues.CreateEnumString("Host"):         docvalues.StringValue{},
 							docvalues.CreateEnumString("LocalAddress"): docvalues.StringValue{},
 							docvalues.CreateEnumString("LocalPort"):    docvalues.NumberValue{Min: &ZERO, Max: &MAX_PORT},

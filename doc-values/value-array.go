@@ -119,24 +119,34 @@ func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32)
 		return line, cursor
 	}
 
+	MIN := uint32(0)
+	MAX := uint32(len(line) - 1)
+
 	var start uint32
 	var end uint32
+
+	// hello,w[o]rld,and,more
+	// [h]ello,world
+	// hello,[w]orld
+	// hell[o],world
+	// hello,worl[d]
+	// hello,world[,]
+	// hello[,]world,how,are,you
 
 	relativePosition, found := utils.FindPreviousCharacter(
 		line,
 		v.Separator,
-		// defaults
-		min(len(line)-1, int(cursor)-1),
+		int(cursor),
 	)
 
 	if found {
-		// +1 to skip the separator
+		// + 1 to skip the separator
 		start = min(
-			min(uint32(len(line)), uint32(relativePosition+1)),
-			uint32(relativePosition+1),
+			MAX,
+			uint32(relativePosition)+1,
 		)
 	} else {
-		start = 0
+		start = MIN
 	}
 
 	relativePosition, found = utils.FindNextCharacter(
@@ -146,21 +156,27 @@ func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32)
 	)
 
 	if found {
-		// -1 to skip the separator
-		end = min(
-			min(uint32(len(line)), uint32(relativePosition)),
-			cursor,
+		// - 1 to skip the separator
+		end = max(
+			MIN,
+			uint32(relativePosition)-1,
 		)
 	} else {
-		end = uint32(len(line))
+		end = MAX
 	}
 
-	return line[start:end], cursor - start
+	if cursor > end {
+		// The user is typing a new (yet empty) value
+		return "", 0
+	}
+
+	return line[start : end+1], cursor - start
 }
 
 func (v ArrayValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	value, cursor := v.getCurrentValue(line, cursor)
 
+	println("after array", value, cursor)
 	return v.SubValue.FetchCompletions(value, cursor)
 }
 
