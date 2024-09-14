@@ -8,17 +8,6 @@ import (
 	"strings"
 )
 
-func createListener(
-	config *SSHConfig,
-	context *sshListenerContext,
-) sshParserListener {
-	return sshParserListener{
-		Config:     config,
-		Errors:     make([]common.LSPError, 0),
-		sshContext: context,
-	}
-}
-
 type sshListenerContext struct {
 	line              uint32
 	currentOption     *SSHOption
@@ -31,6 +20,17 @@ func createSSHListenerContext() *sshListenerContext {
 	context.isKeyAMatchBlock = false
 
 	return context
+}
+
+func createListener(
+	config *SSHConfig,
+	context *sshListenerContext,
+) sshParserListener {
+	return sshParserListener{
+		Config:     config,
+		Errors:     make([]common.LSPError, 0),
+		sshContext: context,
+	}
 }
 
 type sshParserListener struct {
