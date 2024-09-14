@@ -71,6 +71,10 @@ func createIncludePaths(
 func parseFile(
 	filePath string,
 ) (*sshdconfig.SSHDocument, error) {
+	if d, ok := sshdconfig.DocumentParserMap[filePath]; ok {
+		return d, nil
+	}
+
 	c := ast.NewSSHConfig()
 
 	content, err := os.ReadFile(filePath)
@@ -79,7 +83,11 @@ func parseFile(
 		return nil, err
 	}
 
-	c.Parse(string(content))
+	parseErrors := c.Parse(string(content))
+
+	if len(parseErrors) > 0 {
+		return nil, errors.New(fmt.Sprintf("Errors in %s", filePath))
+	}
 
 	d := &sshdconfig.SSHDocument{
 		Config: c,
@@ -90,6 +98,8 @@ func parseFile(
 	if len(errs) > 0 {
 		return nil, errors.New(fmt.Sprintf("Errors in %s", filePath))
 	}
+
+	sshdconfig.DocumentParserMap[filePath] = d
 
 	return d, nil
 }

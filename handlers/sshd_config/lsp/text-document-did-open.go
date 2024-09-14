@@ -17,13 +17,19 @@ func TextDocumentDidOpen(
 ) error {
 	common.ClearDiagnostics(context, params.TextDocument.URI)
 
-	parser := ast.NewSSHConfig()
-	document := sshdconfig.SSHDocument{
-		Config: parser,
-	}
-	sshdconfig.DocumentParserMap[params.TextDocument.URI] = &document
+	var document *sshdconfig.SSHDocument
 
-	errors := parser.Parse(params.TextDocument.Text)
+	if foundDocument, ok := sshdconfig.DocumentParserMap[params.TextDocument.URI]; ok {
+		document = foundDocument
+	} else {
+		config := ast.NewSSHConfig()
+		document = &sshdconfig.SSHDocument{
+			Config: config,
+		}
+		sshdconfig.DocumentParserMap[params.TextDocument.URI] = document
+	}
+
+	errors := document.Config.Parse(params.TextDocument.Text)
 
 	diagnostics := utils.Map(
 		errors,
@@ -34,7 +40,7 @@ func TextDocumentDidOpen(
 
 	diagnostics = append(
 		diagnostics,
-		analyzer.Analyze(&document)...,
+		analyzer.Analyze(document)...,
 	)
 
 	if len(diagnostics) > 0 {
