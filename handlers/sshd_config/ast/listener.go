@@ -3,9 +3,11 @@ package ast
 import (
 	"config-lsp/common"
 	"config-lsp/handlers/sshd_config/ast/parser"
+	match_parser "config-lsp/handlers/sshd_config/fields/match-parser"
+	"strings"
+
 	"github.com/emirpasic/gods/maps/treemap"
 	gods "github.com/emirpasic/gods/utils"
-	"strings"
 )
 
 type sshListenerContext struct {
@@ -93,17 +95,31 @@ func (s *sshParserListener) ExitEntry(ctx *parser.EntryContext) {
 
 	if s.sshContext.isKeyAMatchBlock {
 		// Add new match block
-		matchBlock := &SSHMatchBlock{
-			LocationRange: location,
-			MatchEntry:    s.sshContext.currentOption,
-			Options:       treemap.NewWith(gods.UInt32Comparator),
-		}
-		s.Config.Options.Put(
-			location.Start.Line,
-			matchBlock,
-		)
+		match := match_parser.NewMatch()
+		errors := match.Parse(s.sshContext.currentOption.OptionValue.Value, location.Start.Line)
 
-		s.sshContext.currentMatchBlock = matchBlock
+		if len(errors) > 0 {
+			for _, err := range errors {
+				s.Errors = append(s.Errors, common.LSPError{
+					Range: err.Range.ShiftHorizontal(s.sshContext.currentOption.Start.Character),
+					Err:   err.Err,
+				})
+			}
+		} else {
+			matchBlock := &SSHMatchBlock{
+				LocationRange: location,
+				MatchEntry:    s.sshContext.currentOption,
+				MatchValue:    match,
+				Options:       treemap.NewWith(gods.UInt32Comparator),
+			}
+			s.Config.Options.Put(
+				location.Start.Line,
+				matchBlock,
+			)
+
+			s.sshContext.currentMatchBlock = matchBlock
+		}
+
 		s.sshContext.isKeyAMatchBlock = false
 	} else if s.sshContext.currentMatchBlock != nil {
 		s.sshContext.currentMatchBlock.Options.Put(

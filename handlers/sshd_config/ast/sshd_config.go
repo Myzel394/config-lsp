@@ -2,6 +2,7 @@ package ast
 
 import (
 	"config-lsp/common"
+	match_parser "config-lsp/handlers/sshd_config/fields/match-parser"
 
 	"github.com/emirpasic/gods/maps/treemap"
 )
@@ -52,6 +53,7 @@ func (o SSHOption) GetOption() SSHOption {
 type SSHMatchBlock struct {
 	common.LocationRange
 	MatchEntry *SSHOption
+	MatchValue *match_parser.Match
 
 	// [uint32]*SSHOption -> line number -> *SSHOption
 	Options *treemap.Map

@@ -65,7 +65,7 @@ func TestMatchSimpleBlock(
 	input := utils.Dedent(`
 PermitRootLogin no
 
-Match 192.168.0.1
+Match Address 192.168.0.1
 	PasswordAuthentication yes
 `)
 	p := NewSSHConfig()
@@ -88,8 +88,12 @@ Match 192.168.0.1
 
 	rawSecondEntry, _ := p.Options.Get(uint32(2))
 	secondEntry := rawSecondEntry.(*SSHMatchBlock)
-	if !(secondEntry.MatchEntry.Value == "Match 192.168.0.1") {
-		t.Errorf("Expected second entry to be 'Match 192.168.0.1', but got: %v", secondEntry.MatchEntry.Value)
+	if !(secondEntry.MatchEntry.Value == "Match Address 192.168.0.1") {
+		t.Errorf("Expected second entry to be 'Match Address 192.168.0.1', but got: %v", secondEntry.MatchEntry.Value)
+	}
+
+	if !(secondEntry.MatchValue.Entries[0].Criteria == "Address" && secondEntry.MatchValue.Entries[0].Values[0].Value == "192.168.0.1") {
+		t.Errorf("Expected second entry to be 'Match Address 192.168.0.1', but got: %v", secondEntry.MatchValue)
 	}
 
 	if !(secondEntry.Options.Size() == 1) {
@@ -109,11 +113,11 @@ func TestMultipleMatchBlocks(
 	input := utils.Dedent(`
 PermitRootLogin no
 
-Match 192.168.0.1
+Match User lena
 	PasswordAuthentication yes
 	AllowUsers root user
 
-Match 192.168.0.2
+Match Address 192.168.0.2
 	MaxAuthTries 3
 `)
 	p := NewSSHConfig()
@@ -159,18 +163,18 @@ Match 192.168.0.2
 	}
 
 	firstOption, firstMatchBlock := p.FindOption(uint32(3))
-	if !(firstOption.Key.Value == "PasswordAuthentication" && firstOption.OptionValue.Value == "yes" && firstMatchBlock.MatchEntry.Value == "Match 192.168.0.1") {
-		t.Errorf("Expected first option to be 'PasswordAuthentication yes' and first match block to be 'Match 192.168.0.1', but got: %v, %v", firstOption, firstMatchBlock)
+	if !(firstOption.Key.Value == "PasswordAuthentication" && firstOption.OptionValue.Value == "yes") {
+		t.Errorf("Expected first option to be 'PasswordAuthentication yes' and first match block to be 'Match Address 192.168.0.1', but got: %v, %v", firstOption, firstMatchBlock)
 	}
 
 	emptyOption, matchBlock := p.FindOption(uint32(5))
-	if !(emptyOption == nil && matchBlock.MatchEntry.Value == "Match 192.168.0.1") {
-		t.Errorf("Expected empty option and match block to be 'Match 192.168.0.1', but got: %v, %v", emptyOption, matchBlock)
+	if !(emptyOption == nil && matchBlock.MatchEntry.Value == "Match User lena" && matchBlock.MatchValue.Entries[0].Values[0].Value == "lena") {
+		t.Errorf("Expected empty option and match block to be 'Match User lena', but got: %v, %v", emptyOption, matchBlock)
 	}
 
 	matchOption, matchBlock := p.FindOption(uint32(2))
-	if !(matchOption.Value == "Match 192.168.0.1" && matchBlock.MatchEntry.Value == "Match 192.168.0.1") {
-		t.Errorf("Expected match option to be 'Match 192.160.0.1' and match block to be 'Match 192.168.0.1', but got: %v, %v", matchOption, matchBlock)
+	if !(matchOption.Value == "Match User lena" && matchBlock.MatchEntry.Value == "Match User lena" && matchBlock.MatchValue.Entries[0].Values[0].Value == "lena") {
+		t.Errorf("Expected match option to be 'Match User lena', but got: %v, %v", matchOption, matchBlock)
 	}
 }
 
@@ -412,6 +416,10 @@ Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1
 		t.Errorf("Expected fourth entry to be 'Match User anoncvs', but got: %v", fourthEntry.MatchEntry.Value)
 	}
 
+	if !(fourthEntry.MatchValue.Entries[0].Criteria == "User" && fourthEntry.MatchValue.Entries[0].Values[0].Value == "anoncvs") {
+		t.Errorf("Expected fourth entry to be 'Match User anoncvs', but got: %v", fourthEntry.MatchValue)
+	}
+
 	if !(fourthEntry.Options.Size() == 3) {
 		t.Errorf("Expected 3 options in fourth match block, but got: %v", fourthEntry.Options)
 	}
@@ -430,6 +438,10 @@ Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1
 
 	if !(sixthEntry.MatchEntry.Key.Value == "Match" && sixthEntry.MatchEntry.OptionValue.Value == "Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1") {
 		t.Errorf("Expected sixth entry to be 'Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1', but got: %v", sixthEntry.MatchEntry.Value)
+	}
+
+	if !(sixthEntry.MatchValue.Entries[0].Criteria == "Address" && len(sixthEntry.MatchValue.Entries[0].Values) == 3) {
+		t.Errorf("Expected sixth entry to contain 3 values, but got: %v", sixthEntry.MatchValue)
 	}
 
 	if !(sixthEntry.Options.Size() == 2) {
