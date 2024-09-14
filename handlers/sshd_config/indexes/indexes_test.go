@@ -102,4 +102,17 @@ Match Address 192.168.0.1/24
 		indexes.OptionsPerRelativeKey[indexEntry][2].Start.Line == 3) {
 		t.Errorf("Expected 'Port 22' on line 1, but got %v on line %v", indexes.OptionsPerRelativeKey[indexEntry][0].Value, indexes.OptionsPerRelativeKey[indexEntry][0].Start.Line)
 	}
+
+	if !(len(indexes.AllOptionsPerName["PermitRootLogin"]) == 3 &&
+		indexes.AllOptionsPerName["PermitRootLogin"][0].Option.Value == "PermitRootLogin yes" &&
+		indexes.AllOptionsPerName["PermitRootLogin"][0].Option.Start.Line == 0 &&
+		indexes.AllOptionsPerName["PermitRootLogin"][0].MatchBlock == nil &&
+		indexes.AllOptionsPerName["PermitRootLogin"][1].Option.Value == "\tPermitRootLogin no" &&
+		indexes.AllOptionsPerName["PermitRootLogin"][1].Option.Start.Line == 6 &&
+		indexes.AllOptionsPerName["PermitRootLogin"][1].MatchBlock == firstMatchBlock &&
+		indexes.AllOptionsPerName["PermitRootLogin"][2].Option.Value == "\tPermitRootLogin yes" &&
+		indexes.AllOptionsPerName["PermitRootLogin"][2].Option.Start.Line == 8 &&
+		indexes.AllOptionsPerName["PermitRootLogin"][2].MatchBlock == firstMatchBlock) {
+		t.Errorf("Expected 3 PermitRootLogin options, but got %v", indexes.AllOptionsPerName["PermitRootLogin"])
+	}
 }

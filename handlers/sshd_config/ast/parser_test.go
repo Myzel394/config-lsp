@@ -136,13 +136,13 @@ Match 192.168.0.2
 
 	rawThirdEntry, _ := secondEntry.Options.Get(uint32(3))
 	thirdEntry := rawThirdEntry.(*SSHOption)
-	if !(thirdEntry.Key.Value == "PasswordAuthentication" && thirdEntry.OptionValue.Value == "yes") {
+	if !(thirdEntry.Key.Value == "PasswordAuthentication" && thirdEntry.OptionValue.Value == "yes" && thirdEntry.LocationRange.Start.Line == 3) {
 		t.Errorf("Expected third entry to be 'PasswordAuthentication yes', but got: %v", thirdEntry.Value)
 	}
 
 	rawFourthEntry, _ := secondEntry.Options.Get(uint32(4))
 	fourthEntry := rawFourthEntry.(*SSHOption)
-	if !(fourthEntry.Key.Value == "AllowUsers" && fourthEntry.OptionValue.Value == "root user") {
+	if !(fourthEntry.Key.Value == "AllowUsers" && fourthEntry.OptionValue.Value == "root user" && fourthEntry.LocationRange.Start.Line == 4) {
 		t.Errorf("Expected fourth entry to be 'AllowUsers root user', but got: %v", fourthEntry.Value)
 	}
 
@@ -154,7 +154,7 @@ Match 192.168.0.2
 
 	rawSixthEntry, _ := fifthEntry.Options.Get(uint32(7))
 	sixthEntry := rawSixthEntry.(*SSHOption)
-	if !(sixthEntry.Key.Value == "MaxAuthTries" && sixthEntry.OptionValue.Value == "3") {
+	if !(sixthEntry.Key.Value == "MaxAuthTries" && sixthEntry.OptionValue.Value == "3" && sixthEntry.LocationRange.Start.Line == 7) {
 		t.Errorf("Expected sixth entry to be 'MaxAuthTries 3', but got: %v", sixthEntry.Value)
 	}
 
@@ -199,7 +199,8 @@ Sample
 
 	rawFirstEntry, _ := p.Options.Get(uint32(1))
 	firstEntry := rawFirstEntry.(*SSHOption)
-	if !(firstEntry.Value == "PermitRootLogin no") {
+	firstEntryOpt, _ := p.FindOption(uint32(1))
+	if !(firstEntry.Value == "PermitRootLogin no" && firstEntry.LocationRange.Start.Line == 1 && firstEntryOpt == firstEntry) {
 		t.Errorf("Expected first entry to be 'PermitRootLogin no', but got: %v", firstEntry.Value)
 	}
 

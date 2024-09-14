@@ -22,14 +22,27 @@ type SSHIndexKey struct {
 	MatchBlock *ast.SSHMatchBlock
 }
 
+type SSHIndexAllOption struct {
+	MatchBlock *ast.SSHMatchBlock
+	Option   *ast.SSHOption
+}
+
 type SSHIndexes struct {
+	// Contains a map of `Option name + MatchBlock` to a list of options with that name
+	// This means an option may be specified inside a match block, and to get this
+	// option you need to know the match block it was specified in
+	// If you want to get all options for a specific name, you can use the `AllOptionsPerName` field
 	OptionsPerRelativeKey map[SSHIndexKey][]*ast.SSHOption
+
+	// This is a map of `Option name` to a list of options with that name
+	AllOptionsPerName map[string][]*SSHIndexAllOption
 }
 
 func CreateIndexes(config ast.SSHConfig) (*SSHIndexes, []common.LSPError) {
 	errs := make([]common.LSPError, 0)
 	indexes := &SSHIndexes{
 		OptionsPerRelativeKey: make(map[SSHIndexKey][]*ast.SSHOption),
+		AllOptionsPerName:     make(map[string][]*SSHIndexAllOption),
 	}
 
 	it := config.Options.Iterator()
@@ -82,6 +95,21 @@ func addOption(
 		}
 	} else {
 		i.OptionsPerRelativeKey[indexEntry] = []*ast.SSHOption{option}
+	}
+
+
+	if existingEntry, found := i.AllOptionsPerName[option.Key.Value]; found {
+		i.AllOptionsPerName[option.Key.Value] = append(existingEntry, &SSHIndexAllOption{
+			MatchBlock: matchBlock,
+			Option:    option,
+		})
+	} else {
+		i.AllOptionsPerName[option.Key.Value] = []*SSHIndexAllOption{
+			{
+				MatchBlock: matchBlock,
+				Option:   option,
+			},
+		}
 	}
 
 	return errs
