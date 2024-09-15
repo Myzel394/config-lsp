@@ -34,7 +34,7 @@
             pname = "github.com/Myzel394/config-lsp";
             version = "v0.0.1";
             src = ./.;
-            vendorHash = "sha256-KhyqogTyb3jNrGP+0Zmn/nfx+WxzjgcrFOp2vivFgT0=";
+            vendorHash = "sha256-PUVmhdbmfy1FaSzLt3SIK0MtWezsjb+PL+Z5YxMMhdw=";
             checkPhase = ''
               go test -v $(pwd)/...
             '';

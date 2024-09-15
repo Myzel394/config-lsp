@@ -19,6 +19,6 @@ jobs:
       - name: Check Nix flake
         run: nix flake check
 
-      - name: Run tests
-        run: nix develop --command bash -c 'go test ./...'
+      - name: Build app
+        run: nix build -L
 

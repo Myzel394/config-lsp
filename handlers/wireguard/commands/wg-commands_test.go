@@ -13,6 +13,10 @@ func TestWireguardAvailable(
 func TestWireguardPrivateKey(
 	t *testing.T,
 ) {
+	if !AreWireguardToolsAvailable() {
+		t.Skip("Wireguard tools not available")
+	}
+
 	privateKey, err := CreateNewPrivateKey()
 
 	if err != nil {
@@ -25,6 +29,10 @@ func TestWireguardPrivateKey(
 func TestWireguardPublicKey(
 	t *testing.T,
 ) {
+	if !AreWireguardToolsAvailable() {
+		t.Skip("Wireguard tools not available")
+	}
+
 	privateKey := "UPBKR0kLF2C/+Ei5fwN5KHsAcon9xfBX+RWhebYFGWg="
 	publicKey, err := CreatePublicKey(privateKey)
 
