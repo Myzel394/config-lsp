@@ -49,6 +49,8 @@ func Analyze(
 		}
 	}
 
+	errors = append(errors, analyzeMatchBlocks(d)...)
+
 	if len(errors) > 0 {
 		return errsToDiagnostics(errors)
 	}

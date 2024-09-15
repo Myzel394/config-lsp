@@ -93,6 +93,10 @@ func (s *sshParserListener) ExitEntry(ctx *parser.EntryContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.sshContext.line)
 
+	defer (func() {
+		s.sshContext.currentOption = nil
+	})()
+
 	if s.sshContext.isKeyAMatchBlock {
 		// Add new match block
 		var match *match_parser.Match
@@ -131,17 +135,20 @@ func (s *sshParserListener) ExitEntry(ctx *parser.EntryContext) {
 		s.sshContext.currentMatchBlock = matchBlock
 
 		s.sshContext.isKeyAMatchBlock = false
-	} else if s.sshContext.currentMatchBlock != nil {
+
+		return
+	}
+
+	if s.sshContext.currentMatchBlock != nil {
 		s.sshContext.currentMatchBlock.Options.Put(
 			location.Start.Line,
 			s.sshContext.currentOption,
 		)
+		s.sshContext.currentMatchBlock.End = s.sshContext.currentOption.End
 	} else {
 		s.Config.Options.Put(
 			location.Start.Line,
 			s.sshContext.currentOption,
 		)
 	}
-
-	s.sshContext.currentOption = nil
 }

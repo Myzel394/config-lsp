@@ -13,7 +13,7 @@ func getMatchCompletions(
 	match *match_parser.Match,
 	cursor uint32,
 ) ([]protocol.CompletionItem, error) {
-	if len(match.Entries) == 0 {
+	if match == nil || len(match.Entries) == 0 {
 		completions := getMatchCriteriaCompletions()
 		completions = append(completions, getMatchAllKeywordCompletion())
 

@@ -1,7 +1,7 @@
 grammar Config;
 
 lineStatement
-    : (entry | (leadingComment) | WHITESPACE?) EOF
+    : (entry | leadingComment | WHITESPACE?) EOF
     ;
 
 entry

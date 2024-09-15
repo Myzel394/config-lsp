@@ -82,6 +82,8 @@ func CreateIndexes(config ast.SSHConfig) (*SSHIndexes, []common.LSPError) {
 		case *ast.SSHMatchBlock:
 			matchBlock := entry.(*ast.SSHMatchBlock)
 
+			errs = append(errs, addOption(indexes, matchBlock.MatchEntry, matchBlock)...)
+
 			it := matchBlock.Options.Iterator()
 			for it.Next() {
 				option := it.Value().(*ast.SSHOption)

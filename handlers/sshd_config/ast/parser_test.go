@@ -92,6 +92,10 @@ Match Address 192.168.0.1
 		t.Errorf("Expected second entry to be 'Match Address 192.168.0.1', but got: %v", secondEntry.MatchEntry.Value)
 	}
 
+	if !(secondEntry.Start.Line == 2 && secondEntry.Start.Character == 0 && secondEntry.End.Line == 3 && secondEntry.End.Character == 26) {
+		t.Errorf("Expected second entry's location to be 2:0-3:25, but got: %v", secondEntry.LocationRange)
+	}
+
 	if !(secondEntry.MatchValue.Entries[0].Criteria.Type == "Address" && secondEntry.MatchValue.Entries[0].Values.Values[0].Value == "192.168.0.1" && secondEntry.MatchEntry.OptionValue.Start.Character == 6) {
 		t.Errorf("Expected second entry to be 'Match Address 192.168.0.1', but got: %v", secondEntry.MatchValue)
 	}
@@ -234,6 +238,17 @@ Match Address 192.168.0.2
 	matchOption, matchBlock := p.FindOption(uint32(2))
 	if !(matchOption.Value == "Match User lena" && matchBlock.MatchEntry.Value == "Match User lena" && matchBlock.MatchValue.Entries[0].Values.Values[0].Value == "lena" && matchBlock.MatchEntry.OptionValue.Start.Character == 6) {
 		t.Errorf("Expected match option to be 'Match User lena', but got: %v, %v", matchOption, matchBlock)
+	}
+
+	if !(matchOption.Start.Line == 2 && matchOption.End.Line == 2 && matchOption.Start.Character == 0 && matchOption.End.Character == 14) {
+		t.Errorf("Expected match option to be at 2:0-14, but got: %v", matchOption.LocationRange)
+	}
+
+	if !(matchBlock.Start.Line == 2 &&
+		matchBlock.Start.Character == 0 &&
+		matchBlock.End.Line == 4 &&
+		matchBlock.End.Character == 20) {
+		t.Errorf("Expected match block to be at 2:0-4:20, but got: %v", matchBlock.LocationRange)
 	}
 }
 

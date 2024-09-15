@@ -2,6 +2,7 @@ package utils
 
 import (
 	"regexp"
+	"strings"
 )
 
 var trimIndexPattern = regexp.MustCompile(`^\s*(.+?)\s*$`)
@@ -56,4 +57,22 @@ var emptyRegex = regexp.MustCompile(`^\s*$`)
 
 func IsEmpty(s string) bool {
 	return emptyRegex.MatchString(s)
+}
+
+func AllIndexes(s string, sub string) []int {
+	indexes := make([]int, 0)
+	current := s
+
+	for {
+		index := strings.Index(current, sub)
+
+		if index == -1 {
+			break
+		}
+
+		indexes = append(indexes, index)
+		current = current[index+1:]
+	}
+
+	return indexes
 }

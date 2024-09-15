@@ -1,6 +1,7 @@
 package lsp
 
 import (
+	"config-lsp/common"
 	"config-lsp/handlers/aliases"
 	"config-lsp/handlers/aliases/ast"
 	"config-lsp/handlers/aliases/handlers"
@@ -13,7 +14,7 @@ func TextDocumentSignatureHelp(context *glsp.Context, params *protocol.Signature
 	document := aliases.DocumentParserMap[params.TextDocument.URI]
 
 	line := params.Position.Line
-	character := params.Position.Character
+	character := common.CursorToCharacterIndex(params.Position.Character)
 
 	if _, found := document.Parser.CommentLines[line]; found {
 		// Comment
