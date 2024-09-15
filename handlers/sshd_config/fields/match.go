@@ -1,5 +1,7 @@
 package fields
 
+import docvalues "config-lsp/doc-values"
+
 var MatchAllowedOptions = map[string]struct{}{
 	"AcceptEnv":                       {},
 	"AllowAgentForwarding":            {},
@@ -60,4 +62,16 @@ var MatchAllowedOptions = map[string]struct{}{
 	"X11DisplayOffset":                {},
 	"X11Forwarding":                   {},
 	"X11UseLocalhos":                  {},
+}
+
+var MatchUserField = docvalues.UserValue("", false)
+var MatchGroupField = docvalues.GroupValue("", false)
+var MatchHostField = docvalues.DomainValue()
+var MatchLocalAddressField = docvalues.StringValue{}
+var MatchLocalPortField = docvalues.StringValue{}
+var MatchRDomainField = docvalues.StringValue{}
+var MatchAddressField = docvalues.IPAddressValue{
+	AllowIPv4:  true,
+	AllowIPv6:  true,
+	AllowRange: true,
 }

@@ -563,27 +563,7 @@ The arguments to Match are one or more criteria-pattern pairs or the single toke
 The match patterns may consist of single entries or comma-separated lists and may use the wildcard and negation operators described in the “PATTERNS” section of ssh_config(5).
 The patterns in an Address criteria may additionally contain addresses to match in CIDR address/masklen format, such as 192.0.2.0/24 or 2001:db8::/32. Note that the mask length provided must be consistent with the address - it is an error to specify a mask length that is too long for the address or one with bits set in this host portion of the address. For example, 192.0.2.0/33 and 192.0.2.0/8, respectively.
 Only a subset of keywords may be used on the lines following a Match keyword. Available keywords are AcceptEnv, AllowAgentForwarding, AllowGroups, AllowStreamLocalForwarding, AllowTcpForwarding, AllowUsers, AuthenticationMethods, AuthorizedKeysCommand, AuthorizedKeysCommandUser, AuthorizedKeysFile, AuthorizedPrincipalsCommand, AuthorizedPrincipalsCommandUser, AuthorizedPrincipalsFile, Banner, CASignatureAlgorithms, ChannelTimeout, ChrootDirectory, ClientAliveCountMax, ClientAliveInterval, DenyGroups, DenyUsers, DisableForwarding, ExposeAuthInfo, ForceCommand, GatewayPorts, GSSAPIAuthentication, HostbasedAcceptedAlgorithms, HostbasedAuthentication, HostbasedUsesNameFromPacketOnly, IgnoreRhosts, Include, IPQoS, KbdInteractiveAuthentication, KerberosAuthentication, LogLevel, MaxAuthTries, MaxSessions, PasswordAuthentication, PermitEmptyPasswords, PermitListen, PermitOpen, PermitRootLogin, PermitTTY, PermitTunnel, PermitUserRC, PubkeyAcceptedAlgorithms, PubkeyAuthentication, PubkeyAuthOptions, RekeyLimit, RevokedKeys, RDomain, SetEnv, StreamLocalBindMask, StreamLocalBindUnlink, TrustedUserCAKeys, UnusedConnectionTimeout, X11DisplayOffset, X11Forwarding and X11UseLocalhost.`,
-		Value: docvalues.OrValue{
-			Values: []docvalues.Value{
-				docvalues.SingleEnumValue("All"),
-				docvalues.ArrayValue{
-					Separator:           ",",
-					DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
-					SubValue: docvalues.KeyEnumAssignmentValue{
-						Separator: " ",
-						Values: map[docvalues.EnumString]docvalues.Value{
-							docvalues.CreateEnumString("User"):         docvalues.UserValue("", false),
-							docvalues.CreateEnumString("Group"):        docvalues.GroupValue("", false),
-							docvalues.CreateEnumString("Host"):         docvalues.StringValue{},
-							docvalues.CreateEnumString("LocalAddress"): docvalues.StringValue{},
-							docvalues.CreateEnumString("LocalPort"):    docvalues.NumberValue{Min: &ZERO, Max: &MAX_PORT},
-							docvalues.CreateEnumString("RDomain"):      docvalues.StringValue{},
-							docvalues.CreateEnumString("Address"):      docvalues.StringValue{},
-						},
-					},
-				},
-			},
-		},
+		Value: docvalues.StringValue{},
 	},
 	"MaxAuthTries": {
 		Documentation: `Specifies the maximum number of authentication attempts permitted per connection. Once the number of failures reaches half this value, additional failures are logged. The default is 6.`,

@@ -40,29 +40,30 @@ func matchParserInit() {
 		"ADDRESS", "COMMA", "STRING", "WHITESPACE",
 	}
 	staticData.RuleNames = []string{
-		"root", "matchEntry", "criteria", "values", "value",
+		"root", "matchEntry", "separator", "criteria", "values", "value",
 	}
 	staticData.PredictionContextCache = antlr.NewPredictionContextCache()
 	staticData.serializedATN = []int32{
-		4, 1, 10, 46, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7,
-		4, 1, 0, 3, 0, 12, 8, 0, 1, 0, 1, 0, 5, 0, 16, 8, 0, 10, 0, 12, 0, 19,
-		9, 0, 1, 0, 1, 0, 1, 1, 1, 1, 3, 1, 25, 8, 1, 1, 1, 3, 1, 28, 8, 1, 1,
-		2, 1, 2, 1, 3, 3, 3, 33, 8, 3, 1, 3, 1, 3, 3, 3, 37, 8, 3, 5, 3, 39, 8,
-		3, 10, 3, 12, 3, 42, 9, 3, 1, 4, 1, 4, 1, 4, 0, 0, 5, 0, 2, 4, 6, 8, 0,
-		1, 1, 0, 1, 7, 47, 0, 11, 1, 0, 0, 0, 2, 22, 1, 0, 0, 0, 4, 29, 1, 0, 0,
-		0, 6, 32, 1, 0, 0, 0, 8, 43, 1, 0, 0, 0, 10, 12, 3, 2, 1, 0, 11, 10, 1,
-		0, 0, 0, 11, 12, 1, 0, 0, 0, 12, 17, 1, 0, 0, 0, 13, 14, 5, 10, 0, 0, 14,
-		16, 3, 2, 1, 0, 15, 13, 1, 0, 0, 0, 16, 19, 1, 0, 0, 0, 17, 15, 1, 0, 0,
-		0, 17, 18, 1, 0, 0, 0, 18, 20, 1, 0, 0, 0, 19, 17, 1, 0, 0, 0, 20, 21,
-		5, 0, 0, 1, 21, 1, 1, 0, 0, 0, 22, 24, 3, 4, 2, 0, 23, 25, 5, 10, 0, 0,
-		24, 23, 1, 0, 0, 0, 24, 25, 1, 0, 0, 0, 25, 27, 1, 0, 0, 0, 26, 28, 3,
-		6, 3, 0, 27, 26, 1, 0, 0, 0, 27, 28, 1, 0, 0, 0, 28, 3, 1, 0, 0, 0, 29,
-		30, 7, 0, 0, 0, 30, 5, 1, 0, 0, 0, 31, 33, 3, 8, 4, 0, 32, 31, 1, 0, 0,
-		0, 32, 33, 1, 0, 0, 0, 33, 40, 1, 0, 0, 0, 34, 36, 5, 8, 0, 0, 35, 37,
-		3, 8, 4, 0, 36, 35, 1, 0, 0, 0, 36, 37, 1, 0, 0, 0, 37, 39, 1, 0, 0, 0,
-		38, 34, 1, 0, 0, 0, 39, 42, 1, 0, 0, 0, 40, 38, 1, 0, 0, 0, 40, 41, 1,
-		0, 0, 0, 41, 7, 1, 0, 0, 0, 42, 40, 1, 0, 0, 0, 43, 44, 5, 9, 0, 0, 44,
-		9, 1, 0, 0, 0, 7, 11, 17, 24, 27, 32, 36, 40,
+		4, 1, 10, 50, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7,
+		4, 2, 5, 7, 5, 1, 0, 3, 0, 14, 8, 0, 1, 0, 1, 0, 3, 0, 18, 8, 0, 5, 0,
+		20, 8, 0, 10, 0, 12, 0, 23, 9, 0, 1, 0, 1, 0, 1, 1, 1, 1, 3, 1, 29, 8,
+		1, 1, 1, 3, 1, 32, 8, 1, 1, 2, 1, 2, 1, 3, 1, 3, 1, 4, 1, 4, 1, 4, 3, 4,
+		41, 8, 4, 5, 4, 43, 8, 4, 10, 4, 12, 4, 46, 9, 4, 1, 5, 1, 5, 1, 5, 0,
+		0, 6, 0, 2, 4, 6, 8, 10, 0, 1, 1, 0, 1, 7, 50, 0, 13, 1, 0, 0, 0, 2, 26,
+		1, 0, 0, 0, 4, 33, 1, 0, 0, 0, 6, 35, 1, 0, 0, 0, 8, 37, 1, 0, 0, 0, 10,
+		47, 1, 0, 0, 0, 12, 14, 3, 2, 1, 0, 13, 12, 1, 0, 0, 0, 13, 14, 1, 0, 0,
+		0, 14, 21, 1, 0, 0, 0, 15, 17, 5, 10, 0, 0, 16, 18, 3, 2, 1, 0, 17, 16,
+		1, 0, 0, 0, 17, 18, 1, 0, 0, 0, 18, 20, 1, 0, 0, 0, 19, 15, 1, 0, 0, 0,
+		20, 23, 1, 0, 0, 0, 21, 19, 1, 0, 0, 0, 21, 22, 1, 0, 0, 0, 22, 24, 1,
+		0, 0, 0, 23, 21, 1, 0, 0, 0, 24, 25, 5, 0, 0, 1, 25, 1, 1, 0, 0, 0, 26,
+		28, 3, 6, 3, 0, 27, 29, 3, 4, 2, 0, 28, 27, 1, 0, 0, 0, 28, 29, 1, 0, 0,
+		0, 29, 31, 1, 0, 0, 0, 30, 32, 3, 8, 4, 0, 31, 30, 1, 0, 0, 0, 31, 32,
+		1, 0, 0, 0, 32, 3, 1, 0, 0, 0, 33, 34, 5, 10, 0, 0, 34, 5, 1, 0, 0, 0,
+		35, 36, 7, 0, 0, 0, 36, 7, 1, 0, 0, 0, 37, 44, 3, 10, 5, 0, 38, 40, 5,
+		8, 0, 0, 39, 41, 3, 10, 5, 0, 40, 39, 1, 0, 0, 0, 40, 41, 1, 0, 0, 0, 41,
+		43, 1, 0, 0, 0, 42, 38, 1, 0, 0, 0, 43, 46, 1, 0, 0, 0, 44, 42, 1, 0, 0,
+		0, 44, 45, 1, 0, 0, 0, 45, 9, 1, 0, 0, 0, 46, 44, 1, 0, 0, 0, 47, 48, 5,
+		9, 0, 0, 48, 11, 1, 0, 0, 0, 7, 13, 17, 21, 28, 31, 40, 44,
 	}
 	deserializer := antlr.NewATNDeserializer(nil)
 	staticData.atn = deserializer.Deserialize(staticData.serializedATN)
@@ -117,9 +118,10 @@ const (
 const (
 	MatchParserRULE_root       = 0
 	MatchParserRULE_matchEntry = 1
-	MatchParserRULE_criteria   = 2
-	MatchParserRULE_values     = 3
-	MatchParserRULE_value      = 4
+	MatchParserRULE_separator  = 2
+	MatchParserRULE_criteria   = 3
+	MatchParserRULE_values     = 4
+	MatchParserRULE_value      = 5
 )
 
 // IRootContext is an interface to support dynamic dispatch.
@@ -251,7 +253,7 @@ func (p *MatchParser) Root() (localctx IRootContext) {
 	var _la int
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(11)
+	p.SetState(13)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -260,12 +262,12 @@ func (p *MatchParser) Root() (localctx IRootContext) {
 
 	if (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&254) != 0 {
 		{
-			p.SetState(10)
+			p.SetState(12)
 			p.MatchEntry()
 		}
 
 	}
-	p.SetState(17)
+	p.SetState(21)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -274,19 +276,29 @@ func (p *MatchParser) Root() (localctx IRootContext) {
 
 	for _la == MatchParserWHITESPACE {
 		{
-			p.SetState(13)
+			p.SetState(15)
 			p.Match(MatchParserWHITESPACE)
 			if p.HasError() {
 				// Recognition error - abort rule
 				goto errorExit
 			}
 		}
-		{
-			p.SetState(14)
-			p.MatchEntry()
+		p.SetState(17)
+		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
+		_la = p.GetTokenStream().LA(1)
+
+		if (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&254) != 0 {
+			{
+				p.SetState(16)
+				p.MatchEntry()
+			}
+
 		}
 
-		p.SetState(19)
+		p.SetState(23)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
@@ -294,7 +306,7 @@ func (p *MatchParser) Root() (localctx IRootContext) {
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
-		p.SetState(20)
+		p.SetState(24)
 		p.Match(MatchParserEOF)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -324,7 +336,7 @@ type IMatchEntryContext interface {
 
 	// Getter signatures
 	Criteria() ICriteriaContext
-	WHITESPACE() antlr.TerminalNode
+	Separator() ISeparatorContext
 	Values() IValuesContext
 
 	// IsMatchEntryContext differentiates from other interfaces.
@@ -379,8 +391,20 @@ func (s *MatchEntryContext) Criteria() ICriteriaContext {
 	return t.(ICriteriaContext)
 }
 
-func (s *MatchEntryContext) WHITESPACE() antlr.TerminalNode {
-	return s.GetToken(MatchParserWHITESPACE, 0)
+func (s *MatchEntryContext) Separator() ISeparatorContext {
+	var t antlr.RuleContext
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(ISeparatorContext); ok {
+			t = ctx.(antlr.RuleContext)
+			break
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(ISeparatorContext)
 }
 
 func (s *MatchEntryContext) Values() IValuesContext {
@@ -422,38 +446,134 @@ func (s *MatchEntryContext) ExitRule(listener antlr.ParseTreeListener) {
 func (p *MatchParser) MatchEntry() (localctx IMatchEntryContext) {
 	localctx = NewMatchEntryContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 2, MatchParserRULE_matchEntry)
+	var _la int
+
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(22)
+		p.SetState(26)
 		p.Criteria()
 	}
-	p.SetState(24)
-	p.GetErrorHandler().Sync(p)
-
-	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 2, p.GetParserRuleContext()) == 1 {
-		{
-			p.SetState(23)
-			p.Match(MatchParserWHITESPACE)
-			if p.HasError() {
-				// Recognition error - abort rule
-				goto errorExit
-			}
-		}
-
-	} else if p.HasError() { // JIM
-		goto errorExit
-	}
-	p.SetState(27)
+	p.SetState(28)
 	p.GetErrorHandler().Sync(p)
 
 	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 3, p.GetParserRuleContext()) == 1 {
 		{
-			p.SetState(26)
-			p.Values()
+			p.SetState(27)
+			p.Separator()
 		}
 
 	} else if p.HasError() { // JIM
 		goto errorExit
+	}
+	p.SetState(31)
+	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
+	_la = p.GetTokenStream().LA(1)
+
+	if _la == MatchParserSTRING {
+		{
+			p.SetState(30)
+			p.Values()
+		}
+
+	}
+
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
+	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
+}
+
+// ISeparatorContext is an interface to support dynamic dispatch.
+type ISeparatorContext interface {
+	antlr.ParserRuleContext
+
+	// GetParser returns the parser.
+	GetParser() antlr.Parser
+
+	// Getter signatures
+	WHITESPACE() antlr.TerminalNode
+
+	// IsSeparatorContext differentiates from other interfaces.
+	IsSeparatorContext()
+}
+
+type SeparatorContext struct {
+	antlr.BaseParserRuleContext
+	parser antlr.Parser
+}
+
+func NewEmptySeparatorContext() *SeparatorContext {
+	var p = new(SeparatorContext)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = MatchParserRULE_separator
+	return p
+}
+
+func InitEmptySeparatorContext(p *SeparatorContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = MatchParserRULE_separator
+}
+
+func (*SeparatorContext) IsSeparatorContext() {}
+
+func NewSeparatorContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *SeparatorContext {
+	var p = new(SeparatorContext)
+
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
+
+	p.parser = parser
+	p.RuleIndex = MatchParserRULE_separator
+
+	return p
+}
+
+func (s *SeparatorContext) GetParser() antlr.Parser { return s.parser }
+
+func (s *SeparatorContext) WHITESPACE() antlr.TerminalNode {
+	return s.GetToken(MatchParserWHITESPACE, 0)
+}
+
+func (s *SeparatorContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *SeparatorContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+	return antlr.TreesStringTree(s, ruleNames, recog)
+}
+
+func (s *SeparatorContext) EnterRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(MatchListener); ok {
+		listenerT.EnterSeparator(s)
+	}
+}
+
+func (s *SeparatorContext) ExitRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(MatchListener); ok {
+		listenerT.ExitSeparator(s)
+	}
+}
+
+func (p *MatchParser) Separator() (localctx ISeparatorContext) {
+	localctx = NewSeparatorContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 4, MatchParserRULE_separator)
+	p.EnterOuterAlt(localctx, 1)
+	{
+		p.SetState(33)
+		p.Match(MatchParserWHITESPACE)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
+		}
 	}
 
 errorExit:
@@ -571,12 +691,12 @@ func (s *CriteriaContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *MatchParser) Criteria() (localctx ICriteriaContext) {
 	localctx = NewCriteriaContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 4, MatchParserRULE_criteria)
+	p.EnterRule(localctx, 6, MatchParserRULE_criteria)
 	var _la int
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(29)
+		p.SetState(35)
 		_la = p.GetTokenStream().LA(1)
 
 		if !((int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&254) != 0) {
@@ -720,25 +840,15 @@ func (s *ValuesContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *MatchParser) Values() (localctx IValuesContext) {
 	localctx = NewValuesContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 6, MatchParserRULE_values)
+	p.EnterRule(localctx, 8, MatchParserRULE_values)
 	var _la int
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(32)
-	p.GetErrorHandler().Sync(p)
-	if p.HasError() {
-		goto errorExit
+	{
+		p.SetState(37)
+		p.Value()
 	}
-	_la = p.GetTokenStream().LA(1)
-
-	if _la == MatchParserSTRING {
-		{
-			p.SetState(31)
-			p.Value()
-		}
-
-	}
-	p.SetState(40)
+	p.SetState(44)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -747,14 +857,14 @@ func (p *MatchParser) Values() (localctx IValuesContext) {
 
 	for _la == MatchParserCOMMA {
 		{
-			p.SetState(34)
+			p.SetState(38)
 			p.Match(MatchParserCOMMA)
 			if p.HasError() {
 				// Recognition error - abort rule
 				goto errorExit
 			}
 		}
-		p.SetState(36)
+		p.SetState(40)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
@@ -763,13 +873,13 @@ func (p *MatchParser) Values() (localctx IValuesContext) {
 
 		if _la == MatchParserSTRING {
 			{
-				p.SetState(35)
+				p.SetState(39)
 				p.Value()
 			}
 
 		}
 
-		p.SetState(42)
+		p.SetState(46)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
@@ -862,10 +972,10 @@ func (s *ValueContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *MatchParser) Value() (localctx IValueContext) {
 	localctx = NewValueContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 8, MatchParserRULE_value)
+	p.EnterRule(localctx, 10, MatchParserRULE_value)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(43)
+		p.SetState(47)
 		p.Match(MatchParserSTRING)
 		if p.HasError() {
 			// Recognition error - abort rule

@@ -1,7 +1,7 @@
 grammar Config;
 
 lineStatement
-    : (entry | (WHITESPACE? leadingComment) | WHITESPACE?) EOF
+    : (entry | (leadingComment) | WHITESPACE?) EOF
     ;
 
 entry
@@ -17,7 +17,7 @@ key
     ;
 
 value
-    : (STRING WHITESPACE)? STRING WHITESPACE?
+    : (STRING WHITESPACE)* STRING? WHITESPACE?
     ;
 
 leadingComment

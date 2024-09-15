@@ -1,25 +1,23 @@
 grammar Match;
 
 root
-    : matchEntry? (WHITESPACE matchEntry)* EOF
+    : matchEntry? (WHITESPACE matchEntry?)* EOF
     ;
 
 matchEntry
-    : criteria WHITESPACE? values?
+    : criteria separator? values?
+    ;
+
+separator
+    : WHITESPACE
     ;
 
 criteria
-    : USER
-    | GROUP
-    | HOST
-    | LOCALADDRESS
-    | LOCALPORT
-    | RDOMAIN
-    | ADDRESS
+    : (USER | GROUP | HOST| LOCALADDRESS | LOCALPORT | RDOMAIN | ADDRESS)
     ;
 
 values
-    : value? (COMMA value?)*
+    : value (COMMA value?)*
     ;
 
 value

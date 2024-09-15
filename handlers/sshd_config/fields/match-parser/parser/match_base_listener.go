@@ -33,6 +33,12 @@ func (s *BaseMatchListener) EnterMatchEntry(ctx *MatchEntryContext) {}
 // ExitMatchEntry is called when production matchEntry is exited.
 func (s *BaseMatchListener) ExitMatchEntry(ctx *MatchEntryContext) {}
 
+// EnterSeparator is called when production separator is entered.
+func (s *BaseMatchListener) EnterSeparator(ctx *SeparatorContext) {}
+
+// ExitSeparator is called when production separator is exited.
+func (s *BaseMatchListener) ExitSeparator(ctx *SeparatorContext) {}
+
 // EnterCriteria is called when production criteria is entered.
 func (s *BaseMatchListener) EnterCriteria(ctx *CriteriaContext) {}
 

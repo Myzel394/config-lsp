@@ -14,6 +14,9 @@ type MatchListener interface {
 	// EnterMatchEntry is called when entering the matchEntry production.
 	EnterMatchEntry(c *MatchEntryContext)
 
+	// EnterSeparator is called when entering the separator production.
+	EnterSeparator(c *SeparatorContext)
+
 	// EnterCriteria is called when entering the criteria production.
 	EnterCriteria(c *CriteriaContext)
 
@@ -28,6 +31,9 @@ type MatchListener interface {
 
 	// ExitMatchEntry is called when exiting the matchEntry production.
 	ExitMatchEntry(c *MatchEntryContext)
+
+	// ExitSeparator is called when exiting the separator production.
+	ExitSeparator(c *SeparatorContext)
 
 	// ExitCriteria is called when exiting the criteria production.
 	ExitCriteria(c *CriteriaContext)

@@ -26,12 +26,23 @@ type MatchCriteria struct {
 	Type MatchCriteriaType
 }
 
+type MatchSeparator struct {
+	common.LocationRange
+}
+
+type MatchValues struct {
+	common.LocationRange
+
+	Values []*MatchValue
+}
+
 type MatchEntry struct {
 	common.LocationRange
 	Value string
 
-	Criteria MatchCriteriaType
-	Values   []*MatchValue
+	Criteria  MatchCriteria
+	Separator *MatchSeparator
+	Values    *MatchValues
 }
 
 type MatchValue struct {

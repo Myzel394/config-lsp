@@ -11,16 +11,19 @@ import (
 
 func createMatchListenerContext(
 	line uint32,
+	startCharacter uint32,
 ) *matchListenerContext {
 	return &matchListenerContext{
-		currentEntry: nil,
-		line:         line,
+		currentEntry:   nil,
+		line:           line,
+		startCharacter: startCharacter,
 	}
 }
 
 type matchListenerContext struct {
-	currentEntry *MatchEntry
-	line         uint32
+	currentEntry   *MatchEntry
+	line           uint32
+	startCharacter uint32
 }
 
 func createListener(
@@ -42,13 +45,12 @@ type matchParserListener struct {
 }
 
 func (s *matchParserListener) EnterMatchEntry(ctx *parser.MatchEntryContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter)
 	location.ChangeBothLines(s.matchContext.line)
 
 	entry := &MatchEntry{
 		LocationRange: location,
 		Value:         ctx.GetText(),
-		Values:        make([]*MatchValue, 0),
 	}
 
 	s.match.Entries = append(s.match.Entries, entry)
@@ -70,7 +72,7 @@ var availableCriteria = map[string]MatchCriteriaType{
 }
 
 func (s *matchParserListener) EnterCriteria(ctx *parser.CriteriaContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter)
 	location.ChangeBothLines(s.matchContext.line)
 
 	criteria, found := availableCriteria[ctx.GetText()]
@@ -83,11 +85,33 @@ func (s *matchParserListener) EnterCriteria(ctx *parser.CriteriaContext) {
 		return
 	}
 
-	s.matchContext.currentEntry.Criteria = criteria
+	s.matchContext.currentEntry.Criteria = MatchCriteria{
+		LocationRange: location,
+		Type:          criteria,
+	}
+}
+
+func (s *matchParserListener) EnterSeparator(ctx *parser.SeparatorContext) {
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter)
+	location.ChangeBothLines(s.matchContext.line)
+
+	s.matchContext.currentEntry.Separator = &MatchSeparator{
+		LocationRange: location,
+	}
+}
+
+func (s *matchParserListener) EnterValues(ctx *parser.ValuesContext) {
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter)
+	location.ChangeBothLines(s.matchContext.line)
+
+	s.matchContext.currentEntry.Values = &MatchValues{
+		LocationRange: location,
+		Values:        make([]*MatchValue, 0),
+	}
 }
 
 func (s *matchParserListener) EnterValue(ctx *parser.ValueContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter)
 	location.ChangeBothLines(s.matchContext.line)
 
 	value := &MatchValue{
@@ -95,5 +119,5 @@ func (s *matchParserListener) EnterValue(ctx *parser.ValueContext) {
 		Value:         ctx.GetText(),
 	}
 
-	s.matchContext.currentEntry.Values = append(s.matchContext.currentEntry.Values, value)
+	s.matchContext.currentEntry.Values.Values = append(s.matchContext.currentEntry.Values.Values, value)
 }

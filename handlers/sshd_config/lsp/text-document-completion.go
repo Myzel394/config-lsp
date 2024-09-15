@@ -14,7 +14,7 @@ var isEmptyPattern = regexp.MustCompile(`^\s*$`)
 
 func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionParams) (any, error) {
 	line := params.Position.Line
-	cursor := params.Position.Character
+	cursor := common.CursorToCharacterIndex(params.Position.Character)
 
 	d := sshdconfig.DocumentParserMap[params.TextDocument.URI]
 
@@ -27,7 +27,7 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 	if entry == nil ||
 		entry.Separator == nil ||
 		entry.Key == nil ||
-		(common.CursorToCharacterIndex(cursor)) <= entry.Key.End.Character {
+		cursor <= entry.Key.End.Character {
 
 		return handlers.GetRootCompletions(
 			d,
@@ -37,10 +37,11 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 		)
 	}
 
-	if entry.Separator != nil && cursor > entry.Separator.End.Character {
+	if entry.Separator != nil && cursor >= entry.Separator.End.Character {
 		return handlers.GetOptionCompletions(
 			d,
 			entry,
+			matchBlock,
 			cursor,
 		)
 	}

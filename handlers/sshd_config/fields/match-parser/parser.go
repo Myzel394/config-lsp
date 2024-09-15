@@ -20,8 +20,9 @@ func (m *Match) Clear() {
 func (m *Match) Parse(
 	input string,
 	line uint32,
+	startCharacter uint32,
 ) []common.LSPError {
-	context := createMatchListenerContext(line)
+	context := createMatchListenerContext(line, startCharacter)
 
 	stream := antlr.NewInputStream(input)
 

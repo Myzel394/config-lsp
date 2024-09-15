@@ -92,7 +92,7 @@ Match Address 192.168.0.1
 		t.Errorf("Expected second entry to be 'Match Address 192.168.0.1', but got: %v", secondEntry.MatchEntry.Value)
 	}
 
-	if !(secondEntry.MatchValue.Entries[0].Criteria == "Address" && secondEntry.MatchValue.Entries[0].Values[0].Value == "192.168.0.1") {
+	if !(secondEntry.MatchValue.Entries[0].Criteria.Type == "Address" && secondEntry.MatchValue.Entries[0].Values.Values[0].Value == "192.168.0.1" && secondEntry.MatchEntry.OptionValue.Start.Character == 6) {
 		t.Errorf("Expected second entry to be 'Match Address 192.168.0.1', but got: %v", secondEntry.MatchValue)
 	}
 
@@ -104,6 +104,65 @@ Match Address 192.168.0.1
 	thirdEntry := rawThirdEntry.(*SSHOption)
 	if !(thirdEntry.Key.Value == "PasswordAuthentication" && thirdEntry.OptionValue.Value == "yes") {
 		t.Errorf("Expected third entry to be 'PasswordAuthentication yes', but got: %v", thirdEntry.Value)
+	}
+}
+
+func TestMultipleEntriesInMatchBlock(
+	t *testing.T,
+) {
+	input := utils.Dedent(`
+Match User lena User root
+`)
+	p := NewSSHConfig()
+	errors := p.Parse(input)
+
+	if len(errors) != 0 {
+		t.Fatalf("Expected no errors, got %v", errors)
+	}
+
+	_, matchBlock := p.FindOption(uint32(0))
+
+	if !(matchBlock.MatchEntry.Value == "Match User lena User root") {
+		t.Errorf("Expected match block to be 'Match User lena User root', but got: %v", matchBlock.MatchEntry.Value)
+	}
+
+	if !(len(matchBlock.MatchValue.Entries) == 2) {
+		t.Errorf("Expected 2 entries in match block, but got: %v", matchBlock.MatchValue.Entries)
+	}
+
+	if !(matchBlock.MatchValue.Entries[0].Criteria.Type == "User" && matchBlock.MatchValue.Entries[0].Values.Values[0].Value == "lena") {
+		t.Errorf("Expected first entry to be 'User lena', but got: %v", matchBlock.MatchValue.Entries[0])
+	}
+
+	if !(matchBlock.MatchValue.Entries[1].Criteria.Type == "User" && matchBlock.MatchValue.Entries[1].Values.Values[0].Value == "root") {
+		t.Errorf("Expected second entry to be 'User root', but got: %v", matchBlock.MatchValue.Entries[1])
+	}
+}
+
+func TestIncompleteMatchBlock(
+	t *testing.T,
+) {
+	input := "Match User lena User "
+
+	p := NewSSHConfig()
+	errors := p.Parse(input)
+
+	if !(len(errors) == 0) {
+		t.Errorf("Expected 0 error, got %v", errors)
+	}
+
+	_, matchBlock := p.FindOption(uint32(0))
+
+	if !(matchBlock.MatchEntry.Value == "Match User lena User ") {
+		t.Errorf("Expected match block to be 'Match User lena User ', but got: %v", matchBlock.MatchEntry.Value)
+	}
+
+	if !(matchBlock.MatchValue.Entries[0].Criteria.Type == "User" && matchBlock.MatchValue.Entries[0].Values.Values[0].Value == "lena") {
+		t.Errorf("Expected first entry to be 'User lena', but got: %v", matchBlock.MatchValue.Entries[0])
+	}
+
+	if !(matchBlock.MatchValue.Entries[1].Value == "User " && matchBlock.MatchValue.Entries[1].Criteria.Type == "User" && matchBlock.MatchValue.Entries[1].Values == nil) {
+		t.Errorf("Expected second entry to be 'User ', but got: %v", matchBlock.MatchValue.Entries[1])
 	}
 }
 
@@ -168,12 +227,12 @@ Match Address 192.168.0.2
 	}
 
 	emptyOption, matchBlock := p.FindOption(uint32(5))
-	if !(emptyOption == nil && matchBlock.MatchEntry.Value == "Match User lena" && matchBlock.MatchValue.Entries[0].Values[0].Value == "lena") {
+	if !(emptyOption == nil && matchBlock.MatchEntry.Value == "Match User lena" && matchBlock.MatchValue.Entries[0].Values.Values[0].Value == "lena") {
 		t.Errorf("Expected empty option and match block to be 'Match User lena', but got: %v, %v", emptyOption, matchBlock)
 	}
 
 	matchOption, matchBlock := p.FindOption(uint32(2))
-	if !(matchOption.Value == "Match User lena" && matchBlock.MatchEntry.Value == "Match User lena" && matchBlock.MatchValue.Entries[0].Values[0].Value == "lena") {
+	if !(matchOption.Value == "Match User lena" && matchBlock.MatchEntry.Value == "Match User lena" && matchBlock.MatchValue.Entries[0].Values.Values[0].Value == "lena" && matchBlock.MatchEntry.OptionValue.Start.Character == 6) {
 		t.Errorf("Expected match option to be 'Match User lena', but got: %v, %v", matchOption, matchBlock)
 	}
 }
@@ -416,7 +475,7 @@ Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1
 		t.Errorf("Expected fourth entry to be 'Match User anoncvs', but got: %v", fourthEntry.MatchEntry.Value)
 	}
 
-	if !(fourthEntry.MatchValue.Entries[0].Criteria == "User" && fourthEntry.MatchValue.Entries[0].Values[0].Value == "anoncvs") {
+	if !(fourthEntry.MatchValue.Entries[0].Criteria.Type == "User" && fourthEntry.MatchValue.Entries[0].Values.Values[0].Value == "anoncvs") {
 		t.Errorf("Expected fourth entry to be 'Match User anoncvs', but got: %v", fourthEntry.MatchValue)
 	}
 
@@ -440,7 +499,7 @@ Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1
 		t.Errorf("Expected sixth entry to be 'Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1', but got: %v", sixthEntry.MatchEntry.Value)
 	}
 
-	if !(sixthEntry.MatchValue.Entries[0].Criteria == "Address" && len(sixthEntry.MatchValue.Entries[0].Values) == 3) {
+	if !(sixthEntry.MatchValue.Entries[0].Criteria.Type == "Address" && len(sixthEntry.MatchValue.Entries[0].Values.Values) == 3) {
 		t.Errorf("Expected sixth entry to contain 3 values, but got: %v", sixthEntry.MatchValue)
 	}
 

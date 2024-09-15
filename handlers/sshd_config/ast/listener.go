@@ -95,30 +95,40 @@ func (s *sshParserListener) ExitEntry(ctx *parser.EntryContext) {
 
 	if s.sshContext.isKeyAMatchBlock {
 		// Add new match block
-		match := match_parser.NewMatch()
-		errors := match.Parse(s.sshContext.currentOption.OptionValue.Value, location.Start.Line)
+		var match *match_parser.Match
 
-		if len(errors) > 0 {
-			for _, err := range errors {
-				s.Errors = append(s.Errors, common.LSPError{
-					Range: err.Range.ShiftHorizontal(s.sshContext.currentOption.Start.Character),
-					Err:   err.Err,
-				})
-			}
-		} else {
-			matchBlock := &SSHMatchBlock{
-				LocationRange: location,
-				MatchEntry:    s.sshContext.currentOption,
-				MatchValue:    match,
-				Options:       treemap.NewWith(gods.UInt32Comparator),
-			}
-			s.Config.Options.Put(
+		if s.sshContext.currentOption.OptionValue != nil {
+			matchParser := match_parser.NewMatch()
+			errors := matchParser.Parse(
+				s.sshContext.currentOption.OptionValue.Value,
 				location.Start.Line,
-				matchBlock,
+				s.sshContext.currentOption.OptionValue.Start.Character,
 			)
 
-			s.sshContext.currentMatchBlock = matchBlock
+			if len(errors) > 0 {
+				for _, err := range errors {
+					s.Errors = append(s.Errors, common.LSPError{
+						Range: err.Range.ShiftHorizontal(s.sshContext.currentOption.Start.Character),
+						Err:   err.Err,
+					})
+				}
+			} else {
+				match = matchParser
+			}
 		}
+
+		matchBlock := &SSHMatchBlock{
+			LocationRange: location,
+			MatchEntry:    s.sshContext.currentOption,
+			MatchValue:    match,
+			Options:       treemap.NewWith(gods.UInt32Comparator),
+		}
+		s.Config.Options.Put(
+			location.Start.Line,
+			matchBlock,
+		)
+
+		s.sshContext.currentMatchBlock = matchBlock
 
 		s.sshContext.isKeyAMatchBlock = false
 	} else if s.sshContext.currentMatchBlock != nil {

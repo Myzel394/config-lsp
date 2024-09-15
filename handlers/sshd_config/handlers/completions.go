@@ -55,6 +55,7 @@ func GetRootCompletions(
 func GetOptionCompletions(
 	d *sshdconfig.SSHDocument,
 	entry *ast.SSHOption,
+	matchBlock *ast.SSHMatchBlock,
 	cursor uint32,
 ) ([]protocol.CompletionItem, error) {
 	option, found := fields.Options[entry.Key.Value]
@@ -63,12 +64,19 @@ func GetOptionCompletions(
 		return nil, nil
 	}
 
+	if entry.Key.Value == "Match" {
+		return getMatchCompletions(
+			d,
+			matchBlock.MatchValue,
+			cursor-matchBlock.MatchEntry.Start.Character,
+		)
+	}
+
+	line := entry.OptionValue.Value
+
 	if entry.OptionValue == nil {
 		return option.FetchCompletions("", 0), nil
 	}
 
-	relativeCursor := common.CursorToCharacterIndex(cursor - entry.OptionValue.Start.Character)
-	line := entry.OptionValue.Value
-
-	return option.FetchCompletions(line, relativeCursor), nil
+	return option.FetchCompletions(line, common.CursorToCharacterIndex(cursor)), nil
 }
