@@ -48,6 +48,13 @@ body:
       placeholder: Your examples here
 
   - type: textarea
+    id: locations
+    attributes:
+      label: File locations
+      description: What are the usual locations for the config file? If the program supports multiple config files, mention them as well.
+      placeholder: /etc/ssh/sshd_config
+
+  - type: textarea
     id: tutorial
     attributes:
       label: Tutorial
