@@ -1,0 +1,63 @@
+name: New Config Request
+description: Suggest support for a new config
+labels: [new-config]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # Thank you for suggesting a new config!
+
+        As implementing a new config requires a lot of work, make sure to provide as much information as possible to help understand the request.
+        This is not a 1-minute issue that can be done quickly without any work. We are distributing some work to you so that the maintainers can focus on implementing the actual LSP instead of spending time searching for documentation, examples, etc. If it takes you between 10 - 30 minutes to fill out this form, you are saving the maintainers hours of work.
+
+  - type: checkboxes
+    attributes:
+      label: You must fill out all the fields
+      options:
+        - label: I understand that this issue may be closed without any notice if the template is not filled out correctly
+          required: true
+
+        - label: I've checked that I'm using the latest version of config-lsp
+          required: true
+
+  - type: input
+    attributes:
+      label: Program
+      description: Provide the URL of the program's official website
+      placeholder: https://www.openssh.com/
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the purpose of the program and the config file and what it is used for
+      placeholder: Your description here
+
+  - type: textarea
+    id: documentation
+    attributes:
+      label: Documentation
+      description: Enter the URL of the official documentation for the config. If the program provides a manpage, you may specify this as well. Do not link to the site https://linux.die.net/ - use alternatives instead.
+      placeholder: https://man.openbsd.org/ssh_config.5
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples
+      description: Provide *at least* 3 examples of the config file. One simple example, one (theoretical) complex example, and one real-world example. If the examples contain real data, you may anonymize the values but try to keep the structure intact.
+      placeholder: Your examples here
+
+  - type: textarea
+    id: tutorial
+    attributes:
+      label: Tutorial
+      description: Provide a step-by-step tutorial on how to use the config file and get the program up and running. If there are any specific settings that are required, mention them as well.
+      placeholder: Your tutorial here
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Information
+      description: Provide any additional information that you think is relevant to the config file. This can be anything from specific use-cases to known issues.
+      placeholder: Your additional information here
+
