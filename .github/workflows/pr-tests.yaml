@@ -20,5 +20,5 @@ jobs:
         run: nix flake check
 
       - name: Build app
-        run: nix build -L
+        run: nix develop --command bash -c "go build"
 
