@@ -12,11 +12,13 @@ import (
 func GetHoverInfoForOption(
 	option *ast.SSHOption,
 	matchBlock *ast.SSHMatchBlock,
+	line uint32,
 	cursor uint32,
 ) (*protocol.Hover, error) {
 	var docValue *docvalues.DocumentationValue
 
-	if matchBlock == nil {
+	// Either root level or in the line of a match block
+	if matchBlock == nil || matchBlock.Start.Line == line {
 		val := fields.Options[option.Key.Value]
 		docValue = &val
 	} else {

@@ -24,5 +24,10 @@ func TextDocumentHover(
 		return nil, nil
 	}
 
-	return handlers.GetHoverInfoForOption(option, matchBlock, cursor)
+	return handlers.GetHoverInfoForOption(
+		option,
+		matchBlock,
+		line,
+		cursor,
+	)
 }
