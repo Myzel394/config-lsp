@@ -40,33 +40,33 @@ func checkOption(
 	errs := make([]common.LSPError, 0)
 
 	if option.Key != nil {
-		docOption, found := fields.Options[option.Key.Value]
+		docOption, found := fields.Options[option.Key.Key]
 
 		if !found {
 			errs = append(errs, common.LSPError{
 				Range: option.Key.LocationRange,
-				Err:   errors.New(fmt.Sprintf("Unknown option: %s", option.Key.Value)),
+				Err:   errors.New(fmt.Sprintf("Unknown option: %s", option.Key.Key)),
 			})
 
 			return errs
 		}
 
-		if _, found := fields.MatchAllowedOptions[option.Key.Value]; !found && isInMatchBlock {
+		if _, found := fields.MatchAllowedOptions[option.Key.Key]; !found && isInMatchBlock {
 			errs = append(errs, common.LSPError{
 				Range: option.Key.LocationRange,
-				Err:   errors.New(fmt.Sprintf("Option '%s' is not allowed inside Match blocks", option.Key.Value)),
+				Err:   errors.New(fmt.Sprintf("Option '%s' is not allowed inside Match blocks", option.Key.Key)),
 			})
 
 			return errs
 		}
 
-		if option.OptionValue == nil || option.OptionValue.Value == "" {
+		if option.OptionValue == nil || option.OptionValue.Value.Value == "" {
 			errs = append(errs, common.LSPError{
 				Range: option.Key.LocationRange,
-				Err:   errors.New(fmt.Sprintf("Option '%s' requires a value", option.Key.Value)),
+				Err:   errors.New(fmt.Sprintf("Option '%s' requires a value", option.Key.Key)),
 			})
 		} else {
-			invalidValues := docOption.CheckIsValid(option.OptionValue.Value)
+			invalidValues := docOption.CheckIsValid(option.OptionValue.Value.Value)
 
 			errs = append(
 				errs,
@@ -93,7 +93,7 @@ func checkMatchBlock(
 
 	matchOption := matchBlock.MatchEntry.OptionValue
 	if matchOption != nil {
-		invalidValues := fields.Options["Match"].CheckIsValid(matchOption.Value)
+		invalidValues := fields.Options["Match"].CheckIsValid(matchOption.Value.Value)
 
 		errs = append(
 			errs,

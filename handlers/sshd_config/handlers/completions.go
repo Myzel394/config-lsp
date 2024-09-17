@@ -58,13 +58,13 @@ func GetOptionCompletions(
 	matchBlock *ast.SSHDMatchBlock,
 	cursor uint32,
 ) ([]protocol.CompletionItem, error) {
-	option, found := fields.Options[entry.Key.Value]
+	option, found := fields.Options[entry.Key.Key]
 
 	if !found {
 		return nil, nil
 	}
 
-	if entry.Key.Value == "Match" {
+	if entry.Key.Key == "Match" {
 		return getMatchCompletions(
 			d,
 			matchBlock.MatchValue,
@@ -72,11 +72,13 @@ func GetOptionCompletions(
 		)
 	}
 
-	line := entry.OptionValue.Value
-
 	if entry.OptionValue == nil {
 		return option.FetchCompletions("", 0), nil
 	}
 
-	return option.FetchCompletions(line, common.CursorToCharacterIndex(cursor)), nil
+	line := entry.OptionValue.Value.Raw
+	return option.FetchCompletions(
+		line,
+		common.CursorToCharacterIndex(cursor)-entry.OptionValue.Start.Character,
+	), nil
 }

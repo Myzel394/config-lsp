@@ -14,7 +14,7 @@ func TextDocumentDefinition(context *glsp.Context, params *protocol.DefinitionPa
 	line := params.Position.Line
 
 	if include, found := d.Indexes.Includes[line]; found {
-		relativeCursor := cursor - include.Option.Option.LocationRange.Start.Character
+		relativeCursor := cursor - include.Option.LocationRange.Start.Character
 
 		return handlers.GetIncludeOptionLocation(include, relativeCursor), nil
 	}

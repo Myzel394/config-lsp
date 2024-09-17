@@ -27,15 +27,15 @@ PasswordAuthentication yes
 	rawFirstEntry, _ := p.Options.Get(uint32(0))
 	firstEntry := rawFirstEntry.(*SSHDOption)
 
-	if !(firstEntry.Value == "PermitRootLogin no" &&
+	if !(firstEntry.Value.Value == "PermitRootLogin no" &&
 		firstEntry.LocationRange.Start.Line == 0 &&
 		firstEntry.LocationRange.End.Line == 0 &&
 		firstEntry.LocationRange.Start.Character == 0 &&
 		firstEntry.LocationRange.End.Character == 17 &&
-		firstEntry.Key.Value == "PermitRootLogin" &&
+		firstEntry.Key.Value.Value == "PermitRootLogin" &&
 		firstEntry.Key.LocationRange.Start.Character == 0 &&
 		firstEntry.Key.LocationRange.End.Character == 14 &&
-		firstEntry.OptionValue.Value == "no" &&
+		firstEntry.OptionValue.Value.Value == "no" &&
 		firstEntry.OptionValue.LocationRange.Start.Character == 16 &&
 		firstEntry.OptionValue.LocationRange.End.Character == 17) {
 		t.Errorf("Expected first entry to be PermitRootLogin no, but got: %v", firstEntry)
@@ -44,15 +44,15 @@ PasswordAuthentication yes
 	rawSecondEntry, _ := p.Options.Get(uint32(1))
 	secondEntry := rawSecondEntry.(*SSHDOption)
 
-	if !(secondEntry.Value == "PasswordAuthentication yes" &&
+	if !(secondEntry.Value.Value == "PasswordAuthentication yes" &&
 		secondEntry.LocationRange.Start.Line == 1 &&
 		secondEntry.LocationRange.End.Line == 1 &&
 		secondEntry.LocationRange.Start.Character == 0 &&
 		secondEntry.LocationRange.End.Character == 25 &&
-		secondEntry.Key.Value == "PasswordAuthentication" &&
+		secondEntry.Key.Value.Value == "PasswordAuthentication" &&
 		secondEntry.Key.LocationRange.Start.Character == 0 &&
 		secondEntry.Key.LocationRange.End.Character == 21 &&
-		secondEntry.OptionValue.Value == "yes" &&
+		secondEntry.OptionValue.Value.Value == "yes" &&
 		secondEntry.OptionValue.LocationRange.Start.Character == 23 &&
 		secondEntry.OptionValue.LocationRange.End.Character == 25) {
 		t.Errorf("Expected second entry to be PasswordAuthentication yes, but got: %v", secondEntry)
@@ -82,13 +82,13 @@ Match Address 192.168.0.1
 
 	rawFirstEntry, _ := p.Options.Get(uint32(0))
 	firstEntry := rawFirstEntry.(*SSHDOption)
-	if !(firstEntry.Value == "PermitRootLogin no") {
+	if !(firstEntry.Value.Value == "PermitRootLogin no") {
 		t.Errorf("Expected first entry to be 'PermitRootLogin no', but got: %v", firstEntry.Value)
 	}
 
 	rawSecondEntry, _ := p.Options.Get(uint32(2))
 	secondEntry := rawSecondEntry.(*SSHDMatchBlock)
-	if !(secondEntry.MatchEntry.Value == "Match Address 192.168.0.1") {
+	if !(secondEntry.MatchEntry.Value.Value == "Match Address 192.168.0.1") {
 		t.Errorf("Expected second entry to be 'Match Address 192.168.0.1', but got: %v", secondEntry.MatchEntry.Value)
 	}
 
@@ -96,7 +96,7 @@ Match Address 192.168.0.1
 		t.Errorf("Expected second entry's location to be 2:0-3:25, but got: %v", secondEntry.LocationRange)
 	}
 
-	if !(secondEntry.MatchValue.Entries[0].Criteria.Type == "Address" && secondEntry.MatchValue.Entries[0].Values.Values[0].Value == "192.168.0.1" && secondEntry.MatchEntry.OptionValue.Start.Character == 6) {
+	if !(secondEntry.MatchValue.Entries[0].Criteria.Type == "Address" && secondEntry.MatchValue.Entries[0].Values.Values[0].Value.Value == "192.168.0.1" && secondEntry.MatchEntry.OptionValue.Start.Character == 6) {
 		t.Errorf("Expected second entry to be 'Match Address 192.168.0.1', but got: %v", secondEntry.MatchValue)
 	}
 
@@ -106,7 +106,7 @@ Match Address 192.168.0.1
 
 	rawThirdEntry, _ := secondEntry.Options.Get(uint32(3))
 	thirdEntry := rawThirdEntry.(*SSHDOption)
-	if !(thirdEntry.Key.Value == "PasswordAuthentication" && thirdEntry.OptionValue.Value == "yes") {
+	if !(thirdEntry.Key.Value.Value == "PasswordAuthentication" && thirdEntry.OptionValue.Value.Value == "yes") {
 		t.Errorf("Expected third entry to be 'PasswordAuthentication yes', but got: %v", thirdEntry.Value)
 	}
 }
@@ -126,7 +126,7 @@ Match User lena User root
 
 	_, matchBlock := p.FindOption(uint32(0))
 
-	if !(matchBlock.MatchEntry.Value == "Match User lena User root") {
+	if !(matchBlock.MatchEntry.Value.Value == "Match User lena User root") {
 		t.Errorf("Expected match block to be 'Match User lena User root', but got: %v", matchBlock.MatchEntry.Value)
 	}
 
@@ -134,11 +134,11 @@ Match User lena User root
 		t.Errorf("Expected 2 entries in match block, but got: %v", matchBlock.MatchValue.Entries)
 	}
 
-	if !(matchBlock.MatchValue.Entries[0].Criteria.Type == "User" && matchBlock.MatchValue.Entries[0].Values.Values[0].Value == "lena") {
+	if !(matchBlock.MatchValue.Entries[0].Criteria.Type == "User" && matchBlock.MatchValue.Entries[0].Values.Values[0].Value.Value == "lena") {
 		t.Errorf("Expected first entry to be 'User lena', but got: %v", matchBlock.MatchValue.Entries[0])
 	}
 
-	if !(matchBlock.MatchValue.Entries[1].Criteria.Type == "User" && matchBlock.MatchValue.Entries[1].Values.Values[0].Value == "root") {
+	if !(matchBlock.MatchValue.Entries[1].Criteria.Type == "User" && matchBlock.MatchValue.Entries[1].Values.Values[0].Value.Value == "root") {
 		t.Errorf("Expected second entry to be 'User root', but got: %v", matchBlock.MatchValue.Entries[1])
 	}
 }
@@ -157,15 +157,15 @@ func TestIncompleteMatchBlock(
 
 	_, matchBlock := p.FindOption(uint32(0))
 
-	if !(matchBlock.MatchEntry.Value == "Match User lena User ") {
+	if !(matchBlock.MatchEntry.Value.Value == "Match User lena User ") {
 		t.Errorf("Expected match block to be 'Match User lena User ', but got: %v", matchBlock.MatchEntry.Value)
 	}
 
-	if !(matchBlock.MatchValue.Entries[0].Criteria.Type == "User" && matchBlock.MatchValue.Entries[0].Values.Values[0].Value == "lena") {
+	if !(matchBlock.MatchValue.Entries[0].Criteria.Type == "User" && matchBlock.MatchValue.Entries[0].Values.Values[0].Value.Value == "lena") {
 		t.Errorf("Expected first entry to be 'User lena', but got: %v", matchBlock.MatchValue.Entries[0])
 	}
 
-	if !(matchBlock.MatchValue.Entries[1].Value == "User " && matchBlock.MatchValue.Entries[1].Criteria.Type == "User" && matchBlock.MatchValue.Entries[1].Values == nil) {
+	if !(matchBlock.MatchValue.Entries[1].Value.Value == "User " && matchBlock.MatchValue.Entries[1].Criteria.Type == "User" && matchBlock.MatchValue.Entries[1].Values == nil) {
 		t.Errorf("Expected second entry to be 'User ', but got: %v", matchBlock.MatchValue.Entries[1])
 	}
 }
@@ -203,13 +203,13 @@ Match Address 192.168.0.2
 
 	rawThirdEntry, _ := secondEntry.Options.Get(uint32(3))
 	thirdEntry := rawThirdEntry.(*SSHDOption)
-	if !(thirdEntry.Key.Value == "PasswordAuthentication" && thirdEntry.OptionValue.Value == "yes" && thirdEntry.LocationRange.Start.Line == 3) {
+	if !(thirdEntry.Key.Value.Value == "PasswordAuthentication" && thirdEntry.OptionValue.Value.Value == "yes" && thirdEntry.LocationRange.Start.Line == 3) {
 		t.Errorf("Expected third entry to be 'PasswordAuthentication yes', but got: %v", thirdEntry.Value)
 	}
 
 	rawFourthEntry, _ := secondEntry.Options.Get(uint32(4))
 	fourthEntry := rawFourthEntry.(*SSHDOption)
-	if !(fourthEntry.Key.Value == "AllowUsers" && fourthEntry.OptionValue.Value == "root user" && fourthEntry.LocationRange.Start.Line == 4) {
+	if !(fourthEntry.Key.Value.Value == "AllowUsers" && fourthEntry.OptionValue.Value.Value == "root user" && fourthEntry.LocationRange.Start.Line == 4) {
 		t.Errorf("Expected fourth entry to be 'AllowUsers root user', but got: %v", fourthEntry.Value)
 	}
 
@@ -221,22 +221,22 @@ Match Address 192.168.0.2
 
 	rawSixthEntry, _ := fifthEntry.Options.Get(uint32(7))
 	sixthEntry := rawSixthEntry.(*SSHDOption)
-	if !(sixthEntry.Key.Value == "MaxAuthTries" && sixthEntry.OptionValue.Value == "3" && sixthEntry.LocationRange.Start.Line == 7) {
+	if !(sixthEntry.Key.Value.Value == "MaxAuthTries" && sixthEntry.OptionValue.Value.Value == "3" && sixthEntry.LocationRange.Start.Line == 7) {
 		t.Errorf("Expected sixth entry to be 'MaxAuthTries 3', but got: %v", sixthEntry.Value)
 	}
 
 	firstOption, firstMatchBlock := p.FindOption(uint32(3))
-	if !(firstOption.Key.Value == "PasswordAuthentication" && firstOption.OptionValue.Value == "yes") {
+	if !(firstOption.Key.Key == "PasswordAuthentication" && firstOption.OptionValue.Value.Value == "yes") {
 		t.Errorf("Expected first option to be 'PasswordAuthentication yes' and first match block to be 'Match Address 192.168.0.1', but got: %v, %v", firstOption, firstMatchBlock)
 	}
 
 	emptyOption, matchBlock := p.FindOption(uint32(5))
-	if !(emptyOption == nil && matchBlock.MatchEntry.Value == "Match User lena" && matchBlock.MatchValue.Entries[0].Values.Values[0].Value == "lena") {
+	if !(emptyOption == nil && matchBlock.MatchEntry.Value.Value == "Match User lena" && matchBlock.MatchValue.Entries[0].Values.Values[0].Value.Value == "lena") {
 		t.Errorf("Expected empty option and match block to be 'Match User lena', but got: %v, %v", emptyOption, matchBlock)
 	}
 
 	matchOption, matchBlock := p.FindOption(uint32(2))
-	if !(matchOption.Value == "Match User lena" && matchBlock.MatchEntry.Value == "Match User lena" && matchBlock.MatchValue.Entries[0].Values.Values[0].Value == "lena" && matchBlock.MatchEntry.OptionValue.Start.Character == 6) {
+	if !(matchOption.Value.Value == "Match User lena" && matchBlock.MatchEntry.Value.Value == "Match User lena" && matchBlock.MatchValue.Entries[0].Values.Values[0].Value.Value == "lena" && matchBlock.MatchEntry.OptionValue.Start.Character == 6) {
 		t.Errorf("Expected match option to be 'Match User lena', but got: %v, %v", matchOption, matchBlock)
 	}
 
@@ -278,7 +278,7 @@ Sample
 	rawFirstEntry, _ := p.Options.Get(uint32(1))
 	firstEntry := rawFirstEntry.(*SSHDOption)
 	firstEntryOpt, _ := p.FindOption(uint32(1))
-	if !(firstEntry.Value == "PermitRootLogin no" && firstEntry.LocationRange.Start.Line == 1 && firstEntryOpt == firstEntry) {
+	if !(firstEntry.Value.Value == "PermitRootLogin no" && firstEntry.LocationRange.Start.Line == 1 && firstEntryOpt == firstEntry) {
 		t.Errorf("Expected first entry to be 'PermitRootLogin no', but got: %v", firstEntry.Value)
 	}
 
@@ -297,7 +297,7 @@ Sample
 	rawSecondEntry, _ := p.Options.Get(uint32(5))
 	secondEntry := rawSecondEntry.(*SSHDOption)
 
-	if !(secondEntry.Value == "Sample") {
+	if !(secondEntry.Value.Value == "Sample") {
 		t.Errorf("Expected second entry to be 'Sample', but got: %v", secondEntry.Value)
 	}
 
@@ -468,29 +468,29 @@ Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1
 
 	rawFirstEntry, _ := p.Options.Get(uint32(38))
 	firstEntry := rawFirstEntry.(*SSHDOption)
-	if !(firstEntry.Key.Value == "PermitRootLogin" && firstEntry.OptionValue.Value == "no") {
+	if !(firstEntry.Key.Value.Value == "PermitRootLogin" && firstEntry.OptionValue.Value.Value == "no") {
 		t.Errorf("Expected first entry to be 'PermitRootLogin no', but got: %v", firstEntry.Value)
 	}
 
 	rawSecondEntry, _ := p.Options.Get(uint32(60))
 	secondEntry := rawSecondEntry.(*SSHDOption)
-	if !(secondEntry.Key.Value == "PasswordAuthentication" && secondEntry.OptionValue.Value == "no") {
+	if !(secondEntry.Key.Value.Value == "PasswordAuthentication" && secondEntry.OptionValue.Value.Value == "no") {
 		t.Errorf("Expected second entry to be 'PasswordAuthentication no', but got: %v", secondEntry.Value)
 	}
 
 	rawThirdEntry, _ := p.Options.Get(uint32(118))
 	thirdEntry := rawThirdEntry.(*SSHDOption)
-	if !(thirdEntry.Key.Value == "Subsystem" && thirdEntry.OptionValue.Value == "sftp\tinternal-sftp") {
+	if !(thirdEntry.Key.Value.Value == "Subsystem" && thirdEntry.OptionValue.Value.Value == "sftp\tinternal-sftp") {
 		t.Errorf("Expected third entry to be 'Subsystem sftp internal-sftp', but got: %v", thirdEntry.Value)
 	}
 
 	rawFourthEntry, _ := p.Options.Get(uint32(135))
 	fourthEntry := rawFourthEntry.(*SSHDMatchBlock)
-	if !(fourthEntry.MatchEntry.Value == "Match User anoncvs") {
+	if !(fourthEntry.MatchEntry.Value.Value == "Match User anoncvs") {
 		t.Errorf("Expected fourth entry to be 'Match User anoncvs', but got: %v", fourthEntry.MatchEntry.Value)
 	}
 
-	if !(fourthEntry.MatchValue.Entries[0].Criteria.Type == "User" && fourthEntry.MatchValue.Entries[0].Values.Values[0].Value == "anoncvs") {
+	if !(fourthEntry.MatchValue.Entries[0].Criteria.Type == "User" && fourthEntry.MatchValue.Entries[0].Values.Values[0].Value.Value == "anoncvs") {
 		t.Errorf("Expected fourth entry to be 'Match User anoncvs', but got: %v", fourthEntry.MatchValue)
 	}
 
@@ -500,17 +500,17 @@ Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1
 
 	rawFifthEntry, _ := fourthEntry.Options.Get(uint32(136))
 	fifthEntry := rawFifthEntry.(*SSHDOption)
-	if !(fifthEntry.Key.Value == "X11Forwarding" && fifthEntry.OptionValue.Value == "no") {
+	if !(fifthEntry.Key.Value.Value == "X11Forwarding" && fifthEntry.OptionValue.Value.Value == "no") {
 		t.Errorf("Expected fifth entry to be 'X11Forwarding no', but got: %v", fifthEntry.Value)
 	}
 
 	rawSixthEntry, _ := p.Options.Get(uint32(142))
 	sixthEntry := rawSixthEntry.(*SSHDMatchBlock)
-	if !(sixthEntry.MatchEntry.Value == "Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1") {
+	if !(sixthEntry.MatchEntry.Value.Value == "Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1") {
 		t.Errorf("Expected sixth entry to be 'Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1', but got: %v", sixthEntry.MatchEntry.Value)
 	}
 
-	if !(sixthEntry.MatchEntry.Key.Value == "Match" && sixthEntry.MatchEntry.OptionValue.Value == "Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1") {
+	if !(sixthEntry.MatchEntry.Key.Value.Value == "Match" && sixthEntry.MatchEntry.OptionValue.Value.Value == "Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1") {
 		t.Errorf("Expected sixth entry to be 'Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1', but got: %v", sixthEntry.MatchEntry.Value)
 	}
 
@@ -524,7 +524,7 @@ Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1
 
 	rawSeventhEntry, _ := sixthEntry.Options.Get(uint32(143))
 	seventhEntry := rawSeventhEntry.(*SSHDOption)
-	if !(seventhEntry.Key.Value == "PermitRootLogin" && seventhEntry.OptionValue.Value == "without-password") {
+	if !(seventhEntry.Key.Value.Value == "PermitRootLogin" && seventhEntry.OptionValue.Value.Value == "without-password") {
 		t.Errorf("Expected seventh entry to be 'PermitRootLogin without-password', but got: %v", seventhEntry.Value)
 	}
 }

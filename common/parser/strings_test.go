@@ -11,9 +11,8 @@ func TestStringsSingleWortQuotedFullFeatures(
 ) {
 	input := `hello "world"`
 	expected := ParsedString{
-		Raw:      input,
-		Value:    "hello world",
-		Features: FullFeatures,
+		Raw:   input,
+		Value: "hello world",
 	}
 
 	actual := ParseRawString(input, FullFeatures)
@@ -28,9 +27,8 @@ func TestStringsFullyQuotedFullFeatures(
 ) {
 	input := `"hello world"`
 	expected := ParsedString{
-		Raw:      input,
-		Value:    "hello world",
-		Features: FullFeatures,
+		Raw:   input,
+		Value: "hello world",
 	}
 
 	actual := ParseRawString(input, FullFeatures)
@@ -45,9 +43,8 @@ func TestStringsMultipleQuotesFullFeatures(
 ) {
 	input := `hello "world goodbye"`
 	expected := ParsedString{
-		Raw:      input,
-		Value:    "hello world goodbye",
-		Features: FullFeatures,
+		Raw:   input,
+		Value: "hello world goodbye",
 	}
 
 	actual := ParseRawString(input, FullFeatures)
@@ -62,9 +59,8 @@ func TestStringsSimpleEscapedFullFeatures(
 ) {
 	input := `hello \"world`
 	expected := ParsedString{
-		Raw:      input,
-		Value:    `hello "world`,
-		Features: FullFeatures,
+		Raw:   input,
+		Value: `hello "world`,
 	}
 
 	actual := ParseRawString(input, FullFeatures)
@@ -79,9 +75,8 @@ func TestStringsEscapedQuotesFullFeatures(
 ) {
 	input := `hello \"world\"`
 	expected := ParsedString{
-		Raw:      input,
-		Value:    `hello "world"`,
-		Features: FullFeatures,
+		Raw:   input,
+		Value: `hello "world"`,
 	}
 
 	actual := ParseRawString(input, FullFeatures)
@@ -96,9 +91,8 @@ func TestStringsQuotesAndEscapedFullFeatures(
 ) {
 	input := `hello "world how\" are you"`
 	expected := ParsedString{
-		Raw:      input,
-		Value:    `hello world how" are you`,
-		Features: FullFeatures,
+		Raw:   input,
+		Value: `hello world how" are you`,
 	}
 
 	actual := ParseRawString(input, FullFeatures)
@@ -113,9 +107,8 @@ func TestStringsIncompleteQuotesFullFeatures(
 ) {
 	input := `hello "world`
 	expected := ParsedString{
-		Raw:      input,
-		Value:    `hello "world`,
-		Features: FullFeatures,
+		Raw:   input,
+		Value: `hello "world`,
 	}
 
 	actual := ParseRawString(input, FullFeatures)
@@ -130,9 +123,8 @@ func TestStringsIncompleteQuoteEscapedFullFeatures(
 ) {
 	input := `hello "world\"`
 	expected := ParsedString{
-		Raw:      input,
-		Value:    `hello "world"`,
-		Features: FullFeatures,
+		Raw:   input,
+		Value: `hello "world"`,
 	}
 
 	actual := ParseRawString(input, FullFeatures)
@@ -147,9 +139,8 @@ func TestStringsIncompleteQuotes2FullFeatures(
 ) {
 	input := `hello "world how" "are you`
 	expected := ParsedString{
-		Raw:      input,
-		Value:    `hello world how "are you`,
-		Features: FullFeatures,
+		Raw:   input,
+		Value: `hello world how "are you`,
 	}
 
 	actual := ParseRawString(input, FullFeatures)
@@ -164,9 +155,8 @@ func TestStringsIncompleteQuotes3FullFeatures(
 ) {
 	input := `hello "world how are you`
 	expected := ParsedString{
-		Raw:      input,
-		Value:    `hello "world how are you`,
-		Features: FullFeatures,
+		Raw:   input,
+		Value: `hello "world how are you`,
 	}
 
 	actual := ParseRawString(input, FullFeatures)

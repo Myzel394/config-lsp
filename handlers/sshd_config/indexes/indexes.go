@@ -3,30 +3,11 @@ package indexes
 import (
 	"config-lsp/common"
 	"config-lsp/handlers/sshd_config/ast"
+	"config-lsp/handlers/sshd_config/fields"
 	"errors"
 	"fmt"
 	"regexp"
 )
-
-var allowedDoubleOptions = map[string]struct{}{
-	"AllowGroups":   {},
-	"AllowUsers":    {},
-	"DenyGroups":    {},
-	"DenyUsers":     {},
-	"ListenAddress": {},
-	"Match":         {},
-	"Port":          {},
-}
-
-type SSHIndexKey struct {
-	Option     string
-	MatchBlock *ast.SSHDMatchBlock
-}
-
-type SSHIndexAllOption struct {
-	MatchBlock *ast.SSHDMatchBlock
-	Option     *ast.SSHDOption
-}
 
 type ValidPath string
 
@@ -34,6 +15,12 @@ func (v ValidPath) AsURI() string {
 	return "file://" + string(v)
 }
 
+// SSHIndexIncludeValue Used to store the individual includes
+// An `Include` statement can have multiple paths,
+// each [SSHIndexIncludeValue] represents a single entered path.
+// Note that an entered path can represent multiple real paths, as
+// the path can contain wildcards.
+// All true paths are stored in the [Paths] field.
 type SSHIndexIncludeValue struct {
 	common.LocationRange
 	Value string
@@ -43,21 +30,28 @@ type SSHIndexIncludeValue struct {
 }
 
 type SSHIndexIncludeLine struct {
-	Values []*SSHIndexIncludeValue
-	Option *SSHIndexAllOption
+	Values     []*SSHIndexIncludeValue
+	Option     *ast.SSHDOption
+	MatchBlock *ast.SSHDMatchBlock
 }
 
 type SSHIndexes struct {
-	// Contains a map of `Option name + MatchBlock` to a list of options with that name
-	// This means an option may be specified inside a match block, and to get this
-	// option you need to know the match block it was specified in
-	// If you want to get all options for a specific name, you can use the `AllOptionsPerName` field
-	OptionsPerRelativeKey map[SSHIndexKey][]*ast.SSHDOption
-
 	// This is a map of `Option name` to a list of options with that name
-	AllOptionsPerName map[string]map[uint32]*SSHIndexAllOption
+	AllOptionsPerName map[*ast.SSHDMatchBlock](map[string]([]*ast.SSHDOption))
 
 	Includes map[uint32]*SSHIndexIncludeLine
+}
+
+func (i SSHIndexes) GetAllOptionsForName(name string) map[*ast.SSHDMatchBlock][]*ast.SSHDOption {
+	allOptions := make(map[*ast.SSHDMatchBlock][]*ast.SSHDOption)
+
+	for matchBlock, options := range i.AllOptionsPerName {
+		if opts, found := options[name]; found {
+			allOptions[matchBlock] = opts
+		}
+	}
+
+	return allOptions
 }
 
 var whitespacePattern = regexp.MustCompile(`\S+`)
@@ -65,9 +59,8 @@ var whitespacePattern = regexp.MustCompile(`\S+`)
 func CreateIndexes(config ast.SSHDConfig) (*SSHIndexes, []common.LSPError) {
 	errs := make([]common.LSPError, 0)
 	indexes := &SSHIndexes{
-		OptionsPerRelativeKey: make(map[SSHIndexKey][]*ast.SSHDOption),
-		AllOptionsPerName:     make(map[string]map[uint32]*SSHIndexAllOption),
-		Includes:              make(map[uint32]*SSHIndexIncludeLine),
+		AllOptionsPerName: make(map[*ast.SSHDMatchBlock](map[string]([]*ast.SSHDOption))),
+		Includes:          make(map[uint32]*SSHIndexIncludeLine),
 	}
 
 	it := config.Options.Iterator()
@@ -94,8 +87,9 @@ func CreateIndexes(config ast.SSHDConfig) (*SSHIndexes, []common.LSPError) {
 	}
 
 	// Add Includes
-	for _, includeOption := range indexes.AllOptionsPerName["Include"] {
-		rawValue := includeOption.Option.OptionValue.Value
+	for matchBlock, options := range indexes.GetAllOptionsForName("Include") {
+		includeOption := options[0]
+		rawValue := includeOption.OptionValue.Value.Value
 		pathIndexes := whitespacePattern.FindAllStringIndex(rawValue, -1)
 		paths := make([]*SSHIndexIncludeValue, 0)
 
@@ -105,15 +99,15 @@ func CreateIndexes(config ast.SSHDConfig) (*SSHIndexes, []common.LSPError) {
 
 			rawPath := rawValue[startIndex:endIndex]
 
-			offset := includeOption.Option.OptionValue.Start.Character
+			offset := includeOption.OptionValue.Start.Character
 			path := SSHIndexIncludeValue{
 				LocationRange: common.LocationRange{
 					Start: common.Location{
-						Line:      includeOption.Option.Start.Line,
+						Line:      includeOption.Start.Line,
 						Character: uint32(startIndex) + offset,
 					},
 					End: common.Location{
-						Line:      includeOption.Option.Start.Line,
+						Line:      includeOption.Start.Line,
 						Character: uint32(endIndex) + offset - 1,
 					},
 				},
@@ -124,9 +118,10 @@ func CreateIndexes(config ast.SSHDConfig) (*SSHIndexes, []common.LSPError) {
 			paths = append(paths, &path)
 		}
 
-		indexes.Includes[includeOption.Option.Start.Line] = &SSHIndexIncludeLine{
-			Values: paths,
-			Option: includeOption,
+		indexes.Includes[includeOption.Start.Line] = &SSHIndexIncludeLine{
+			Values:     paths,
+			Option:     includeOption,
+			MatchBlock: matchBlock,
 		}
 	}
 
@@ -140,35 +135,33 @@ func addOption(
 ) []common.LSPError {
 	var errs []common.LSPError
 
-	indexEntry := SSHIndexKey{
-		Option:     option.Key.Value,
-		MatchBlock: matchBlock,
-	}
-
-	if existingEntry, found := i.OptionsPerRelativeKey[indexEntry]; found {
-		if _, found := allowedDoubleOptions[option.Key.Value]; found {
-			// Double value, but doubles are allowed
-			i.OptionsPerRelativeKey[indexEntry] = append(existingEntry, option)
+	if optionsMap, found := i.AllOptionsPerName[matchBlock]; found {
+		if options, found := optionsMap[option.Key.Key]; found {
+			if _, duplicatesAllowed := fields.AllowedDuplicateOptions[option.Key.Key]; !duplicatesAllowed {
+				firstDefinedOption := options[0]
+				errs = append(errs, common.LSPError{
+					Range: option.Key.LocationRange,
+					Err: errors.New(fmt.Sprintf(
+						"Option '%s' has already been defined on line %d",
+						option.Key.Key,
+						firstDefinedOption.Start.Line,
+					)),
+				})
+			} else {
+				i.AllOptionsPerName[matchBlock][option.Key.Key] = append(
+					i.AllOptionsPerName[matchBlock][option.Key.Key],
+					option,
+				)
+			}
 		} else {
-			errs = append(errs, common.LSPError{
-				Range: option.Key.LocationRange,
-				Err:   errors.New(fmt.Sprintf("Option %s is already defined on line %d", option.Key.Value, existingEntry[0].Start.Line+1)),
-			})
+			i.AllOptionsPerName[matchBlock][option.Key.Key] = []*ast.SSHDOption{
+				option,
+			}
 		}
 	} else {
-		i.OptionsPerRelativeKey[indexEntry] = []*ast.SSHDOption{option}
-	}
-
-	if _, found := i.AllOptionsPerName[option.Key.Value]; found {
-		i.AllOptionsPerName[option.Key.Value][option.Start.Line] = &SSHIndexAllOption{
-			MatchBlock: matchBlock,
-			Option:     option,
-		}
-	} else {
-		i.AllOptionsPerName[option.Key.Value] = map[uint32]*SSHIndexAllOption{
-			option.Start.Line: {
-				MatchBlock: matchBlock,
-				Option:     option,
+		i.AllOptionsPerName[matchBlock] = map[string]([]*ast.SSHDOption){
+			option.Key.Key: {
+				option,
 			},
 		}
 	}

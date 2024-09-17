@@ -2,6 +2,7 @@ package match_parser
 
 import (
 	"config-lsp/common"
+	commonparser "config-lsp/common/parser"
 )
 
 type Match struct {
@@ -23,7 +24,8 @@ const (
 type MatchCriteria struct {
 	common.LocationRange
 
-	Type MatchCriteriaType
+	Type  MatchCriteriaType
+	Value commonparser.ParsedString
 }
 
 type MatchSeparator struct {
@@ -38,7 +40,7 @@ type MatchValues struct {
 
 type MatchEntry struct {
 	common.LocationRange
-	Value string
+	Value commonparser.ParsedString
 
 	Criteria  MatchCriteria
 	Separator *MatchSeparator
@@ -47,5 +49,5 @@ type MatchEntry struct {
 
 type MatchValue struct {
 	common.LocationRange
-	Value string
+	Value commonparser.ParsedString
 }

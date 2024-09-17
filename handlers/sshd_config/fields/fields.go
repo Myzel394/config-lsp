@@ -9,6 +9,16 @@ var ZERO = 0
 var MAX_PORT = 65535
 var MAX_FILE_MODE = 0777
 
+var AllowedDuplicateOptions = map[string]struct{}{
+	"AllowGroups":   {},
+	"AllowUsers":    {},
+	"DenyGroups":    {},
+	"DenyUsers":     {},
+	"ListenAddress": {},
+	"Match":         {},
+	"Port":          {},
+}
+
 var Options = map[string]docvalues.DocumentationValue{
 	"AcceptEnv": {
 		Documentation: `Specifies what environment variables sent by the client will be copied into the session's environ(7). See SendEnv and SetEnv in ssh_config(5) for how to configure the client. The TERM environment variable is always accepted whenever the client requests a pseudo-terminal as it is required by the protocol. Variables are specified by name, which may contain the wildcard characters ‘*’ and ‘?’. Multiple environment variables may be separated by whitespace or spread across multiple AcceptEnv directives. Be warned that some environment variables could be used to bypass restricted user environments. For this reason, care should be taken in the use of this directive. The default is not to accept any environment variables.`,

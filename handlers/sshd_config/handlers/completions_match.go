@@ -83,7 +83,7 @@ func getMatchValueCompletions(
 	var relativeCursor uint32
 
 	if value != nil {
-		line = value.Value
+		line = value.Value.Raw
 		relativeCursor = cursor - value.Start.Character
 	} else {
 		line = ""

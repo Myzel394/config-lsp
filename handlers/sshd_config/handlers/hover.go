@@ -19,11 +19,11 @@ func GetHoverInfoForOption(
 
 	// Either root level or in the line of a match block
 	if matchBlock == nil || matchBlock.Start.Line == line {
-		val := fields.Options[option.Key.Value]
+		val := fields.Options[option.Key.Key]
 		docValue = &val
 	} else {
-		if _, found := fields.MatchAllowedOptions[option.Key.Value]; found {
-			val := fields.Options[option.Key.Value]
+		if _, found := fields.MatchAllowedOptions[option.Key.Key]; found {
+			val := fields.Options[option.Key.Key]
 			docValue = &val
 		}
 	}
@@ -31,7 +31,7 @@ func GetHoverInfoForOption(
 	if cursor >= option.Key.Start.Character && cursor <= option.Key.End.Character {
 		if docValue != nil {
 			contents := []string{
-				"## " + option.Key.Value,
+				"## " + option.Key.Key,
 				"",
 			}
 			contents = append(contents, docValue.Documentation)
@@ -54,7 +54,7 @@ func GetHoverInfoForOption(
 
 	if option.OptionValue != nil && cursor >= option.OptionValue.Start.Character && cursor <= option.OptionValue.End.Character {
 		relativeCursor := cursor - option.OptionValue.Start.Character
-		contents := docValue.FetchHoverInfo(option.OptionValue.Value, relativeCursor)
+		contents := docValue.FetchHoverInfo(option.OptionValue.Value.Raw, relativeCursor)
 
 		return &protocol.Hover{
 			Contents: strings.Join(contents, "\n"),

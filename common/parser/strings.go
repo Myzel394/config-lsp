@@ -13,8 +13,6 @@ var FullFeatures = ParseFeatures{
 type ParsedString struct {
 	Raw   string
 	Value string
-
-	Features ParseFeatures
 }
 
 func ParseRawString(
@@ -34,9 +32,8 @@ func ParseRawString(
 	}
 
 	return ParsedString{
-		Raw:      raw,
-		Value:    value,
-		Features: features,
+		Raw:   raw,
+		Value: value,
 	}
 }
 

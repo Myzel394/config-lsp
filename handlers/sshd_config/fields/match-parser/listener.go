@@ -2,6 +2,7 @@ package match_parser
 
 import (
 	"config-lsp/common"
+	commonparser "config-lsp/common/parser"
 	"config-lsp/handlers/sshd_config/fields/match-parser/parser"
 	"config-lsp/utils"
 	"errors"
@@ -50,7 +51,7 @@ func (s *matchParserListener) EnterMatchEntry(ctx *parser.MatchEntryContext) {
 
 	entry := &MatchEntry{
 		LocationRange: location,
-		Value:         ctx.GetText(),
+		Value:         commonparser.ParseRawString(ctx.GetText(), commonparser.FullFeatures),
 	}
 
 	s.match.Entries = append(s.match.Entries, entry)
@@ -75,7 +76,9 @@ func (s *matchParserListener) EnterCriteria(ctx *parser.CriteriaContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter)
 	location.ChangeBothLines(s.matchContext.line)
 
-	criteria, found := availableCriteria[ctx.GetText()]
+	value := commonparser.ParseRawString(ctx.GetText(), commonparser.FullFeatures)
+
+	criteria, found := availableCriteria[value.Value]
 
 	if !found {
 		s.Errors = append(s.Errors, common.LSPError{
@@ -88,6 +91,7 @@ func (s *matchParserListener) EnterCriteria(ctx *parser.CriteriaContext) {
 	s.matchContext.currentEntry.Criteria = MatchCriteria{
 		LocationRange: location,
 		Type:          criteria,
+		Value:         value,
 	}
 }
 
@@ -116,7 +120,7 @@ func (s *matchParserListener) EnterValue(ctx *parser.ValueContext) {
 
 	value := &MatchValue{
 		LocationRange: location,
-		Value:         ctx.GetText(),
+		Value:         commonparser.ParseRawString(ctx.GetText(), commonparser.FullFeatures),
 	}
 
 	s.matchContext.currentEntry.Values.Values = append(s.matchContext.currentEntry.Values.Values, value)

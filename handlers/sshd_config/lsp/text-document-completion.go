@@ -33,7 +33,7 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 			d,
 			matchBlock,
 			// Empty line, or currently typing a new key
-			entry == nil || isEmptyPattern.Match([]byte(entry.Value[cursor:])),
+			entry == nil || isEmptyPattern.Match([]byte(entry.Value.Value[cursor:])),
 		)
 	}
 

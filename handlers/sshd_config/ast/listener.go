@@ -2,6 +2,7 @@ package ast
 
 import (
 	"config-lsp/common"
+	commonparser "config-lsp/common/parser"
 	"config-lsp/handlers/sshd_config/ast/parser"
 	match_parser "config-lsp/handlers/sshd_config/fields/match-parser"
 	"strings"
@@ -48,7 +49,7 @@ func (s *sshParserListener) EnterEntry(ctx *parser.EntryContext) {
 
 	option := &SSHDOption{
 		LocationRange: location,
-		Value:         ctx.GetText(),
+		Value:         commonparser.ParseRawString(ctx.GetText(), commonparser.FullFeatures),
 	}
 
 	s.sshContext.currentOption = option
@@ -59,6 +60,14 @@ func (s *sshParserListener) EnterKey(ctx *parser.KeyContext) {
 	location.ChangeBothLines(s.sshContext.line)
 
 	text := ctx.GetText()
+	value := commonparser.ParseRawString(text, commonparser.FullFeatures)
+	key := strings.TrimRight(
+		strings.TrimLeft(
+			value.Value,
+			" ",
+		),
+		" ",
+	)
 
 	if strings.ToLower(text) == "match" {
 		s.sshContext.isKeyAMatchBlock = true
@@ -66,7 +75,8 @@ func (s *sshParserListener) EnterKey(ctx *parser.KeyContext) {
 
 	s.sshContext.currentOption.Key = &SSHDKey{
 		LocationRange: location,
-		Value:         ctx.GetText(),
+		Value:         value,
+		Key:           key,
 	}
 }
 
@@ -85,7 +95,7 @@ func (s *sshParserListener) EnterValue(ctx *parser.ValueContext) {
 
 	s.sshContext.currentOption.OptionValue = &SSHDValue{
 		LocationRange: location,
-		Value:         ctx.GetText(),
+		Value:         commonparser.ParseRawString(ctx.GetText(), commonparser.FullFeatures),
 	}
 }
 
@@ -104,7 +114,7 @@ func (s *sshParserListener) ExitEntry(ctx *parser.EntryContext) {
 		if s.sshContext.currentOption.OptionValue != nil {
 			matchParser := match_parser.NewMatch()
 			errors := matchParser.Parse(
-				s.sshContext.currentOption.OptionValue.Value,
+				s.sshContext.currentOption.OptionValue.Value.Raw,
 				location.Start.Line,
 				s.sshContext.currentOption.OptionValue.Start.Character,
 			)

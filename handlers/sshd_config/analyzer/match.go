@@ -15,19 +15,18 @@ func analyzeMatchBlocks(
 ) []common.LSPError {
 	errs := make([]common.LSPError, 0)
 
-	for _, indexOption := range d.Indexes.AllOptionsPerName["Match"] {
-		matchBlock := indexOption.MatchBlock.MatchValue
-
+	for matchBlock, options := range d.Indexes.GetAllOptionsForName("Match") {
+		option := options[0]
 		// Check if the match block has filled out all fields
-		if matchBlock == nil || len(matchBlock.Entries) == 0 {
+		if matchBlock == nil || matchBlock.MatchValue == nil || len(matchBlock.MatchValue.Entries) == 0 {
 			errs = append(errs, common.LSPError{
-				Range: indexOption.Option.LocationRange,
+				Range: option.LocationRange,
 				Err:   errors.New("A match expression is required"),
 			})
 			continue
 		}
 
-		for _, entry := range matchBlock.Entries {
+		for _, entry := range matchBlock.MatchValue.Entries {
 			if entry.Values == nil {
 				errs = append(errs, common.LSPError{
 					Range: entry.LocationRange,
@@ -43,9 +42,9 @@ func analyzeMatchBlocks(
 		}
 
 		// Check if match blocks are not empty
-		if indexOption.MatchBlock.Options.Size() == 0 {
+		if matchBlock.Options.Size() == 0 {
 			errs = append(errs, common.LSPError{
-				Range: indexOption.Option.LocationRange,
+				Range: option.LocationRange,
 				Err:   errors.New("This match block is empty"),
 			})
 		}
@@ -59,7 +58,7 @@ func analyzeMatchValueNegation(
 ) []common.LSPError {
 	errs := make([]common.LSPError, 0)
 
-	positionsAsList := utils.AllIndexes(value.Value, "!")
+	positionsAsList := utils.AllIndexes(value.Value.Value, "!")
 	positions := utils.SliceToMap(positionsAsList, struct{}{})
 
 	delete(positions, 0)
@@ -93,7 +92,7 @@ func analyzeMatchValuesContainsPositiveValue(
 	containsPositive := false
 
 	for _, value := range values.Values {
-		if !strings.HasPrefix(value.Value, "!") {
+		if !strings.HasPrefix(value.Value.Value, "!") {
 			containsPositive = true
 			break
 		}

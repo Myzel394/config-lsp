@@ -2,19 +2,21 @@ package ast
 
 import (
 	"config-lsp/common"
-	match_parser "config-lsp/handlers/sshd_config/fields/match-parser"
+	commonparser "config-lsp/common/parser"
+	matchparser "config-lsp/handlers/sshd_config/fields/match-parser"
 
 	"github.com/emirpasic/gods/maps/treemap"
 )
 
 type SSHDKey struct {
 	common.LocationRange
-	Value string
+	Value commonparser.ParsedString
+	Key   string
 }
 
 type SSHDValue struct {
 	common.LocationRange
-	Value string
+	Value commonparser.ParsedString
 }
 
 type SSHDEntryType uint
@@ -35,7 +37,7 @@ type SSHDSeparator struct {
 
 type SSHDOption struct {
 	common.LocationRange
-	Value string
+	Value commonparser.ParsedString
 
 	Key         *SSHDKey
 	Separator   *SSHDSeparator
@@ -45,7 +47,7 @@ type SSHDOption struct {
 type SSHDMatchBlock struct {
 	common.LocationRange
 	MatchEntry *SSHDOption
-	MatchValue *match_parser.Match
+	MatchValue *matchparser.Match
 
 	// [uint32]*SSHDOption -> line number -> *SSHDOption
 	Options *treemap.Map
