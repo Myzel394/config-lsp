@@ -4,7 +4,7 @@ import (
 	"config-lsp/common"
 	commonparser "config-lsp/common/parser"
 	"config-lsp/handlers/sshd_config/ast/parser"
-	match_parser "config-lsp/handlers/sshd_config/fields/match-parser"
+	matchparser "config-lsp/handlers/sshd_config/fields/match-parser"
 	"strings"
 
 	"github.com/emirpasic/gods/maps/treemap"
@@ -109,10 +109,10 @@ func (s *sshParserListener) ExitEntry(ctx *parser.EntryContext) {
 
 	if s.sshContext.isKeyAMatchBlock {
 		// Add new match block
-		var match *match_parser.Match
+		var match *matchparser.Match
 
 		if s.sshContext.currentOption.OptionValue != nil {
-			matchParser := match_parser.NewMatch()
+			matchParser := matchparser.NewMatch()
 			errors := matchParser.Parse(
 				s.sshContext.currentOption.OptionValue.Value.Raw,
 				location.Start.Line,

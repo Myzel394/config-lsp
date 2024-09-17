@@ -3,7 +3,7 @@ package analyzer
 import (
 	"config-lsp/common"
 	sshdconfig "config-lsp/handlers/sshd_config"
-	match_parser "config-lsp/handlers/sshd_config/fields/match-parser"
+	matchparser "config-lsp/handlers/sshd_config/fields/match-parser"
 	"config-lsp/utils"
 	"errors"
 	"fmt"
@@ -54,7 +54,7 @@ func analyzeMatchBlocks(
 }
 
 func analyzeMatchValueNegation(
-	value *match_parser.MatchValue,
+	value *matchparser.MatchValue,
 ) []common.LSPError {
 	errs := make([]common.LSPError, 0)
 
@@ -83,7 +83,7 @@ func analyzeMatchValueNegation(
 }
 
 func analyzeMatchValuesContainsPositiveValue(
-	values *match_parser.MatchValues,
+	values *matchparser.MatchValues,
 ) []common.LSPError {
 	if len(values.Values) == 0 {
 		return nil

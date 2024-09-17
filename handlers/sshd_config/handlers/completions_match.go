@@ -3,14 +3,14 @@ package handlers
 import (
 	sshdconfig "config-lsp/handlers/sshd_config"
 	"config-lsp/handlers/sshd_config/fields"
-	match_parser "config-lsp/handlers/sshd_config/fields/match-parser"
+	matchparser "config-lsp/handlers/sshd_config/fields/match-parser"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func getMatchCompletions(
 	d *sshdconfig.SSHDocument,
-	match *match_parser.Match,
+	match *matchparser.Match,
 	cursor uint32,
 ) ([]protocol.CompletionItem, error) {
 	if match == nil || len(match.Entries) == 0 {
@@ -34,31 +34,31 @@ func getMatchCriteriaCompletions() []protocol.CompletionItem {
 
 	return []protocol.CompletionItem{
 		{
-			Label: string(match_parser.MatchCriteriaTypeUser),
+			Label: string(matchparser.MatchCriteriaTypeUser),
 			Kind:  &kind,
 		},
 		{
-			Label: string(match_parser.MatchCriteriaTypeGroup),
+			Label: string(matchparser.MatchCriteriaTypeGroup),
 			Kind:  &kind,
 		},
 		{
-			Label: string(match_parser.MatchCriteriaTypeHost),
+			Label: string(matchparser.MatchCriteriaTypeHost),
 			Kind:  &kind,
 		},
 		{
-			Label: string(match_parser.MatchCriteriaTypeAddress),
+			Label: string(matchparser.MatchCriteriaTypeAddress),
 			Kind:  &kind,
 		},
 		{
-			Label: string(match_parser.MatchCriteriaTypeLocalAddress),
+			Label: string(matchparser.MatchCriteriaTypeLocalAddress),
 			Kind:  &kind,
 		},
 		{
-			Label: string(match_parser.MatchCriteriaTypeLocalPort),
+			Label: string(matchparser.MatchCriteriaTypeLocalPort),
 			Kind:  &kind,
 		},
 		{
-			Label: string(match_parser.MatchCriteriaTypeRDomain),
+			Label: string(matchparser.MatchCriteriaTypeRDomain),
 			Kind:  &kind,
 		},
 	}
@@ -74,7 +74,7 @@ func getMatchAllKeywordCompletion() protocol.CompletionItem {
 }
 
 func getMatchValueCompletions(
-	entry *match_parser.MatchEntry,
+	entry *matchparser.MatchEntry,
 	cursor uint32,
 ) []protocol.CompletionItem {
 	value := entry.GetValueByCursor(entry.End.Character)
@@ -91,19 +91,19 @@ func getMatchValueCompletions(
 	}
 
 	switch entry.Criteria.Type {
-	case match_parser.MatchCriteriaTypeUser:
+	case matchparser.MatchCriteriaTypeUser:
 		return fields.MatchUserField.FetchCompletions(line, relativeCursor)
-	case match_parser.MatchCriteriaTypeGroup:
+	case matchparser.MatchCriteriaTypeGroup:
 		return fields.MatchGroupField.FetchCompletions(line, relativeCursor)
-	case match_parser.MatchCriteriaTypeHost:
+	case matchparser.MatchCriteriaTypeHost:
 		return fields.MatchHostField.FetchCompletions(line, relativeCursor)
-	case match_parser.MatchCriteriaTypeAddress:
+	case matchparser.MatchCriteriaTypeAddress:
 		return fields.MatchAddressField.FetchCompletions(line, relativeCursor)
-	case match_parser.MatchCriteriaTypeLocalAddress:
+	case matchparser.MatchCriteriaTypeLocalAddress:
 		return fields.MatchLocalAddressField.FetchCompletions(line, relativeCursor)
-	case match_parser.MatchCriteriaTypeLocalPort:
+	case matchparser.MatchCriteriaTypeLocalPort:
 		return fields.MatchLocalPortField.FetchCompletions(line, relativeCursor)
-	case match_parser.MatchCriteriaTypeRDomain:
+	case matchparser.MatchCriteriaTypeRDomain:
 		return fields.MatchRDomainField.FetchCompletions(line, relativeCursor)
 	}
 

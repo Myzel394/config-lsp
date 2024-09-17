@@ -1,4 +1,4 @@
-package match_parser
+package matchparser
 
 import (
 	"testing"
