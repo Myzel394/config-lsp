@@ -46,14 +46,26 @@ func (v PrefixWithMeaningValue) FetchCompletions(line string, cursor uint32) []p
 	textFormat := protocol.InsertTextFormatPlainText
 	kind := protocol.CompletionItemKindText
 
-	prefixCompletions := utils.Map(v.Prefixes, func(prefix Prefix) protocol.CompletionItem {
-		return protocol.CompletionItem{
-			Label:            prefix.Prefix,
-			Detail:           &prefix.Meaning,
-			InsertTextFormat: &textFormat,
-			Kind:             &kind,
+	// Check if the line starts with a prefix
+	startsWithPrefix := false
+	for _, prefix := range v.Prefixes {
+		if strings.HasPrefix(line, prefix.Prefix) {
+			startsWithPrefix = true
+			break
 		}
-	})
+	}
+
+	var prefixCompletions []protocol.CompletionItem
+	if !startsWithPrefix {
+		prefixCompletions = utils.Map(v.Prefixes, func(prefix Prefix) protocol.CompletionItem {
+			return protocol.CompletionItem{
+				Label:            prefix.Prefix,
+				Detail:           &prefix.Meaning,
+				InsertTextFormat: &textFormat,
+				Kind:             &kind,
+			}
+		})
+	}
 
 	return append(prefixCompletions, v.SubValue.FetchCompletions(line, cursor)...)
 }
