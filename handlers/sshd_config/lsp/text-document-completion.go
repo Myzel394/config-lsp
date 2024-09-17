@@ -1,7 +1,6 @@
 package lsp
 
 import (
-	"config-lsp/common"
 	sshdconfig "config-lsp/handlers/sshd_config"
 	"config-lsp/handlers/sshd_config/handlers"
 	"regexp"
@@ -14,7 +13,7 @@ var isEmptyPattern = regexp.MustCompile(`^\s*$`)
 
 func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionParams) (any, error) {
 	line := params.Position.Line
-	cursor := common.CursorToCharacterIndex(params.Position.Character)
+	cursor := params.Position.Character
 
 	d := sshdconfig.DocumentParserMap[params.TextDocument.URI]
 

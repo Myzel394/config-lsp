@@ -64,3 +64,27 @@ func (c SSHDConfig) FindOption(line uint32) (*SSHDOption, *SSHDMatchBlock) {
 	return nil, nil
 
 }
+
+func (c SSHDConfig) GetAllOptions() []*SSHDOption {
+	options := make(
+		[]*SSHDOption,
+		0,
+		// Approximation, this does not need to be exact
+		c.Options.Size()+10,
+	)
+
+	for _, rawEntry := range c.Options.Values() {
+		switch entry := rawEntry.(type) {
+		case *SSHDOption:
+			options = append(options, entry)
+		case *SSHDMatchBlock:
+			options = append(options, entry.MatchEntry)
+
+			for _, rawOption := range entry.Options.Values() {
+				options = append(options, rawOption.(*SSHDOption))
+			}
+		}
+	}
+
+	return options
+}

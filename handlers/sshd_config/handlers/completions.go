@@ -18,16 +18,31 @@ func GetRootCompletions(
 ) ([]protocol.CompletionItem, error) {
 	kind := protocol.CompletionItemKindField
 
-	availableOptions := make(map[string]docvalues.DocumentationValue)
+	availableOptions := make(map[string]docvalues.DocumentationValue, 0)
 
 	if parentMatchBlock == nil {
-		availableOptions = fields.Options
-	} else {
-		for option := range fields.MatchAllowedOptions {
-			if opt, found := fields.Options[option]; found {
-				availableOptions[option] = opt
+		for key, option := range fields.Options {
+			if _, found := d.Indexes.AllOptionsPerName[key]; !found {
+				availableOptions[key] = option
 			}
 		}
+	} else {
+		for key := range fields.MatchAllowedOptions {
+			if option, found := fields.Options[key]; found {
+				if _, found := d.Indexes.AllOptionsPerName[key]; !found {
+					availableOptions[key] = option
+				}
+			}
+		}
+	}
+
+	// Remove all fields that are already present and are not allowed to be duplicated
+	for _, option := range d.Config.GetAllOptions() {
+		if _, found := fields.AllowedDuplicateOptions[option.Key.Key]; found {
+			continue
+		}
+
+		delete(availableOptions, option.Key.Key)
 	}
 
 	return utils.MapMapToSlice(
