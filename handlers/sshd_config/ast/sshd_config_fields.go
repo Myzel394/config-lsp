@@ -1,22 +1,22 @@
 package ast
 
-func (o SSHOption) GetType() SSHEntryType {
-	return SSHEntryTypeOption
+func (o SSHDOption) GetType() SSHDEntryType {
+	return SSHDEntryTypeOption
 }
 
-func (o SSHOption) GetOption() SSHOption {
+func (o SSHDOption) GetOption() SSHDOption {
 	return o
 }
 
-func (m SSHMatchBlock) GetType() SSHEntryType {
-	return SSHEntryTypeMatchBlock
+func (m SSHDMatchBlock) GetType() SSHDEntryType {
+	return SSHDEntryTypeMatchBlock
 }
 
-func (m SSHMatchBlock) GetOption() SSHOption {
+func (m SSHDMatchBlock) GetOption() SSHDOption {
 	return *m.MatchEntry
 }
 
-func (c SSHConfig) FindMatchBlock(line uint32) *SSHMatchBlock {
+func (c SSHDConfig) FindMatchBlock(line uint32) *SSHDMatchBlock {
 	for currentLine := line; currentLine > 0; currentLine-- {
 		rawEntry, found := c.Options.Get(currentLine)
 
@@ -25,7 +25,7 @@ func (c SSHConfig) FindMatchBlock(line uint32) *SSHMatchBlock {
 		}
 
 		switch entry := rawEntry.(type) {
-		case *SSHMatchBlock:
+		case *SSHDMatchBlock:
 			return entry
 		}
 	}
@@ -33,7 +33,7 @@ func (c SSHConfig) FindMatchBlock(line uint32) *SSHMatchBlock {
 	return nil
 }
 
-func (c SSHConfig) FindOption(line uint32) (*SSHOption, *SSHMatchBlock) {
+func (c SSHDConfig) FindOption(line uint32) (*SSHDOption, *SSHDMatchBlock) {
 	matchBlock := c.FindMatchBlock(line)
 
 	if matchBlock != nil {
@@ -44,7 +44,7 @@ func (c SSHConfig) FindOption(line uint32) (*SSHOption, *SSHMatchBlock) {
 		rawEntry, found := matchBlock.Options.Get(line)
 
 		if found {
-			return rawEntry.(*SSHOption), matchBlock
+			return rawEntry.(*SSHDOption), matchBlock
 		} else {
 			return nil, matchBlock
 		}
@@ -54,10 +54,10 @@ func (c SSHConfig) FindOption(line uint32) (*SSHOption, *SSHMatchBlock) {
 
 	if found {
 		switch rawEntry.(type) {
-		case *SSHMatchBlock:
-			return rawEntry.(*SSHMatchBlock).MatchEntry, rawEntry.(*SSHMatchBlock)
-		case *SSHOption:
-			return rawEntry.(*SSHOption), nil
+		case *SSHDMatchBlock:
+			return rawEntry.(*SSHDMatchBlock).MatchEntry, rawEntry.(*SSHDMatchBlock)
+		case *SSHDOption:
+			return rawEntry.(*SSHDOption), nil
 		}
 	}
 

@@ -10,8 +10,8 @@ import (
 )
 
 func GetHoverInfoForOption(
-	option *ast.SSHOption,
-	matchBlock *ast.SSHMatchBlock,
+	option *ast.SSHDOption,
+	matchBlock *ast.SSHDMatchBlock,
 	line uint32,
 	cursor uint32,
 ) (*protocol.Hover, error) {

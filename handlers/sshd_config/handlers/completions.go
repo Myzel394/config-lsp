@@ -13,7 +13,7 @@ import (
 
 func GetRootCompletions(
 	d *sshdconfig.SSHDocument,
-	parentMatchBlock *ast.SSHMatchBlock,
+	parentMatchBlock *ast.SSHDMatchBlock,
 	suggestValue bool,
 ) ([]protocol.CompletionItem, error) {
 	kind := protocol.CompletionItemKindField
@@ -54,8 +54,8 @@ func GetRootCompletions(
 
 func GetOptionCompletions(
 	d *sshdconfig.SSHDocument,
-	entry *ast.SSHOption,
-	matchBlock *ast.SSHMatchBlock,
+	entry *ast.SSHDOption,
+	matchBlock *ast.SSHDMatchBlock,
 	cursor uint32,
 ) ([]protocol.CompletionItem, error) {
 	option, found := fields.Options[entry.Key.Value]

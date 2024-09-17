@@ -12,8 +12,8 @@ import (
 
 type sshListenerContext struct {
 	line              uint32
-	currentOption     *SSHOption
-	currentMatchBlock *SSHMatchBlock
+	currentOption     *SSHDOption
+	currentMatchBlock *SSHDMatchBlock
 	isKeyAMatchBlock  bool
 }
 
@@ -25,7 +25,7 @@ func createSSHListenerContext() *sshListenerContext {
 }
 
 func createListener(
-	config *SSHConfig,
+	config *SSHDConfig,
 	context *sshListenerContext,
 ) sshParserListener {
 	return sshParserListener{
@@ -37,7 +37,7 @@ func createListener(
 
 type sshParserListener struct {
 	*parser.BaseConfigListener
-	Config     *SSHConfig
+	Config     *SSHDConfig
 	Errors     []common.LSPError
 	sshContext *sshListenerContext
 }
@@ -46,7 +46,7 @@ func (s *sshParserListener) EnterEntry(ctx *parser.EntryContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.sshContext.line)
 
-	option := &SSHOption{
+	option := &SSHDOption{
 		LocationRange: location,
 		Value:         ctx.GetText(),
 	}
@@ -64,7 +64,7 @@ func (s *sshParserListener) EnterKey(ctx *parser.KeyContext) {
 		s.sshContext.isKeyAMatchBlock = true
 	}
 
-	s.sshContext.currentOption.Key = &SSHKey{
+	s.sshContext.currentOption.Key = &SSHDKey{
 		LocationRange: location,
 		Value:         ctx.GetText(),
 	}
@@ -74,7 +74,7 @@ func (s *sshParserListener) EnterSeparator(ctx *parser.SeparatorContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.sshContext.line)
 
-	s.sshContext.currentOption.Separator = &SSHSeparator{
+	s.sshContext.currentOption.Separator = &SSHDSeparator{
 		LocationRange: location,
 	}
 }
@@ -83,7 +83,7 @@ func (s *sshParserListener) EnterValue(ctx *parser.ValueContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.sshContext.line)
 
-	s.sshContext.currentOption.OptionValue = &SSHValue{
+	s.sshContext.currentOption.OptionValue = &SSHDValue{
 		LocationRange: location,
 		Value:         ctx.GetText(),
 	}
@@ -121,7 +121,7 @@ func (s *sshParserListener) ExitEntry(ctx *parser.EntryContext) {
 			}
 		}
 
-		matchBlock := &SSHMatchBlock{
+		matchBlock := &SSHDMatchBlock{
 			LocationRange: location,
 			MatchEntry:    s.sshContext.currentOption,
 			MatchValue:    match,

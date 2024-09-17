@@ -25,7 +25,7 @@ PasswordAuthentication yes
 	}
 
 	rawFirstEntry, _ := p.Options.Get(uint32(0))
-	firstEntry := rawFirstEntry.(*SSHOption)
+	firstEntry := rawFirstEntry.(*SSHDOption)
 
 	if !(firstEntry.Value == "PermitRootLogin no" &&
 		firstEntry.LocationRange.Start.Line == 0 &&
@@ -42,7 +42,7 @@ PasswordAuthentication yes
 	}
 
 	rawSecondEntry, _ := p.Options.Get(uint32(1))
-	secondEntry := rawSecondEntry.(*SSHOption)
+	secondEntry := rawSecondEntry.(*SSHDOption)
 
 	if !(secondEntry.Value == "PasswordAuthentication yes" &&
 		secondEntry.LocationRange.Start.Line == 1 &&
@@ -81,13 +81,13 @@ Match Address 192.168.0.1
 	}
 
 	rawFirstEntry, _ := p.Options.Get(uint32(0))
-	firstEntry := rawFirstEntry.(*SSHOption)
+	firstEntry := rawFirstEntry.(*SSHDOption)
 	if !(firstEntry.Value == "PermitRootLogin no") {
 		t.Errorf("Expected first entry to be 'PermitRootLogin no', but got: %v", firstEntry.Value)
 	}
 
 	rawSecondEntry, _ := p.Options.Get(uint32(2))
-	secondEntry := rawSecondEntry.(*SSHMatchBlock)
+	secondEntry := rawSecondEntry.(*SSHDMatchBlock)
 	if !(secondEntry.MatchEntry.Value == "Match Address 192.168.0.1") {
 		t.Errorf("Expected second entry to be 'Match Address 192.168.0.1', but got: %v", secondEntry.MatchEntry.Value)
 	}
@@ -105,7 +105,7 @@ Match Address 192.168.0.1
 	}
 
 	rawThirdEntry, _ := secondEntry.Options.Get(uint32(3))
-	thirdEntry := rawThirdEntry.(*SSHOption)
+	thirdEntry := rawThirdEntry.(*SSHDOption)
 	if !(thirdEntry.Key.Value == "PasswordAuthentication" && thirdEntry.OptionValue.Value == "yes") {
 		t.Errorf("Expected third entry to be 'PasswordAuthentication yes', but got: %v", thirdEntry.Value)
 	}
@@ -196,31 +196,31 @@ Match Address 192.168.0.2
 	}
 
 	rawSecondEntry, _ := p.Options.Get(uint32(2))
-	secondEntry := rawSecondEntry.(*SSHMatchBlock)
+	secondEntry := rawSecondEntry.(*SSHDMatchBlock)
 	if !(secondEntry.Options.Size() == 2) {
 		t.Errorf("Expected 2 options in second match block, but got: %v", secondEntry.Options)
 	}
 
 	rawThirdEntry, _ := secondEntry.Options.Get(uint32(3))
-	thirdEntry := rawThirdEntry.(*SSHOption)
+	thirdEntry := rawThirdEntry.(*SSHDOption)
 	if !(thirdEntry.Key.Value == "PasswordAuthentication" && thirdEntry.OptionValue.Value == "yes" && thirdEntry.LocationRange.Start.Line == 3) {
 		t.Errorf("Expected third entry to be 'PasswordAuthentication yes', but got: %v", thirdEntry.Value)
 	}
 
 	rawFourthEntry, _ := secondEntry.Options.Get(uint32(4))
-	fourthEntry := rawFourthEntry.(*SSHOption)
+	fourthEntry := rawFourthEntry.(*SSHDOption)
 	if !(fourthEntry.Key.Value == "AllowUsers" && fourthEntry.OptionValue.Value == "root user" && fourthEntry.LocationRange.Start.Line == 4) {
 		t.Errorf("Expected fourth entry to be 'AllowUsers root user', but got: %v", fourthEntry.Value)
 	}
 
 	rawFifthEntry, _ := p.Options.Get(uint32(6))
-	fifthEntry := rawFifthEntry.(*SSHMatchBlock)
+	fifthEntry := rawFifthEntry.(*SSHDMatchBlock)
 	if !(fifthEntry.Options.Size() == 1) {
 		t.Errorf("Expected 1 option in fifth match block, but got: %v", fifthEntry.Options)
 	}
 
 	rawSixthEntry, _ := fifthEntry.Options.Get(uint32(7))
-	sixthEntry := rawSixthEntry.(*SSHOption)
+	sixthEntry := rawSixthEntry.(*SSHDOption)
 	if !(sixthEntry.Key.Value == "MaxAuthTries" && sixthEntry.OptionValue.Value == "3" && sixthEntry.LocationRange.Start.Line == 7) {
 		t.Errorf("Expected sixth entry to be 'MaxAuthTries 3', but got: %v", sixthEntry.Value)
 	}
@@ -276,7 +276,7 @@ Sample
 	}
 
 	rawFirstEntry, _ := p.Options.Get(uint32(1))
-	firstEntry := rawFirstEntry.(*SSHOption)
+	firstEntry := rawFirstEntry.(*SSHDOption)
 	firstEntryOpt, _ := p.FindOption(uint32(1))
 	if !(firstEntry.Value == "PermitRootLogin no" && firstEntry.LocationRange.Start.Line == 1 && firstEntryOpt == firstEntry) {
 		t.Errorf("Expected first entry to be 'PermitRootLogin no', but got: %v", firstEntry.Value)
@@ -295,7 +295,7 @@ Sample
 	}
 
 	rawSecondEntry, _ := p.Options.Get(uint32(5))
-	secondEntry := rawSecondEntry.(*SSHOption)
+	secondEntry := rawSecondEntry.(*SSHDOption)
 
 	if !(secondEntry.Value == "Sample") {
 		t.Errorf("Expected second entry to be 'Sample', but got: %v", secondEntry.Value)
@@ -467,25 +467,25 @@ Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1
 	}
 
 	rawFirstEntry, _ := p.Options.Get(uint32(38))
-	firstEntry := rawFirstEntry.(*SSHOption)
+	firstEntry := rawFirstEntry.(*SSHDOption)
 	if !(firstEntry.Key.Value == "PermitRootLogin" && firstEntry.OptionValue.Value == "no") {
 		t.Errorf("Expected first entry to be 'PermitRootLogin no', but got: %v", firstEntry.Value)
 	}
 
 	rawSecondEntry, _ := p.Options.Get(uint32(60))
-	secondEntry := rawSecondEntry.(*SSHOption)
+	secondEntry := rawSecondEntry.(*SSHDOption)
 	if !(secondEntry.Key.Value == "PasswordAuthentication" && secondEntry.OptionValue.Value == "no") {
 		t.Errorf("Expected second entry to be 'PasswordAuthentication no', but got: %v", secondEntry.Value)
 	}
 
 	rawThirdEntry, _ := p.Options.Get(uint32(118))
-	thirdEntry := rawThirdEntry.(*SSHOption)
+	thirdEntry := rawThirdEntry.(*SSHDOption)
 	if !(thirdEntry.Key.Value == "Subsystem" && thirdEntry.OptionValue.Value == "sftp\tinternal-sftp") {
 		t.Errorf("Expected third entry to be 'Subsystem sftp internal-sftp', but got: %v", thirdEntry.Value)
 	}
 
 	rawFourthEntry, _ := p.Options.Get(uint32(135))
-	fourthEntry := rawFourthEntry.(*SSHMatchBlock)
+	fourthEntry := rawFourthEntry.(*SSHDMatchBlock)
 	if !(fourthEntry.MatchEntry.Value == "Match User anoncvs") {
 		t.Errorf("Expected fourth entry to be 'Match User anoncvs', but got: %v", fourthEntry.MatchEntry.Value)
 	}
@@ -499,13 +499,13 @@ Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1
 	}
 
 	rawFifthEntry, _ := fourthEntry.Options.Get(uint32(136))
-	fifthEntry := rawFifthEntry.(*SSHOption)
+	fifthEntry := rawFifthEntry.(*SSHDOption)
 	if !(fifthEntry.Key.Value == "X11Forwarding" && fifthEntry.OptionValue.Value == "no") {
 		t.Errorf("Expected fifth entry to be 'X11Forwarding no', but got: %v", fifthEntry.Value)
 	}
 
 	rawSixthEntry, _ := p.Options.Get(uint32(142))
-	sixthEntry := rawSixthEntry.(*SSHMatchBlock)
+	sixthEntry := rawSixthEntry.(*SSHDMatchBlock)
 	if !(sixthEntry.MatchEntry.Value == "Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1") {
 		t.Errorf("Expected sixth entry to be 'Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1', but got: %v", sixthEntry.MatchEntry.Value)
 	}
@@ -523,7 +523,7 @@ Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1
 	}
 
 	rawSeventhEntry, _ := sixthEntry.Options.Get(uint32(143))
-	seventhEntry := rawSeventhEntry.(*SSHOption)
+	seventhEntry := rawSeventhEntry.(*SSHDOption)
 	if !(seventhEntry.Key.Value == "PermitRootLogin" && seventhEntry.OptionValue.Value == "without-password") {
 		t.Errorf("Expected seventh entry to be 'PermitRootLogin without-password', but got: %v", seventhEntry.Value)
 	}

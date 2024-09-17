@@ -7,52 +7,52 @@ import (
 	"github.com/emirpasic/gods/maps/treemap"
 )
 
-type SSHKey struct {
+type SSHDKey struct {
 	common.LocationRange
 	Value string
 }
 
-type SSHValue struct {
+type SSHDValue struct {
 	common.LocationRange
 	Value string
 }
 
-type SSHEntryType uint
+type SSHDEntryType uint
 
 const (
-	SSHEntryTypeOption SSHEntryType = iota
-	SSHEntryTypeMatchBlock
+	SSHDEntryTypeOption SSHDEntryType = iota
+	SSHDEntryTypeMatchBlock
 )
 
-type SSHEntry interface {
-	GetType() SSHEntryType
-	GetOption() SSHOption
+type SSHDEntry interface {
+	GetType() SSHDEntryType
+	GetOption() SSHDOption
 }
 
-type SSHSeparator struct {
+type SSHDSeparator struct {
 	common.LocationRange
 }
 
-type SSHOption struct {
+type SSHDOption struct {
 	common.LocationRange
 	Value string
 
-	Key         *SSHKey
-	Separator   *SSHSeparator
-	OptionValue *SSHValue
+	Key         *SSHDKey
+	Separator   *SSHDSeparator
+	OptionValue *SSHDValue
 }
 
-type SSHMatchBlock struct {
+type SSHDMatchBlock struct {
 	common.LocationRange
-	MatchEntry *SSHOption
+	MatchEntry *SSHDOption
 	MatchValue *match_parser.Match
 
-	// [uint32]*SSHOption -> line number -> *SSHOption
+	// [uint32]*SSHDOption -> line number -> *SSHDOption
 	Options *treemap.Map
 }
 
-type SSHConfig struct {
-	// [uint32]SSHOption -> line number -> *SSHEntry
+type SSHDConfig struct {
+	// [uint32]SSHDOption -> line number -> *SSHDEntry
 	Options *treemap.Map
 	// [uint32]{} -> line number -> {}
 	CommentLines map[uint32]struct{}

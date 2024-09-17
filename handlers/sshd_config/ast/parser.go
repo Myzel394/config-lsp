@@ -12,14 +12,14 @@ import (
 	gods "github.com/emirpasic/gods/utils"
 )
 
-func NewSSHConfig() *SSHConfig {
-	config := &SSHConfig{}
+func NewSSHConfig() *SSHDConfig {
+	config := &SSHDConfig{}
 	config.Clear()
 
 	return config
 }
 
-func (c *SSHConfig) Clear() {
+func (c *SSHDConfig) Clear() {
 	c.Options = treemap.NewWith(gods.UInt32Comparator)
 	c.CommentLines = map[uint32]struct{}{}
 }
@@ -27,7 +27,7 @@ func (c *SSHConfig) Clear() {
 var commentPattern = regexp.MustCompile(`^\s*#.*$`)
 var emptyPattern = regexp.MustCompile(`^\s*$`)
 
-func (c *SSHConfig) Parse(input string) []common.LSPError {
+func (c *SSHDConfig) Parse(input string) []common.LSPError {
 	errors := make([]common.LSPError, 0)
 	lines := utils.SplitIntoLines(input)
 	context := createSSHListenerContext()
@@ -53,7 +53,7 @@ func (c *SSHConfig) Parse(input string) []common.LSPError {
 	return errors
 }
 
-func (c *SSHConfig) parseStatement(
+func (c *SSHDConfig) parseStatement(
 	context *sshListenerContext,
 	input string,
 ) []common.LSPError {

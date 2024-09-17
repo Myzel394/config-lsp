@@ -20,12 +20,12 @@ var allowedDoubleOptions = map[string]struct{}{
 
 type SSHIndexKey struct {
 	Option     string
-	MatchBlock *ast.SSHMatchBlock
+	MatchBlock *ast.SSHDMatchBlock
 }
 
 type SSHIndexAllOption struct {
-	MatchBlock *ast.SSHMatchBlock
-	Option     *ast.SSHOption
+	MatchBlock *ast.SSHDMatchBlock
+	Option     *ast.SSHDOption
 }
 
 type ValidPath string
@@ -52,7 +52,7 @@ type SSHIndexes struct {
 	// This means an option may be specified inside a match block, and to get this
 	// option you need to know the match block it was specified in
 	// If you want to get all options for a specific name, you can use the `AllOptionsPerName` field
-	OptionsPerRelativeKey map[SSHIndexKey][]*ast.SSHOption
+	OptionsPerRelativeKey map[SSHIndexKey][]*ast.SSHDOption
 
 	// This is a map of `Option name` to a list of options with that name
 	AllOptionsPerName map[string]map[uint32]*SSHIndexAllOption
@@ -62,31 +62,31 @@ type SSHIndexes struct {
 
 var whitespacePattern = regexp.MustCompile(`\S+`)
 
-func CreateIndexes(config ast.SSHConfig) (*SSHIndexes, []common.LSPError) {
+func CreateIndexes(config ast.SSHDConfig) (*SSHIndexes, []common.LSPError) {
 	errs := make([]common.LSPError, 0)
 	indexes := &SSHIndexes{
-		OptionsPerRelativeKey: make(map[SSHIndexKey][]*ast.SSHOption),
+		OptionsPerRelativeKey: make(map[SSHIndexKey][]*ast.SSHDOption),
 		AllOptionsPerName:     make(map[string]map[uint32]*SSHIndexAllOption),
 		Includes:              make(map[uint32]*SSHIndexIncludeLine),
 	}
 
 	it := config.Options.Iterator()
 	for it.Next() {
-		entry := it.Value().(ast.SSHEntry)
+		entry := it.Value().(ast.SSHDEntry)
 
 		switch entry.(type) {
-		case *ast.SSHOption:
-			option := entry.(*ast.SSHOption)
+		case *ast.SSHDOption:
+			option := entry.(*ast.SSHDOption)
 
 			errs = append(errs, addOption(indexes, option, nil)...)
-		case *ast.SSHMatchBlock:
-			matchBlock := entry.(*ast.SSHMatchBlock)
+		case *ast.SSHDMatchBlock:
+			matchBlock := entry.(*ast.SSHDMatchBlock)
 
 			errs = append(errs, addOption(indexes, matchBlock.MatchEntry, matchBlock)...)
 
 			it := matchBlock.Options.Iterator()
 			for it.Next() {
-				option := it.Value().(*ast.SSHOption)
+				option := it.Value().(*ast.SSHDOption)
 
 				errs = append(errs, addOption(indexes, option, matchBlock)...)
 			}
@@ -135,8 +135,8 @@ func CreateIndexes(config ast.SSHConfig) (*SSHIndexes, []common.LSPError) {
 
 func addOption(
 	i *SSHIndexes,
-	option *ast.SSHOption,
-	matchBlock *ast.SSHMatchBlock,
+	option *ast.SSHDOption,
+	matchBlock *ast.SSHDMatchBlock,
 ) []common.LSPError {
 	var errs []common.LSPError
 
@@ -156,7 +156,7 @@ func addOption(
 			})
 		}
 	} else {
-		i.OptionsPerRelativeKey[indexEntry] = []*ast.SSHOption{option}
+		i.OptionsPerRelativeKey[indexEntry] = []*ast.SSHDOption{option}
 	}
 
 	if _, found := i.AllOptionsPerName[option.Key.Value]; found {

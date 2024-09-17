@@ -8,7 +8,7 @@ import (
 )
 
 type SSHDocument struct {
-	Config  *ast.SSHConfig
+	Config  *ast.SSHDConfig
 	Indexes *indexes.SSHIndexes
 }
 

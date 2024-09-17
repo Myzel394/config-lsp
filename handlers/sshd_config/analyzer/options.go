@@ -18,13 +18,13 @@ func analyzeOptionsAreValid(
 	it := d.Config.Options.Iterator()
 
 	for it.Next() {
-		entry := it.Value().(ast.SSHEntry)
+		entry := it.Value().(ast.SSHDEntry)
 
 		switch entry.(type) {
-		case *ast.SSHOption:
-			errs = append(errs, checkOption(entry.(*ast.SSHOption), false)...)
-		case *ast.SSHMatchBlock:
-			matchBlock := entry.(*ast.SSHMatchBlock)
+		case *ast.SSHDOption:
+			errs = append(errs, checkOption(entry.(*ast.SSHDOption), false)...)
+		case *ast.SSHDMatchBlock:
+			matchBlock := entry.(*ast.SSHDMatchBlock)
 			errs = append(errs, checkMatchBlock(matchBlock)...)
 		}
 
@@ -34,7 +34,7 @@ func analyzeOptionsAreValid(
 }
 
 func checkOption(
-	option *ast.SSHOption,
+	option *ast.SSHDOption,
 	isInMatchBlock bool,
 ) []common.LSPError {
 	errs := make([]common.LSPError, 0)
@@ -87,7 +87,7 @@ func checkOption(
 }
 
 func checkMatchBlock(
-	matchBlock *ast.SSHMatchBlock,
+	matchBlock *ast.SSHDMatchBlock,
 ) []common.LSPError {
 	errs := make([]common.LSPError, 0)
 
@@ -112,7 +112,7 @@ func checkMatchBlock(
 	it := matchBlock.Options.Iterator()
 
 	for it.Next() {
-		option := it.Value().(*ast.SSHOption)
+		option := it.Value().(*ast.SSHDOption)
 
 		errs = append(errs, checkOption(option, true)...)
 	}
