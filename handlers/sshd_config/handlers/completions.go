@@ -79,6 +79,6 @@ func GetOptionCompletions(
 	line := entry.OptionValue.Value.Raw
 	return option.FetchCompletions(
 		line,
-		common.CursorToCharacterIndex(cursor)-entry.OptionValue.Start.Character,
+		common.CursorToCharacterIndex(cursor-entry.OptionValue.Start.Character),
 	), nil
 }

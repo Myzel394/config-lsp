@@ -144,7 +144,7 @@ func addOption(
 					Err: errors.New(fmt.Sprintf(
 						"Option '%s' has already been defined on line %d",
 						option.Key.Key,
-						firstDefinedOption.Start.Line,
+						firstDefinedOption.Start.Line+1,
 					)),
 				})
 			} else {
