@@ -18,9 +18,9 @@ func Analyze(
 		return errsToDiagnostics(errors)
 	}
 
-	indexes, indexErrors := indexes.CreateIndexes(*d.Config)
+	i, indexErrors := indexes.CreateIndexes(*d.Config)
 
-	d.Indexes = indexes
+	d.Indexes = i
 
 	errors = append(errors, indexErrors...)
 
