@@ -10,13 +10,13 @@ import (
 )
 
 func GetIncludeOptionLocation(
-	include *indexes.SSHIndexIncludeLine,
+	include *indexes.SSHDIndexIncludeLine,
 	cursor uint32,
 ) []protocol.Location {
 	index, found := slices.BinarySearchFunc(
 		include.Values,
 		cursor,
-		func(i *indexes.SSHIndexIncludeValue, cursor uint32) int {
+		func(i *indexes.SSHDIndexIncludeValue, cursor uint32) int {
 			if cursor < i.Start.Character {
 				return -1
 			}

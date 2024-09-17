@@ -15,7 +15,7 @@ func analyzeMatchBlocks(
 ) []common.LSPError {
 	errs := make([]common.LSPError, 0)
 
-	for matchBlock, options := range d.Indexes.GetAllOptionsForName("Match") {
+	for matchBlock, options := range d.Indexes.AllOptionsPerName["Match"] {
 		option := options[0]
 		// Check if the match block has filled out all fields
 		if matchBlock == nil || matchBlock.MatchValue == nil || len(matchBlock.MatchValue.Entries) == 0 {

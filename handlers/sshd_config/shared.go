@@ -9,7 +9,7 @@ import (
 
 type SSHDocument struct {
 	Config  *ast.SSHDConfig
-	Indexes *indexes.SSHIndexes
+	Indexes *indexes.SSHDIndexes
 }
 
 var DocumentParserMap = map[protocol.DocumentUri]*SSHDocument{}

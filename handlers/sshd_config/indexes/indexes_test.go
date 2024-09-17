@@ -34,7 +34,7 @@ Match Address 192.168.0.1/24
 	}
 
 	firstMatchBlock := config.FindMatchBlock(uint32(6))
-	opts := indexes.GetAllOptionsForName("PermitRootLogin")
+	opts := indexes.AllOptionsPerName["PermitRootLogin"]
 	if !(len(opts) == 2 &&
 		len(opts[nil]) == 1 &&
 		opts[nil][0].Value.Value == "PermitRootLogin yes" &&
