@@ -28,7 +28,7 @@ support: alice, bob
 		t.Fatalf("Expected no errors, but got: %v", errors)
 	}
 
-	edits := RenameAlias(i, i.Keys["alice"], "amelie")
+	edits := RenameAlias(i, "alice", "amelie")
 
 	if !(len(edits) == 3) {
 		t.Errorf("Expected 2 edits, but got %v", len(edits))
@@ -44,5 +44,40 @@ support: alice, bob
 
 	if !(edits[2].Range.Start.Line == 2 && edits[2].Range.Start.Character == 9 && edits[2].Range.End.Line == 2 && edits[2].Range.End.Character == 14) {
 		t.Errorf("Unexpected edit: %v", edits[2])
+	}
+}
+
+func TestRenameWithoutDefinitionEntry(
+	t *testing.T,
+) {
+	input := utils.Dedent(`
+bob: root
+support: root, bob
+`)
+	parser := ast.NewAliasesParser()
+	errors := parser.Parse(input)
+
+	if len(errors) > 0 {
+		t.Fatalf("Unexpected errors: %v", errors)
+	}
+
+	i, errors := indexes.CreateIndexes(parser)
+
+	if len(errors) > 0 {
+		t.Fatalf("Expected no errors, but got: %v", errors)
+	}
+
+	edits := RenameAlias(i, "root", "amelie")
+
+	if !(len(edits) == 2) {
+		t.Errorf("Expected 2 edits, but got %v", len(edits))
+	}
+
+	if !(edits[0].Range.Start.Line == 0 && edits[0].Range.Start.Character == 5 && edits[0].Range.End.Line == 0 && edits[0].Range.End.Character == 9) {
+		t.Errorf("Unexpected edit: %v", edits[0])
+	}
+
+	if !(edits[1].Range.Start.Line == 1 && edits[1].Range.Start.Character == 9 && edits[1].Range.End.Line == 1 && edits[1].Range.End.Character == 13) {
+		t.Errorf("Unexpected edit: %v", edits[1])
 	}
 }
