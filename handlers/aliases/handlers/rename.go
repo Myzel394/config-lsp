@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"config-lsp/handlers/aliases/ast"
 	"config-lsp/handlers/aliases/indexes"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -9,17 +8,22 @@ import (
 
 func RenameAlias(
 	i indexes.AliasesIndexes,
-	oldEntry *ast.AliasEntry,
+	oldName string,
 	newName string,
 ) []protocol.TextEdit {
-	occurrences := i.UserOccurrences[indexes.NormalizeKey(oldEntry.Key.Value)]
+	normalizedName := indexes.NormalizeKey(oldName)
+	definitionEntry := i.Keys[normalizedName]
+	occurrences := i.UserOccurrences[normalizedName]
+
 	changes := make([]protocol.TextEdit, 0, len(occurrences))
 
-	// Own rename
-	changes = append(changes, protocol.TextEdit{
-		Range:   oldEntry.Key.Location.ToLSPRange(),
-		NewText: newName,
-	})
+	if definitionEntry != nil {
+		// Own rename
+		changes = append(changes, protocol.TextEdit{
+			Range:   definitionEntry.Key.Location.ToLSPRange(),
+			NewText: newName,
+		})
+	}
 
 	// Other AliasValueUser occurrences
 	for _, value := range occurrences {

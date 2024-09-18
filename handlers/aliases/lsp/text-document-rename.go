@@ -4,7 +4,6 @@ import (
 	"config-lsp/handlers/aliases"
 	"config-lsp/handlers/aliases/ast"
 	"config-lsp/handlers/aliases/handlers"
-	"config-lsp/handlers/aliases/indexes"
 
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -24,7 +23,11 @@ func TextDocumentRename(context *glsp.Context, params *protocol.RenameParams) (*
 	entry := rawEntry.(*ast.AliasEntry)
 
 	if character >= entry.Key.Location.Start.Character && character <= entry.Key.Location.End.Character {
-		changes := handlers.RenameAlias(*d.Indexes, entry, params.NewName)
+		changes := handlers.RenameAlias(
+			*d.Indexes,
+			entry.Key.Value,
+			params.NewName,
+		)
 
 		return &protocol.WorkspaceEdit{
 			Changes: map[protocol.DocumentUri][]protocol.TextEdit{
@@ -44,9 +47,11 @@ func TextDocumentRename(context *glsp.Context, params *protocol.RenameParams) (*
 		case ast.AliasValueUser:
 			userValue := (*rawValue).(ast.AliasValueUser)
 
-			definitionEntry := d.Indexes.Keys[indexes.NormalizeKey(userValue.Value)]
-
-			changes := handlers.RenameAlias(*d.Indexes, definitionEntry, params.NewName)
+			changes := handlers.RenameAlias(
+				*d.Indexes,
+				userValue.Value,
+				params.NewName,
+			)
 
 			return &protocol.WorkspaceEdit{
 				Changes: map[protocol.DocumentUri][]protocol.TextEdit{
