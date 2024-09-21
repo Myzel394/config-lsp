@@ -16,15 +16,15 @@ func GetValueAtCursor(
 	index, found := slices.BinarySearchFunc(
 		entry.Values.Values,
 		cursor,
-		func(entry ast.AliasValueInterface, pos uint32) int {
-			value := entry.GetAliasValue()
+		func(current ast.AliasValueInterface, target uint32) int {
+			value := current.GetAliasValue()
 
-			if pos > value.Location.End.Character {
-				return -1
+			if target < value.Location.Start.Character {
+				return 1
 			}
 
-			if pos < value.Location.Start.Character {
-				return 1
+			if target > value.Location.End.Character {
+				return -1
 			}
 
 			return 0

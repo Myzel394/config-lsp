@@ -16,13 +16,13 @@ func GetIncludeOptionLocation(
 	index, found := slices.BinarySearchFunc(
 		include.Values,
 		cursor,
-		func(i *indexes.SSHDIndexIncludeValue, cursor uint32) int {
-			if cursor < i.Start.Character {
-				return -1
+		func(current *indexes.SSHDIndexIncludeValue, target uint32) int {
+			if target < current.Start.Character {
+				return 1
 			}
 
-			if cursor > i.End.Character {
-				return 1
+			if target > current.End.Character {
+				return -1
 			}
 
 			return 0

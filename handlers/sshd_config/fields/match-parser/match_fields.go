@@ -6,12 +6,12 @@ func (m Match) GetEntryByCursor(cursor uint32) *MatchEntry {
 	index, found := slices.BinarySearchFunc(
 		m.Entries,
 		cursor,
-		func(entry *MatchEntry, cursor uint32) int {
-			if cursor < entry.Start.Character {
+		func(current *MatchEntry, target uint32) int {
+			if target < current.Start.Character {
 				return 1
 			}
 
-			if cursor > entry.End.Character {
+			if target > current.End.Character {
 				return -1
 			}
 
@@ -40,12 +40,12 @@ func (e MatchEntry) GetValueByCursor(cursor uint32) *MatchValue {
 	index, found := slices.BinarySearchFunc(
 		e.Values.Values,
 		cursor,
-		func(value *MatchValue, cursor uint32) int {
-			if cursor < value.Start.Character {
+		func(current *MatchValue, target uint32) int {
+			if target < current.Start.Character {
 				return 1
 			}
 
-			if cursor > value.End.Character {
+			if target > current.End.Character {
 				return -1
 			}
 
