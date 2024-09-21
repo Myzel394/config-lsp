@@ -91,13 +91,15 @@ func GetOptionCompletions(
 		return option.FetchCompletions("", 0), nil
 	}
 
+	// Hello wo|rld
 	line := entry.OptionValue.Value.Raw
 	// NEW: docvalues index
 	return option.FetchCompletions(
 		line,
 		common.DeprecatedImprovedCursorToIndex(
-			entry.OptionValue.Start.GetRelativeCursorPosition(cursor),
+			cursor,
 			line,
+			entry.OptionValue.Start.Character,
 		),
 	), nil
 }

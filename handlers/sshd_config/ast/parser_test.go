@@ -303,6 +303,22 @@ Sample
 
 }
 
+func TestIncompleteExample(
+	t *testing.T,
+) {
+	input := utils.Dedent(`
+MACs 
+`)
+	p := NewSSHConfig()
+	errors := p.Parse(input)
+
+	if len(errors) != 0 {
+		t.Fatalf("Expected no errors, got %v", errors)
+	}
+
+	println(p)
+}
+
 func TestComplexExample(
 	t *testing.T,
 ) {

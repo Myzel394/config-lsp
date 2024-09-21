@@ -29,7 +29,7 @@ func GetHoverInfoForOption(
 		}
 	}
 
-	if option.Key.ContainsIndexPosition(index) {
+	if option.Key.ContainsPosition(index) {
 		if docValue != nil {
 			contents := []string{
 				"## " + option.Key.Key,
@@ -53,7 +53,7 @@ func GetHoverInfoForOption(
 		}
 	}
 
-	if option.OptionValue != nil && option.OptionValue.ContainsIndexPosition(index) {
+	if option.OptionValue != nil && option.OptionValue.ContainsPosition(index) {
 		line := option.OptionValue.Value.Raw
 		contents := docValue.FetchHoverInfo(
 			line,

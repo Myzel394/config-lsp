@@ -27,7 +27,7 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 	if entry == nil ||
 		entry.Separator == nil ||
 		entry.Key == nil ||
-		entry.Key.Start.IsAfterCursorPosition(cursor) {
+		entry.Key.IsPositionBeforeEnd(cursor) {
 
 		return handlers.GetRootCompletions(
 			d,
@@ -37,7 +37,7 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 		)
 	}
 
-	if entry.Separator != nil && entry.Separator.End.IsBeforeCursorPosition(cursor) {
+	if entry.Separator != nil && entry.OptionValue.IsPositionAfterStart(cursor) {
 		return handlers.GetOptionCompletions(
 			d,
 			entry,

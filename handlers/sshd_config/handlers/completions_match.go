@@ -21,9 +21,9 @@ func getMatchCompletions(
 		return completions, nil
 	}
 
-	entry := match.GetEntryByCursor(cursor)
+	entry := match.GetEntryAtPosition(cursor)
 
-	if entry == nil || entry.Criteria.ContainsCursorPosition(cursor) {
+	if entry == nil || entry.Criteria.ContainsPosition(cursor) {
 		return getMatchCriteriaCompletions(), nil
 	}
 
@@ -78,7 +78,7 @@ func getMatchValueCompletions(
 	entry *matchparser.MatchEntry,
 	cursor common.CursorPosition,
 ) []protocol.CompletionItem {
-	value := entry.GetValueByCursor(entry.End.Character)
+	value := entry.GetValueAtPosition(cursor)
 
 	var line string
 	var relativeCursor uint32
@@ -86,8 +86,9 @@ func getMatchValueCompletions(
 	if value != nil {
 		line = value.Value.Raw
 		relativeCursor = common.DeprecatedImprovedCursorToIndex(
-			value.Start.GetRelativeCursorPosition(cursor),
+			cursor,
 			line,
+			value.Start.Character,
 		)
 	} else {
 		line = ""

@@ -17,12 +17,12 @@ func GetIncludeOptionLocation(
 		include.Values,
 		index,
 		func(current *indexes.SSHDIndexIncludeValue, target common.IndexPosition) int {
-			if current.Start.IsAfterIndexPosition(target) {
-				return 1
+			if current.IsPositionAfterEnd(target) {
+				return -1
 			}
 
-			if current.End.IsBeforeIndexPosition(target) {
-				return -1
+			if current.IsPositionBeforeStart(target) {
+				return 1
 			}
 
 			return 0
