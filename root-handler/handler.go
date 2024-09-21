@@ -17,21 +17,22 @@ var lspHandler protocol.Handler
 func SetUpRootHandler() {
 	rootHandler = NewRootHandler()
 	lspHandler = protocol.Handler{
-		Initialize:                initialize,
-		Initialized:               initialized,
-		Shutdown:                  shutdown,
-		SetTrace:                  setTrace,
-		TextDocumentDidOpen:       TextDocumentDidOpen,
-		TextDocumentDidChange:     TextDocumentDidChange,
-		TextDocumentCompletion:    TextDocumentCompletion,
-		TextDocumentHover:         TextDocumentHover,
-		TextDocumentDidClose:      TextDocumentDidClose,
-		TextDocumentCodeAction:    TextDocumentCodeAction,
-		TextDocumentDefinition:    TextDocumentDefinition,
-		WorkspaceExecuteCommand:   WorkspaceExecuteCommand,
-		TextDocumentRename:        TextDocumentRename,
-		TextDocumentPrepareRename: TextDocumentPrepareRename,
-		TextDocumentSignatureHelp: TextDocumentSignatureHelp,
+		Initialize:                  initialize,
+		Initialized:                 initialized,
+		Shutdown:                    shutdown,
+		SetTrace:                    setTrace,
+		TextDocumentDidOpen:         TextDocumentDidOpen,
+		TextDocumentDidChange:       TextDocumentDidChange,
+		TextDocumentCompletion:      TextDocumentCompletion,
+		TextDocumentHover:           TextDocumentHover,
+		TextDocumentDidClose:        TextDocumentDidClose,
+		TextDocumentCodeAction:      TextDocumentCodeAction,
+		TextDocumentDefinition:      TextDocumentDefinition,
+		WorkspaceExecuteCommand:     WorkspaceExecuteCommand,
+		TextDocumentRename:          TextDocumentRename,
+		TextDocumentPrepareRename:   TextDocumentPrepareRename,
+		TextDocumentSignatureHelp:   TextDocumentSignatureHelp,
+		TextDocumentRangeFormatting: TextDocumentRangeFormattingFunc,
 	}
 
 	server := server.NewServer(&lspHandler, lsName, false)
