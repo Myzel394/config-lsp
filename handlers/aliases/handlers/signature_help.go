@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"config-lsp/common"
 	"config-lsp/handlers/aliases/ast"
 	"strings"
 
@@ -125,8 +126,8 @@ func GetAllValuesSignatureHelp() *protocol.SignatureHelp {
 }
 
 func GetValueSignatureHelp(
+	cursor common.CursorPosition,
 	value ast.AliasValueInterface,
-	cursor uint32,
 ) *protocol.SignatureHelp {
 	switch value.(type) {
 	case ast.AliasValueUser:
@@ -166,7 +167,8 @@ func GetValueSignatureHelp(
 			},
 		}
 	case ast.AliasValueEmail:
-		isBeforeAtSymbol := cursor <= uint32(strings.Index(value.GetAliasValue().Value, "@"))
+		indexPosition := common.LSPCharacterAsIndexPosition(uint32(strings.Index(value.GetAliasValue().Value, "@")))
+		isBeforeAtSymbol := cursor.IsBeforeIndexPosition(indexPosition)
 
 		var index uint32
 
@@ -269,7 +271,7 @@ func GetValueSignatureHelp(
 		errorValue := value.(ast.AliasValueError)
 		var index uint32
 
-		if errorValue.Code == nil || cursor <= errorValue.Code.Location.End.Character {
+		if errorValue.Code == nil || errorValue.Code.Location.IsPositionBeforeEnd(cursor) {
 			index = 1
 		} else {
 			index = 2

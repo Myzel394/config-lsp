@@ -1,12 +1,13 @@
 package handlers
 
 import (
+	"config-lsp/common"
 	"config-lsp/handlers/aliases/ast"
 	"slices"
 )
 
-func GetValueAtCursor(
-	cursor uint32,
+func GetValueAtPosition(
+	position common.Position,
 	entry *ast.AliasEntry,
 ) *ast.AliasValueInterface {
 	if entry.Values == nil || len(entry.Values.Values) == 0 {
@@ -15,16 +16,16 @@ func GetValueAtCursor(
 
 	index, found := slices.BinarySearchFunc(
 		entry.Values.Values,
-		cursor,
-		func(current ast.AliasValueInterface, target uint32) int {
-			value := current.GetAliasValue()
+		position,
+		func(rawCurrent ast.AliasValueInterface, target common.Position) int {
+			current := rawCurrent.GetAliasValue()
 
-			if target < value.Location.Start.Character {
-				return 1
+			if current.Location.IsPositionAfterEnd(target) {
+				return -1
 			}
 
-			if target > value.Location.End.Character {
-				return -1
+			if current.Location.IsPositionBeforeStart(target) {
+				return 1
 			}
 
 			return 0

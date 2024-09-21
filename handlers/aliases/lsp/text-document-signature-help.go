@@ -14,7 +14,7 @@ func TextDocumentSignatureHelp(context *glsp.Context, params *protocol.Signature
 	document := aliases.DocumentParserMap[params.TextDocument.URI]
 
 	line := params.Position.Line
-	character := common.CursorToCharacterIndex(params.Position.Character)
+	cursor := common.LSPCharacterAsCursorPosition(common.CursorToCharacterIndex(params.Position.Character))
 
 	if _, found := document.Parser.CommentLines[line]; found {
 		// Comment
@@ -29,12 +29,12 @@ func TextDocumentSignatureHelp(context *glsp.Context, params *protocol.Signature
 
 	entry := rawEntry.(*ast.AliasEntry)
 
-	if entry.Key != nil && character >= entry.Key.Location.Start.Character && character <= entry.Key.Location.End.Character {
+	if entry.Key != nil && entry.Key.Location.ContainsPosition(cursor) {
 		return handlers.GetRootSignatureHelp(0), nil
 	}
 
-	if entry.Values != nil && character >= entry.Values.Location.Start.Character && character <= entry.Values.Location.End.Character {
-		value := handlers.GetValueAtCursor(character, entry)
+	if entry.Values != nil && entry.Values.Location.ContainsPosition(cursor) {
+		value := handlers.GetValueAtPosition(cursor, entry)
 
 		if value == nil {
 			// For some reason, this does not really work,
@@ -46,7 +46,7 @@ func TextDocumentSignatureHelp(context *glsp.Context, params *protocol.Signature
 			return nil, nil
 		}
 
-		return handlers.GetValueSignatureHelp(*value, character), nil
+		return handlers.GetValueSignatureHelp(cursor, *value), nil
 	}
 
 	return nil, nil

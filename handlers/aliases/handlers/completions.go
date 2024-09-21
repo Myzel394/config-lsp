@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"config-lsp/common"
 	"config-lsp/handlers/aliases/analyzer"
 	"config-lsp/handlers/aliases/ast"
 	"config-lsp/handlers/aliases/fetchers"
@@ -38,7 +39,7 @@ func GetAliasesCompletions(
 }
 
 func GetCompletionsForEntry(
-	cursor uint32,
+	cursor common.CursorPosition,
 	entry *ast.AliasEntry,
 	i *indexes.AliasesIndexes,
 ) ([]protocol.CompletionItem, error) {
@@ -48,8 +49,7 @@ func GetCompletionsForEntry(
 		return completions, nil
 	}
 
-	value := GetValueAtCursor(cursor, entry)
-	relativeCursor := cursor - entry.Key.Location.Start.Character
+	value := GetValueAtPosition(cursor, entry)
 
 	excludedUsers := getUsersFromEntry(entry)
 
@@ -61,8 +61,6 @@ func GetCompletionsForEntry(
 		completions = append(completions, getUserCompletions(
 			i,
 			excludedUsers,
-			"",
-			0,
 		)...)
 
 		return completions, nil
@@ -70,21 +68,17 @@ func GetCompletionsForEntry(
 
 	switch (*value).(type) {
 	case ast.AliasValueUser:
-		userValue := (*value).(ast.AliasValueUser)
-
 		return getUserCompletions(
 			i,
 			excludedUsers,
-			userValue.Value,
-			relativeCursor,
 		), nil
 	case ast.AliasValueError:
 		errorValue := (*value).(ast.AliasValueError)
 
 		isAtErrorCode := errorValue.Code == nil &&
-			relativeCursor >= errorValue.Location.Start.Character &&
+			errorValue.Location.IsPositionAfterStart(cursor) &&
 			(errorValue.Message == nil ||
-				relativeCursor <= errorValue.Message.Location.Start.Character)
+				errorValue.Message.Location.IsPositionBeforeEnd(cursor))
 
 		if isAtErrorCode {
 			kind := protocol.CompletionItemKindValue
@@ -160,8 +154,6 @@ func getErrorCompletion() protocol.CompletionItem {
 func getUserCompletions(
 	i *indexes.AliasesIndexes,
 	excluded map[string]struct{},
-	line string,
-	cursor uint32,
 ) []protocol.CompletionItem {
 	users := fetchers.GetAvailableUserValues(i)
 

@@ -105,11 +105,11 @@ luke: :include:/etc/other_aliases
 		t.Fatalf("Expected path to be '/etc/other_aliases', got %v", includeValue.Path.Path)
 	}
 
-	if !(includeValue.Location.Start.Character == 6 && includeValue.Location.End.Character == 32) {
+	if !(includeValue.Location.Start.Character == 6 && includeValue.Location.End.Character == 33) {
 		t.Fatalf("Expected location to be 6-33, got %v-%v", includeValue.Location.Start.Character, includeValue.Location.End.Character)
 	}
 
-	if !(includeValue.Path.Location.Start.Character == 15 && includeValue.Path.Location.End.Character == 32) {
+	if !(includeValue.Path.Location.Start.Character == 15 && includeValue.Path.Location.End.Character == 33) {
 		t.Fatalf("Expected path location to be 15-33, got %v-%v", includeValue.Path.Location.Start.Character, includeValue.Path.Location.End.Character)
 	}
 }

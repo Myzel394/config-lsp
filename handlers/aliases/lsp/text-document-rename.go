@@ -1,6 +1,7 @@
 package lsp
 
 import (
+	"config-lsp/common"
 	"config-lsp/handlers/aliases"
 	"config-lsp/handlers/aliases/ast"
 	"config-lsp/handlers/aliases/handlers"
@@ -11,7 +12,7 @@ import (
 
 func TextDocumentRename(context *glsp.Context, params *protocol.RenameParams) (*protocol.WorkspaceEdit, error) {
 	d := aliases.DocumentParserMap[params.TextDocument.URI]
-	character := params.Position.Character
+	index := common.LSPCharacterAsIndexPosition(params.Position.Character)
 	line := params.Position.Line
 
 	rawEntry, found := d.Parser.Aliases.Get(line)
@@ -22,7 +23,7 @@ func TextDocumentRename(context *glsp.Context, params *protocol.RenameParams) (*
 
 	entry := rawEntry.(*ast.AliasEntry)
 
-	if character >= entry.Key.Location.Start.Character && character <= entry.Key.Location.End.Character {
+	if entry.Key.Location.ContainsPosition(index) {
 		changes := handlers.RenameAlias(
 			*d.Indexes,
 			entry.Key.Value,
@@ -36,8 +37,8 @@ func TextDocumentRename(context *glsp.Context, params *protocol.RenameParams) (*
 		}, nil
 	}
 
-	if entry.Values != nil && character >= entry.Values.Location.Start.Character && character <= entry.Values.Location.End.Character {
-		rawValue := handlers.GetValueAtCursor(character, entry)
+	if entry.Values != nil && entry.Values.Location.ContainsPosition(index) {
+		rawValue := handlers.GetValueAtPosition(index, entry)
 
 		if rawValue == nil {
 			return nil, nil

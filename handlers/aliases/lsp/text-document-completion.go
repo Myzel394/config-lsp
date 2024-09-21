@@ -1,6 +1,7 @@
 package lsp
 
 import (
+	"config-lsp/common"
 	"config-lsp/handlers/aliases"
 	"config-lsp/handlers/aliases/ast"
 	"config-lsp/handlers/aliases/handlers"
@@ -11,7 +12,7 @@ import (
 
 func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionParams) (any, error) {
 	d := aliases.DocumentParserMap[params.TextDocument.URI]
-	cursor := params.Position.Character
+	cursor := common.LSPCharacterAsCursorPosition(params.Position.Character)
 	line := params.Position.Line
 
 	if _, found := d.Parser.CommentLines[line]; found {
@@ -31,15 +32,15 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 		return handlers.GetAliasesCompletions(d.Indexes), nil
 	}
 
-	if cursor >= entry.Key.Location.Start.Character && cursor <= entry.Key.Location.End.Character {
+	if entry.Key.Location.ContainsPosition(cursor) {
 		return handlers.GetAliasesCompletions(d.Indexes), nil
 	}
 
-	if entry.Separator == nil && cursor > entry.Key.Location.End.Character {
+	if entry.Separator == nil && entry.Key.Location.IsPositionBeforeEnd(cursor) {
 		return nil, nil
 	}
 
-	if cursor > entry.Separator.End.Character {
+	if entry.Separator.IsPositionBeforeEnd(cursor) {
 		return handlers.GetCompletionsForEntry(
 			cursor,
 			entry,

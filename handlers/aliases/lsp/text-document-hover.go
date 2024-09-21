@@ -1,6 +1,7 @@
 package lsp
 
 import (
+	"config-lsp/common"
 	"config-lsp/handlers/aliases"
 	"config-lsp/handlers/aliases/ast"
 	"config-lsp/handlers/aliases/handlers"
@@ -17,7 +18,7 @@ func TextDocumentHover(
 	document := aliases.DocumentParserMap[params.TextDocument.URI]
 
 	line := params.Position.Line
-	character := params.Position.Character
+	index := common.LSPCharacterAsIndexPosition(params.Position.Character)
 
 	if _, found := document.Parser.CommentLines[line]; found {
 		// Comment
@@ -32,7 +33,7 @@ func TextDocumentHover(
 
 	entry := rawEntry.(*ast.AliasEntry)
 
-	if entry.Key != nil && character >= entry.Key.Location.Start.Character && character <= entry.Key.Location.End.Character {
+	if entry.Key != nil && entry.Key.Location.ContainsPosition(index) {
 		text := handlers.GetAliasHoverInfo(*document.Indexes, *entry)
 
 		return &protocol.Hover{
@@ -40,8 +41,8 @@ func TextDocumentHover(
 		}, nil
 	}
 
-	if entry.Values != nil && character >= entry.Values.Location.Start.Character && character <= entry.Values.Location.End.Character {
-		value := handlers.GetValueAtCursor(character, entry)
+	if entry.Values != nil && entry.Values.Location.ContainsPosition(index) {
+		value := handlers.GetValueAtPosition(index, entry)
 
 		if value == nil {
 			return nil, nil
