@@ -2,8 +2,8 @@ package analyzer
 
 import (
 	"config-lsp/common"
+	"config-lsp/common/parsers/openssh-match-parser"
 	sshdconfig "config-lsp/handlers/sshd_config"
-	matchparser "config-lsp/handlers/sshd_config/fields/match-parser"
 	"config-lsp/utils"
 	"errors"
 	"fmt"

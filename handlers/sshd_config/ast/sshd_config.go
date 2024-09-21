@@ -3,8 +3,7 @@ package ast
 import (
 	"config-lsp/common"
 	commonparser "config-lsp/common/parser"
-	matchparser "config-lsp/handlers/sshd_config/fields/match-parser"
-
+	"config-lsp/common/parsers/openssh-match-parser"
 	"github.com/emirpasic/gods/maps/treemap"
 )
 
@@ -47,8 +46,8 @@ type SSHDOption struct {
 
 type SSHDMatchBlock struct {
 	common.LocationRange
-	MatchEntry *SSHDOption
-	MatchValue *matchparser.Match
+	MatchOption *SSHDOption
+	MatchValue  *matchparser.Match
 
 	// [uint32]*SSHDOption -> line number -> *SSHDOption
 	Options *treemap.Map

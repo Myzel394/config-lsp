@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"config-lsp/common/formatting"
+	"config-lsp/common/parsers/openssh-match-parser"
 	"config-lsp/handlers/sshd_config/ast"
-	matchparser "config-lsp/handlers/sshd_config/fields/match-parser"
 	"config-lsp/utils"
 	"fmt"
 	"strings"
@@ -57,10 +57,10 @@ func formatSSHDMatchBlock(
 	edits := make([]protocol.TextEdit, 0)
 
 	edits = append(edits, protocol.TextEdit{
-		Range: matchBlock.MatchEntry.ToLSPRange(),
+		Range: matchBlock.MatchOption.ToLSPRange(),
 		NewText: matchTemplate.Format(
 			options,
-			matchBlock.MatchEntry.Key.Key,
+			matchBlock.MatchOption.Key.Key,
 			formatMatchToString(matchBlock.MatchValue),
 		),
 	})

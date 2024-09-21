@@ -3,7 +3,7 @@ package matchparser
 import (
 	"config-lsp/common"
 	commonparser "config-lsp/common/parser"
-	"config-lsp/handlers/sshd_config/fields/match-parser/parser"
+	parser2 "config-lsp/common/parsers/openssh-match-parser/parser"
 	"config-lsp/utils"
 	"errors"
 	"fmt"
@@ -39,13 +39,13 @@ func createListener(
 }
 
 type matchParserListener struct {
-	*parser.BaseMatchListener
+	*parser2.BaseMatchListener
 	match        *Match
 	Errors       []common.LSPError
 	matchContext *matchListenerContext
 }
 
-func (s *matchParserListener) EnterMatchEntry(ctx *parser.MatchEntryContext) {
+func (s *matchParserListener) EnterMatchEntry(ctx *parser2.MatchEntryContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter)
 	location.ChangeBothLines(s.matchContext.line)
 
@@ -58,7 +58,7 @@ func (s *matchParserListener) EnterMatchEntry(ctx *parser.MatchEntryContext) {
 	s.matchContext.currentEntry = entry
 }
 
-func (s *matchParserListener) ExitMatchEntry(ctx *parser.MatchEntryContext) {
+func (s *matchParserListener) ExitMatchEntry(ctx *parser2.MatchEntryContext) {
 	s.matchContext.currentEntry = nil
 }
 
@@ -72,7 +72,7 @@ var availableCriteria = map[string]MatchCriteriaType{
 	string(MatchCriteriaTypeAddress):      MatchCriteriaTypeAddress,
 }
 
-func (s *matchParserListener) EnterCriteria(ctx *parser.CriteriaContext) {
+func (s *matchParserListener) EnterCriteria(ctx *parser2.CriteriaContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter)
 	location.ChangeBothLines(s.matchContext.line)
 
@@ -95,7 +95,7 @@ func (s *matchParserListener) EnterCriteria(ctx *parser.CriteriaContext) {
 	}
 }
 
-func (s *matchParserListener) EnterSeparator(ctx *parser.SeparatorContext) {
+func (s *matchParserListener) EnterSeparator(ctx *parser2.SeparatorContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter)
 	location.ChangeBothLines(s.matchContext.line)
 
@@ -104,7 +104,7 @@ func (s *matchParserListener) EnterSeparator(ctx *parser.SeparatorContext) {
 	}
 }
 
-func (s *matchParserListener) EnterValues(ctx *parser.ValuesContext) {
+func (s *matchParserListener) EnterValues(ctx *parser2.ValuesContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter)
 	location.ChangeBothLines(s.matchContext.line)
 
@@ -114,7 +114,7 @@ func (s *matchParserListener) EnterValues(ctx *parser.ValuesContext) {
 	}
 }
 
-func (s *matchParserListener) EnterValue(ctx *parser.ValueContext) {
+func (s *matchParserListener) EnterValue(ctx *parser2.ValueContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter)
 	location.ChangeBothLines(s.matchContext.line)
 

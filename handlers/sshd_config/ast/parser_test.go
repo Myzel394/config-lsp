@@ -88,15 +88,15 @@ Match Address 192.168.0.1
 
 	rawSecondEntry, _ := p.Options.Get(uint32(2))
 	secondEntry := rawSecondEntry.(*SSHDMatchBlock)
-	if !(secondEntry.MatchEntry.Value.Value == "Match Address 192.168.0.1") {
-		t.Errorf("Expected second entry to be 'Match Address 192.168.0.1', but got: %v", secondEntry.MatchEntry.Value)
+	if !(secondEntry.MatchOption.Value.Value == "Match Address 192.168.0.1") {
+		t.Errorf("Expected second entry to be 'Match Address 192.168.0.1', but got: %v", secondEntry.MatchOption.Value)
 	}
 
 	if !(secondEntry.Start.Line == 2 && secondEntry.Start.Character == 0 && secondEntry.End.Line == 3 && secondEntry.End.Character == 27) {
 		t.Errorf("Expected second entry's location to be 2:0-3:25, but got: %v", secondEntry.LocationRange)
 	}
 
-	if !(secondEntry.MatchValue.Entries[0].Criteria.Type == "Address" && secondEntry.MatchValue.Entries[0].Values.Values[0].Value.Value == "192.168.0.1" && secondEntry.MatchEntry.OptionValue.Start.Character == 6) {
+	if !(secondEntry.MatchValue.Entries[0].Criteria.Type == "Address" && secondEntry.MatchValue.Entries[0].Values.Values[0].Value.Value == "192.168.0.1" && secondEntry.MatchOption.OptionValue.Start.Character == 6) {
 		t.Errorf("Expected second entry to be 'Match Address 192.168.0.1', but got: %v", secondEntry.MatchValue)
 	}
 
@@ -126,8 +126,8 @@ Match User lena User root
 
 	_, matchBlock := p.FindOption(uint32(0))
 
-	if !(matchBlock.MatchEntry.Value.Value == "Match User lena User root") {
-		t.Errorf("Expected match block to be 'Match User lena User root', but got: %v", matchBlock.MatchEntry.Value)
+	if !(matchBlock.MatchOption.Value.Value == "Match User lena User root") {
+		t.Errorf("Expected match block to be 'Match User lena User root', but got: %v", matchBlock.MatchOption.Value)
 	}
 
 	if !(len(matchBlock.MatchValue.Entries) == 2) {
@@ -157,8 +157,8 @@ func TestIncompleteMatchBlock(
 
 	_, matchBlock := p.FindOption(uint32(0))
 
-	if !(matchBlock.MatchEntry.Value.Value == "Match User lena User ") {
-		t.Errorf("Expected match block to be 'Match User lena User ', but got: %v", matchBlock.MatchEntry.Value)
+	if !(matchBlock.MatchOption.Value.Value == "Match User lena User ") {
+		t.Errorf("Expected match block to be 'Match User lena User ', but got: %v", matchBlock.MatchOption.Value)
 	}
 
 	if !(matchBlock.MatchValue.Entries[0].Criteria.Type == "User" && matchBlock.MatchValue.Entries[0].Values.Values[0].Value.Value == "lena") {
@@ -231,12 +231,12 @@ Match Address 192.168.0.2
 	}
 
 	emptyOption, matchBlock := p.FindOption(uint32(5))
-	if !(emptyOption == nil && matchBlock.MatchEntry.Value.Value == "Match User lena" && matchBlock.MatchValue.Entries[0].Values.Values[0].Value.Value == "lena") {
+	if !(emptyOption == nil && matchBlock.MatchOption.Value.Value == "Match User lena" && matchBlock.MatchValue.Entries[0].Values.Values[0].Value.Value == "lena") {
 		t.Errorf("Expected empty option and match block to be 'Match User lena', but got: %v, %v", emptyOption, matchBlock)
 	}
 
 	matchOption, matchBlock := p.FindOption(uint32(2))
-	if !(matchOption.Value.Value == "Match User lena" && matchBlock.MatchEntry.Value.Value == "Match User lena" && matchBlock.MatchValue.Entries[0].Values.Values[0].Value.Value == "lena" && matchBlock.MatchEntry.OptionValue.Start.Character == 6) {
+	if !(matchOption.Value.Value == "Match User lena" && matchBlock.MatchOption.Value.Value == "Match User lena" && matchBlock.MatchValue.Entries[0].Values.Values[0].Value.Value == "lena" && matchBlock.MatchOption.OptionValue.Start.Character == 6) {
 		t.Errorf("Expected match option to be 'Match User lena', but got: %v, %v", matchOption, matchBlock)
 	}
 
@@ -502,8 +502,8 @@ Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1
 
 	rawFourthEntry, _ := p.Options.Get(uint32(135))
 	fourthEntry := rawFourthEntry.(*SSHDMatchBlock)
-	if !(fourthEntry.MatchEntry.Value.Value == "Match User anoncvs") {
-		t.Errorf("Expected fourth entry to be 'Match User anoncvs', but got: %v", fourthEntry.MatchEntry.Value)
+	if !(fourthEntry.MatchOption.Value.Value == "Match User anoncvs") {
+		t.Errorf("Expected fourth entry to be 'Match User anoncvs', but got: %v", fourthEntry.MatchOption.Value)
 	}
 
 	if !(fourthEntry.MatchValue.Entries[0].Criteria.Type == "User" && fourthEntry.MatchValue.Entries[0].Values.Values[0].Value.Value == "anoncvs") {
@@ -522,12 +522,12 @@ Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1
 
 	rawSixthEntry, _ := p.Options.Get(uint32(142))
 	sixthEntry := rawSixthEntry.(*SSHDMatchBlock)
-	if !(sixthEntry.MatchEntry.Value.Value == "Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1") {
-		t.Errorf("Expected sixth entry to be 'Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1', but got: %v", sixthEntry.MatchEntry.Value)
+	if !(sixthEntry.MatchOption.Value.Value == "Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1") {
+		t.Errorf("Expected sixth entry to be 'Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1', but got: %v", sixthEntry.MatchOption.Value)
 	}
 
-	if !(sixthEntry.MatchEntry.Key.Value.Value == "Match" && sixthEntry.MatchEntry.OptionValue.Value.Value == "Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1") {
-		t.Errorf("Expected sixth entry to be 'Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1', but got: %v", sixthEntry.MatchEntry.Value)
+	if !(sixthEntry.MatchOption.Key.Value.Value == "Match" && sixthEntry.MatchOption.OptionValue.Value.Value == "Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1") {
+		t.Errorf("Expected sixth entry to be 'Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1', but got: %v", sixthEntry.MatchOption.Value)
 	}
 
 	if !(sixthEntry.MatchValue.Entries[0].Criteria.Type == "Address" && len(sixthEntry.MatchValue.Entries[0].Values.Values) == 3) {

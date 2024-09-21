@@ -30,7 +30,7 @@ func CreateIndexes(config ast.SSHDConfig) (*SSHDIndexes, []common.LSPError) {
 		case *ast.SSHDMatchBlock:
 			matchBlock := entry.(*ast.SSHDMatchBlock)
 
-			errs = append(errs, addOption(indexes, matchBlock.MatchEntry, matchBlock)...)
+			errs = append(errs, addOption(indexes, matchBlock.MatchOption, matchBlock)...)
 
 			it := matchBlock.Options.Iterator()
 			for it.Next() {

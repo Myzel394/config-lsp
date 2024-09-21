@@ -3,8 +3,8 @@ package ast
 import (
 	"config-lsp/common"
 	commonparser "config-lsp/common/parser"
+	matchparser2 "config-lsp/common/parsers/openssh-match-parser"
 	"config-lsp/handlers/sshd_config/ast/parser"
-	matchparser "config-lsp/handlers/sshd_config/fields/match-parser"
 	"strings"
 
 	"github.com/emirpasic/gods/maps/treemap"
@@ -113,10 +113,10 @@ func (s *sshParserListener) ExitEntry(ctx *parser.EntryContext) {
 
 	if s.sshContext.isKeyAMatchBlock {
 		// Add new match block
-		var match *matchparser.Match
+		var match *matchparser2.Match
 
 		if s.sshContext.currentOption.OptionValue != nil {
-			matchParser := matchparser.NewMatch()
+			matchParser := matchparser2.NewMatch()
 			errors := matchParser.Parse(
 				s.sshContext.currentOption.OptionValue.Value.Raw,
 				location.Start.Line,
@@ -137,7 +137,7 @@ func (s *sshParserListener) ExitEntry(ctx *parser.EntryContext) {
 
 		matchBlock := &SSHDMatchBlock{
 			LocationRange: location,
-			MatchEntry:    s.sshContext.currentOption,
+			MatchOption:   s.sshContext.currentOption,
 			MatchValue:    match,
 			Options:       treemap.NewWith(gods.UInt32Comparator),
 		}

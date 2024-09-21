@@ -2,10 +2,9 @@ package handlers
 
 import (
 	"config-lsp/common"
+	"config-lsp/common/parsers/openssh-match-parser"
 	sshdconfig "config-lsp/handlers/sshd_config"
 	"config-lsp/handlers/sshd_config/fields"
-	matchparser "config-lsp/handlers/sshd_config/fields/match-parser"
-
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 

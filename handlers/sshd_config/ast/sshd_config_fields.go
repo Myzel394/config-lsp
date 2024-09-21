@@ -13,7 +13,7 @@ func (m SSHDMatchBlock) GetType() SSHDEntryType {
 }
 
 func (m SSHDMatchBlock) GetOption() SSHDOption {
-	return *m.MatchEntry
+	return *m.MatchOption
 }
 
 func (c SSHDConfig) FindMatchBlock(line uint32) *SSHDMatchBlock {
@@ -37,8 +37,8 @@ func (c SSHDConfig) FindOption(line uint32) (*SSHDOption, *SSHDMatchBlock) {
 	matchBlock := c.FindMatchBlock(line)
 
 	if matchBlock != nil {
-		if line == matchBlock.MatchEntry.Start.Line {
-			return matchBlock.MatchEntry, matchBlock
+		if line == matchBlock.MatchOption.Start.Line {
+			return matchBlock.MatchOption, matchBlock
 		}
 
 		rawEntry, found := matchBlock.Options.Get(line)
@@ -55,7 +55,7 @@ func (c SSHDConfig) FindOption(line uint32) (*SSHDOption, *SSHDMatchBlock) {
 	if found {
 		switch rawEntry.(type) {
 		case *SSHDMatchBlock:
-			return rawEntry.(*SSHDMatchBlock).MatchEntry, rawEntry.(*SSHDMatchBlock)
+			return rawEntry.(*SSHDMatchBlock).MatchOption, rawEntry.(*SSHDMatchBlock)
 		case *SSHDOption:
 			return rawEntry.(*SSHDOption), nil
 		}
@@ -78,7 +78,7 @@ func (c SSHDConfig) GetAllOptions() []*SSHDOption {
 		case *SSHDOption:
 			options = append(options, entry)
 		case *SSHDMatchBlock:
-			options = append(options, entry.MatchEntry)
+			options = append(options, entry.MatchOption)
 
 			for _, rawOption := range entry.Options.Values() {
 				options = append(options, rawOption.(*SSHDOption))

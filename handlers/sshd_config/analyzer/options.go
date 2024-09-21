@@ -109,7 +109,7 @@ func checkMatchBlock(
 ) []common.LSPError {
 	errs := make([]common.LSPError, 0)
 
-	matchOption := matchBlock.MatchEntry.OptionValue
+	matchOption := matchBlock.MatchOption.OptionValue
 	if matchOption != nil {
 		invalidValues := fields.Options["Match"].CheckIsValid(matchOption.Value.Value)
 
