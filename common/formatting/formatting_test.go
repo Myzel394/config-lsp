@@ -79,3 +79,40 @@ func TestSimpleExampleWhiteSpaceAtEndShouldNOTTrim(
 		t.Errorf("Expected %q but got %q", expected, result)
 	}
 }
+
+func TestSurroundWithQuotesExample(
+	t *testing.T,
+) {
+	template := FormatTemplate("%s /!'%s/!'")
+
+	options := protocol.FormattingOptions{
+		"tabSize":                float64(4),
+		"insertSpaces":           false,
+		"trimTrailingWhitespace": true,
+	}
+
+	result := template.Format(options, "PermitRootLogin", "this is okay")
+	expected := `PermitRootLogin "this is okay"`
+
+	if result != expected {
+		t.Errorf("Expected %q but got %q", expected, result)
+	}
+}
+func TestSurroundWithQuotesButNoSpaceExample(
+	t *testing.T,
+) {
+	template := FormatTemplate("%s /!'%s/!'")
+
+	options := protocol.FormattingOptions{
+		"tabSize":                float64(4),
+		"insertSpaces":           false,
+		"trimTrailingWhitespace": true,
+	}
+
+	result := template.Format(options, "PermitRootLogin", "yes")
+	expected := `PermitRootLogin yes`
+
+	if result != expected {
+		t.Errorf("Expected %q but got %q", expected, result)
+	}
+}

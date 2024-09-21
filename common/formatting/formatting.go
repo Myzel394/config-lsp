@@ -32,6 +32,8 @@ func (f FormatTemplate) Format(
 		value = strings.TrimRight(value, "\t")
 	}
 
+	value = surroundWithQuotes(value)
+
 	return value
 }
 
@@ -55,6 +57,45 @@ func (f FormatTemplate) replace(format string, replacement string) FormatTemplat
 	}
 
 	return FormatTemplate(value)
+}
+
+func surroundWithQuotes(s string) string {
+	value := s
+	currentIndex := 0
+
+	for {
+		startPosition := strings.Index(value[currentIndex:], "/!'")
+
+		if startPosition == -1 {
+			break
+		}
+
+		startPosition = startPosition + currentIndex + 3
+		currentIndex = startPosition
+
+		endPosition := strings.Index(value[startPosition:], "/!'")
+
+		if endPosition == -1 {
+			break
+		}
+
+		endPosition = endPosition + startPosition
+		currentIndex = endPosition
+
+		innerValue := value[startPosition:endPosition]
+
+		if strings.Contains(innerValue, " ") {
+			value = value[:startPosition-3] + "\"" + innerValue + "\"" + value[endPosition+3:]
+		} else {
+			value = value[:startPosition-3] + innerValue + value[endPosition+3:]
+		}
+
+		if endPosition+3 >= len(value) {
+			break
+		}
+	}
+
+	return value
 }
 
 func getTab(options protocol.FormattingOptions) string {
