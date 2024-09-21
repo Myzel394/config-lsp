@@ -11,14 +11,14 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
+var optionTemplate = formatting.FormatTemplate(
+	"%s /!'%s/!'",
+)
+
 func formatSSHDOption(
 	option *ast.SSHDOption,
 	options protocol.FormattingOptions,
 ) []protocol.TextEdit {
-	template := formatting.FormatTemplate(
-		"%s/t%s",
-	)
-
 	var key string
 
 	if option.Key != nil {
@@ -38,7 +38,7 @@ func formatSSHDOption(
 	return []protocol.TextEdit{
 		{
 			Range:   option.ToLSPRange(),
-			NewText: template.Format(options, key, value),
+			NewText: optionTemplate.Format(options, key, value),
 		},
 	}
 }
@@ -49,12 +49,9 @@ func formatSSHDMatchBlock(
 ) []protocol.TextEdit {
 	edits := make([]protocol.TextEdit, 0)
 
-	template := formatting.FormatTemplate(
-		"%s/t%s",
-	)
 	edits = append(edits, protocol.TextEdit{
 		Range:   matchBlock.ToLSPRange(),
-		NewText: template.Format(options, matchBlock.MatchEntry.Key.Key, formatMatchToString(matchBlock.MatchValue)),
+		NewText: optionTemplate.Format(options, matchBlock.MatchEntry.Key.Key, formatMatchToString(matchBlock.MatchValue)),
 	})
 
 	it := matchBlock.Options.Iterator()

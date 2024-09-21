@@ -17,7 +17,7 @@ criteria
     ;
 
 values
-    : value (COMMA value?)*
+    : value? (COMMA value?)*
     ;
 
 value
