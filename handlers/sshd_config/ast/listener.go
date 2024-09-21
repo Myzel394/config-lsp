@@ -84,8 +84,12 @@ func (s *sshParserListener) EnterSeparator(ctx *parser.SeparatorContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.sshContext.line)
 
+	text := ctx.GetText()
+	value := commonparser.ParseRawString(text, commonparser.FullFeatures)
+
 	s.sshContext.currentOption.Separator = &SSHDSeparator{
 		LocationRange: location,
+		Value:         value,
 	}
 }
 

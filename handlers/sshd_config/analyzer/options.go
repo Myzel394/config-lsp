@@ -11,7 +11,7 @@ import (
 	"fmt"
 )
 
-func analyzeOptionsAreValid(
+func analyzeStructureIsValid(
 	d *sshdconfig.SSHDocument,
 ) []common.LSPError {
 	errs := make([]common.LSPError, 0)
@@ -39,48 +39,66 @@ func checkOption(
 ) []common.LSPError {
 	errs := make([]common.LSPError, 0)
 
-	if option.Key != nil {
-		docOption, found := fields.Options[option.Key.Key]
+	if option.Key == nil {
+		return errs
+	}
 
-		if !found {
-			errs = append(errs, common.LSPError{
-				Range: option.Key.LocationRange,
-				Err:   errors.New(fmt.Sprintf("Unknown option: %s", option.Key.Key)),
-			})
+	errs = append(errs, checkIsUsingDoubleQuotes(option.Key.Value, option.Key.LocationRange)...)
+	errs = append(errs, checkQuotesAreClosed(option.Key.Value, option.Key.LocationRange)...)
 
-			return errs
-		}
+	docOption, found := fields.Options[option.Key.Key]
 
-		if _, found := fields.MatchAllowedOptions[option.Key.Key]; !found && isInMatchBlock {
-			errs = append(errs, common.LSPError{
-				Range: option.Key.LocationRange,
-				Err:   errors.New(fmt.Sprintf("Option '%s' is not allowed inside Match blocks", option.Key.Key)),
-			})
+	if !found {
+		errs = append(errs, common.LSPError{
+			Range: option.Key.LocationRange,
+			Err:   errors.New(fmt.Sprintf("Unknown option: %s", option.Key.Key)),
+		})
 
-			return errs
-		}
+		return errs
+	}
 
-		if option.OptionValue == nil || option.OptionValue.Value.Value == "" {
-			errs = append(errs, common.LSPError{
-				Range: option.Key.LocationRange,
-				Err:   errors.New(fmt.Sprintf("Option '%s' requires a value", option.Key.Key)),
-			})
-		} else {
-			invalidValues := docOption.CheckIsValid(option.OptionValue.Value.Value)
+	if _, found := fields.MatchAllowedOptions[option.Key.Key]; !found && isInMatchBlock {
+		errs = append(errs, common.LSPError{
+			Range: option.Key.LocationRange,
+			Err:   errors.New(fmt.Sprintf("Option '%s' is not allowed inside Match blocks", option.Key.Key)),
+		})
 
-			errs = append(
-				errs,
-				utils.Map(
-					invalidValues,
-					func(invalidValue *docvalues.InvalidValue) common.LSPError {
-						err := docvalues.LSPErrorFromInvalidValue(option.Start.Line, *invalidValue)
-						err.ShiftCharacter(option.OptionValue.Start.Character)
+		return errs
+	}
 
-						return err
-					},
-				)...,
-			)
-		}
+	if option.OptionValue == nil || option.OptionValue.Value.Value == "" {
+		errs = append(errs, common.LSPError{
+			Range: option.Key.LocationRange,
+			Err:   errors.New(fmt.Sprintf("Option '%s' requires a value", option.Key.Key)),
+		})
+	} else {
+		errs = append(errs, checkIsUsingDoubleQuotes(option.OptionValue.Value, option.OptionValue.LocationRange)...)
+		errs = append(errs, checkQuotesAreClosed(option.OptionValue.Value, option.OptionValue.LocationRange)...)
+
+		invalidValues := docOption.CheckIsValid(option.OptionValue.Value.Value)
+
+		errs = append(
+			errs,
+			utils.Map(
+				invalidValues,
+				func(invalidValue *docvalues.InvalidValue) common.LSPError {
+					err := docvalues.LSPErrorFromInvalidValue(option.Start.Line, *invalidValue)
+					err.ShiftCharacter(option.OptionValue.Start.Character)
+
+					return err
+				},
+			)...,
+		)
+	}
+
+	if option.Separator == nil || option.Separator.Value.Value == "" {
+		errs = append(errs, common.LSPError{
+			Range: option.Key.LocationRange,
+			Err:   errors.New(fmt.Sprintf("There should be a separator between an option and its value")),
+		})
+	} else {
+		errs = append(errs, checkIsUsingDoubleQuotes(option.Separator.Value, option.Separator.LocationRange)...)
+		errs = append(errs, checkQuotesAreClosed(option.Separator.Value, option.Separator.LocationRange)...)
 	}
 
 	return errs

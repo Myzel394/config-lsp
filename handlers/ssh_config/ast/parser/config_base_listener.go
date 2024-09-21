@@ -56,9 +56,3 @@ func (s *BaseConfigListener) EnterLeadingComment(ctx *LeadingCommentContext) {}
 
 // ExitLeadingComment is called when production leadingComment is exited.
 func (s *BaseConfigListener) ExitLeadingComment(ctx *LeadingCommentContext) {}
-
-// EnterString is called when production string is entered.
-func (s *BaseConfigListener) EnterString(ctx *StringContext) {}
-
-// ExitString is called when production string is exited.
-func (s *BaseConfigListener) ExitString(ctx *StringContext) {}

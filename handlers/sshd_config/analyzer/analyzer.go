@@ -12,7 +12,7 @@ import (
 func Analyze(
 	d *sshdconfig.SSHDocument,
 ) []protocol.Diagnostic {
-	errors := analyzeOptionsAreValid(d)
+	errors := analyzeStructureIsValid(d)
 
 	if len(errors) > 0 {
 		return errsToDiagnostics(errors)

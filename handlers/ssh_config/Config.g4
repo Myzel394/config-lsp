@@ -13,22 +13,16 @@ separator
     ;
 
 key
-    : string
+    : STRING
     ;
 
 value
-    : (string WHITESPACE)* string? WHITESPACE?
+    : (STRING WHITESPACE)* STRING? WHITESPACE?
     ;
 
 leadingComment
-    : HASH WHITESPACE? (string WHITESPACE?)+
+    : HASH WHITESPACE? (STRING WHITESPACE?)+
     ;
-
-string
-    : (QUOTED_STRING | STRING)
-    ;
-
-///////////////////////////////////////////////
 
 HASH
     : '#'
@@ -39,13 +33,9 @@ WHITESPACE
     ;
 
 STRING
-    : ~('#' | '\r' | '\n' | '"' | ' ' | '\t')+
+    : ~(' ' | '\t' | '\r' | '\n' | '#')+
     ;
 
 NEWLINE
     : '\r'? '\n'
-    ;
-
-QUOTED_STRING
-    : '"' WHITESPACE? (STRING WHITESPACE)* STRING? ('"')?
     ;

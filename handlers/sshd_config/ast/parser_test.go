@@ -165,7 +165,7 @@ func TestIncompleteMatchBlock(
 		t.Errorf("Expected first entry to be 'User lena', but got: %v", matchBlock.MatchValue.Entries[0])
 	}
 
-	if !(matchBlock.MatchValue.Entries[1].Value.Value == "User " && matchBlock.MatchValue.Entries[1].Criteria.Type == "User" && matchBlock.MatchValue.Entries[1].Values == nil) {
+	if !(matchBlock.MatchValue.Entries[1].Value.Value == "User " && matchBlock.MatchValue.Entries[1].Criteria.Type == "User" && len(matchBlock.MatchValue.Entries[1].Values.Values) == 0) {
 		t.Errorf("Expected second entry to be 'User ', but got: %v", matchBlock.MatchValue.Entries[1])
 	}
 }
@@ -542,5 +542,103 @@ Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1
 	seventhEntry := rawSeventhEntry.(*SSHDOption)
 	if !(seventhEntry.Key.Value.Value == "PermitRootLogin" && seventhEntry.OptionValue.Value.Value == "without-password") {
 		t.Errorf("Expected seventh entry to be 'PermitRootLogin without-password', but got: %v", seventhEntry.Value)
+	}
+}
+
+func TestQuotedOptionExample(
+	t *testing.T,
+) {
+	input := utils.Dedent(`
+PermitRootLogin "no"
+`)
+	p := NewSSHConfig()
+	errors := p.Parse(input)
+
+	if len(errors) != 0 {
+		t.Fatalf("Expected no errors, got %v", errors)
+	}
+
+	if !(p.Options.Size() == 1 &&
+		len(utils.KeysOfMap(p.CommentLines)) == 0) {
+		t.Errorf("Expected 1 option and no comment lines, but got: %v, %v", p.Options, p.CommentLines)
+	}
+
+	rawFirstEntry, _ := p.Options.Get(uint32(0))
+	entry := rawFirstEntry.(*SSHDOption)
+
+	if !(entry.Key.Value.Value == "PermitRootLogin" && entry.OptionValue.Value.Value == "no") {
+		t.Errorf("Expected first entry to be 'PermitRootLogin no', but got: %v", entry.Value)
+	}
+
+	if !(entry.LocationRange.Start.Line == 0 && entry.LocationRange.Start.Character == 0 && entry.LocationRange.End.Line == 0 && entry.LocationRange.End.Character == 20) {
+		t.Errorf("Expected location range to be 0:0-0:20, but got: %v", entry.LocationRange)
+	}
+
+	if !(entry.OptionValue.LocationRange.Start.Character == 16 && entry.OptionValue.LocationRange.End.Character == 20) {
+		t.Errorf("Expected option value location range to be 17-20, but got: %v", entry.OptionValue.LocationRange)
+	}
+}
+
+func TestQuotedKeyExample(
+	t *testing.T,
+) {
+	input := utils.Dedent(`
+"PermitRootLogin" no
+`)
+	p := NewSSHConfig()
+	errors := p.Parse(input)
+
+	if len(errors) != 0 {
+		t.Fatalf("Expected no errors, got %v", errors)
+	}
+
+	if !(p.Options.Size() == 1 &&
+		len(utils.KeysOfMap(p.CommentLines)) == 0) {
+		t.Errorf("Expected 1 option and no comment lines, but got: %v, %v", p.Options, p.CommentLines)
+	}
+
+	rawFirstEntry, _ := p.Options.Get(uint32(0))
+	entry := rawFirstEntry.(*SSHDOption)
+
+	if !(entry.Key.Value.Value == "PermitRootLogin" && entry.OptionValue.Value.Value == "no") {
+		t.Errorf("Expected first entry to be 'PermitRootLogin no', but got: %v", entry.Value)
+	}
+
+	if !(entry.LocationRange.Start.Line == 0 && entry.LocationRange.Start.Character == 0 && entry.LocationRange.End.Line == 0 && entry.LocationRange.End.Character == 20) {
+		t.Errorf("Expected location range to be 0:0-0:20, but got: %v", entry.LocationRange)
+	}
+
+	if !(entry.Key.LocationRange.Start.Character == 0 && entry.Key.LocationRange.End.Character == 17) {
+		t.Errorf("Expected key location range to be 0-17, but got: %v", entry.Key.LocationRange)
+	}
+
+	if !(entry.Key.LocationRange.Start.Character == 0 && entry.Key.LocationRange.End.Character == 17) {
+		t.Errorf("Expected key location range to be 0-17, but got: %v", entry.Key.LocationRange)
+	}
+}
+
+func TestQuotedValueWithSpacesExample(
+	t *testing.T,
+) {
+	input := utils.Dedent(`
+PermitRootLogin "no yes maybe"
+`)
+	p := NewSSHConfig()
+	errors := p.Parse(input)
+
+	if len(errors) != 0 {
+		t.Fatalf("Expected no errors, got %v", errors)
+	}
+
+	if !(p.Options.Size() == 1 &&
+		len(utils.KeysOfMap(p.CommentLines)) == 0) {
+		t.Errorf("Expected 1 option and no comment lines, but got: %v, %v", p.Options, p.CommentLines)
+	}
+
+	rawFirstEntry, _ := p.Options.Get(uint32(0))
+	entry := rawFirstEntry.(*SSHDOption)
+
+	if !(entry.Key.Value.Value == "PermitRootLogin" && entry.OptionValue.Value.Value == "no yes maybe") {
+		t.Errorf("Expected first entry to be 'PermitRootLogin no yes maybe', but got: %v", entry.Value)
 	}
 }

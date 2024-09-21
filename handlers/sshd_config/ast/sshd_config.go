@@ -33,6 +33,7 @@ type SSHDEntry interface {
 
 type SSHDSeparator struct {
 	common.LocationRange
+	Value commonparser.ParsedString
 }
 
 type SSHDOption struct {

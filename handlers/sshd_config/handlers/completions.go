@@ -22,16 +22,20 @@ func GetRootCompletions(
 
 	if parentMatchBlock == nil {
 		for key, option := range fields.Options {
-			if _, found := d.Indexes.AllOptionsPerName[key]; !found {
-				availableOptions[key] = option
+			if d.Indexes != nil && utils.KeyExists(d.Indexes.AllOptionsPerName, key) && !utils.KeyExists(fields.AllowedDuplicateOptions, key) {
+				continue
 			}
+
+			availableOptions[key] = option
 		}
 	} else {
 		for key := range fields.MatchAllowedOptions {
 			if option, found := fields.Options[key]; found {
-				if _, found := d.Indexes.AllOptionsPerName[key]; !found {
-					availableOptions[key] = option
+				if d.Indexes != nil && utils.KeyExists(d.Indexes.AllOptionsPerName, key) && !utils.KeyExists(fields.AllowedDuplicateOptions, key) {
+					continue
 				}
+
+				availableOptions[key] = option
 			}
 		}
 	}

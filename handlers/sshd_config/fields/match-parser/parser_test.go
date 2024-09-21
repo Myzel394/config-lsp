@@ -128,7 +128,7 @@ func TestIncompleteBetweenValuesExample(
 		t.Errorf("Expected User, but got %v", match.Entries[0])
 	}
 
-	if !(match.Entries[0].Values == nil) {
+	if !(len(match.Entries[0].Values.Values) == 0) {
 		t.Errorf("Expected 0 values, but got %v", match.Entries[0].Values)
 	}
 }
