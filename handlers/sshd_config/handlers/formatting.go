@@ -26,7 +26,11 @@ func FormatDocument(
 		switch entry.(type) {
 		case *ast.SSHDOption:
 			option := entry.(*ast.SSHDOption)
-			edits = append(edits, formatSSHDOption(option, options)...)
+			edits = append(edits, formatSSHDOption(
+				option,
+				options,
+				optionTemplate,
+			)...)
 		case *ast.SSHDMatchBlock:
 			matchBlock := entry.(*ast.SSHDMatchBlock)
 

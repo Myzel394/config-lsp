@@ -33,38 +33,37 @@ var MatchParserStaticData struct {
 func matchParserInit() {
 	staticData := &MatchParserStaticData
 	staticData.LiteralNames = []string{
-		"", "", "", "", "", "", "", "", "','",
+		"", "','",
 	}
 	staticData.SymbolicNames = []string{
-		"", "USER", "GROUP", "HOST", "LOCALADDRESS", "LOCALPORT", "RDOMAIN",
-		"ADDRESS", "COMMA", "STRING", "WHITESPACE",
+		"", "COMMA", "STRING", "WHITESPACE",
 	}
 	staticData.RuleNames = []string{
 		"root", "matchEntry", "separator", "criteria", "values", "value",
 	}
 	staticData.PredictionContextCache = antlr.NewPredictionContextCache()
 	staticData.serializedATN = []int32{
-		4, 1, 10, 52, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7,
-		4, 2, 5, 7, 5, 1, 0, 3, 0, 14, 8, 0, 1, 0, 1, 0, 3, 0, 18, 8, 0, 5, 0,
-		20, 8, 0, 10, 0, 12, 0, 23, 9, 0, 1, 0, 1, 0, 1, 1, 1, 1, 3, 1, 29, 8,
-		1, 1, 1, 3, 1, 32, 8, 1, 1, 2, 1, 2, 1, 3, 1, 3, 1, 4, 3, 4, 39, 8, 4,
-		1, 4, 1, 4, 3, 4, 43, 8, 4, 5, 4, 45, 8, 4, 10, 4, 12, 4, 48, 9, 4, 1,
-		5, 1, 5, 1, 5, 0, 0, 6, 0, 2, 4, 6, 8, 10, 0, 1, 1, 0, 1, 7, 53, 0, 13,
-		1, 0, 0, 0, 2, 26, 1, 0, 0, 0, 4, 33, 1, 0, 0, 0, 6, 35, 1, 0, 0, 0, 8,
-		38, 1, 0, 0, 0, 10, 49, 1, 0, 0, 0, 12, 14, 3, 2, 1, 0, 13, 12, 1, 0, 0,
-		0, 13, 14, 1, 0, 0, 0, 14, 21, 1, 0, 0, 0, 15, 17, 5, 10, 0, 0, 16, 18,
-		3, 2, 1, 0, 17, 16, 1, 0, 0, 0, 17, 18, 1, 0, 0, 0, 18, 20, 1, 0, 0, 0,
-		19, 15, 1, 0, 0, 0, 20, 23, 1, 0, 0, 0, 21, 19, 1, 0, 0, 0, 21, 22, 1,
-		0, 0, 0, 22, 24, 1, 0, 0, 0, 23, 21, 1, 0, 0, 0, 24, 25, 5, 0, 0, 1, 25,
-		1, 1, 0, 0, 0, 26, 28, 3, 6, 3, 0, 27, 29, 3, 4, 2, 0, 28, 27, 1, 0, 0,
-		0, 28, 29, 1, 0, 0, 0, 29, 31, 1, 0, 0, 0, 30, 32, 3, 8, 4, 0, 31, 30,
-		1, 0, 0, 0, 31, 32, 1, 0, 0, 0, 32, 3, 1, 0, 0, 0, 33, 34, 5, 10, 0, 0,
-		34, 5, 1, 0, 0, 0, 35, 36, 7, 0, 0, 0, 36, 7, 1, 0, 0, 0, 37, 39, 3, 10,
-		5, 0, 38, 37, 1, 0, 0, 0, 38, 39, 1, 0, 0, 0, 39, 46, 1, 0, 0, 0, 40, 42,
-		5, 8, 0, 0, 41, 43, 3, 10, 5, 0, 42, 41, 1, 0, 0, 0, 42, 43, 1, 0, 0, 0,
-		43, 45, 1, 0, 0, 0, 44, 40, 1, 0, 0, 0, 45, 48, 1, 0, 0, 0, 46, 44, 1,
-		0, 0, 0, 46, 47, 1, 0, 0, 0, 47, 9, 1, 0, 0, 0, 48, 46, 1, 0, 0, 0, 49,
-		50, 5, 9, 0, 0, 50, 11, 1, 0, 0, 0, 8, 13, 17, 21, 28, 31, 38, 42, 46,
+		4, 1, 3, 52, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7, 4,
+		2, 5, 7, 5, 1, 0, 3, 0, 14, 8, 0, 1, 0, 1, 0, 3, 0, 18, 8, 0, 5, 0, 20,
+		8, 0, 10, 0, 12, 0, 23, 9, 0, 1, 0, 1, 0, 1, 1, 1, 1, 3, 1, 29, 8, 1, 1,
+		1, 3, 1, 32, 8, 1, 1, 2, 1, 2, 1, 3, 1, 3, 1, 4, 3, 4, 39, 8, 4, 1, 4,
+		1, 4, 3, 4, 43, 8, 4, 5, 4, 45, 8, 4, 10, 4, 12, 4, 48, 9, 4, 1, 5, 1,
+		5, 1, 5, 0, 0, 6, 0, 2, 4, 6, 8, 10, 0, 0, 53, 0, 13, 1, 0, 0, 0, 2, 26,
+		1, 0, 0, 0, 4, 33, 1, 0, 0, 0, 6, 35, 1, 0, 0, 0, 8, 38, 1, 0, 0, 0, 10,
+		49, 1, 0, 0, 0, 12, 14, 3, 2, 1, 0, 13, 12, 1, 0, 0, 0, 13, 14, 1, 0, 0,
+		0, 14, 21, 1, 0, 0, 0, 15, 17, 5, 3, 0, 0, 16, 18, 3, 2, 1, 0, 17, 16,
+		1, 0, 0, 0, 17, 18, 1, 0, 0, 0, 18, 20, 1, 0, 0, 0, 19, 15, 1, 0, 0, 0,
+		20, 23, 1, 0, 0, 0, 21, 19, 1, 0, 0, 0, 21, 22, 1, 0, 0, 0, 22, 24, 1,
+		0, 0, 0, 23, 21, 1, 0, 0, 0, 24, 25, 5, 0, 0, 1, 25, 1, 1, 0, 0, 0, 26,
+		28, 3, 6, 3, 0, 27, 29, 3, 4, 2, 0, 28, 27, 1, 0, 0, 0, 28, 29, 1, 0, 0,
+		0, 29, 31, 1, 0, 0, 0, 30, 32, 3, 8, 4, 0, 31, 30, 1, 0, 0, 0, 31, 32,
+		1, 0, 0, 0, 32, 3, 1, 0, 0, 0, 33, 34, 5, 3, 0, 0, 34, 5, 1, 0, 0, 0, 35,
+		36, 5, 2, 0, 0, 36, 7, 1, 0, 0, 0, 37, 39, 3, 10, 5, 0, 38, 37, 1, 0, 0,
+		0, 38, 39, 1, 0, 0, 0, 39, 46, 1, 0, 0, 0, 40, 42, 5, 1, 0, 0, 41, 43,
+		3, 10, 5, 0, 42, 41, 1, 0, 0, 0, 42, 43, 1, 0, 0, 0, 43, 45, 1, 0, 0, 0,
+		44, 40, 1, 0, 0, 0, 45, 48, 1, 0, 0, 0, 46, 44, 1, 0, 0, 0, 46, 47, 1,
+		0, 0, 0, 47, 9, 1, 0, 0, 0, 48, 46, 1, 0, 0, 0, 49, 50, 5, 2, 0, 0, 50,
+		11, 1, 0, 0, 0, 8, 13, 17, 21, 28, 31, 38, 42, 46,
 	}
 	deserializer := antlr.NewATNDeserializer(nil)
 	staticData.atn = deserializer.Deserialize(staticData.serializedATN)
@@ -102,17 +101,10 @@ func NewMatchParser(input antlr.TokenStream) *MatchParser {
 
 // MatchParser tokens.
 const (
-	MatchParserEOF          = antlr.TokenEOF
-	MatchParserUSER         = 1
-	MatchParserGROUP        = 2
-	MatchParserHOST         = 3
-	MatchParserLOCALADDRESS = 4
-	MatchParserLOCALPORT    = 5
-	MatchParserRDOMAIN      = 6
-	MatchParserADDRESS      = 7
-	MatchParserCOMMA        = 8
-	MatchParserSTRING       = 9
-	MatchParserWHITESPACE   = 10
+	MatchParserEOF        = antlr.TokenEOF
+	MatchParserCOMMA      = 1
+	MatchParserSTRING     = 2
+	MatchParserWHITESPACE = 3
 )
 
 // MatchParser rules.
@@ -261,7 +253,7 @@ func (p *MatchParser) Root() (localctx IRootContext) {
 	}
 	_la = p.GetTokenStream().LA(1)
 
-	if (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&254) != 0 {
+	if _la == MatchParserSTRING {
 		{
 			p.SetState(12)
 			p.MatchEntry()
@@ -291,7 +283,7 @@ func (p *MatchParser) Root() (localctx IRootContext) {
 		}
 		_la = p.GetTokenStream().LA(1)
 
-		if (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&254) != 0 {
+		if _la == MatchParserSTRING {
 			{
 				p.SetState(16)
 				p.MatchEntry()
@@ -594,13 +586,7 @@ type ICriteriaContext interface {
 	GetParser() antlr.Parser
 
 	// Getter signatures
-	USER() antlr.TerminalNode
-	GROUP() antlr.TerminalNode
-	HOST() antlr.TerminalNode
-	LOCALADDRESS() antlr.TerminalNode
-	LOCALPORT() antlr.TerminalNode
-	RDOMAIN() antlr.TerminalNode
-	ADDRESS() antlr.TerminalNode
+	STRING() antlr.TerminalNode
 
 	// IsCriteriaContext differentiates from other interfaces.
 	IsCriteriaContext()
@@ -638,32 +624,8 @@ func NewCriteriaContext(parser antlr.Parser, parent antlr.ParserRuleContext, inv
 
 func (s *CriteriaContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *CriteriaContext) USER() antlr.TerminalNode {
-	return s.GetToken(MatchParserUSER, 0)
-}
-
-func (s *CriteriaContext) GROUP() antlr.TerminalNode {
-	return s.GetToken(MatchParserGROUP, 0)
-}
-
-func (s *CriteriaContext) HOST() antlr.TerminalNode {
-	return s.GetToken(MatchParserHOST, 0)
-}
-
-func (s *CriteriaContext) LOCALADDRESS() antlr.TerminalNode {
-	return s.GetToken(MatchParserLOCALADDRESS, 0)
-}
-
-func (s *CriteriaContext) LOCALPORT() antlr.TerminalNode {
-	return s.GetToken(MatchParserLOCALPORT, 0)
-}
-
-func (s *CriteriaContext) RDOMAIN() antlr.TerminalNode {
-	return s.GetToken(MatchParserRDOMAIN, 0)
-}
-
-func (s *CriteriaContext) ADDRESS() antlr.TerminalNode {
-	return s.GetToken(MatchParserADDRESS, 0)
+func (s *CriteriaContext) STRING() antlr.TerminalNode {
+	return s.GetToken(MatchParserSTRING, 0)
 }
 
 func (s *CriteriaContext) GetRuleContext() antlr.RuleContext {
@@ -689,18 +651,13 @@ func (s *CriteriaContext) ExitRule(listener antlr.ParseTreeListener) {
 func (p *MatchParser) Criteria() (localctx ICriteriaContext) {
 	localctx = NewCriteriaContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 6, MatchParserRULE_criteria)
-	var _la int
-
 	p.EnterOuterAlt(localctx, 1)
 	{
 		p.SetState(35)
-		_la = p.GetTokenStream().LA(1)
-
-		if !((int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&254) != 0) {
-			p.GetErrorHandler().RecoverInline(p)
-		} else {
-			p.GetErrorHandler().ReportMatch(p)
-			p.Consume()
+		p.Match(MatchParserSTRING)
+		if p.HasError() {
+			// Recognition error - abort rule
+			goto errorExit
 		}
 	}
 

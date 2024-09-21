@@ -14,10 +14,17 @@ import (
 var optionTemplate = formatting.FormatTemplate(
 	"%s /!'%s/!'",
 )
+var matchTemplate = formatting.FormatTemplate(
+	"%s %s",
+)
+var matchOptionTemplate = formatting.FormatTemplate(
+	"    %s /!'%s/!'",
+)
 
 func formatSSHDOption(
 	option *ast.SSHDOption,
 	options protocol.FormattingOptions,
+	template formatting.FormatTemplate,
 ) []protocol.TextEdit {
 	var key string
 
@@ -38,7 +45,7 @@ func formatSSHDOption(
 	return []protocol.TextEdit{
 		{
 			Range:   option.ToLSPRange(),
-			NewText: optionTemplate.Format(options, key, value),
+			NewText: template.Format(options, key, value),
 		},
 	}
 }
@@ -50,15 +57,23 @@ func formatSSHDMatchBlock(
 	edits := make([]protocol.TextEdit, 0)
 
 	edits = append(edits, protocol.TextEdit{
-		Range:   matchBlock.ToLSPRange(),
-		NewText: optionTemplate.Format(options, matchBlock.MatchEntry.Key.Key, formatMatchToString(matchBlock.MatchValue)),
+		Range: matchBlock.MatchEntry.ToLSPRange(),
+		NewText: matchTemplate.Format(
+			options,
+			matchBlock.MatchEntry.Key.Key,
+			formatMatchToString(matchBlock.MatchValue),
+		),
 	})
 
 	it := matchBlock.Options.Iterator()
 	for it.Next() {
 		option := it.Value().(*ast.SSHDOption)
 
-		edits = append(edits, formatSSHDOption(option, options)...)
+		edits = append(edits, formatSSHDOption(
+			option,
+			options,
+			matchOptionTemplate,
+		)...)
 	}
 
 	return edits
