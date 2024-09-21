@@ -79,7 +79,7 @@ Include /etc/ssh/sshd_config.d/*.conf hello_world
 		indexes.Includes[1].Values[0].Start.Line == 1 &&
 		indexes.Includes[1].Values[0].End.Line == 1 &&
 		indexes.Includes[1].Values[0].Start.Character == 8 &&
-		indexes.Includes[1].Values[0].End.Character == 36) {
+		indexes.Includes[1].Values[0].End.Character == 37) {
 		t.Errorf("Expected '/etc/ssh/sshd_config.d/*.conf' on line 1, but got %v on line %v", indexes.Includes[1].Values[0].Value, indexes.Includes[1].Values[0].Start.Line)
 	}
 
@@ -87,7 +87,7 @@ Include /etc/ssh/sshd_config.d/*.conf hello_world
 		indexes.Includes[1].Values[1].Start.Line == 1 &&
 		indexes.Includes[1].Values[1].End.Line == 1 &&
 		indexes.Includes[1].Values[1].Start.Character == 38 &&
-		indexes.Includes[1].Values[1].End.Character == 48) {
+		indexes.Includes[1].Values[1].End.Character == 49) {
 		t.Errorf("Expected 'hello_world' on line 1, but got %v on line %v", indexes.Includes[1].Values[1].Value, indexes.Includes[1].Values[1].Start.Line)
 	}
 }

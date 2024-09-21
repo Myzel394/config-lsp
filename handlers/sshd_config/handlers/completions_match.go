@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"config-lsp/common"
 	sshdconfig "config-lsp/handlers/sshd_config"
 	"config-lsp/handlers/sshd_config/fields"
 	matchparser "config-lsp/handlers/sshd_config/fields/match-parser"
@@ -10,8 +11,8 @@ import (
 
 func getMatchCompletions(
 	d *sshdconfig.SSHDocument,
+	cursor common.CursorPosition,
 	match *matchparser.Match,
-	cursor uint32,
 ) ([]protocol.CompletionItem, error) {
 	if match == nil || len(match.Entries) == 0 {
 		completions := getMatchCriteriaCompletions()
@@ -22,7 +23,7 @@ func getMatchCompletions(
 
 	entry := match.GetEntryByCursor(cursor)
 
-	if entry == nil || entry.Criteria.IsCursorBetween(cursor) {
+	if entry == nil || entry.Criteria.ContainsCursorPosition(cursor) {
 		return getMatchCriteriaCompletions(), nil
 	}
 
@@ -75,7 +76,7 @@ func getMatchAllKeywordCompletion() protocol.CompletionItem {
 
 func getMatchValueCompletions(
 	entry *matchparser.MatchEntry,
-	cursor uint32,
+	cursor common.CursorPosition,
 ) []protocol.CompletionItem {
 	value := entry.GetValueByCursor(entry.End.Character)
 
@@ -84,7 +85,10 @@ func getMatchValueCompletions(
 
 	if value != nil {
 		line = value.Value.Raw
-		relativeCursor = cursor - value.Start.Character
+		relativeCursor = common.DeprecatedImprovedCursorToIndex(
+			value.Start.GetRelativeCursorPosition(cursor),
+			line,
+		)
 	} else {
 		line = ""
 		relativeCursor = 0

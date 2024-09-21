@@ -1,17 +1,20 @@
 package matchparser
 
-import "slices"
+import (
+	"config-lsp/common"
+	"slices"
+)
 
-func (m Match) GetEntryByCursor(cursor uint32) *MatchEntry {
+func (m Match) GetEntryByCursor(cursor common.CursorPosition) *MatchEntry {
 	index, found := slices.BinarySearchFunc(
 		m.Entries,
 		cursor,
-		func(current *MatchEntry, target uint32) int {
-			if target < current.Start.Character {
+		func(current *MatchEntry, target common.CursorPosition) int {
+			if current.Start.IsAfterCursorPosition(target) {
 				return 1
 			}
 
-			if target > current.End.Character {
+			if current.End.IsBeforeCursorPosition(target) {
 				return -1
 			}
 

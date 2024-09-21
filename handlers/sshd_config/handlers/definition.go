@@ -1,9 +1,9 @@
 package handlers
 
 import (
+	"config-lsp/common"
 	"config-lsp/handlers/sshd_config/indexes"
 	"config-lsp/utils"
-	"fmt"
 	"slices"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -11,17 +11,17 @@ import (
 
 func GetIncludeOptionLocation(
 	include *indexes.SSHDIndexIncludeLine,
-	cursor uint32,
+	index common.IndexPosition,
 ) []protocol.Location {
-	index, found := slices.BinarySearchFunc(
+	foundIndex, found := slices.BinarySearchFunc(
 		include.Values,
-		cursor,
-		func(current *indexes.SSHDIndexIncludeValue, target uint32) int {
-			if target < current.Start.Character {
+		index,
+		func(current *indexes.SSHDIndexIncludeValue, target common.IndexPosition) int {
+			if current.Start.IsAfterIndexPosition(target) {
 				return 1
 			}
 
-			if target > current.End.Character {
+			if current.End.IsBeforeIndexPosition(target) {
 				return -1
 			}
 
@@ -33,8 +33,7 @@ func GetIncludeOptionLocation(
 		return nil
 	}
 
-	path := include.Values[index]
-	println("paths", fmt.Sprintf("%v", path.Paths))
+	path := include.Values[foundIndex]
 
 	return utils.Map(
 		path.Paths,

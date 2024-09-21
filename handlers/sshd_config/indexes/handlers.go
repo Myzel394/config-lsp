@@ -63,7 +63,7 @@ func CreateIndexes(config ast.SSHDConfig) (*SSHDIndexes, []common.LSPError) {
 					},
 					End: common.Location{
 						Line:      includeOption.Start.Line,
-						Character: uint32(endIndex) + offset - 1,
+						Character: uint32(endIndex) + offset,
 					},
 				},
 				Value: rawPath,

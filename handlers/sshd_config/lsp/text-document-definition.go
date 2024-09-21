@@ -1,6 +1,7 @@
 package lsp
 
 import (
+	"config-lsp/common"
 	sshdconfig "config-lsp/handlers/sshd_config"
 	"config-lsp/handlers/sshd_config/handlers"
 
@@ -10,13 +11,14 @@ import (
 
 func TextDocumentDefinition(context *glsp.Context, params *protocol.DefinitionParams) ([]protocol.Location, error) {
 	d := sshdconfig.DocumentParserMap[params.TextDocument.URI]
-	cursor := params.Position.Character
+	index := common.LSPCharacterAsIndexPosition(params.Position.Character)
 	line := params.Position.Line
 
 	if include, found := d.Indexes.Includes[line]; found {
-		relativeCursor := cursor - include.Option.LocationRange.Start.Character
-
-		return handlers.GetIncludeOptionLocation(include, relativeCursor), nil
+		return handlers.GetIncludeOptionLocation(
+			include,
+			index,
+		), nil
 	}
 
 	return nil, nil

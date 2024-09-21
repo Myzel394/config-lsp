@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
 	"config-lsp/handlers/sshd_config/ast"
 	"config-lsp/handlers/sshd_config/fields"
@@ -13,7 +14,7 @@ func GetHoverInfoForOption(
 	option *ast.SSHDOption,
 	matchBlock *ast.SSHDMatchBlock,
 	line uint32,
-	cursor uint32,
+	index common.IndexPosition,
 ) (*protocol.Hover, error) {
 	var docValue *docvalues.DocumentationValue
 
@@ -28,7 +29,7 @@ func GetHoverInfoForOption(
 		}
 	}
 
-	if cursor >= option.Key.Start.Character && cursor <= option.Key.End.Character {
+	if option.Key.ContainsIndexPosition(index) {
 		if docValue != nil {
 			contents := []string{
 				"## " + option.Key.Key,
@@ -52,9 +53,12 @@ func GetHoverInfoForOption(
 		}
 	}
 
-	if option.OptionValue != nil && cursor >= option.OptionValue.Start.Character && cursor <= option.OptionValue.End.Character {
-		relativeCursor := cursor - option.OptionValue.Start.Character
-		contents := docValue.FetchHoverInfo(option.OptionValue.Value.Raw, relativeCursor)
+	if option.OptionValue != nil && option.OptionValue.ContainsIndexPosition(index) {
+		line := option.OptionValue.Value.Raw
+		contents := docValue.FetchHoverInfo(
+			line,
+			uint32(option.OptionValue.Start.GetRelativeIndexPosition(index)),
+		)
 
 		return &protocol.Hover{
 			Contents: strings.Join(contents, "\n"),

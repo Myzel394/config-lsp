@@ -25,15 +25,15 @@ func TestComplexExample(
 		t.Fatalf("Expected User, but got %v", match.Entries[0])
 	}
 
-	if !(match.Entries[0].Values.Values[0].Value.Value == "root" && match.Entries[0].Values.Values[0].Start.Character == 5+offset && match.Entries[0].Values.Values[0].End.Character == 8+offset && match.Entries[0].Start.Character == 0+offset && match.Entries[0].End.Character == 20+offset) {
+	if !(match.Entries[0].Values.Values[0].Value.Value == "root" && match.Entries[0].Values.Values[0].Start.Character == 5+offset && match.Entries[0].Values.Values[0].End.Character == 8+offset+1 && match.Entries[0].Start.Character == 0+offset && match.Entries[0].End.Character == 20+offset+1) {
 		t.Errorf("Expected root, but got %v", match.Entries[0].Values.Values[0])
 	}
 
-	if !(match.Entries[0].Values.Values[1].Value.Value == "admin" && match.Entries[0].Values.Values[1].Start.Character == 10+offset && match.Entries[0].Values.Values[1].End.Character == 14+offset) {
+	if !(match.Entries[0].Values.Values[1].Value.Value == "admin" && match.Entries[0].Values.Values[1].Start.Character == 10+offset && match.Entries[0].Values.Values[1].End.Character == 14+offset+1) {
 		t.Errorf("Expected admin, but got %v", match.Entries[0].Values.Values[1])
 	}
 
-	if !(match.Entries[0].Values.Values[2].Value.Value == "alice" && match.Entries[0].Values.Values[2].Start.Character == 16+offset && match.Entries[0].Values.Values[2].End.Character == 20+offset) {
+	if !(match.Entries[0].Values.Values[2].Value.Value == "alice" && match.Entries[0].Values.Values[2].Start.Character == 16+offset && match.Entries[0].Values.Values[2].End.Character == 20+offset+1) {
 		t.Errorf("Expected alice, but got %v", match.Entries[0].Values.Values[2])
 	}
 
@@ -41,11 +41,11 @@ func TestComplexExample(
 		t.Errorf("Expected Address, but got %v", match.Entries[1])
 	}
 
-	if !(match.Entries[1].Values.Values[0].Value.Value == "*" && match.Entries[1].Values.Values[0].Start.Character == 30+offset && match.Entries[1].Values.Values[0].End.Character == 30+offset) {
+	if !(match.Entries[1].Values.Values[0].Value.Value == "*" && match.Entries[1].Values.Values[0].Start.Character == 30+offset && match.Entries[1].Values.Values[0].End.Character == 30+offset+1) {
 		t.Errorf("Expected *, but got %v", match.Entries[1].Values.Values[0])
 	}
 
-	if !(match.Entries[1].Values.Values[1].Value.Value == "!192.168.0.1" && match.Entries[1].Values.Values[1].Start.Character == 32+offset && match.Entries[1].Values.Values[1].End.Character == 43+offset) {
+	if !(match.Entries[1].Values.Values[1].Value.Value == "!192.168.0.1" && match.Entries[1].Values.Values[1].Start.Character == 32+offset && match.Entries[1].Values.Values[1].End.Character == 43+offset+1) {
 		t.Errorf("Expected !192.168.0.1, but got %v", match.Entries[1].Values.Values[1])
 	}
 }
@@ -103,7 +103,7 @@ func TestIncompleteBetweenEntriesExample(
 		t.Errorf("Expected 3 values, but got %v", len(match.Entries[0].Values.Values))
 	}
 
-	if !(match.Entries[0].Start.Character == 0 && match.Entries[0].End.Character == 20) {
+	if !(match.Entries[0].Start.Character == 0 && match.Entries[0].End.Character == 21) {
 		t.Errorf("Expected 0-20, but got %v", match.Entries[0])
 	}
 }

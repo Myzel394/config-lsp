@@ -31,13 +31,13 @@ PasswordAuthentication yes
 		firstEntry.LocationRange.Start.Line == 0 &&
 		firstEntry.LocationRange.End.Line == 0 &&
 		firstEntry.LocationRange.Start.Character == 0 &&
-		firstEntry.LocationRange.End.Character == 17 &&
+		firstEntry.LocationRange.End.Character == 18 &&
 		firstEntry.Key.Value.Value == "PermitRootLogin" &&
 		firstEntry.Key.LocationRange.Start.Character == 0 &&
-		firstEntry.Key.LocationRange.End.Character == 14 &&
+		firstEntry.Key.LocationRange.End.Character == 15 &&
 		firstEntry.OptionValue.Value.Value == "no" &&
 		firstEntry.OptionValue.LocationRange.Start.Character == 16 &&
-		firstEntry.OptionValue.LocationRange.End.Character == 17) {
+		firstEntry.OptionValue.LocationRange.End.Character == 18) {
 		t.Errorf("Expected first entry to be PermitRootLogin no, but got: %v", firstEntry)
 	}
 
@@ -48,13 +48,13 @@ PasswordAuthentication yes
 		secondEntry.LocationRange.Start.Line == 1 &&
 		secondEntry.LocationRange.End.Line == 1 &&
 		secondEntry.LocationRange.Start.Character == 0 &&
-		secondEntry.LocationRange.End.Character == 25 &&
+		secondEntry.LocationRange.End.Character == 26 &&
 		secondEntry.Key.Value.Value == "PasswordAuthentication" &&
 		secondEntry.Key.LocationRange.Start.Character == 0 &&
-		secondEntry.Key.LocationRange.End.Character == 21 &&
+		secondEntry.Key.LocationRange.End.Character == 22 &&
 		secondEntry.OptionValue.Value.Value == "yes" &&
 		secondEntry.OptionValue.LocationRange.Start.Character == 23 &&
-		secondEntry.OptionValue.LocationRange.End.Character == 25) {
+		secondEntry.OptionValue.LocationRange.End.Character == 26) {
 		t.Errorf("Expected second entry to be PasswordAuthentication yes, but got: %v", secondEntry)
 	}
 }
@@ -92,7 +92,7 @@ Match Address 192.168.0.1
 		t.Errorf("Expected second entry to be 'Match Address 192.168.0.1', but got: %v", secondEntry.MatchEntry.Value)
 	}
 
-	if !(secondEntry.Start.Line == 2 && secondEntry.Start.Character == 0 && secondEntry.End.Line == 3 && secondEntry.End.Character == 26) {
+	if !(secondEntry.Start.Line == 2 && secondEntry.Start.Character == 0 && secondEntry.End.Line == 3 && secondEntry.End.Character == 27) {
 		t.Errorf("Expected second entry's location to be 2:0-3:25, but got: %v", secondEntry.LocationRange)
 	}
 
@@ -240,14 +240,14 @@ Match Address 192.168.0.2
 		t.Errorf("Expected match option to be 'Match User lena', but got: %v, %v", matchOption, matchBlock)
 	}
 
-	if !(matchOption.Start.Line == 2 && matchOption.End.Line == 2 && matchOption.Start.Character == 0 && matchOption.End.Character == 14) {
+	if !(matchOption.Start.Line == 2 && matchOption.End.Line == 2 && matchOption.Start.Character == 0 && matchOption.End.Character == 15) {
 		t.Errorf("Expected match option to be at 2:0-14, but got: %v", matchOption.LocationRange)
 	}
 
 	if !(matchBlock.Start.Line == 2 &&
 		matchBlock.Start.Character == 0 &&
 		matchBlock.End.Line == 4 &&
-		matchBlock.End.Character == 20) {
+		matchBlock.End.Character == 21) {
 		t.Errorf("Expected match block to be at 2:0-4:20, but got: %v", matchBlock.LocationRange)
 	}
 }

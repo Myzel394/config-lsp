@@ -1,6 +1,7 @@
 package lsp
 
 import (
+	"config-lsp/common"
 	sshdconfig "config-lsp/handlers/sshd_config"
 	"config-lsp/handlers/sshd_config/handlers"
 
@@ -13,7 +14,7 @@ func TextDocumentHover(
 	params *protocol.HoverParams,
 ) (*protocol.Hover, error) {
 	line := params.Position.Line
-	cursor := params.Position.Character
+	index := common.LSPCharacterAsIndexPosition(params.Position.Character)
 
 	d := sshdconfig.DocumentParserMap[params.TextDocument.URI]
 
@@ -28,6 +29,6 @@ func TextDocumentHover(
 		option,
 		matchBlock,
 		line,
-		cursor,
+		index,
 	)
 }

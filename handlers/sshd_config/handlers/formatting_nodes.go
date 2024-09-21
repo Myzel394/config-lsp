@@ -54,7 +54,7 @@ func formatSSHDMatchBlock(
 	)
 	edits = append(edits, protocol.TextEdit{
 		Range:   matchBlock.ToLSPRange(),
-		NewText: template.Format(options, matchBlock.MatchEntry.Key.Key, formatMatchToString(matchBlock.MatchValue, options)),
+		NewText: template.Format(options, matchBlock.MatchEntry.Key.Key, formatMatchToString(matchBlock.MatchValue)),
 	})
 
 	it := matchBlock.Options.Iterator()
@@ -69,12 +69,11 @@ func formatSSHDMatchBlock(
 
 func formatMatchToString(
 	match *matchparser.Match,
-	options protocol.FormattingOptions,
 ) string {
 	entriesAsStrings := utils.Map(
 		match.Entries,
 		func(entry *matchparser.MatchEntry) string {
-			return formatMatchEntryToString(entry, options)
+			return formatMatchEntryToString(entry)
 		},
 	)
 
@@ -83,18 +82,16 @@ func formatMatchToString(
 
 func formatMatchEntryToString(
 	entry *matchparser.MatchEntry,
-	options protocol.FormattingOptions,
 ) string {
 	return fmt.Sprintf(
 		"%s %s",
 		string(entry.Criteria.Type),
-		formatMatchValuesToString(entry.Values, options),
+		formatMatchValuesToString(entry.Values),
 	)
 }
 
 func formatMatchValuesToString(
 	values *matchparser.MatchValues,
-	options protocol.FormattingOptions,
 ) string {
 	valuesAsStrings := utils.Map(
 		values.Values,
