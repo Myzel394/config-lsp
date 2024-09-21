@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"config-lsp/common"
 	"config-lsp/handlers/hosts"
 	"config-lsp/handlers/hosts/ast"
 	"fmt"
@@ -15,21 +16,21 @@ const (
 )
 
 func GetHoverTargetInEntry(
+	index common.IndexPosition,
 	e ast.HostsEntry,
-	cursor uint32,
 ) *HoverTarget {
-	if e.IPAddress != nil && e.IPAddress.Location.ContainsCursorByCharacter(cursor) {
+	if e.IPAddress != nil && e.IPAddress.Location.ContainsPosition(index) {
 		target := HoverTargetIPAddress
 		return &target
 	}
 
-	if e.Hostname != nil && e.Hostname.Location.ContainsCursorByCharacter(cursor) {
+	if e.Hostname != nil && e.Hostname.Location.ContainsPosition(index) {
 		target := HoverTargetHostname
 		return &target
 	}
 
 	for _, alias := range e.Aliases {
-		if alias.Location.ContainsCursorByCharacter(cursor) {
+		if alias.Location.ContainsPosition(index) {
 			target := HoverTargetAlias
 			return &target
 		}
@@ -39,9 +40,9 @@ func GetHoverTargetInEntry(
 }
 
 func GetHoverInfoForHostname(
+	index common.IndexPosition,
 	d hosts.HostsDocument,
 	hostname ast.HostsHostname,
-	cursor uint32,
 ) []string {
 	ipAddress := d.Indexes.Resolver.Entries[hostname.Value]
 

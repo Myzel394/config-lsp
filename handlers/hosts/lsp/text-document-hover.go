@@ -1,6 +1,7 @@
 package lsp
 
 import (
+	"config-lsp/common"
 	"config-lsp/handlers/hosts"
 	"config-lsp/handlers/hosts/ast"
 	"config-lsp/handlers/hosts/fields"
@@ -18,7 +19,7 @@ func TextDocumentHover(
 	document := hosts.DocumentParserMap[params.TextDocument.URI]
 
 	line := params.Position.Line
-	character := params.Position.Character
+	index := common.LSPCharacterAsIndexPosition(params.Position.Character)
 
 	if _, found := document.Parser.CommentLines[line]; found {
 		// Comment
@@ -33,14 +34,15 @@ func TextDocumentHover(
 	}
 
 	entry := rawEntry.(*ast.HostsEntry)
-	target := handlers.GetHoverTargetInEntry(*entry, character)
+	target := handlers.GetHoverTargetInEntry(index, *entry)
 
 	var hostname *ast.HostsHostname
 
 	switch *target {
 	case handlers.HoverTargetIPAddress:
-		relativeCursor := character - entry.IPAddress.Location.Start.Character
-		hover := fields.IPAddressField.FetchHoverInfo(entry.IPAddress.Value.String(), relativeCursor)
+		line := entry.IPAddress.Value.String()
+		relativeCursor := uint32(entry.IPAddress.Location.Start.GetRelativeIndexPosition(index))
+		hover := fields.IPAddressField.FetchHoverInfo(line, relativeCursor)
 
 		return &protocol.Hover{
 			Contents: hover,
@@ -49,7 +51,7 @@ func TextDocumentHover(
 		hostname = entry.Hostname
 	case handlers.HoverTargetAlias:
 		for _, alias := range entry.Aliases {
-			if character >= alias.Location.Start.Character && character <= alias.Location.End.Character {
+			if alias.Location.ContainsPosition(index) {
 				hostname = alias
 				break
 			}
@@ -76,7 +78,13 @@ func TextDocumentHover(
 		)
 		contents = append(
 			contents,
-			handlers.GetHoverInfoForHostname(*document, *hostname, character)...,
+			[]string{
+				"",
+			}...,
+		)
+		contents = append(
+			contents,
+			handlers.GetHoverInfoForHostname(index, *document, *hostname)...,
 		)
 
 		return &protocol.Hover{
