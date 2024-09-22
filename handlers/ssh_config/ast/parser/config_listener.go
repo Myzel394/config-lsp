@@ -26,6 +26,9 @@ type ConfigListener interface {
 	// EnterLeadingComment is called when entering the leadingComment production.
 	EnterLeadingComment(c *LeadingCommentContext)
 
+	// EnterString is called when entering the string production.
+	EnterString(c *StringContext)
+
 	// ExitLineStatement is called when exiting the lineStatement production.
 	ExitLineStatement(c *LineStatementContext)
 
@@ -43,4 +46,7 @@ type ConfigListener interface {
 
 	// ExitLeadingComment is called when exiting the leadingComment production.
 	ExitLeadingComment(c *LeadingCommentContext)
+
+	// ExitString is called when exiting the string production.
+	ExitString(c *StringContext)
 }

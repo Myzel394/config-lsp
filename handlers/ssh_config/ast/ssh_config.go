@@ -3,7 +3,7 @@ package ast
 import (
 	"config-lsp/common"
 	commonparser "config-lsp/common/parser"
-	"config-lsp/common/parsers/openssh-match-parser"
+	"config-lsp/handlers/ssh_config/match-parser"
 	"github.com/emirpasic/gods/maps/treemap"
 )
 
@@ -52,10 +52,7 @@ type SSHHostBlock struct {
 
 type SSHConfig struct {
 	// [uint32]SSHOption -> line number -> *SSHEntry
-	RootOptions *treemap.Map
-
-	MatchBlosks []*SSHMatchBlock
-	HostBlocks  []*SSHHostBlock
+	Options *treemap.Map
 
 	// [uint32]{} -> line number -> {}
 	CommentLines map[uint32]struct{}
