@@ -126,7 +126,7 @@ func (s *sshdParserListener) ExitEntry(ctx *parser.EntryContext) {
 			if len(errors) > 0 {
 				for _, err := range errors {
 					s.Errors = append(s.Errors, common.LSPError{
-						Range: err.Range.ShiftHorizontal(s.sshdContext.currentOption.Start.Character),
+						Range: err.Range,
 						Err:   err.Err,
 					})
 				}

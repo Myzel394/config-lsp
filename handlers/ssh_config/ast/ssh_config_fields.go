@@ -32,7 +32,7 @@ func (b *SSHHostBlock) GetBlockType() SSHBlockType {
 }
 
 func (b *SSHHostBlock) AddOption(option *SSHOption) {
-	b.Others.Put(option.LocationRange.Start.Line, option)
+	b.Options.Put(option.LocationRange.Start.Line, option)
 }
 
 func (b *SSHHostBlock) SetEnd(end common.Location) {

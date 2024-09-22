@@ -4,6 +4,7 @@ import (
 	"config-lsp/common"
 	commonparser "config-lsp/common/parser"
 	"config-lsp/handlers/ssh_config/ast/parser"
+	hostparser "config-lsp/handlers/ssh_config/host-parser"
 	"config-lsp/handlers/ssh_config/match-parser"
 	"strings"
 
@@ -131,7 +132,7 @@ func (s *sshParserListener) ExitEntry(ctx *parser.EntryContext) {
 			if len(errors) > 0 {
 				for _, err := range errors {
 					s.Errors = append(s.Errors, common.LSPError{
-						Range: err.Range.ShiftHorizontal(s.sshContext.currentOption.Start.Character),
+						Range: err.Range,
 						Err:   err.Err,
 					})
 				}
@@ -153,6 +154,41 @@ func (s *sshParserListener) ExitEntry(ctx *parser.EntryContext) {
 
 			s.sshContext.currentKeyIsBlockOf = nil
 			s.sshContext.currentBlock = matchBlock
+		case SSHBlockTypeHost:
+			var host *hostparser.Host
+
+			hostParser := hostparser.NewHost()
+			errors := hostParser.Parse(
+				s.sshContext.currentOption.OptionValue.Value.Raw,
+				location.Start.Line,
+				s.sshContext.currentOption.OptionValue.Start.Character,
+			)
+
+			if len(errors) > 0 {
+				for _, err := range errors {
+					s.Errors = append(s.Errors, common.LSPError{
+						Range: err.Range,
+						Err:   err.Err,
+					})
+				}
+			} else {
+				host = hostParser
+			}
+
+			hostBlock := &SSHHostBlock{
+				LocationRange: location,
+				HostOption: s.sshContext.currentOption,
+				HostValue: host,
+				Options: treemap.NewWith(gods.UInt32Comparator),
+			}
+
+			s.Config.Options.Put(
+				location.Start.Line,
+				hostBlock,
+			)
+
+			s.sshContext.currentKeyIsBlockOf = nil
+			s.sshContext.currentBlock = hostBlock
 		}
 
 		return
