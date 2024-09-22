@@ -2,16 +2,16 @@ package handlers
 
 import (
 	"config-lsp/common"
-	"config-lsp/common/parsers/openssh-match-parser"
 	sshdconfig "config-lsp/handlers/sshd_config"
 	"config-lsp/handlers/sshd_config/fields"
+	"config-lsp/handlers/sshd_config/match-parser"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func getMatchCompletions(
-	d *sshdconfig.SSHDocument,
+	d *sshdconfig.SSHDDocument,
 	cursor common.CursorPosition,
-	match *matchparser.Match,
+	match *matchparser.matchparser,
 ) ([]protocol.CompletionItem, error) {
 	if match == nil || len(match.Entries) == 0 {
 		completions := getMatchCriteriaCompletions()

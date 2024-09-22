@@ -11,9 +11,9 @@ import (
 func DocumentFromInput(
 	t *testing.T,
 	content string,
-) *sshdconfig.SSHDocument {
+) *sshdconfig.SSHDDocument {
 	input := utils.Dedent(content)
-	c := ast.NewSSHConfig()
+	c := ast.NewSSHDConfig()
 	errors := c.Parse(input)
 
 	if len(errors) > 0 {
@@ -26,7 +26,7 @@ func DocumentFromInput(
 		t.Fatalf("Index error: %v", errors)
 	}
 
-	return &sshdconfig.SSHDocument{
+	return &sshdconfig.SSHDDocument{
 		Config:  c,
 		Indexes: i,
 	}

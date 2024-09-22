@@ -17,7 +17,7 @@ func TestSimpleFormattingExampleWorks(
 		PermitRootLogin    yes   
 a b 
 `)
-	config := ast.NewSSHConfig()
+	config := ast.NewSSHDConfig()
 	errors := config.Parse(input)
 
 	if len(errors) > 0 {
@@ -30,7 +30,7 @@ a b
 		t.Fatalf("Failed to create indexes: %v", errors)
 	}
 
-	d := sshdconfig.SSHDocument{
+	d := sshdconfig.SSHDDocument{
 		Config:  config,
 		Indexes: i,
 	}

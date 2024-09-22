@@ -17,7 +17,7 @@ import (
 var whitespacePattern = regexp.MustCompile(`\S+`)
 
 func analyzeIncludeValues(
-	d *sshdconfig.SSHDocument,
+	d *sshdconfig.SSHDDocument,
 ) []common.LSPError {
 	errs := make([]common.LSPError, 0)
 
@@ -70,12 +70,12 @@ func createIncludePaths(
 
 func parseFile(
 	filePath string,
-) (*sshdconfig.SSHDocument, error) {
+) (*sshdconfig.SSHDDocument, error) {
 	if d, ok := sshdconfig.DocumentParserMap[filePath]; ok {
 		return d, nil
 	}
 
-	c := ast.NewSSHConfig()
+	c := ast.NewSSHDConfig()
 
 	content, err := os.ReadFile(filePath)
 
@@ -89,7 +89,7 @@ func parseFile(
 		return nil, errors.New(fmt.Sprintf("Errors in %s", filePath))
 	}
 
-	d := &sshdconfig.SSHDocument{
+	d := &sshdconfig.SSHDDocument{
 		Config: c,
 	}
 

@@ -12,7 +12,7 @@ import (
 )
 
 func GetRootCompletions(
-	d *sshdconfig.SSHDocument,
+	d *sshdconfig.SSHDDocument,
 	parentMatchBlock *ast.SSHDMatchBlock,
 	suggestValue bool,
 ) ([]protocol.CompletionItem, error) {
@@ -72,7 +72,7 @@ func GetRootCompletions(
 }
 
 func GetOptionCompletions(
-	d *sshdconfig.SSHDocument,
+	d *sshdconfig.SSHDDocument,
 	entry *ast.SSHDOption,
 	matchBlock *ast.SSHDMatchBlock,
 	cursor common.CursorPosition,

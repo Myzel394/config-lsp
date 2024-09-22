@@ -12,7 +12,7 @@ import (
 	gods "github.com/emirpasic/gods/utils"
 )
 
-func NewSSHConfig() *SSHDConfig {
+func NewSSHDConfig() *SSHDConfig {
 	config := &SSHDConfig{}
 	config.Clear()
 
@@ -30,7 +30,7 @@ var emptyPattern = regexp.MustCompile(`^\s*$`)
 func (c *SSHDConfig) Parse(input string) []common.LSPError {
 	errors := make([]common.LSPError, 0)
 	lines := utils.SplitIntoLines(input)
-	context := createSSHListenerContext()
+	context := createListenerContext()
 
 	for rawLineNumber, line := range lines {
 		context.line = uint32(rawLineNumber)
@@ -54,7 +54,7 @@ func (c *SSHDConfig) Parse(input string) []common.LSPError {
 }
 
 func (c *SSHDConfig) parseStatement(
-	context *sshListenerContext,
+	context *sshdListenerContext,
 	input string,
 ) []common.LSPError {
 	stream := antlr.NewInputStream(input)

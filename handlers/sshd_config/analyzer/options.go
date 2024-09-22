@@ -12,7 +12,7 @@ import (
 )
 
 func analyzeStructureIsValid(
-	d *sshdconfig.SSHDocument,
+	d *sshdconfig.SSHDDocument,
 ) []common.LSPError {
 	errs := make([]common.LSPError, 0)
 	it := d.Config.Options.Iterator()

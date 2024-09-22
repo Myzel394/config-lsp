@@ -8,7 +8,7 @@ import (
 )
 
 func FormatDocument(
-	d *sshdconfig.SSHDocument,
+	d *sshdconfig.SSHDDocument,
 	textRange protocol.Range,
 	options protocol.FormattingOptions,
 ) ([]protocol.TextEdit, error) {

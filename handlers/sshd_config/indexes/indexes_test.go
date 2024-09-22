@@ -20,7 +20,7 @@ Match Address 192.168.0.1/24
 	RoomLogin yes
 	PermitRootLogin yes
 `)
-	config := ast.NewSSHConfig()
+	config := ast.NewSSHDConfig()
 	errors := config.Parse(input)
 
 	if len(errors) > 0 {
@@ -54,7 +54,7 @@ func TestIncludeExample(
 PermitRootLogin yes
 Include /etc/ssh/sshd_config.d/*.conf hello_world
 `)
-	config := ast.NewSSHConfig()
+	config := ast.NewSSHDConfig()
 	errors := config.Parse(input)
 
 	if len(errors) > 0 {

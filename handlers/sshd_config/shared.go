@@ -7,9 +7,9 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-type SSHDocument struct {
+type SSHDDocument struct {
 	Config  *ast.SSHDConfig
 	Indexes *indexes.SSHDIndexes
 }
 
-var DocumentParserMap = map[protocol.DocumentUri]*SSHDocument{}
+var DocumentParserMap = map[protocol.DocumentUri]*SSHDDocument{}

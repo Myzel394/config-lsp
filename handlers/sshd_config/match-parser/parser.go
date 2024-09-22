@@ -2,7 +2,7 @@ package matchparser
 
 import (
 	"config-lsp/common"
-	parser2 "config-lsp/common/parsers/openssh-match-parser/parser"
+	"config-lsp/handlers/sshd_config/match-parser/parser"
 	"github.com/antlr4-go/antlr/v4"
 )
 
@@ -27,14 +27,14 @@ func (m *Match) Parse(
 	stream := antlr.NewInputStream(input)
 
 	lexerErrorListener := createErrorListener(context.line)
-	lexer := parser2.NewMatchLexer(stream)
+	lexer := parser.NewMatchLexer(stream)
 	lexer.RemoveErrorListeners()
 	lexer.AddErrorListener(&lexerErrorListener)
 
 	tokenStream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 
 	parserErrorListener := createErrorListener(context.line)
-	antlrParser := parser2.NewMatchParser(tokenStream)
+	antlrParser := parser.NewMatchParser(tokenStream)
 	antlrParser.RemoveErrorListeners()
 	antlrParser.AddErrorListener(&parserErrorListener)
 

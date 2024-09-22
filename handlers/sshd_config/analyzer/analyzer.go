@@ -10,7 +10,7 @@ import (
 )
 
 func Analyze(
-	d *sshdconfig.SSHDocument,
+	d *sshdconfig.SSHDDocument,
 ) []protocol.Diagnostic {
 	errors := analyzeStructureIsValid(d)
 

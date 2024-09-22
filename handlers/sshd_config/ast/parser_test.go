@@ -12,7 +12,7 @@ func TestSimpleParserExample(
 PermitRootLogin no
 PasswordAuthentication yes
 `)
-	p := NewSSHConfig()
+	p := NewSSHDConfig()
 	errors := p.Parse(input)
 
 	if len(errors) != 0 {
@@ -68,7 +68,7 @@ PermitRootLogin no
 Match Address 192.168.0.1
 	PasswordAuthentication yes
 `)
-	p := NewSSHConfig()
+	p := NewSSHDConfig()
 	errors := p.Parse(input)
 
 	if len(errors) != 0 {
@@ -117,7 +117,7 @@ func TestMultipleEntriesInMatchBlock(
 	input := utils.Dedent(`
 Match User lena User root
 `)
-	p := NewSSHConfig()
+	p := NewSSHDConfig()
 	errors := p.Parse(input)
 
 	if len(errors) != 0 {
@@ -148,7 +148,7 @@ func TestIncompleteMatchBlock(
 ) {
 	input := "Match User lena User "
 
-	p := NewSSHConfig()
+	p := NewSSHDConfig()
 	errors := p.Parse(input)
 
 	if !(len(errors) == 0) {
@@ -183,7 +183,7 @@ Match User lena
 Match Address 192.168.0.2
 	MaxAuthTries 3
 `)
-	p := NewSSHConfig()
+	p := NewSSHDConfig()
 	errors := p.Parse(input)
 
 	if len(errors) != 0 {
@@ -263,7 +263,7 @@ Port 22
 AddressFamily any
 Sample
 `)
-	p := NewSSHConfig()
+	p := NewSSHDConfig()
 	errors := p.Parse(input)
 
 	if len(errors) != 0 {
@@ -309,7 +309,7 @@ func TestIncompleteExample(
 	input := utils.Dedent(`
 MACs 
 `)
-	p := NewSSHConfig()
+	p := NewSSHDConfig()
 	errors := p.Parse(input)
 
 	if len(errors) != 0 {
@@ -470,7 +470,7 @@ Match Address 172.22.100.0/24,172.22.5.0/24,127.0.0.1
   PermitRootLogin without-password
   PasswordAuthentication yes
 `)
-	p := NewSSHConfig()
+	p := NewSSHDConfig()
 	errors := p.Parse(input)
 
 	if len(errors) != 0 {
@@ -551,7 +551,7 @@ func TestQuotedOptionExample(
 	input := utils.Dedent(`
 PermitRootLogin "no"
 `)
-	p := NewSSHConfig()
+	p := NewSSHDConfig()
 	errors := p.Parse(input)
 
 	if len(errors) != 0 {
@@ -585,7 +585,7 @@ func TestQuotedKeyExample(
 	input := utils.Dedent(`
 "PermitRootLogin" no
 `)
-	p := NewSSHConfig()
+	p := NewSSHDConfig()
 	errors := p.Parse(input)
 
 	if len(errors) != 0 {
@@ -623,7 +623,7 @@ func TestQuotedValueWithSpacesExample(
 	input := utils.Dedent(`
 PermitRootLogin "no yes maybe"
 `)
-	p := NewSSHConfig()
+	p := NewSSHDConfig()
 	errors := p.Parse(input)
 
 	if len(errors) != 0 {

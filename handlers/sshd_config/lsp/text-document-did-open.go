@@ -17,13 +17,13 @@ func TextDocumentDidOpen(
 ) error {
 	common.ClearDiagnostics(context, params.TextDocument.URI)
 
-	var document *sshdconfig.SSHDocument
+	var document *sshdconfig.SSHDDocument
 
 	if foundDocument, ok := sshdconfig.DocumentParserMap[params.TextDocument.URI]; ok {
 		document = foundDocument
 	} else {
-		config := ast.NewSSHConfig()
-		document = &sshdconfig.SSHDocument{
+		config := ast.NewSSHDConfig()
+		document = &sshdconfig.SSHDDocument{
 			Config: config,
 		}
 		sshdconfig.DocumentParserMap[params.TextDocument.URI] = document

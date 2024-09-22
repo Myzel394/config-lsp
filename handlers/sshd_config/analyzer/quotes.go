@@ -9,7 +9,7 @@ import (
 )
 
 func analyzeQuotesAreValid(
-	d *sshdconfig.SSHDocument,
+	d *sshdconfig.SSHDDocument,
 ) []common.LSPError {
 	errs := make([]common.LSPError, 0)
 

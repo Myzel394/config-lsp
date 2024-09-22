@@ -15,7 +15,7 @@ func TestEmptyMatchBlocksMakesErrors(
 PermitRootLogin yes
 Match User root
 `)
-	c := ast.NewSSHConfig()
+	c := ast.NewSSHDConfig()
 	errors := c.Parse(input)
 
 	if len(errors) > 0 {
@@ -28,7 +28,7 @@ Match User root
 		t.Fatalf("Index error: %v", errors)
 	}
 
-	d := &sshdconfig.SSHDocument{
+	d := &sshdconfig.SSHDDocument{
 		Config:  c,
 		Indexes: indexes,
 	}
@@ -47,7 +47,7 @@ func TestContainsOnlyNegativeValues(
 PermitRootLogin yes
 Match User !root,!admin
 `)
-	c := ast.NewSSHConfig()
+	c := ast.NewSSHDConfig()
 	errors := c.Parse(input)
 
 	if len(errors) > 0 {

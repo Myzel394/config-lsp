@@ -2,8 +2,8 @@ package analyzer
 
 import (
 	"config-lsp/common"
-	"config-lsp/common/parsers/openssh-match-parser"
 	sshdconfig "config-lsp/handlers/sshd_config"
+	"config-lsp/handlers/sshd_config/match-parser"
 	"config-lsp/utils"
 	"errors"
 	"fmt"
@@ -11,7 +11,7 @@ import (
 )
 
 func analyzeMatchBlocks(
-	d *sshdconfig.SSHDocument,
+	d *sshdconfig.SSHDDocument,
 ) []common.LSPError {
 	errs := make([]common.LSPError, 0)
 
@@ -54,7 +54,7 @@ func analyzeMatchBlocks(
 }
 
 func analyzeMatchValueNegation(
-	value *matchparser.MatchValue,
+	value *matchparser.matchparser,
 ) []common.LSPError {
 	errs := make([]common.LSPError, 0)
 

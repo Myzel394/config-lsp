@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"config-lsp/common/formatting"
-	"config-lsp/common/parsers/openssh-match-parser"
 	"config-lsp/handlers/sshd_config/ast"
+	"config-lsp/handlers/sshd_config/match-parser"
 	"config-lsp/utils"
 	"fmt"
 	"strings"
@@ -80,7 +80,7 @@ func formatSSHDMatchBlock(
 }
 
 func formatMatchToString(
-	match *matchparser.Match,
+	match *matchparser.matchparser,
 ) string {
 	entriesAsStrings := utils.Map(
 		match.Entries,
