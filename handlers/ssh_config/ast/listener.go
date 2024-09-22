@@ -152,6 +152,7 @@ func (s *sshParserListener) ExitEntry(ctx *parser.EntryContext) {
 
 			s.sshContext.currentKeyIsBlockOf = nil
 			s.sshContext.currentBlock = matchBlock
+
 		case SSHBlockTypeHost:
 			var host *hostparser.Host
 

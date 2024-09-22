@@ -23,12 +23,14 @@ type SSHIndexIncludeValue struct {
 type SSHIndexIncludeLine struct {
 	Values     []*SSHIndexIncludeValue
 	Option     *ast.SSHOption
-	Block *ast.SSHBlock
+	Block ast.SSHBlock
 }
 
 type SSHIndexes struct {
-	AllOptionsPerName map[string](map[*ast.SSHBlock]([]*ast.SSHOption))
+	AllOptionsPerName map[string](map[ast.SSHBlock]([]*ast.SSHOption))
 
 	Includes []*SSHIndexIncludeLine
+
+	BlockRanges map[uint32]ast.SSHBlock
 }
 

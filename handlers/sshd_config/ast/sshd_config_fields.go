@@ -62,7 +62,6 @@ func (c SSHDConfig) FindOption(line uint32) (*SSHDOption, *SSHDMatchBlock) {
 	}
 
 	return nil, nil
-
 }
 
 func (c SSHDConfig) GetAllOptions() []*SSHDOption {

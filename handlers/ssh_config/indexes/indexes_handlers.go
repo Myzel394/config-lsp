@@ -13,7 +13,7 @@ var whitespacePattern = regexp.MustCompile(`\S+`)
 
 func NewSSHIndexes() *SSHIndexes {
 	return &SSHIndexes{
-		AllOptionsPerName: make(map[string](map[*ast.SSHBlock]([]*ast.SSHOption)), 0),
+		AllOptionsPerName: make(map[string](map[ast.SSHBlock]([]*ast.SSHOption)), 0),
 		Includes: make([]*SSHIndexIncludeLine, 0),
 	}
 }
@@ -34,13 +34,13 @@ func CreateIndexes(config ast.SSHConfig) (*SSHIndexes, []common.LSPError) {
 		case ast.SSHTypeHost:
 			block := entry.(ast.SSHBlock)
 
-			errs = append(errs, addOption(indexes, entry.GetOption(), &block)...)
+			errs = append(errs, addOption(indexes, entry.GetOption(), block)...)
 
 			it := block.GetOptions().Iterator()
 			for it.Next() {
 				option := it.Value().(*ast.SSHOption)
 
-				errs = append(errs, addOption(indexes, option, &block)...)
+				errs = append(errs, addOption(indexes, option, block)...)
 			}
 		}
 	}
@@ -90,7 +90,7 @@ func CreateIndexes(config ast.SSHConfig) (*SSHIndexes, []common.LSPError) {
 func addOption(
 	i *SSHIndexes,
 	option *ast.SSHOption,
-	block *ast.SSHBlock,
+	block ast.SSHBlock,
 ) []common.LSPError {
 	var errs []common.LSPError
 
@@ -118,7 +118,7 @@ func addOption(
 			}
 		}
 	} else {
-		i.AllOptionsPerName[option.Key.Key] = map[*ast.SSHBlock]([]*ast.SSHOption){
+		i.AllOptionsPerName[option.Key.Key] = map[ast.SSHBlock]([]*ast.SSHOption){
 			block: {
 				option,
 			},

@@ -1,8 +1,8 @@
 package sshconfig
 
 import (
-	"config-lsp/handlers/ssh_config/ast"
 	"config-lsp/handlers/ssh_config/indexes"
+	"config-lsp/handlers/ssh_config/ast"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -13,3 +13,4 @@ type SSHDocument struct {
 }
 
 var DocumentParserMap = map[protocol.DocumentUri]*SSHDocument{}
+

@@ -20,23 +20,17 @@ func GetRootCompletions(
 
 	availableOptions := make(map[string]docvalues.DocumentationValue, 0)
 
-	if parentMatchBlock == nil {
-		for key, option := range fields.Options {
-			if d.Indexes != nil && utils.KeyExists(d.Indexes.AllOptionsPerName, key) && !utils.KeyExists(fields.AllowedDuplicateOptions, key) {
-				continue
-			}
+	for key, option := range fields.Options {
+		var exists = false
 
-			availableOptions[key] = option
+		if optionsMap, found := d.Indexes.AllOptionsPerName[key]; found {
+			if _, found := optionsMap[parentMatchBlock]; found {
+				exists = true
+			}
 		}
-	} else {
-		for key := range fields.MatchAllowedOptions {
-			if option, found := fields.Options[key]; found {
-				if d.Indexes != nil && utils.KeyExists(d.Indexes.AllOptionsPerName, key) && !utils.KeyExists(fields.AllowedDuplicateOptions, key) {
-					continue
-				}
 
-				availableOptions[key] = option
-			}
+		if !exists || utils.KeyExists(fields.AllowedDuplicateOptions, key) {
+			availableOptions[key] = option
 		}
 	}
 
