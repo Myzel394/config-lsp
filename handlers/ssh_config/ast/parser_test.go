@@ -256,3 +256,104 @@ Match originalhost laptop exec "[[ $(/usr/bin/dig +short laptop.lan) == '' ]]"
 		t.Errorf("Expected third entry to be HostName laptop.sdn, but got: %v", thirdOption)
 	}
 }
+
+func TestComplexBigExample(
+	t *testing.T,
+) {
+	// From https://gist.github.com/zeloc/b9455b793b07898025db
+	input := utils.Dedent(`
+### default for all ##
+Host *
+     ForwardAgent no
+     ForwardX11 no
+     ForwardX11Trusted yes
+     User nixcraft
+     Port 22
+     Protocol 2
+     ServerAliveInterval 60
+     ServerAliveCountMax 30
+ 
+## override as per host ##
+Host server1
+     HostName server1.cyberciti.biz
+     User nixcraft
+     Port 4242
+     IdentityFile /nfs/shared/users/nixcraft/keys/server1/id_rsa
+ 
+## Home nas server ##
+Host nas01
+     HostName 192.168.1.100
+     User root
+     IdentityFile ~/.ssh/nas01.key
+ 
+## Login AWS Cloud ##
+Host aws.apache
+     HostName 1.2.3.4
+     User wwwdata
+     IdentityFile ~/.ssh/aws.apache.key
+ 
+## Login to internal lan server at 192.168.0.251 via our public uk office ssh based gateway using ##
+## $ ssh uk.gw.lan ##
+Host uk.gw.lan uk.lan
+     HostName 192.168.0.251
+     User nixcraft
+     ProxyCommand  ssh nixcraft@gateway.uk.cyberciti.biz nc %h %p 2> /dev/null
+ 
+## Our Us Proxy Server ##
+## Forward all local port 3128 traffic to port 3128 on the remote vps1.cyberciti.biz server ##
+## $ ssh -f -N  proxyus ##
+Host proxyus
+    HostName vps1.cyberciti.biz
+    User breakfree
+    IdentityFile ~/.ssh/vps1.cyberciti.biz.key
+    LocalForward 3128 127.0.0.1:3128
+`)
+	p := NewSSHConfig()
+
+	errors := p.Parse(input)
+
+	if len(errors) != 0 {
+		t.Fatalf("Expected no errors, got %v", errors)
+	}
+
+	if !(p.Options.Size() == 6 && len(utils.KeysOfMap(p.CommentLines)) == 9) {
+		t.Errorf("Expected 6 options and no comment lines, but got: %v options, %v comment lines", p.Options.Size(), len(p.CommentLines))
+	}
+
+	// Validate each Host block and its options
+	rawFirstEntry, _ := p.Options.Get(uint32(1))
+	firstBlock := rawFirstEntry.(*SSHHostBlock)
+	if !(firstBlock.Options.Size() == 8) {
+		t.Errorf("Expected 8 options for Host *, but got: %v", firstBlock.Options.Size())
+	}
+
+	rawSecondEntry, _ := p.Options.Get(uint32(12))
+	secondBlock := rawSecondEntry.(*SSHHostBlock)
+	if !(secondBlock.Options.Size() == 4) {
+		t.Errorf("Expected 4 options for Host server1, but got: %v", secondBlock.Options.Size())
+	}
+
+	rawThirdEntry, _ := p.Options.Get(uint32(19))
+	thirdBlock := rawThirdEntry.(*SSHHostBlock)
+	if !(thirdBlock.Options.Size() == 3) {
+		t.Errorf("Expected 2 options for Host nas01, but got: %v", thirdBlock.Options.Size())
+	}
+
+	rawFourthEntry, _ := p.Options.Get(uint32(25))
+	fourthBlock := rawFourthEntry.(*SSHHostBlock)
+	if !(fourthBlock.Options.Size() == 3) {
+		t.Errorf("Expected 2 options for Host aws.apache, but got: %v", fourthBlock.Options.Size())
+	}
+
+	rawFifthEntry, _ := p.Options.Get(uint32(32))
+	fifthBlock := rawFifthEntry.(*SSHHostBlock)
+	if !(fifthBlock.Options.Size() == 3) {
+		t.Errorf("Expected 3 options for Host uk.gw.lan uk.lan, but got: %v", fifthBlock.Options.Size())
+	}
+
+	rawSixthEntry, _ := p.Options.Get(uint32(40))
+	sixthBlock := rawSixthEntry.(*SSHHostBlock)
+	if !(sixthBlock.Options.Size() == 4) {
+		t.Errorf("Expected 4 options for Host proxyus, but got: %v", sixthBlock.Options.Size())
+	}
+}
