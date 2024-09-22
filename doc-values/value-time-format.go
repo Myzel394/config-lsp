@@ -1,7 +1,6 @@
-package fields
+package docvalues
 
 import (
-	docvalues "config-lsp/doc-values"
 	"config-lsp/utils"
 	"fmt"
 	"regexp"
@@ -12,6 +11,7 @@ import (
 
 var timeFormatCompletionsPattern = regexp.MustCompile(`(?i)^(\d+)([smhdw])$`)
 var timeFormatCheckPattern = regexp.MustCompile(`(?i)^(\d+)([smhdw]?)$`)
+var isJustDigitsPattern = regexp.MustCompile(`^\d+$`)
 
 type InvalidTimeFormatError struct{}
 
@@ -25,9 +25,9 @@ func (v TimeFormatValue) GetTypeDescription() []string {
 	return []string{"Time value"}
 }
 
-func (v TimeFormatValue) CheckIsValid(value string) []*docvalues.InvalidValue {
+func (v TimeFormatValue) CheckIsValid(value string) []*InvalidValue {
 	if !timeFormatCheckPattern.MatchString(value) {
-		return []*docvalues.InvalidValue{
+		return []*InvalidValue{
 			{
 				Err:   InvalidTimeFormatError{},
 				Start: 0,
@@ -99,7 +99,7 @@ func (v TimeFormatValue) FetchCompletions(line string, cursor uint32) []protocol
 	if line == "" || isJustDigitsPattern.MatchString(line) {
 		completions = append(
 			completions,
-			docvalues.GenerateBase10Completions(line)...,
+			GenerateBase10Completions(line)...,
 		)
 	}
 

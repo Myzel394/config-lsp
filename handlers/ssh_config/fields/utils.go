@@ -1,8 +1,6 @@
 package fields
 
-import (
-	docvalues "config-lsp/doc-values"
-)
+import docvalues "config-lsp/doc-values"
 
 var booleanEnumValue = docvalues.EnumValue{
 	EnforceValues: true,
@@ -13,7 +11,6 @@ var booleanEnumValue = docvalues.EnumValue{
 }
 
 var channelTimeoutExtractor = docvalues.ExtractKeyDuplicatesExtractor("=")
-var setEnvExtractor = docvalues.ExtractKeyDuplicatesExtractor("=")
 
 func prefixPlusMinusCaret(values []docvalues.EnumString) docvalues.PrefixWithMeaningValue {
 	return docvalues.PrefixWithMeaningValue{

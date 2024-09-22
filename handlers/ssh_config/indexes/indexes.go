@@ -1,6 +1,9 @@
-package ast
+package indexes
 
-import "config-lsp/common"
+import (
+	"config-lsp/common"
+	"config-lsp/handlers/ssh_config/ast"
+)
 
 
 type ValidPath string
@@ -19,17 +22,13 @@ type SSHIndexIncludeValue struct {
 
 type SSHIndexIncludeLine struct {
 	Values     []*SSHIndexIncludeValue
-	Option     *SSHOption
-	Block *SSHBlock
+	Option     *ast.SSHOption
+	Block *ast.SSHBlock
 }
 
 type SSHIndexes struct {
-	Includes []*SSHIndexIncludeLine
-}
+	AllOptionsPerName map[string](map[*ast.SSHBlock]([]*ast.SSHOption))
 
-func NewSSHIndexes() *SSHIndexes {
-	return &SSHIndexes{
-		Includes: make([]*SSHIndexIncludeLine, 0),
-	}
+	Includes []*SSHIndexIncludeLine
 }
 

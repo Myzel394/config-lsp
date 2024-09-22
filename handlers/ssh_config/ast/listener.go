@@ -17,12 +17,10 @@ type sshListenerContext struct {
 	currentOption       *SSHOption
 	currentBlock        SSHBlock
 	currentKeyIsBlockOf *SSHBlockType
-	currentIndexes      *SSHIndexes
 }
 
 func createListenerContext() *sshListenerContext {
 	context := new(sshListenerContext)
-	context.currentIndexes = NewSSHIndexes()
 
 	return context
 }

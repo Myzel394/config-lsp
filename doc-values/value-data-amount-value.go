@@ -1,7 +1,6 @@
-package fields
+package docvalues
 
 import (
-	docvalues "config-lsp/doc-values"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -23,9 +22,9 @@ func (v DataAmountValue) GetTypeDescription() []string {
 	return []string{"Data amount"}
 }
 
-func (v DataAmountValue) CheckIsValid(value string) []*docvalues.InvalidValue {
+func (v DataAmountValue) CheckIsValid(value string) []*InvalidValue {
 	if !dataAmountCheckPattern.MatchString(value) {
-		return []*docvalues.InvalidValue{
+		return []*InvalidValue{
 			{
 				Err:   InvalidDataAmountError{},
 				Start: 0,
@@ -85,7 +84,7 @@ func (v DataAmountValue) FetchCompletions(line string, cursor uint32) []protocol
 	if line == "" || isJustDigitsPattern.MatchString(line) {
 		completions = append(
 			completions,
-			docvalues.GenerateBase10Completions(line)...,
+			GenerateBase10Completions(line)...,
 		)
 	}
 

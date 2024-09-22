@@ -1,6 +1,7 @@
 package fields
 
 import (
+	"config-lsp/common/ssh"
 	docvalues "config-lsp/doc-values"
 	"regexp"
 )
@@ -220,7 +221,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 						docvalues.CreateEnumString("x11-connection"),
 					},
 				},
-				Value: TimeFormatValue{},
+				Value: docvalues.TimeFormatValue{},
 			},
 		},
 	},
@@ -325,11 +326,11 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	The list of available signature algorithms may also be obtained using "ssh -Q HostbasedAcceptedAlgorithms". This was formerly named HostbasedAcceptedKeyTypes.`,
 		Value: docvalues.CustomValue{
 			FetchValue: func(_ docvalues.CustomValueContext) docvalues.Value {
-				options, err := queryOpenSSHOptions("HostbasedAcceptedAlgorithms")
+				options, err := ssh.QueryOpenSSHOptions("HostbasedAcceptedAlgorithms")
 
 				if err != nil {
 					// Fallback
-					options, _ = queryOpenSSHOptions("HostbasedAcceptedKeyTypes")
+					options, _ = ssh.QueryOpenSSHOptions("HostbasedAcceptedKeyTypes")
 				}
 
 				return prefixPlusMinusCaret(options)
@@ -374,7 +375,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	The list of available signature algorithms may also be obtained using "ssh -Q HostKeyAlgorithms".`,
 		Value: docvalues.CustomValue{
 			FetchValue: func(_ docvalues.CustomValueContext) docvalues.Value {
-				options, _ := queryOpenSSHOptions("HostKeyAlgorithms")
+				options, _ := ssh.QueryOpenSSHOptions("HostKeyAlgorithms")
 
 				return prefixPlusMinusCaret(options)
 			},
@@ -513,7 +514,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	},
 	"LoginGraceTime": {
 		Documentation: `The server disconnects after this time if the user has not successfully logged in. If the value is 0, there is no time limit. The default is 120 seconds.`,
-		Value:         TimeFormatValue{},
+		Value:         docvalues.TimeFormatValue{},
 	},
 	"LogLevel": {
 		Documentation: `Gives the verbosity level that is used when logging messages from sshd(8). The possible values are: QUIET, FATAL, ERROR, INFO, VERBOSE, DEBUG, DEBUG1, DEBUG2, and DEBUG3. The default is INFO. DEBUG and DEBUG1 are equivalent. DEBUG2 and DEBUG3 each specify higher levels of debugging output. Logging with a DEBUG level violates the privacy of users and is not recommended.`,
@@ -790,7 +791,7 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 	The list of available signature algorithms may also be obtained using "ssh -Q PubkeyAcceptedAlgorithms".`,
 		Value: docvalues.CustomValue{
 			FetchValue: func(_ docvalues.CustomValueContext) docvalues.Value {
-				options, _ := queryOpenSSHOptions("PubkeyAcceptedAlgorithms")
+				options, _ := ssh.QueryOpenSSHOptions("PubkeyAcceptedAlgorithms")
 
 				return prefixPlusMinusCaret(options)
 			},
@@ -822,8 +823,8 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 		Value: docvalues.KeyValueAssignmentValue{
 			Separator:       " ",
 			ValueIsOptional: true,
-			Key:             DataAmountValue{},
-			Value:           TimeFormatValue{},
+			Key:             docvalues.DataAmountValue{},
+			Value:           docvalues.TimeFormatValue{},
 		},
 	},
 	"RequiredRSASize": {
@@ -925,7 +926,7 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 		Documentation: `Specifies whether and how quickly sshd(8) should close client connections with no open channels. Open channels include active shell, command execution or subsystem sessions, connected network, socket, agent or X11 forwardings. Forwarding listeners, such as those from the ssh(1) -R flag, are not considered as open channels and do not prevent the timeout. The timeout value is specified in seconds or may use any of the units documented in the “TIME FORMATS” section.
 	Note that this timeout starts when the client connection completes user authentication but before the client has an opportunity to open any channels. Caution should be used when using short timeout values, as they may not provide sufficient time for the client to request and open its channels before terminating the connection.
 	The default none is to never expire connections for having no open channels. This option may be useful in conjunction with ChannelTimeout.`,
-		Value: TimeFormatValue{},
+		Value: docvalues.TimeFormatValue{},
 	},
 	"UseDNS": {
 		Documentation: `Specifies whether sshd(8) should look up the remote host name, and to check that the resolved host name for the remote IP address maps back to the very same IP address.
