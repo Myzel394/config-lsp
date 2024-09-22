@@ -59,7 +59,7 @@ PasswordAuthentication yes
 	}
 }
 
-func TestMatchSimpleBlock(
+func TestSimpleMatchBlock(
 	t *testing.T,
 ) {
 	input := utils.Dedent(`
@@ -90,6 +90,10 @@ Match Address 192.168.0.1
 	secondEntry := rawSecondEntry.(*SSHDMatchBlock)
 	if !(secondEntry.MatchOption.Value.Value == "Match Address 192.168.0.1") {
 		t.Errorf("Expected second entry to be 'Match Address 192.168.0.1', but got: %v", secondEntry.MatchOption.Value)
+	}
+
+	if !(secondEntry.Options.Size() == 1) {
+		t.Errorf("Expected 1 option in match block, but got: %v", secondEntry.Options)
 	}
 
 	if !(secondEntry.Start.Line == 2 && secondEntry.Start.Character == 0 && secondEntry.End.Line == 3 && secondEntry.End.Character == 27) {
@@ -197,6 +201,10 @@ Match Address 192.168.0.2
 
 	rawSecondEntry, _ := p.Options.Get(uint32(2))
 	secondEntry := rawSecondEntry.(*SSHDMatchBlock)
+	if !(secondEntry.Options.Size() == 2) {
+		t.Errorf("Expected 2 options in second match block, but got: %v", secondEntry.Options)
+	}
+
 	if !(secondEntry.Options.Size() == 2) {
 		t.Errorf("Expected 2 options in second match block, but got: %v", secondEntry.Options)
 	}

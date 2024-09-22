@@ -54,11 +54,11 @@ func analyzeMatchBlocks(
 }
 
 func analyzeMatchValueNegation(
-	value *matchparser.matchparser,
+	value *matchparser.MatchValue,
 ) []common.LSPError {
 	errs := make([]common.LSPError, 0)
 
-	positionsAsList := utils.AllIndexes(value.Value.Value, "!")
+	positionsAsList := utils.AllIndexes(value.Value.Raw, "!")
 	positions := utils.SliceToMap(positionsAsList, struct{}{})
 
 	delete(positions, 0)

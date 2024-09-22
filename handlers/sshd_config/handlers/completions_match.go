@@ -11,7 +11,7 @@ import (
 func getMatchCompletions(
 	d *sshdconfig.SSHDDocument,
 	cursor common.CursorPosition,
-	match *matchparser.matchparser,
+	match *matchparser.Match,
 ) ([]protocol.CompletionItem, error) {
 	if match == nil || len(match.Entries) == 0 {
 		completions := getMatchCriteriaCompletions()

@@ -80,7 +80,7 @@ func formatSSHDMatchBlock(
 }
 
 func formatMatchToString(
-	match *matchparser.matchparser,
+	match *matchparser.Match,
 ) string {
 	entriesAsStrings := utils.Map(
 		match.Entries,

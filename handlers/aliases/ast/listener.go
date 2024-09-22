@@ -2,7 +2,7 @@ package ast
 
 import (
 	"config-lsp/common"
-	"config-lsp/handlers/aliases/parser"
+	"config-lsp/handlers/aliases/ast/parser"
 
 	"github.com/antlr4-go/antlr/v4"
 )

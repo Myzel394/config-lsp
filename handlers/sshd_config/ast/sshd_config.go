@@ -47,7 +47,7 @@ type SSHDOption struct {
 type SSHDMatchBlock struct {
 	common.LocationRange
 	MatchOption *SSHDOption
-	MatchValue  *matchparser.matchparser
+	MatchValue  *matchparser.Match
 
 	// [uint32]*SSHDOption -> line number -> *SSHDOption
 	Options *treemap.Map
