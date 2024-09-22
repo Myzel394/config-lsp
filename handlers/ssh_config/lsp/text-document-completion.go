@@ -37,14 +37,14 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 		)
 	}
 
-	// if option.Separator != nil && option.OptionValue.IsPositionAfterStart(cursor) {
-	// 	return handlers.GetOptionCompletions(
-	// 		d,
-	// 		entry,
-	// 		matchBlock,
-	// 		cursor,
-	// 	)
-	// }
+	if option.Separator != nil && option.OptionValue.IsPositionAfterStart(cursor) {
+		return handlers.GetOptionCompletions(
+			d,
+			option,
+			block,
+			cursor,
+		)
+	}
 
 	return nil, nil
 }

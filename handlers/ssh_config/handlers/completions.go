@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
 	sshconfig "config-lsp/handlers/ssh_config"
 	"config-lsp/handlers/ssh_config/ast"
@@ -55,5 +56,43 @@ func GetRootCompletions(
 
 			return *completion
 		},
+	), nil
+}
+
+func GetOptionCompletions(
+	d *sshconfig.SSHDocument,
+	entry *ast.SSHOption,
+	block ast.SSHBlock,
+	cursor common.CursorPosition,
+) ([]protocol.CompletionItem, error) {
+	option, found := fields.Options[entry.Key.Key]
+
+	if !found {
+		return nil, nil
+	}
+
+	if entry.Key.Key == "Match" {
+		return nil, nil
+		// return getMatchCompletions(
+		// 	d,
+		// 	cursor,
+		// 	matchBlock.MatchValue,
+		// )
+	}
+
+	if entry.OptionValue == nil {
+		return option.FetchCompletions("", 0), nil
+	}
+
+	// Hello wo|rld
+	line := entry.OptionValue.Value.Raw
+	// NEW: docvalues index
+	return option.FetchCompletions(
+		line,
+		common.DeprecatedImprovedCursorToIndex(
+			cursor,
+			line,
+			entry.OptionValue.Start.Character,
+		),
 	), nil
 }
