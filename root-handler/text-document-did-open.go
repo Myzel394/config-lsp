@@ -7,6 +7,7 @@ import (
 	aliases "config-lsp/handlers/aliases/lsp"
 	fstab "config-lsp/handlers/fstab/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
+	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 
@@ -35,6 +36,8 @@ func TextDocumentDidOpen(context *glsp.Context, params *protocol.DidOpenTextDocu
 		return fstab.TextDocumentDidOpen(context, params)
 	case LanguageSSHDConfig:
 		return sshdconfig.TextDocumentDidOpen(context, params)
+	case LanguageSSHConfig:
+		return sshconfig.TextDocumentDidOpen(context, params)
 	case LanguageWireguard:
 		return wireguard.TextDocumentDidOpen(context, params)
 	case LanguageHosts:

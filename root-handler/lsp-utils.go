@@ -13,6 +13,7 @@ import (
 type SupportedLanguage string
 
 const (
+	LanguageSSHConfig  SupportedLanguage = "ssh_config"
 	LanguageSSHDConfig SupportedLanguage = "sshd_config"
 	LanguageFstab      SupportedLanguage = "fstab"
 	LanguageWireguard  SupportedLanguage = "languagewireguard"
@@ -21,6 +22,7 @@ const (
 )
 
 var AllSupportedLanguages = []string{
+	string(LanguageSSHConfig),
 	string(LanguageSSHDConfig),
 	string(LanguageFstab),
 	string(LanguageWireguard),
@@ -54,8 +56,12 @@ func (e LanguageUndetectableError) Error() string {
 var valueToLanguageMap = map[string]SupportedLanguage{
 	"sshd_config": LanguageSSHDConfig,
 	"sshdconfig":  LanguageSSHDConfig,
-	"ssh_config":  LanguageSSHDConfig,
-	"sshconfig":   LanguageSSHDConfig,
+
+	"ssh_config":  LanguageSSHConfig,
+	"sshconfig":   LanguageSSHConfig,
+
+	".ssh/config": LanguageSSHConfig,
+	"~/.ssh/config": LanguageSSHConfig,
 
 	"fstab":     LanguageFstab,
 	"etc/fstab": LanguageFstab,
@@ -122,6 +128,10 @@ func DetectLanguage(
 
 	if strings.HasPrefix(uri, "file:///etc/wireguard/") || wireguardPattern.MatchString(uri) {
 		return LanguageWireguard, nil
+	}
+
+	if strings.HasSuffix(uri, ".ssh/config") {
+		return LanguageSSHConfig, nil
 	}
 
 	return "", undetectableError

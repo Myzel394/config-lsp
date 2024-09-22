@@ -4,6 +4,7 @@ import (
 	aliases "config-lsp/handlers/aliases/lsp"
 	fstab "config-lsp/handlers/fstab/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
+	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 
@@ -29,6 +30,8 @@ func TextDocumentHover(context *glsp.Context, params *protocol.HoverParams) (*pr
 		return hosts.TextDocumentHover(context, params)
 	case LanguageSSHDConfig:
 		return sshdconfig.TextDocumentHover(context, params)
+	case LanguageSSHConfig:
+		return sshconfig.TextDocumentHover(context, params)
 	case LanguageFstab:
 		return fstab.TextDocumentHover(context, params)
 	case LanguageWireguard:

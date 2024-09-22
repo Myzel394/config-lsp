@@ -26,6 +26,8 @@ func TextDocumentSignatureHelp(context *glsp.Context, params *protocol.Signature
 		return nil, nil
 	case LanguageSSHDConfig:
 		return sshdconfig.TextDocumentSignatureHelp(context, params)
+	case LanguageSSHConfig:
+		return nil, nil
 	case LanguageFstab:
 		return nil, nil
 	case LanguageWireguard:

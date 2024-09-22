@@ -4,6 +4,8 @@ import (
 	aliases "config-lsp/handlers/aliases/lsp"
 	fstab "config-lsp/handlers/fstab/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
+	sshconfig "config-lsp/handlers/ssh_config/lsp"
+	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 
 	"github.com/tliron/glsp"
@@ -28,6 +30,9 @@ func TextDocumentDidClose(context *glsp.Context, params *protocol.DidCloseTextDo
 
 	switch *language {
 	case LanguageSSHDConfig:
+		return sshdconfig.TextDocumentDidClose(context, params)
+	case LanguageSSHConfig:
+		return sshconfig.TextDocumentDidClose(context, params)
 	case LanguageFstab:
 		return fstab.TextDocumentDidClose(context, params)
 	case LanguageWireguard:

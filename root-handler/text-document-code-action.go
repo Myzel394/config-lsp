@@ -29,6 +29,8 @@ func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionPa
 		return hosts.TextDocumentCodeAction(context, params)
 	case LanguageSSHDConfig:
 		return nil, nil
+	case LanguageSSHConfig:
+		return nil, nil
 	case LanguageWireguard:
 		return wireguard.TextDocumentCodeAction(context, params)
 	case LanguageAliases:

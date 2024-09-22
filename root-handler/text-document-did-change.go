@@ -5,6 +5,7 @@ import (
 	fstab "config-lsp/handlers/fstab/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
+	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 
 	"github.com/tliron/glsp"
@@ -43,6 +44,8 @@ func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeText
 			return fstab.TextDocumentDidOpen(context, params)
 		case LanguageSSHDConfig:
 			return sshdconfig.TextDocumentDidOpen(context, params)
+		case LanguageSSHConfig:
+			return sshconfig.TextDocumentDidOpen(context, params)
 		case LanguageWireguard:
 			return wireguard.TextDocumentDidOpen(context, params)
 		case LanguageHosts:
@@ -57,6 +60,8 @@ func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeText
 		return fstab.TextDocumentDidChange(context, params)
 	case LanguageSSHDConfig:
 		return sshdconfig.TextDocumentDidChange(context, params)
+	case LanguageSSHConfig:
+		return sshconfig.TextDocumentDidChange(context, params)
 	case LanguageWireguard:
 		return wireguard.TextDocumentDidChange(context, params)
 	case LanguageHosts:

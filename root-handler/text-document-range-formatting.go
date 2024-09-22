@@ -1,7 +1,9 @@
 package roothandler
 
 import (
+	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
+
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -27,6 +29,8 @@ func TextDocumentRangeFormattingFunc(
 		return nil, nil
 	case LanguageSSHDConfig:
 		return sshdconfig.TextDocumentRangeFormatting(context, params)
+	case LanguageSSHConfig:
+		return sshconfig.TextDocumentRangeFormatting(context, params)
 	case LanguageFstab:
 		return nil, nil
 	case LanguageWireguard:

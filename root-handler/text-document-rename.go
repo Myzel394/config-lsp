@@ -24,6 +24,8 @@ func TextDocumentRename(context *glsp.Context, params *protocol.RenameParams) (*
 		return nil, nil
 	case LanguageSSHDConfig:
 		return nil, nil
+	case LanguageSSHConfig:
+		return nil, nil
 	case LanguageFstab:
 		return nil, nil
 	case LanguageWireguard:
