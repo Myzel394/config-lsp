@@ -2,6 +2,7 @@ package ast
 
 import (
 	"config-lsp/common"
+	"config-lsp/utils"
 
 	"github.com/emirpasic/gods/maps/treemap"
 )
@@ -145,8 +146,26 @@ func (c SSHConfig) FindOption(line uint32) (*SSHOption, SSHBlock) {
 }
 
 type AllOptionInfo struct {
-	Block SSHBlock
+	Block  SSHBlock
 	Option *SSHOption
+}
+
+func (c SSHConfig) GetAllOptionsForBlock(block SSHBlock) []AllOptionInfo {
+	if block == nil {
+		return c.GetAllOptions()
+	}
+
+	return utils.Map(
+		block.GetOptions().Values(),
+		func(rawOption interface{}) AllOptionInfo {
+			option := rawOption.(*SSHOption)
+
+			return AllOptionInfo{
+				Block:  block,
+				Option: option,
+			}
+		},
+	)
 }
 
 func (c SSHConfig) GetAllOptions() []AllOptionInfo {
@@ -157,21 +176,21 @@ func (c SSHConfig) GetAllOptions() []AllOptionInfo {
 		case *SSHOption:
 			option := rawEntry.(*SSHOption)
 			options = append(options, AllOptionInfo{
-				Block: nil,
+				Block:  nil,
 				Option: option,
 			})
 		case *SSHMatchBlock:
 			block := rawEntry.(SSHBlock)
 
 			options = append(options, AllOptionInfo{
-				Block: block,
+				Block:  block,
 				Option: block.GetEntryOption(),
 			})
 
 			for _, rawOption := range block.GetOptions().Values() {
 				option := rawOption.(*SSHOption)
 				options = append(options, AllOptionInfo{
-					Block: nil,
+					Block:  block,
 					Option: option,
 				})
 			}
@@ -179,14 +198,14 @@ func (c SSHConfig) GetAllOptions() []AllOptionInfo {
 			block := rawEntry.(SSHBlock)
 
 			options = append(options, AllOptionInfo{
-				Block: block,
+				Block:  block,
 				Option: block.GetEntryOption(),
 			})
 
 			for _, rawOption := range block.GetOptions().Values() {
 				option := rawOption.(*SSHOption)
 				options = append(options, AllOptionInfo{
-					Block: nil,
+					Block:  block,
 					Option: option,
 				})
 			}
@@ -196,4 +215,3 @@ func (c SSHConfig) GetAllOptions() []AllOptionInfo {
 
 	return options
 }
-

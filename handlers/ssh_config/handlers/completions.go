@@ -28,15 +28,6 @@ func GetRootCompletions(
 		}
 	}
 
-	// Remove all fields that are already present and are not allowed to be duplicated
-	for _, info := range d.Config.GetAllOptions() {
-		if _, found := fields.AllowedDuplicateOptions[info.Option.Key.Key]; found {
-			continue
-		}
-
-		delete(availableOptions, info.Option.Key.Key)
-	}
-
 	return utils.MapMapToSlice(
 		availableOptions,
 		func(name string, doc docvalues.DocumentationValue) protocol.CompletionItem {

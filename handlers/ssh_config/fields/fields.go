@@ -11,6 +11,8 @@ var MAX_PORT = 65535
 
 var AllowedDuplicateOptions = map[string]struct{}{
 	"CertificateFile": {},
+	"Match": {},
+	"Host": {},
 }
 
 var Options = map[string]docvalues.DocumentationValue{
