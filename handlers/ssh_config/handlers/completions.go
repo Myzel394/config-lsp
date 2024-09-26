@@ -21,11 +21,16 @@ func GetRootCompletions(
 	availableOptions := make(map[string]docvalues.DocumentationValue, 0)
 
 	for key, option := range fields.Options {
-		alreadyExists := d.FindOptionByNameAndBlock(key, parentBlock) != nil
-
-		if !alreadyExists || utils.KeyExists(fields.AllowedDuplicateOptions, key) {
-			availableOptions[key] = option
+		// Check for duplicates
+		if d.FindOptionByNameAndBlock(key, parentBlock) != nil && !utils.KeyExists(fields.AllowedDuplicateOptions, key) {
+			continue
 		}
+
+		if parentBlock != nil && parentBlock.GetBlockType() == ast.SSHBlockTypeHost && utils.KeyExists(fields.HostDisallowedOptions, key) {
+			continue
+		}
+
+		availableOptions[key] = option
 	}
 
 	return utils.MapMapToSlice(

@@ -9,12 +9,6 @@ import (
 var ZERO = 0
 var MAX_PORT = 65535
 
-var AllowedDuplicateOptions = map[string]struct{}{
-	"CertificateFile": {},
-	"Match": {},
-	"Host": {},
-}
-
 var Options = map[string]docvalues.DocumentationValue{
 	"Host": {
 		Documentation: `Restricts the following declarations (up to the next Host or Match keyword) to be only for those hosts that match one of the patterns given after the keyword. If more than one pattern is provided, they should be separated by whitespace. A single ‘*’ as a pattern can be used to provide global defaults for all hosts. The host is usually the hostname argument given on the command line (see the CanonicalizeHostname keyword for exceptions).
@@ -110,7 +104,7 @@ var Options = map[string]docvalues.DocumentationValue{
 	"CASignatureAlgorithms": {
 		Documentation: `Specifies which algorithms are allowed for signing of certificates by certificate authorities (CAs). The default is:
     
-    ssh-ed25519,ecdsa-sha2-nistp256,
+ssh-ed25519,ecdsa-sha2-nistp256,
 ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
 sk-ssh-ed25519@openssh.com,
 sk-ecdsa-sha2-nistp256@openssh.com,
@@ -204,8 +198,8 @@ The default is not to expire channels of any type for inactivity.`,
 		Documentation: `Specifies the ciphers allowed and their order of preference. Multiple ciphers must be comma-separated. If the specified list begins with a
       ‘+’ character, then the specified ciphers will be appended to the default set instead of replacing them. If the specified list begins with a ‘-’ character, then the specified ciphers (including wildcards) will be removed from the default set instead of replacing them. If the specified list begins with a ‘^’ character, then the specified ciphers will be placed at the head of the default set.
     The supported ciphers are:
-    
-    3des-cbc
+
+3des-cbc
 aes128-cbc
 aes192-cbc
 aes256-cbc
@@ -215,15 +209,14 @@ aes256-ctr
 aes128-gcm@openssh.com
 aes256-gcm@openssh.com
 chacha20-poly1305@openssh.com
-    
+
     The default is:
-    
-    chacha20-poly1305@openssh.com,
+
+chacha20-poly1305@openssh.com,
 aes128-ctr,aes192-ctr,aes256-ctr,
 aes128-gcm@openssh.com,aes256-gcm@openssh.com
     
-    The list of available ciphers may also be obtained using
-        'ssh -Q cipher'.`,
+    The list of available ciphers may also be obtained using 'ssh -Q cipher'.`,
 		Value: prefixPlusMinusCaret([]docvalues.EnumString{
 			docvalues.CreateEnumString("3des-cbc"),
 			docvalues.CreateEnumString("aes128-cbc"),
@@ -314,8 +307,7 @@ aes128-gcm@openssh.com,aes256-gcm@openssh.com
 		Value: docvalues.StringValue{},
 	},
 	"ExitOnForwardFailure": {
-		Documentation: `Specifies whether ssh(1) should terminate the connection if it cannot set up all requested dynamic, tunnel, local, and remote port forwardings, (e.g. if either end is unable to bind and listen on a specified port). Note that ExitOnForwardFailure does not apply to connections made over port forwardings and will not, for example, cause ssh(1) to exit if TCP connections to the ultimate forwarding destination fail. The argument must be yes or no
-      (the default).`,
+		Documentation: `Specifies whether ssh(1) should terminate the connection if it cannot set up all requested dynamic, tunnel, local, and remote port forwardings, (e.g. if either end is unable to bind and listen on a specified port). Note that ExitOnForwardFailure does not apply to connections made over port forwardings and will not, for example, cause ssh(1) to exit if TCP connections to the ultimate forwarding destination fail. The argument must be yes or no (the default).`,
 		Value: booleanEnumValue,
 	},
 	"FingerprintHash": {
@@ -383,14 +375,13 @@ aes128-gcm@openssh.com,aes256-gcm@openssh.com
 		Value:         booleanEnumValue,
 	},
 	"HashKnownHosts": {
-		Documentation: `Indicates that ssh(1) should hash host names and addresses when they are added to
-      ~/.ssh/known_hosts. These hashed names may be used normally by ssh(1) and sshd(8), but they do not visually reveal identifying information if the file's contents are disclosed. The default is no. Note that existing names and addresses in known hosts files will not be converted automatically, but may be manually hashed using ssh-keygen(1).`,
+		Documentation: `Indicates that ssh(1) should hash host names and addresses when they are added to ~/.ssh/known_hosts. These hashed names may be used normally by ssh(1) and sshd(8), but they do not visually reveal identifying information if the file's contents are disclosed. The default is no. Note that existing names and addresses in known hosts files will not be converted automatically, but may be manually hashed using ssh-keygen(1).`,
 		Value: booleanEnumValue,
 	},
 	"HostbasedAcceptedAlgorithms": {
 		Documentation: `Specifies the signature algorithms that will be used for hostbased authentication as a comma-separated list of patterns. Alternately if the specified list begins with a ‘+’ character, then the specified signature algorithms will be appended to the default set instead of replacing them. If the specified list begins with a ‘-’ character, then the specified signature algorithms (including wildcards) will be removed from the default set instead of replacing them. If the specified list begins with a ‘^’ character, then the specified signature algorithms will be placed at the head of the default set. The default for this option is:
-    
-    ssh-ed25519-cert-v01@openssh.com,
+
+ssh-ed25519-cert-v01@openssh.com,
 ecdsa-sha2-nistp256-cert-v01@openssh.com,
 ecdsa-sha2-nistp384-cert-v01@openssh.com,
 ecdsa-sha2-nistp521-cert-v01@openssh.com,
@@ -403,7 +394,7 @@ ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
 sk-ssh-ed25519@openssh.com,
 sk-ecdsa-sha2-nistp256@openssh.com,
 rsa-sha2-512,rsa-sha2-256
-    
+
     The -Q option of ssh(1) may be used to list supported signature algorithms. This was formerly named HostbasedKeyTypes.`,
 	Value: docvalues.CustomValue{
 		FetchValue: func(_ docvalues.CustomValueContext) docvalues.Value {
@@ -426,8 +417,8 @@ rsa-sha2-512,rsa-sha2-256
 		Documentation: `Specifies the host key signature algorithms that the client wants to use in order of preference. Alternately if the specified list begins with a
       ‘+’ character, then the specified signature algorithms will be appended to the default set instead of replacing them. If the specified list begins with a ‘-’ character, then the specified signature algorithms (including wildcards) will be removed from the default set instead of replacing them. If the specified list begins with a
       ‘^’ character, then the specified signature algorithms will be placed at the head of the default set. The default for this option is:
-    
-    ssh-ed25519-cert-v01@openssh.com,
+
+ssh-ed25519-cert-v01@openssh.com,
 ecdsa-sha2-nistp256-cert-v01@openssh.com,
 ecdsa-sha2-nistp384-cert-v01@openssh.com,
 ecdsa-sha2-nistp521-cert-v01@openssh.com,
@@ -440,7 +431,7 @@ ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
 sk-ecdsa-sha2-nistp256@openssh.com,
 sk-ssh-ed25519@openssh.com,
 rsa-sha2-512,rsa-sha2-256
-    
+
     If hostkeys are known for the destination host then this default is modified to prefer their algorithms.
     The list of available signature algorithms may also be obtained using 'ssh -Q HostKeyAlgorithms'.`,
 		Value: docvalues.CustomValue{
@@ -479,14 +470,13 @@ rsa-sha2-512,rsa-sha2-256
     IdentityFile may be used in conjunction with IdentitiesOnly to select which identities in an agent are offered during authentication. IdentityFile may also be used in conjunction with CertificateFile in order to provide any certificate also needed for authentication with the identity.`,
 		Value: docvalues.StringValue{},
 	},
+	// TODO: Add
 	"IgnoreUnknown": {
-		Documentation: `Specifies a pattern-list of unknown options to be ignored if they are encountered in configuration parsing. This may be used to suppress errors if ssh_config contains options that are unrecognised by ssh(1). It is recommended that IgnoreUnknown be listed early in the configuration file as it will not be applied to unknown options that appear before
-    it.`,
+		Documentation: `Specifies a pattern-list of unknown options to be ignored if they are encountered in configuration parsing. This may be used to suppress errors if ssh_config contains options that are unrecognised by ssh(1). It is recommended that IgnoreUnknown be listed early in the configuration file as it will not be applied to unknown options that appear before it.`,
 		Value: docvalues.StringValue{},
 	},
 	"Include": {
-		Documentation: `Include the specified configuration file(s). Multiple pathnames may be specified and each pathname may contain glob(7) wildcards, tokens as described in the TOKENS section, environment variables as described in the ENVIRONMENT VARIABLES section and, for user configurations, shell-like
-      ‘~’ references to user home directories. Wildcards will be expanded and processed in lexical order. Files without absolute paths are assumed to be in ~/.ssh if included in a user configuration file or /etc/ssh if included from the system configuration file. Include directive may appear inside a Match or Host block to perform conditional inclusion.`,
+		Documentation: `Include the specified configuration file(s). Multiple pathnames may be specified and each pathname may contain glob(7) wildcards, tokens as described in the TOKENS section, environment variables as described in the ENVIRONMENT VARIABLES section and, for user configurations, shell-like ‘~’ references to user home directories. Wildcards will be expanded and processed in lexical order. Files without absolute paths are assumed to be in ~/.ssh if included in a user configuration file or /etc/ssh if included from the system configuration file. Include directive may appear inside a Match or Host block to perform conditional inclusion.`,
 		Value: docvalues.ArrayValue{
 			Separator:           " ",
 			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
@@ -541,6 +531,7 @@ rsa-sha2-512,rsa-sha2-256
 		},
 	},
 	"KbdInteractiveAuthentication": {
+		// TODO: Show deprecation
 		Documentation: `Specifies whether to use keyboard-interactive authentication. The argument to this keyword must be yes (the default) or no. ChallengeResponseAuthentication is a deprecated alias for this.`,
 		Value:         booleanEnumValue,
 	},
@@ -564,8 +555,8 @@ rsa-sha2-512,rsa-sha2-256
     If the specified list begins with a ‘+’ character, then the specified algorithms will be appended to the default set instead of replacing them. If the specified list begins with a
         ‘-’ character, then the specified algorithms (including wildcards) will be removed from the default set instead of replacing them. If the specified list begins with a ‘^’ character, then the specified algorithms will be placed at the head of the default set.
     The default is:
-    
-    sntrup761x25519-sha512,sntrup761x25519-sha512@openssh.com,
+
+sntrup761x25519-sha512,sntrup761x25519-sha512@openssh.com,
 mlkem768x25519-sha256,
 curve25519-sha256,curve25519-sha256@libssh.org,
 ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,
@@ -573,7 +564,7 @@ diffie-hellman-group-exchange-sha256,
 diffie-hellman-group16-sha512,
 diffie-hellman-group18-sha512,
 diffie-hellman-group14-sha256
-    
+
     The list of supported key exchange algorithms may also be obtained using 'ssh -Q kex'.`,
 		Value: prefixPlusMinusCaret([]docvalues.EnumString{
 			docvalues.CreateEnumString("curve25519-sha256"),
@@ -648,13 +639,13 @@ diffie-hellman-group14-sha256
       ‘^’ character, then the specified algorithms will be placed at the head of the default set.
     The algorithms that contain '-etm' calculate the MAC after encryption (encrypt-then-mac). These are considered safer and their use recommended.
     The default is:
-    
-    umac-64-etm@openssh.com,umac-128-etm@openssh.com,
+
+umac-64-etm@openssh.com,umac-128-etm@openssh.com,
 hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,
 hmac-sha1-etm@openssh.com,
 umac-64@openssh.com,umac-128@openssh.com,
 hmac-sha2-256,hmac-sha2-512,hmac-sha1
-    
+
     The list of available MAC algorithms may also be obtained using 'ssh -Q mac'.`,
 		Value: prefixPlusMinusCaret([]docvalues.EnumString{
 			docvalues.CreateEnumString("hmac-md5"),
@@ -716,6 +707,7 @@ hmac-sha2-256,hmac-sha2-512,hmac-sha1
 		Documentation: `Specifies which PKCS#11 provider to use or none to indicate that no provider should be used (the default). The argument to this keyword is a path to the PKCS#11 shared library ssh(1) should use to communicate with a PKCS#11 token providing keys for user authentication.`,
 		Value:         booleanEnumValue,
 	},
+	// TODO: Show warning
 	"Port": {
 		Documentation: `Specifies the port number to connect on the remote host. The default is 22.`,
 		Value:         docvalues.NumberValue{Min: &ZERO, Max: &MAX_PORT},
@@ -723,7 +715,7 @@ hmac-sha2-256,hmac-sha2-512,hmac-sha1
 	"PreferredAuthentications": {
 		Documentation: `Specifies the order in which the client should try authentication methods. This allows a client to prefer one method (e.g. keyboard-interactive) over another method (e.g. password). The default is:
     
-    gssapi-with-mic,hostbased,publickey,keyboard-interactive,password`,
+gssapi-with-mic,hostbased,publickey,keyboard-interactive,password`,
 		Value: docvalues.EnumValue{
 			EnforceValues: true,
 			Values: []docvalues.EnumString{
@@ -736,8 +728,7 @@ hmac-sha2-256,hmac-sha2-512,hmac-sha1
 		},
 	},
 	"ProxyCommand": {
-		Documentation: `Specifies the command to use to connect to the server. The command string extends to the end of the line, and is executed using the user's shell
-      ‘exec’ directive to avoid a lingering shell process.
+		Documentation: `Specifies the command to use to connect to the server. The command string extends to the end of the line, and is executed using the user's shell ‘exec’ directive to avoid a lingering shell process.
     Arguments to ProxyCommand accept the tokens described in the TOKENS section. The command can be basically anything, and should read from its standard input and write to its standard output. It should eventually connect an sshd(8) server running on some machine, or execute sshd
         -i somewhere. Host key management will be done using the Hostname of the host being connected (defaulting to the name typed by the user). Setting the command to none disables this option entirely. Note that CheckHostIP is not available for connects with a proxy command.
     This directive is useful in conjunction with nc(1) and its proxy support. For example, the following directive would connect via an HTTP proxy at 192.0.2.0:
@@ -760,8 +751,8 @@ hmac-sha2-256,hmac-sha2-512,hmac-sha1
 	"PubkeyAcceptedAlgorithms": {
 		Documentation: `Specifies the signature algorithms that will be used for public key authentication as a comma-separated list of patterns. If the specified list begins with a ‘+’ character, then the algorithms after it will be appended to the default instead of replacing it. If the specified list begins with a ‘-’ character, then the specified algorithms (including wildcards) will be removed from the default set instead of replacing them. If the specified list begins with a
       ‘^’ character, then the specified algorithms will be placed at the head of the default set. The default for this option is:
-    
-    ssh-ed25519-cert-v01@openssh.com,
+
+ssh-ed25519-cert-v01@openssh.com,
 ecdsa-sha2-nistp256-cert-v01@openssh.com,
 ecdsa-sha2-nistp384-cert-v01@openssh.com,
 ecdsa-sha2-nistp521-cert-v01@openssh.com,
@@ -774,7 +765,7 @@ ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521,
 sk-ssh-ed25519@openssh.com,
 sk-ecdsa-sha2-nistp256@openssh.com,
 rsa-sha2-512,rsa-sha2-256
-    
+
     The list of available signature algorithms may also be obtained using 'ssh -Q PubkeyAcceptedAlgorithms'.`,
 		Value: docvalues.CustomValue{
 			FetchValue: func(_ docvalues.CustomValueContext) docvalues.Value {
@@ -813,8 +804,7 @@ rsa-sha2-512,rsa-sha2-256
 		Value: docvalues.StringValue{},
 	},
 	"RequestTTY": {
-		Documentation: `Specifies whether to request a pseudo-tty for the session. The argument may be one of: no (never request a TTY), yes (always request a TTY when standard input is a TTY), force (always request a TTY) or auto (request a TTY when opening a login session). This option mirrors the -t and
-      -T flags for ssh(1).`,
+		Documentation: `Specifies whether to request a pseudo-tty for the session. The argument may be one of: no (never request a TTY), yes (always request a TTY when standard input is a TTY), force (always request a TTY) or auto (request a TTY when opening a login session). This option mirrors the -t and -T flags for ssh(1).`,
 		Value: docvalues.EnumValue{
 			EnforceValues: true,
 			Values: []docvalues.EnumString{
@@ -878,9 +868,7 @@ rsa-sha2-512,rsa-sha2-256
 		Value: booleanEnumValue,
 	},
 	"StrictHostKeyChecking": {
-		Documentation: `If this flag is set to yes, ssh(1) will never automatically add host keys to the
-      ~/.ssh/known_hosts file, and refuses to connect to hosts whose host key has changed. This provides maximum protection against man-in-the-middle (MITM) attacks, though it can be annoying when the
-      /etc/ssh/ssh_known_hosts file is poorly maintained or when connections to new hosts are frequently made. This option forces the user to manually add all new hosts.
+		Documentation: `If this flag is set to yes, ssh(1) will never automatically add host keys to the ~/.ssh/known_hosts file, and refuses to connect to hosts whose host key has changed. This provides maximum protection against man-in-the-middle (MITM) attacks, though it can be annoying when the /etc/ssh/ssh_known_hosts file is poorly maintained or when connections to new hosts are frequently made. This option forces the user to manually add all new hosts.
     If this flag is set to accept-new then ssh will automatically add new host keys to the user's known_hosts file, but will not permit connections to hosts with changed host keys. If this flag is set to no or off, ssh will automatically add new host keys to the user known hosts files and allow connections to hosts with changed hostkeys to proceed, subject to some restrictions. If this flag is set to ask (the default), new host keys will be added to the user known host files only after the user has confirmed that is what they really want to do, and ssh will refuse to connect to hosts whose host key has changed. The host keys of known hosts will be verified automatically in all cases.`,
 		Value: docvalues.EnumValue{
 			EnforceValues: true,
@@ -918,6 +906,7 @@ rsa-sha2-512,rsa-sha2-256
     To disable TCP keepalive messages, the value should be set to no. See also ServerAliveInterval for protocol-level keepalives.`,
 		Value: booleanEnumValue,
 	},
+	// TODO: Add
 	"Tag": {
 		Documentation: `Specify a configuration tag name that may be later used by a Match directive to select a block of configuration.`,
 		Value:         docvalues.StringValue{},
@@ -935,9 +924,7 @@ rsa-sha2-512,rsa-sha2-256
 		},
 	},
 	"TunnelDevice": {
-		Documentation: `Specifies the tun(4) devices to open on the client
-      (local_tun) and the server
-      (remote_tun).
+		Documentation: `Specifies the tun(4) devices to open on the client (local_tun) and the server (remote_tun).
     The argument must be local_tun[:remote_tun]. The devices may be specified by numerical ID or the keyword any, which uses the next available tunnel device. If remote_tun is not specified, it defaults to any. The default is any:any.`,
 		Value: docvalues.StringValue{},
 	},
