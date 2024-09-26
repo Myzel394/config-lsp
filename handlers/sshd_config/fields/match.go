@@ -1,6 +1,9 @@
 package fields
 
-import docvalues "config-lsp/doc-values"
+import (
+	docvalues "config-lsp/doc-values"
+	matchparser "config-lsp/handlers/sshd_config/match-parser"
+)
 
 var MatchAllowedOptions = map[string]struct{}{
 	"AcceptEnv":                       {},
@@ -74,4 +77,14 @@ var MatchAddressField = docvalues.IPAddressValue{
 	AllowIPv4:  true,
 	AllowIPv6:  true,
 	AllowRange: true,
+}
+
+var MatchValueFieldMap = map[matchparser.MatchCriteriaType]docvalues.Value{
+	matchparser.MatchCriteriaTypeUser:        MatchUserField,
+	matchparser.MatchCriteriaTypeGroup:       MatchGroupField,
+	matchparser.MatchCriteriaTypeHost:        MatchHostField,
+	matchparser.MatchCriteriaTypeLocalAddress: MatchLocalAddressField,
+	matchparser.MatchCriteriaTypeLocalPort:    MatchLocalPortField,
+	matchparser.MatchCriteriaTypeRDomain:      MatchRDomainField,
+	matchparser.MatchCriteriaTypeAddress:      MatchAddressField,
 }

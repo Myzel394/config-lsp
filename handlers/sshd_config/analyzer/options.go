@@ -109,24 +109,6 @@ func checkMatchBlock(
 ) []common.LSPError {
 	errs := make([]common.LSPError, 0)
 
-	matchOption := matchBlock.MatchOption.OptionValue
-	if matchOption != nil {
-		invalidValues := fields.Options["Match"].CheckIsValid(matchOption.Value.Value)
-
-		errs = append(
-			errs,
-			utils.Map(
-				invalidValues,
-				func(invalidValue *docvalues.InvalidValue) common.LSPError {
-					err := docvalues.LSPErrorFromInvalidValue(matchBlock.Start.Line, *invalidValue)
-					err.ShiftCharacter(matchOption.Start.Character)
-
-					return err
-				},
-			)...,
-		)
-	}
-
 	it := matchBlock.Options.Iterator()
 
 	for it.Next() {

@@ -2,7 +2,9 @@ package analyzer
 
 import (
 	"config-lsp/common"
+	docvalues "config-lsp/doc-values"
 	sshdconfig "config-lsp/handlers/sshd_config"
+	"config-lsp/handlers/sshd_config/fields"
 	"config-lsp/handlers/sshd_config/match-parser"
 	"config-lsp/utils"
 	"errors"
@@ -23,6 +25,7 @@ func analyzeMatchBlocks(
 				Range: option.LocationRange,
 				Err:   errors.New("A match expression is required"),
 			})
+
 			continue
 		}
 
@@ -32,12 +35,15 @@ func analyzeMatchBlocks(
 					Range: entry.LocationRange,
 					Err:   errors.New(fmt.Sprintf("A value for %s is required", entry.Criteria.Type)),
 				})
-			} else {
-				errs = append(errs, analyzeMatchValuesContainsPositiveValue(entry.Values)...)
 
-				for _, value := range entry.Values.Values {
-					errs = append(errs, analyzeMatchValueNegation(value)...)
-				}
+				continue
+			} 
+
+			errs = append(errs, analyzeMatchValuesContainsPositiveValue(entry.Values)...)
+
+			for _, value := range entry.Values.Values {
+				errs = append(errs, analyzeMatchValueNegation(value)...)
+				errs = append(errs, analyzeMatchValueIsValid(value, entry.Criteria.Type)...)
 			}
 		}
 
@@ -109,3 +115,33 @@ func analyzeMatchValuesContainsPositiveValue(
 
 	return nil
 }
+
+func analyzeMatchValueIsValid(
+	value *matchparser.MatchValue,
+	criteria matchparser.MatchCriteriaType,
+) []common.LSPError {
+	errs := make([]common.LSPError, 0)
+
+	if value.Value.Raw == "" {
+		return errs
+	}
+
+	docOption := fields.MatchValueFieldMap[criteria]
+	invalidValues := docOption.CheckIsValid(value.Value.Raw)
+
+	errs = append(
+		errs,
+		utils.Map(
+			invalidValues,
+			func(invalidValue *docvalues.InvalidValue) common.LSPError {
+				err := docvalues.LSPErrorFromInvalidValue(value.Start.Line, *invalidValue)
+				err.ShiftCharacter(value.Start.Character)
+
+				return err
+			},
+		)...,
+	)
+
+	return errs
+}
+

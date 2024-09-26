@@ -61,3 +61,70 @@ Match User !root,!admin
 		t.Errorf("Expected 1 error, got %v", len(errors))
 	}
 }
+
+func TestEmptyMatchValues(
+	t *testing.T,
+) {
+	input := utils.Dedent(`
+PermitRootLogin yes
+Match User
+`)
+	c := ast.NewSSHDConfig()
+
+	errors := c.Parse(input)
+
+	if len(errors) > 0 {
+		t.Fatalf("Parse error: %v", errors)
+	}
+
+	i, errors := indexes.CreateIndexes(*c)
+
+	if len(errors) > 0 {
+		t.Fatalf("Index error: %v", errors)
+	}
+
+	d := &sshdconfig.SSHDDocument{
+		Config:  c,
+		Indexes: i,
+	}
+
+	errors = analyzeMatchBlocks(d)
+
+	if !(len(errors) == 1) {
+		t.Errorf("Expected 1 error, got %v", len(errors))
+	}
+}
+
+func TestIncompleteMatchValues(
+	t *testing.T,
+) {
+	input := utils.Dedent(`
+PermitRootLogin yes
+Match User 
+`)
+	c := ast.NewSSHDConfig()
+
+	errors := c.Parse(input)
+
+	if len(errors) > 0 {
+		t.Fatalf("Parse error: %v", errors)
+	}
+
+	i, errors := indexes.CreateIndexes(*c)
+
+	if len(errors) > 0 {
+		t.Fatalf("Index error: %v", errors)
+	}
+
+	d := &sshdconfig.SSHDDocument{
+		Config:  c,
+		Indexes: i,
+	}
+
+	errors = analyzeMatchBlocks(d)
+
+	if !(len(errors) == 1) {
+		t.Errorf("Expected 1 error, got %v", len(errors))
+	}
+}
+
