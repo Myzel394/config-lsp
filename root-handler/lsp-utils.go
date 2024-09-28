@@ -57,10 +57,10 @@ var valueToLanguageMap = map[string]SupportedLanguage{
 	"sshd_config": LanguageSSHDConfig,
 	"sshdconfig":  LanguageSSHDConfig,
 
-	"ssh_config":  LanguageSSHConfig,
-	"sshconfig":   LanguageSSHConfig,
+	"ssh_config": LanguageSSHConfig,
+	"sshconfig":  LanguageSSHConfig,
 
-	".ssh/config": LanguageSSHConfig,
+	".ssh/config":   LanguageSSHConfig,
 	"~/.ssh/config": LanguageSSHConfig,
 
 	"fstab":     LanguageFstab,

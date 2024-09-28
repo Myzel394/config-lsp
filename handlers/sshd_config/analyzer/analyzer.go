@@ -56,4 +56,3 @@ func Analyze(
 
 	return nil
 }
-

@@ -9,4 +9,3 @@ var AllowedDuplicateOptions = map[string]struct{}{
 	"Match":         {},
 	"Port":          {},
 }
-
