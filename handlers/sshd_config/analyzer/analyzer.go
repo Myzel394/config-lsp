@@ -4,7 +4,6 @@ import (
 	"config-lsp/common"
 	"config-lsp/handlers/sshd_config"
 	"config-lsp/handlers/sshd_config/indexes"
-	"config-lsp/utils"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -15,7 +14,7 @@ func Analyze(
 	errors := analyzeStructureIsValid(d)
 
 	if len(errors) > 0 {
-		return errsToDiagnostics(errors)
+		return common.ErrsToDiagnostics(errors)
 	}
 
 	i, indexErrors := indexes.CreateIndexes(*d.Config)
@@ -25,7 +24,7 @@ func Analyze(
 	errors = append(errors, indexErrors...)
 
 	if len(errors) > 0 {
-		return errsToDiagnostics(errors)
+		return common.ErrsToDiagnostics(errors)
 	}
 
 	includeErrors := analyzeIncludeValues(d)
@@ -52,17 +51,9 @@ func Analyze(
 	errors = append(errors, analyzeMatchBlocks(d)...)
 
 	if len(errors) > 0 {
-		return errsToDiagnostics(errors)
+		return common.ErrsToDiagnostics(errors)
 	}
 
 	return nil
 }
 
-func errsToDiagnostics(errs []common.LSPError) []protocol.Diagnostic {
-	return utils.Map(
-		errs,
-		func(err common.LSPError) protocol.Diagnostic {
-			return err.ToDiagnostic()
-		},
-	)
-}
