@@ -17,3 +17,5 @@ var HostDisallowedOptions = map[string]struct{}{
 	"EnableSSHKeysign": {},
 }
 
+var GlobalDisallowedOptions = map[string]struct{}{}
+

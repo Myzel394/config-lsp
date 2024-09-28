@@ -60,3 +60,36 @@ func TestIncompleteQuotesExample(
 		t.Errorf("Expected 1 error, got %v", len(errors))
 	}
 }
+
+func TestDependentOptionsExample(
+	t *testing.T,
+) {
+	d := testutils_test.DocumentFromInput(t, `
+Port 1234
+CanonicalDomains example.com
+`)
+
+	option := d.FindOptionsByName("CanonicalDomains")[0]
+	errors := checkIsDependent(d, option.Option.Key, option.Block)
+
+	if !(len(errors) == 1) {
+		t.Errorf("Expected 1 error, got %v", len(errors))
+	}
+}
+
+func TestValidDependentOptionsExample(
+	t *testing.T,
+) {
+	d := testutils_test.DocumentFromInput(t, `
+Port 1234
+CanonicalizeHostname yes
+CanonicalDomains example.com
+`)
+
+	option := d.FindOptionsByName("CanonicalDomains")[0]
+	errors := checkIsDependent(d, option.Option.Key, option.Block)
+
+	if len(errors) > 0 {
+		t.Errorf("Expected no errors, got %v", len(errors))
+	}
+}

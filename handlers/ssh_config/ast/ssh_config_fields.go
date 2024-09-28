@@ -108,9 +108,19 @@ func (b *SSHHostBlock) GetOption() *SSHOption {
 	return b.HostOption
 }
 
+// FindBlock Gets the block based on the line number
+// Note: This does not find the block strictly.
+// This means an empty line will belong to the previous block
+// However, this is required for example for completions, as the
+// user is about to type the new option, and we therefore need to know
+// which block this new option will belong to.
+//
+// You will probably need this in most cases
 func (c SSHConfig) FindBlock(line uint32) SSHBlock {
 	it := c.Options.Iterator()
-	for it.Next() {
+	it.End()
+
+	for it.Prev() {
 		entry := it.Value().(SSHEntry)
 
 		if entry.GetType() == SSHTypeOption {
@@ -119,7 +129,7 @@ func (c SSHConfig) FindBlock(line uint32) SSHBlock {
 
 		block := entry.(SSHBlock)
 
-		if block.GetLocation().Start.Line <= line && block.GetLocation().End.Line >= line {
+		if line >= block.GetLocation().Start.Line {
 			return block
 		}
 	}

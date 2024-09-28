@@ -22,13 +22,13 @@ func analyzeStructureIsValid(
 
 		switch entry.(type) {
 		case *ast.SSHOption:
-			errs = append(errs, checkOption(entry.(*ast.SSHOption), nil)...)
+			errs = append(errs, checkOption(d, entry.(*ast.SSHOption), nil)...)
 		case *ast.SSHMatchBlock:
 			matchBlock := entry.(*ast.SSHMatchBlock)
-			errs = append(errs, checkMatchBlock(matchBlock)...)
+			errs = append(errs, checkMatchBlock(d, matchBlock)...)
 		case *ast.SSHHostBlock:
 			hostBlock := entry.(*ast.SSHHostBlock)
-			errs = append(errs, checkHostBlock(hostBlock)...)
+			errs = append(errs, checkHostBlock(d, hostBlock)...)
 		}
 
 	}
@@ -37,6 +37,7 @@ func analyzeStructureIsValid(
 }
 
 func checkOption(
+	d *sshconfig.SSHDocument,
 	option *ast.SSHOption,
 	block ast.SSHBlock,
 ) []common.LSPError {
@@ -78,13 +79,10 @@ func checkOption(
 	} else {
 		errs = append(errs, checkIsUsingDoubleQuotes(option.OptionValue.Value, option.OptionValue.LocationRange)...)
 		errs = append(errs, checkQuotesAreClosed(option.OptionValue.Value, option.OptionValue.LocationRange)...)
-
-		invalidValues := docOption.CheckIsValid(option.OptionValue.Value.Value)
-
 		errs = append(
 			errs,
 			utils.Map(
-				invalidValues,
+				docOption.CheckIsValid(option.OptionValue.Value.Value),
 				func(invalidValue *docvalues.InvalidValue) common.LSPError {
 					err := docvalues.LSPErrorFromInvalidValue(option.Start.Line, *invalidValue)
 					err.ShiftCharacter(option.OptionValue.Start.Character)
@@ -109,6 +107,7 @@ func checkOption(
 }
 
 func checkMatchBlock(
+	d *sshconfig.SSHDocument,
 	matchBlock *ast.SSHMatchBlock,
 ) []common.LSPError {
 	errs := make([]common.LSPError, 0)
@@ -117,13 +116,14 @@ func checkMatchBlock(
 	for it.Next() {
 		option := it.Value().(*ast.SSHOption)
 
-		errs = append(errs, checkOption(option, matchBlock)...)
+		errs = append(errs, checkOption(d, option, matchBlock)...)
 	}
 
 	return errs
 }
 
 func checkHostBlock(
+	d *sshconfig.SSHDocument,
 	hostBlock *ast.SSHHostBlock,
 ) []common.LSPError {
 	errs := make([]common.LSPError, 0)
@@ -132,7 +132,7 @@ func checkHostBlock(
 	for it.Next() {
 		option := it.Value().(*ast.SSHOption)
 
-		errs = append(errs, checkOption(option, hostBlock)...)
+		errs = append(errs, checkOption(d, option, hostBlock)...)
 	}
 
 	return errs

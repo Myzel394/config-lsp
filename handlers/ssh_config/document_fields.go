@@ -29,3 +29,10 @@ func (d SSHDocument) FindOptionsByName(
 	return options
 }
 
+func (d SSHDocument) DoesOptionExist(
+	name string,
+	block ast.SSHBlock,
+) bool {
+	return d.FindOptionByNameAndBlock(name, block) != nil
+}
+

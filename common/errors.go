@@ -1,6 +1,8 @@
 package common
 
 import (
+	"config-lsp/utils"
+
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
@@ -29,4 +31,13 @@ type SyntaxError struct {
 
 func (s SyntaxError) Error() string {
 	return s.Message
+}
+
+func ErrsToDiagnostics(errs []LSPError) []protocol.Diagnostic {
+	return utils.Map(
+		errs,
+		func(err LSPError) protocol.Diagnostic {
+			return err.ToDiagnostic()
+		},
+	)
 }

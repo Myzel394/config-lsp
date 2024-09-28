@@ -22,11 +22,15 @@ func GetRootCompletions(
 
 	for key, option := range fields.Options {
 		// Check for duplicates
-		if d.FindOptionByNameAndBlock(key, parentBlock) != nil && !utils.KeyExists(fields.AllowedDuplicateOptions, key) {
+		if d.DoesOptionExist(key, parentBlock) && !utils.KeyExists(fields.AllowedDuplicateOptions, key) {
 			continue
 		}
 
 		if parentBlock != nil && parentBlock.GetBlockType() == ast.SSHBlockTypeHost && utils.KeyExists(fields.HostDisallowedOptions, key) {
+			continue
+		}
+
+		if parentBlock == nil && utils.KeyExists(fields.GlobalDisallowedOptions, key) {
 			continue
 		}
 

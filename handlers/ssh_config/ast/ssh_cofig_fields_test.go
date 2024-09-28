@@ -16,6 +16,8 @@ Host laptop
 
 Match originalhost laptop exec "[[ $(/usr/bin/dig +short laptop.lan) == '' ]]"
     HostName laptop.sdn
+
+
 	`)
 
 	p := NewSSHConfig()
@@ -50,5 +52,10 @@ Match originalhost laptop exec "[[ $(/usr/bin/dig +short laptop.lan) == '' ]]"
 
 	if !(thirdBlock.GetLocation().Start.Line == 5) {
 		t.Errorf("Expected line 3, got %v", thirdBlock.GetLocation().Start.Line)
+	}
+
+	fourthOption, fourthBlock := p.FindOption(8)
+	if !(fourthOption == nil && fourthBlock == thirdBlock) {
+		t.Errorf("Expected no option and same block, got %v and %v", fourthOption, fourthBlock)
 	}
 }
