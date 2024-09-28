@@ -14,7 +14,7 @@ var whitespacePattern = regexp.MustCompile(`\S+`)
 func NewSSHIndexes() *SSHIndexes {
 	return &SSHIndexes{
 		AllOptionsPerName: make(map[string](map[ast.SSHBlock]([]*ast.SSHOption)), 0),
-		Includes: make([]*SSHIndexIncludeLine, 0),
+		Includes:          make([]*SSHIndexIncludeLine, 0),
 	}
 }
 
@@ -78,9 +78,9 @@ func CreateIndexes(config ast.SSHConfig) (*SSHIndexes, []common.LSPError) {
 		}
 
 		indexes.Includes[includeOption.Start.Line] = &SSHIndexIncludeLine{
-			Values:     paths,
-			Option:     includeOption,
-			Block: block,
+			Values: paths,
+			Option: includeOption,
+			Block:  block,
 		}
 	}
 

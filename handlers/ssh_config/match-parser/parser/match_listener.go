@@ -14,17 +14,26 @@ type MatchListener interface {
 	// EnterMatchEntry is called when entering the matchEntry production.
 	EnterMatchEntry(c *MatchEntryContext)
 
+	// EnterEntrySingle is called when entering the entrySingle production.
+	EnterEntrySingle(c *EntrySingleContext)
+
+	// EnterEntryWithValue is called when entering the entryWithValue production.
+	EnterEntryWithValue(c *EntryWithValueContext)
+
 	// EnterSeparator is called when entering the separator production.
 	EnterSeparator(c *SeparatorContext)
-
-	// EnterCriteria is called when entering the criteria production.
-	EnterCriteria(c *CriteriaContext)
 
 	// EnterValues is called when entering the values production.
 	EnterValues(c *ValuesContext)
 
 	// EnterValue is called when entering the value production.
 	EnterValue(c *ValueContext)
+
+	// EnterCriteriaSingle is called when entering the criteriaSingle production.
+	EnterCriteriaSingle(c *CriteriaSingleContext)
+
+	// EnterCriteriaWithValue is called when entering the criteriaWithValue production.
+	EnterCriteriaWithValue(c *CriteriaWithValueContext)
 
 	// EnterString is called when entering the string production.
 	EnterString(c *StringContext)
@@ -35,17 +44,26 @@ type MatchListener interface {
 	// ExitMatchEntry is called when exiting the matchEntry production.
 	ExitMatchEntry(c *MatchEntryContext)
 
+	// ExitEntrySingle is called when exiting the entrySingle production.
+	ExitEntrySingle(c *EntrySingleContext)
+
+	// ExitEntryWithValue is called when exiting the entryWithValue production.
+	ExitEntryWithValue(c *EntryWithValueContext)
+
 	// ExitSeparator is called when exiting the separator production.
 	ExitSeparator(c *SeparatorContext)
-
-	// ExitCriteria is called when exiting the criteria production.
-	ExitCriteria(c *CriteriaContext)
 
 	// ExitValues is called when exiting the values production.
 	ExitValues(c *ValuesContext)
 
 	// ExitValue is called when exiting the value production.
 	ExitValue(c *ValueContext)
+
+	// ExitCriteriaSingle is called when exiting the criteriaSingle production.
+	ExitCriteriaSingle(c *CriteriaSingleContext)
+
+	// ExitCriteriaWithValue is called when exiting the criteriaWithValue production.
+	ExitCriteriaWithValue(c *CriteriaWithValueContext)
 
 	// ExitString is called when exiting the string production.
 	ExitString(c *StringContext)

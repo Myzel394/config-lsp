@@ -33,39 +33,52 @@ var MatchParserStaticData struct {
 func matchParserInit() {
 	staticData := &MatchParserStaticData
 	staticData.LiteralNames = []string{
-		"", "','",
+		"", "','", "", "", "", "", "", "", "", "", "", "", "", "", "", "'\"'",
 	}
 	staticData.SymbolicNames = []string{
-		"", "COMMA", "STRING", "WHITESPACE", "QUOTED_STRING",
+		"", "COMMA", "ALL", "CANONICAL", "FINAL", "EXEC", "LOCALNETWORK", "HOST",
+		"ORIGINALHOST", "TAGGED", "USER", "LOCALUSER", "STRING", "WHITESPACE",
+		"QUOTED_STRING", "QUOTE",
 	}
 	staticData.RuleNames = []string{
-		"root", "matchEntry", "separator", "criteria", "values", "value", "string",
+		"root", "matchEntry", "entrySingle", "entryWithValue", "separator",
+		"values", "value", "criteriaSingle", "criteriaWithValue", "string",
 	}
 	staticData.PredictionContextCache = antlr.NewPredictionContextCache()
 	staticData.serializedATN = []int32{
-		4, 1, 4, 56, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7, 4,
-		2, 5, 7, 5, 2, 6, 7, 6, 1, 0, 3, 0, 16, 8, 0, 1, 0, 1, 0, 3, 0, 20, 8,
-		0, 5, 0, 22, 8, 0, 10, 0, 12, 0, 25, 9, 0, 1, 0, 1, 0, 1, 1, 1, 1, 3, 1,
-		31, 8, 1, 1, 1, 3, 1, 34, 8, 1, 1, 2, 1, 2, 1, 3, 1, 3, 1, 4, 3, 4, 41,
-		8, 4, 1, 4, 1, 4, 3, 4, 45, 8, 4, 5, 4, 47, 8, 4, 10, 4, 12, 4, 50, 9,
-		4, 1, 5, 1, 5, 1, 6, 1, 6, 1, 6, 0, 0, 7, 0, 2, 4, 6, 8, 10, 12, 0, 1,
-		2, 0, 2, 2, 4, 4, 56, 0, 15, 1, 0, 0, 0, 2, 28, 1, 0, 0, 0, 4, 35, 1, 0,
-		0, 0, 6, 37, 1, 0, 0, 0, 8, 40, 1, 0, 0, 0, 10, 51, 1, 0, 0, 0, 12, 53,
-		1, 0, 0, 0, 14, 16, 3, 2, 1, 0, 15, 14, 1, 0, 0, 0, 15, 16, 1, 0, 0, 0,
-		16, 23, 1, 0, 0, 0, 17, 19, 5, 3, 0, 0, 18, 20, 3, 2, 1, 0, 19, 18, 1,
-		0, 0, 0, 19, 20, 1, 0, 0, 0, 20, 22, 1, 0, 0, 0, 21, 17, 1, 0, 0, 0, 22,
-		25, 1, 0, 0, 0, 23, 21, 1, 0, 0, 0, 23, 24, 1, 0, 0, 0, 24, 26, 1, 0, 0,
-		0, 25, 23, 1, 0, 0, 0, 26, 27, 5, 0, 0, 1, 27, 1, 1, 0, 0, 0, 28, 30, 3,
-		6, 3, 0, 29, 31, 3, 4, 2, 0, 30, 29, 1, 0, 0, 0, 30, 31, 1, 0, 0, 0, 31,
-		33, 1, 0, 0, 0, 32, 34, 3, 8, 4, 0, 33, 32, 1, 0, 0, 0, 33, 34, 1, 0, 0,
-		0, 34, 3, 1, 0, 0, 0, 35, 36, 5, 3, 0, 0, 36, 5, 1, 0, 0, 0, 37, 38, 3,
-		12, 6, 0, 38, 7, 1, 0, 0, 0, 39, 41, 3, 10, 5, 0, 40, 39, 1, 0, 0, 0, 40,
-		41, 1, 0, 0, 0, 41, 48, 1, 0, 0, 0, 42, 44, 5, 1, 0, 0, 43, 45, 3, 10,
-		5, 0, 44, 43, 1, 0, 0, 0, 44, 45, 1, 0, 0, 0, 45, 47, 1, 0, 0, 0, 46, 42,
-		1, 0, 0, 0, 47, 50, 1, 0, 0, 0, 48, 46, 1, 0, 0, 0, 48, 49, 1, 0, 0, 0,
-		49, 9, 1, 0, 0, 0, 50, 48, 1, 0, 0, 0, 51, 52, 3, 12, 6, 0, 52, 11, 1,
-		0, 0, 0, 53, 54, 7, 0, 0, 0, 54, 13, 1, 0, 0, 0, 8, 15, 19, 23, 30, 33,
-		40, 44, 48,
+		4, 1, 15, 80, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7,
+		4, 2, 5, 7, 5, 2, 6, 7, 6, 2, 7, 7, 7, 2, 8, 7, 8, 2, 9, 7, 9, 1, 0, 3,
+		0, 22, 8, 0, 1, 0, 1, 0, 3, 0, 26, 8, 0, 5, 0, 28, 8, 0, 10, 0, 12, 0,
+		31, 9, 0, 1, 0, 1, 0, 1, 1, 1, 1, 3, 1, 37, 8, 1, 1, 2, 1, 2, 1, 3, 1,
+		3, 3, 3, 43, 8, 3, 1, 3, 3, 3, 46, 8, 3, 1, 4, 1, 4, 1, 5, 3, 5, 51, 8,
+		5, 1, 5, 1, 5, 3, 5, 55, 8, 5, 5, 5, 57, 8, 5, 10, 5, 12, 5, 60, 9, 5,
+		1, 6, 1, 6, 1, 7, 3, 7, 65, 8, 7, 1, 7, 1, 7, 3, 7, 69, 8, 7, 1, 8, 3,
+		8, 72, 8, 8, 1, 8, 1, 8, 3, 8, 76, 8, 8, 1, 9, 1, 9, 1, 9, 0, 0, 10, 0,
+		2, 4, 6, 8, 10, 12, 14, 16, 18, 0, 3, 1, 0, 2, 4, 1, 0, 5, 11, 2, 0, 12,
+		12, 14, 14, 82, 0, 21, 1, 0, 0, 0, 2, 36, 1, 0, 0, 0, 4, 38, 1, 0, 0, 0,
+		6, 40, 1, 0, 0, 0, 8, 47, 1, 0, 0, 0, 10, 50, 1, 0, 0, 0, 12, 61, 1, 0,
+		0, 0, 14, 64, 1, 0, 0, 0, 16, 71, 1, 0, 0, 0, 18, 77, 1, 0, 0, 0, 20, 22,
+		3, 2, 1, 0, 21, 20, 1, 0, 0, 0, 21, 22, 1, 0, 0, 0, 22, 29, 1, 0, 0, 0,
+		23, 25, 5, 13, 0, 0, 24, 26, 3, 2, 1, 0, 25, 24, 1, 0, 0, 0, 25, 26, 1,
+		0, 0, 0, 26, 28, 1, 0, 0, 0, 27, 23, 1, 0, 0, 0, 28, 31, 1, 0, 0, 0, 29,
+		27, 1, 0, 0, 0, 29, 30, 1, 0, 0, 0, 30, 32, 1, 0, 0, 0, 31, 29, 1, 0, 0,
+		0, 32, 33, 5, 0, 0, 1, 33, 1, 1, 0, 0, 0, 34, 37, 3, 4, 2, 0, 35, 37, 3,
+		6, 3, 0, 36, 34, 1, 0, 0, 0, 36, 35, 1, 0, 0, 0, 37, 3, 1, 0, 0, 0, 38,
+		39, 3, 14, 7, 0, 39, 5, 1, 0, 0, 0, 40, 42, 3, 16, 8, 0, 41, 43, 3, 8,
+		4, 0, 42, 41, 1, 0, 0, 0, 42, 43, 1, 0, 0, 0, 43, 45, 1, 0, 0, 0, 44, 46,
+		3, 10, 5, 0, 45, 44, 1, 0, 0, 0, 45, 46, 1, 0, 0, 0, 46, 7, 1, 0, 0, 0,
+		47, 48, 5, 13, 0, 0, 48, 9, 1, 0, 0, 0, 49, 51, 3, 12, 6, 0, 50, 49, 1,
+		0, 0, 0, 50, 51, 1, 0, 0, 0, 51, 58, 1, 0, 0, 0, 52, 54, 5, 1, 0, 0, 53,
+		55, 3, 12, 6, 0, 54, 53, 1, 0, 0, 0, 54, 55, 1, 0, 0, 0, 55, 57, 1, 0,
+		0, 0, 56, 52, 1, 0, 0, 0, 57, 60, 1, 0, 0, 0, 58, 56, 1, 0, 0, 0, 58, 59,
+		1, 0, 0, 0, 59, 11, 1, 0, 0, 0, 60, 58, 1, 0, 0, 0, 61, 62, 3, 18, 9, 0,
+		62, 13, 1, 0, 0, 0, 63, 65, 5, 15, 0, 0, 64, 63, 1, 0, 0, 0, 64, 65, 1,
+		0, 0, 0, 65, 66, 1, 0, 0, 0, 66, 68, 7, 0, 0, 0, 67, 69, 5, 15, 0, 0, 68,
+		67, 1, 0, 0, 0, 68, 69, 1, 0, 0, 0, 69, 15, 1, 0, 0, 0, 70, 72, 5, 15,
+		0, 0, 71, 70, 1, 0, 0, 0, 71, 72, 1, 0, 0, 0, 72, 73, 1, 0, 0, 0, 73, 75,
+		7, 1, 0, 0, 74, 76, 5, 15, 0, 0, 75, 74, 1, 0, 0, 0, 75, 76, 1, 0, 0, 0,
+		76, 17, 1, 0, 0, 0, 77, 78, 7, 2, 0, 0, 78, 19, 1, 0, 0, 0, 13, 21, 25,
+		29, 36, 42, 45, 50, 54, 58, 64, 68, 71, 75,
 	}
 	deserializer := antlr.NewATNDeserializer(nil)
 	staticData.atn = deserializer.Deserialize(staticData.serializedATN)
@@ -105,20 +118,34 @@ func NewMatchParser(input antlr.TokenStream) *MatchParser {
 const (
 	MatchParserEOF           = antlr.TokenEOF
 	MatchParserCOMMA         = 1
-	MatchParserSTRING        = 2
-	MatchParserWHITESPACE    = 3
-	MatchParserQUOTED_STRING = 4
+	MatchParserALL           = 2
+	MatchParserCANONICAL     = 3
+	MatchParserFINAL         = 4
+	MatchParserEXEC          = 5
+	MatchParserLOCALNETWORK  = 6
+	MatchParserHOST          = 7
+	MatchParserORIGINALHOST  = 8
+	MatchParserTAGGED        = 9
+	MatchParserUSER          = 10
+	MatchParserLOCALUSER     = 11
+	MatchParserSTRING        = 12
+	MatchParserWHITESPACE    = 13
+	MatchParserQUOTED_STRING = 14
+	MatchParserQUOTE         = 15
 )
 
 // MatchParser rules.
 const (
-	MatchParserRULE_root       = 0
-	MatchParserRULE_matchEntry = 1
-	MatchParserRULE_separator  = 2
-	MatchParserRULE_criteria   = 3
-	MatchParserRULE_values     = 4
-	MatchParserRULE_value      = 5
-	MatchParserRULE_string     = 6
+	MatchParserRULE_root              = 0
+	MatchParserRULE_matchEntry        = 1
+	MatchParserRULE_entrySingle       = 2
+	MatchParserRULE_entryWithValue    = 3
+	MatchParserRULE_separator         = 4
+	MatchParserRULE_values            = 5
+	MatchParserRULE_value             = 6
+	MatchParserRULE_criteriaSingle    = 7
+	MatchParserRULE_criteriaWithValue = 8
+	MatchParserRULE_string            = 9
 )
 
 // IRootContext is an interface to support dynamic dispatch.
@@ -250,21 +277,21 @@ func (p *MatchParser) Root() (localctx IRootContext) {
 	var _la int
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(15)
+	p.SetState(21)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
 	}
 	_la = p.GetTokenStream().LA(1)
 
-	if _la == MatchParserSTRING || _la == MatchParserQUOTED_STRING {
+	if (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&36860) != 0 {
 		{
-			p.SetState(14)
+			p.SetState(20)
 			p.MatchEntry()
 		}
 
 	}
-	p.SetState(23)
+	p.SetState(29)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -273,29 +300,29 @@ func (p *MatchParser) Root() (localctx IRootContext) {
 
 	for _la == MatchParserWHITESPACE {
 		{
-			p.SetState(17)
+			p.SetState(23)
 			p.Match(MatchParserWHITESPACE)
 			if p.HasError() {
 				// Recognition error - abort rule
 				goto errorExit
 			}
 		}
-		p.SetState(19)
+		p.SetState(25)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
 		}
 		_la = p.GetTokenStream().LA(1)
 
-		if _la == MatchParserSTRING || _la == MatchParserQUOTED_STRING {
+		if (int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&36860) != 0 {
 			{
-				p.SetState(18)
+				p.SetState(24)
 				p.MatchEntry()
 			}
 
 		}
 
-		p.SetState(25)
+		p.SetState(31)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
@@ -303,7 +330,7 @@ func (p *MatchParser) Root() (localctx IRootContext) {
 		_la = p.GetTokenStream().LA(1)
 	}
 	{
-		p.SetState(26)
+		p.SetState(32)
 		p.Match(MatchParserEOF)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -332,9 +359,8 @@ type IMatchEntryContext interface {
 	GetParser() antlr.Parser
 
 	// Getter signatures
-	Criteria() ICriteriaContext
-	Separator() ISeparatorContext
-	Values() IValuesContext
+	EntrySingle() IEntrySingleContext
+	EntryWithValue() IEntryWithValueContext
 
 	// IsMatchEntryContext differentiates from other interfaces.
 	IsMatchEntryContext()
@@ -372,10 +398,10 @@ func NewMatchEntryContext(parser antlr.Parser, parent antlr.ParserRuleContext, i
 
 func (s *MatchEntryContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *MatchEntryContext) Criteria() ICriteriaContext {
+func (s *MatchEntryContext) EntrySingle() IEntrySingleContext {
 	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(ICriteriaContext); ok {
+		if _, ok := ctx.(IEntrySingleContext); ok {
 			t = ctx.(antlr.RuleContext)
 			break
 		}
@@ -385,13 +411,13 @@ func (s *MatchEntryContext) Criteria() ICriteriaContext {
 		return nil
 	}
 
-	return t.(ICriteriaContext)
+	return t.(IEntrySingleContext)
 }
 
-func (s *MatchEntryContext) Separator() ISeparatorContext {
+func (s *MatchEntryContext) EntryWithValue() IEntryWithValueContext {
 	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(ISeparatorContext); ok {
+		if _, ok := ctx.(IEntryWithValueContext); ok {
 			t = ctx.(antlr.RuleContext)
 			break
 		}
@@ -401,23 +427,7 @@ func (s *MatchEntryContext) Separator() ISeparatorContext {
 		return nil
 	}
 
-	return t.(ISeparatorContext)
-}
-
-func (s *MatchEntryContext) Values() IValuesContext {
-	var t antlr.RuleContext
-	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IValuesContext); ok {
-			t = ctx.(antlr.RuleContext)
-			break
-		}
-	}
-
-	if t == nil {
-		return nil
-	}
-
-	return t.(IValuesContext)
+	return t.(IEntryWithValueContext)
 }
 
 func (s *MatchEntryContext) GetRuleContext() antlr.RuleContext {
@@ -443,29 +453,290 @@ func (s *MatchEntryContext) ExitRule(listener antlr.ParseTreeListener) {
 func (p *MatchParser) MatchEntry() (localctx IMatchEntryContext) {
 	localctx = NewMatchEntryContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 2, MatchParserRULE_matchEntry)
+	p.SetState(36)
+	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
+
+	switch p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 3, p.GetParserRuleContext()) {
+	case 1:
+		p.EnterOuterAlt(localctx, 1)
+		{
+			p.SetState(34)
+			p.EntrySingle()
+		}
+
+	case 2:
+		p.EnterOuterAlt(localctx, 2)
+		{
+			p.SetState(35)
+			p.EntryWithValue()
+		}
+
+	case antlr.ATNInvalidAltNumber:
+		goto errorExit
+	}
+
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
+	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
+}
+
+// IEntrySingleContext is an interface to support dynamic dispatch.
+type IEntrySingleContext interface {
+	antlr.ParserRuleContext
+
+	// GetParser returns the parser.
+	GetParser() antlr.Parser
+
+	// Getter signatures
+	CriteriaSingle() ICriteriaSingleContext
+
+	// IsEntrySingleContext differentiates from other interfaces.
+	IsEntrySingleContext()
+}
+
+type EntrySingleContext struct {
+	antlr.BaseParserRuleContext
+	parser antlr.Parser
+}
+
+func NewEmptyEntrySingleContext() *EntrySingleContext {
+	var p = new(EntrySingleContext)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = MatchParserRULE_entrySingle
+	return p
+}
+
+func InitEmptyEntrySingleContext(p *EntrySingleContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = MatchParserRULE_entrySingle
+}
+
+func (*EntrySingleContext) IsEntrySingleContext() {}
+
+func NewEntrySingleContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *EntrySingleContext {
+	var p = new(EntrySingleContext)
+
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
+
+	p.parser = parser
+	p.RuleIndex = MatchParserRULE_entrySingle
+
+	return p
+}
+
+func (s *EntrySingleContext) GetParser() antlr.Parser { return s.parser }
+
+func (s *EntrySingleContext) CriteriaSingle() ICriteriaSingleContext {
+	var t antlr.RuleContext
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(ICriteriaSingleContext); ok {
+			t = ctx.(antlr.RuleContext)
+			break
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(ICriteriaSingleContext)
+}
+
+func (s *EntrySingleContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *EntrySingleContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+	return antlr.TreesStringTree(s, ruleNames, recog)
+}
+
+func (s *EntrySingleContext) EnterRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(MatchListener); ok {
+		listenerT.EnterEntrySingle(s)
+	}
+}
+
+func (s *EntrySingleContext) ExitRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(MatchListener); ok {
+		listenerT.ExitEntrySingle(s)
+	}
+}
+
+func (p *MatchParser) EntrySingle() (localctx IEntrySingleContext) {
+	localctx = NewEntrySingleContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 4, MatchParserRULE_entrySingle)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(28)
-		p.Criteria()
+		p.SetState(38)
+		p.CriteriaSingle()
 	}
-	p.SetState(30)
+
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
+	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
+}
+
+// IEntryWithValueContext is an interface to support dynamic dispatch.
+type IEntryWithValueContext interface {
+	antlr.ParserRuleContext
+
+	// GetParser returns the parser.
+	GetParser() antlr.Parser
+
+	// Getter signatures
+	CriteriaWithValue() ICriteriaWithValueContext
+	Separator() ISeparatorContext
+	Values() IValuesContext
+
+	// IsEntryWithValueContext differentiates from other interfaces.
+	IsEntryWithValueContext()
+}
+
+type EntryWithValueContext struct {
+	antlr.BaseParserRuleContext
+	parser antlr.Parser
+}
+
+func NewEmptyEntryWithValueContext() *EntryWithValueContext {
+	var p = new(EntryWithValueContext)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = MatchParserRULE_entryWithValue
+	return p
+}
+
+func InitEmptyEntryWithValueContext(p *EntryWithValueContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = MatchParserRULE_entryWithValue
+}
+
+func (*EntryWithValueContext) IsEntryWithValueContext() {}
+
+func NewEntryWithValueContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *EntryWithValueContext {
+	var p = new(EntryWithValueContext)
+
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
+
+	p.parser = parser
+	p.RuleIndex = MatchParserRULE_entryWithValue
+
+	return p
+}
+
+func (s *EntryWithValueContext) GetParser() antlr.Parser { return s.parser }
+
+func (s *EntryWithValueContext) CriteriaWithValue() ICriteriaWithValueContext {
+	var t antlr.RuleContext
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(ICriteriaWithValueContext); ok {
+			t = ctx.(antlr.RuleContext)
+			break
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(ICriteriaWithValueContext)
+}
+
+func (s *EntryWithValueContext) Separator() ISeparatorContext {
+	var t antlr.RuleContext
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(ISeparatorContext); ok {
+			t = ctx.(antlr.RuleContext)
+			break
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(ISeparatorContext)
+}
+
+func (s *EntryWithValueContext) Values() IValuesContext {
+	var t antlr.RuleContext
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IValuesContext); ok {
+			t = ctx.(antlr.RuleContext)
+			break
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IValuesContext)
+}
+
+func (s *EntryWithValueContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *EntryWithValueContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+	return antlr.TreesStringTree(s, ruleNames, recog)
+}
+
+func (s *EntryWithValueContext) EnterRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(MatchListener); ok {
+		listenerT.EnterEntryWithValue(s)
+	}
+}
+
+func (s *EntryWithValueContext) ExitRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(MatchListener); ok {
+		listenerT.ExitEntryWithValue(s)
+	}
+}
+
+func (p *MatchParser) EntryWithValue() (localctx IEntryWithValueContext) {
+	localctx = NewEntryWithValueContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 6, MatchParserRULE_entryWithValue)
+	p.EnterOuterAlt(localctx, 1)
+	{
+		p.SetState(40)
+		p.CriteriaWithValue()
+	}
+	p.SetState(42)
 	p.GetErrorHandler().Sync(p)
 
-	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 3, p.GetParserRuleContext()) == 1 {
+	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 4, p.GetParserRuleContext()) == 1 {
 		{
-			p.SetState(29)
+			p.SetState(41)
 			p.Separator()
 		}
 
 	} else if p.HasError() { // JIM
 		goto errorExit
 	}
-	p.SetState(33)
+	p.SetState(45)
 	p.GetErrorHandler().Sync(p)
 
-	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 4, p.GetParserRuleContext()) == 1 {
+	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 5, p.GetParserRuleContext()) == 1 {
 		{
-			p.SetState(32)
+			p.SetState(44)
 			p.Values()
 		}
 
@@ -558,119 +829,15 @@ func (s *SeparatorContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *MatchParser) Separator() (localctx ISeparatorContext) {
 	localctx = NewSeparatorContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 4, MatchParserRULE_separator)
+	p.EnterRule(localctx, 8, MatchParserRULE_separator)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(35)
+		p.SetState(47)
 		p.Match(MatchParserWHITESPACE)
 		if p.HasError() {
 			// Recognition error - abort rule
 			goto errorExit
 		}
-	}
-
-errorExit:
-	if p.HasError() {
-		v := p.GetError()
-		localctx.SetException(v)
-		p.GetErrorHandler().ReportError(p, v)
-		p.GetErrorHandler().Recover(p, v)
-		p.SetError(nil)
-	}
-	p.ExitRule()
-	return localctx
-	goto errorExit // Trick to prevent compiler error if the label is not used
-}
-
-// ICriteriaContext is an interface to support dynamic dispatch.
-type ICriteriaContext interface {
-	antlr.ParserRuleContext
-
-	// GetParser returns the parser.
-	GetParser() antlr.Parser
-
-	// Getter signatures
-	String_() IStringContext
-
-	// IsCriteriaContext differentiates from other interfaces.
-	IsCriteriaContext()
-}
-
-type CriteriaContext struct {
-	antlr.BaseParserRuleContext
-	parser antlr.Parser
-}
-
-func NewEmptyCriteriaContext() *CriteriaContext {
-	var p = new(CriteriaContext)
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = MatchParserRULE_criteria
-	return p
-}
-
-func InitEmptyCriteriaContext(p *CriteriaContext) {
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
-	p.RuleIndex = MatchParserRULE_criteria
-}
-
-func (*CriteriaContext) IsCriteriaContext() {}
-
-func NewCriteriaContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *CriteriaContext {
-	var p = new(CriteriaContext)
-
-	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
-
-	p.parser = parser
-	p.RuleIndex = MatchParserRULE_criteria
-
-	return p
-}
-
-func (s *CriteriaContext) GetParser() antlr.Parser { return s.parser }
-
-func (s *CriteriaContext) String_() IStringContext {
-	var t antlr.RuleContext
-	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IStringContext); ok {
-			t = ctx.(antlr.RuleContext)
-			break
-		}
-	}
-
-	if t == nil {
-		return nil
-	}
-
-	return t.(IStringContext)
-}
-
-func (s *CriteriaContext) GetRuleContext() antlr.RuleContext {
-	return s
-}
-
-func (s *CriteriaContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
-	return antlr.TreesStringTree(s, ruleNames, recog)
-}
-
-func (s *CriteriaContext) EnterRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(MatchListener); ok {
-		listenerT.EnterCriteria(s)
-	}
-}
-
-func (s *CriteriaContext) ExitRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(MatchListener); ok {
-		listenerT.ExitCriteria(s)
-	}
-}
-
-func (p *MatchParser) Criteria() (localctx ICriteriaContext) {
-	localctx = NewCriteriaContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 6, MatchParserRULE_criteria)
-	p.EnterOuterAlt(localctx, 1)
-	{
-		p.SetState(37)
-		p.String_()
 	}
 
 errorExit:
@@ -806,11 +973,11 @@ func (s *ValuesContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *MatchParser) Values() (localctx IValuesContext) {
 	localctx = NewValuesContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 8, MatchParserRULE_values)
+	p.EnterRule(localctx, 10, MatchParserRULE_values)
 	var _la int
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(40)
+	p.SetState(50)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -819,12 +986,12 @@ func (p *MatchParser) Values() (localctx IValuesContext) {
 
 	if _la == MatchParserSTRING || _la == MatchParserQUOTED_STRING {
 		{
-			p.SetState(39)
+			p.SetState(49)
 			p.Value()
 		}
 
 	}
-	p.SetState(48)
+	p.SetState(58)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -833,14 +1000,14 @@ func (p *MatchParser) Values() (localctx IValuesContext) {
 
 	for _la == MatchParserCOMMA {
 		{
-			p.SetState(42)
+			p.SetState(52)
 			p.Match(MatchParserCOMMA)
 			if p.HasError() {
 				// Recognition error - abort rule
 				goto errorExit
 			}
 		}
-		p.SetState(44)
+		p.SetState(54)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
@@ -849,13 +1016,13 @@ func (p *MatchParser) Values() (localctx IValuesContext) {
 
 		if _la == MatchParserSTRING || _la == MatchParserQUOTED_STRING {
 			{
-				p.SetState(43)
+				p.SetState(53)
 				p.Value()
 			}
 
 		}
 
-		p.SetState(50)
+		p.SetState(60)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
@@ -960,11 +1127,345 @@ func (s *ValueContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *MatchParser) Value() (localctx IValueContext) {
 	localctx = NewValueContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 10, MatchParserRULE_value)
+	p.EnterRule(localctx, 12, MatchParserRULE_value)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(51)
+		p.SetState(61)
 		p.String_()
+	}
+
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
+	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
+}
+
+// ICriteriaSingleContext is an interface to support dynamic dispatch.
+type ICriteriaSingleContext interface {
+	antlr.ParserRuleContext
+
+	// GetParser returns the parser.
+	GetParser() antlr.Parser
+
+	// Getter signatures
+	ALL() antlr.TerminalNode
+	CANONICAL() antlr.TerminalNode
+	FINAL() antlr.TerminalNode
+	AllQUOTE() []antlr.TerminalNode
+	QUOTE(i int) antlr.TerminalNode
+
+	// IsCriteriaSingleContext differentiates from other interfaces.
+	IsCriteriaSingleContext()
+}
+
+type CriteriaSingleContext struct {
+	antlr.BaseParserRuleContext
+	parser antlr.Parser
+}
+
+func NewEmptyCriteriaSingleContext() *CriteriaSingleContext {
+	var p = new(CriteriaSingleContext)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = MatchParserRULE_criteriaSingle
+	return p
+}
+
+func InitEmptyCriteriaSingleContext(p *CriteriaSingleContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = MatchParserRULE_criteriaSingle
+}
+
+func (*CriteriaSingleContext) IsCriteriaSingleContext() {}
+
+func NewCriteriaSingleContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *CriteriaSingleContext {
+	var p = new(CriteriaSingleContext)
+
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
+
+	p.parser = parser
+	p.RuleIndex = MatchParserRULE_criteriaSingle
+
+	return p
+}
+
+func (s *CriteriaSingleContext) GetParser() antlr.Parser { return s.parser }
+
+func (s *CriteriaSingleContext) ALL() antlr.TerminalNode {
+	return s.GetToken(MatchParserALL, 0)
+}
+
+func (s *CriteriaSingleContext) CANONICAL() antlr.TerminalNode {
+	return s.GetToken(MatchParserCANONICAL, 0)
+}
+
+func (s *CriteriaSingleContext) FINAL() antlr.TerminalNode {
+	return s.GetToken(MatchParserFINAL, 0)
+}
+
+func (s *CriteriaSingleContext) AllQUOTE() []antlr.TerminalNode {
+	return s.GetTokens(MatchParserQUOTE)
+}
+
+func (s *CriteriaSingleContext) QUOTE(i int) antlr.TerminalNode {
+	return s.GetToken(MatchParserQUOTE, i)
+}
+
+func (s *CriteriaSingleContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *CriteriaSingleContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+	return antlr.TreesStringTree(s, ruleNames, recog)
+}
+
+func (s *CriteriaSingleContext) EnterRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(MatchListener); ok {
+		listenerT.EnterCriteriaSingle(s)
+	}
+}
+
+func (s *CriteriaSingleContext) ExitRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(MatchListener); ok {
+		listenerT.ExitCriteriaSingle(s)
+	}
+}
+
+func (p *MatchParser) CriteriaSingle() (localctx ICriteriaSingleContext) {
+	localctx = NewCriteriaSingleContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 14, MatchParserRULE_criteriaSingle)
+	var _la int
+
+	p.EnterOuterAlt(localctx, 1)
+	p.SetState(64)
+	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
+	_la = p.GetTokenStream().LA(1)
+
+	if _la == MatchParserQUOTE {
+		{
+			p.SetState(63)
+			p.Match(MatchParserQUOTE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
+		}
+
+	}
+	{
+		p.SetState(66)
+		_la = p.GetTokenStream().LA(1)
+
+		if !((int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&28) != 0) {
+			p.GetErrorHandler().RecoverInline(p)
+		} else {
+			p.GetErrorHandler().ReportMatch(p)
+			p.Consume()
+		}
+	}
+	p.SetState(68)
+	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
+	_la = p.GetTokenStream().LA(1)
+
+	if _la == MatchParserQUOTE {
+		{
+			p.SetState(67)
+			p.Match(MatchParserQUOTE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
+		}
+
+	}
+
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
+	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
+}
+
+// ICriteriaWithValueContext is an interface to support dynamic dispatch.
+type ICriteriaWithValueContext interface {
+	antlr.ParserRuleContext
+
+	// GetParser returns the parser.
+	GetParser() antlr.Parser
+
+	// Getter signatures
+	EXEC() antlr.TerminalNode
+	LOCALNETWORK() antlr.TerminalNode
+	HOST() antlr.TerminalNode
+	ORIGINALHOST() antlr.TerminalNode
+	TAGGED() antlr.TerminalNode
+	USER() antlr.TerminalNode
+	LOCALUSER() antlr.TerminalNode
+	AllQUOTE() []antlr.TerminalNode
+	QUOTE(i int) antlr.TerminalNode
+
+	// IsCriteriaWithValueContext differentiates from other interfaces.
+	IsCriteriaWithValueContext()
+}
+
+type CriteriaWithValueContext struct {
+	antlr.BaseParserRuleContext
+	parser antlr.Parser
+}
+
+func NewEmptyCriteriaWithValueContext() *CriteriaWithValueContext {
+	var p = new(CriteriaWithValueContext)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = MatchParserRULE_criteriaWithValue
+	return p
+}
+
+func InitEmptyCriteriaWithValueContext(p *CriteriaWithValueContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = MatchParserRULE_criteriaWithValue
+}
+
+func (*CriteriaWithValueContext) IsCriteriaWithValueContext() {}
+
+func NewCriteriaWithValueContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *CriteriaWithValueContext {
+	var p = new(CriteriaWithValueContext)
+
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
+
+	p.parser = parser
+	p.RuleIndex = MatchParserRULE_criteriaWithValue
+
+	return p
+}
+
+func (s *CriteriaWithValueContext) GetParser() antlr.Parser { return s.parser }
+
+func (s *CriteriaWithValueContext) EXEC() antlr.TerminalNode {
+	return s.GetToken(MatchParserEXEC, 0)
+}
+
+func (s *CriteriaWithValueContext) LOCALNETWORK() antlr.TerminalNode {
+	return s.GetToken(MatchParserLOCALNETWORK, 0)
+}
+
+func (s *CriteriaWithValueContext) HOST() antlr.TerminalNode {
+	return s.GetToken(MatchParserHOST, 0)
+}
+
+func (s *CriteriaWithValueContext) ORIGINALHOST() antlr.TerminalNode {
+	return s.GetToken(MatchParserORIGINALHOST, 0)
+}
+
+func (s *CriteriaWithValueContext) TAGGED() antlr.TerminalNode {
+	return s.GetToken(MatchParserTAGGED, 0)
+}
+
+func (s *CriteriaWithValueContext) USER() antlr.TerminalNode {
+	return s.GetToken(MatchParserUSER, 0)
+}
+
+func (s *CriteriaWithValueContext) LOCALUSER() antlr.TerminalNode {
+	return s.GetToken(MatchParserLOCALUSER, 0)
+}
+
+func (s *CriteriaWithValueContext) AllQUOTE() []antlr.TerminalNode {
+	return s.GetTokens(MatchParserQUOTE)
+}
+
+func (s *CriteriaWithValueContext) QUOTE(i int) antlr.TerminalNode {
+	return s.GetToken(MatchParserQUOTE, i)
+}
+
+func (s *CriteriaWithValueContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *CriteriaWithValueContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+	return antlr.TreesStringTree(s, ruleNames, recog)
+}
+
+func (s *CriteriaWithValueContext) EnterRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(MatchListener); ok {
+		listenerT.EnterCriteriaWithValue(s)
+	}
+}
+
+func (s *CriteriaWithValueContext) ExitRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(MatchListener); ok {
+		listenerT.ExitCriteriaWithValue(s)
+	}
+}
+
+func (p *MatchParser) CriteriaWithValue() (localctx ICriteriaWithValueContext) {
+	localctx = NewCriteriaWithValueContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 16, MatchParserRULE_criteriaWithValue)
+	var _la int
+
+	p.EnterOuterAlt(localctx, 1)
+	p.SetState(71)
+	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
+	_la = p.GetTokenStream().LA(1)
+
+	if _la == MatchParserQUOTE {
+		{
+			p.SetState(70)
+			p.Match(MatchParserQUOTE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
+		}
+
+	}
+	{
+		p.SetState(73)
+		_la = p.GetTokenStream().LA(1)
+
+		if !((int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&4064) != 0) {
+			p.GetErrorHandler().RecoverInline(p)
+		} else {
+			p.GetErrorHandler().ReportMatch(p)
+			p.Consume()
+		}
+	}
+	p.SetState(75)
+	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
+	_la = p.GetTokenStream().LA(1)
+
+	if _la == MatchParserQUOTE {
+		{
+			p.SetState(74)
+			p.Match(MatchParserQUOTE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
+		}
+
 	}
 
 errorExit:
@@ -1057,12 +1558,12 @@ func (s *StringContext) ExitRule(listener antlr.ParseTreeListener) {
 
 func (p *MatchParser) String_() (localctx IStringContext) {
 	localctx = NewStringContext(p, p.GetParserRuleContext(), p.GetState())
-	p.EnterRule(localctx, 12, MatchParserRULE_string)
+	p.EnterRule(localctx, 18, MatchParserRULE_string)
 	var _la int
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(53)
+		p.SetState(77)
 		_la = p.GetTokenStream().LA(1)
 
 		if !(_la == MatchParserSTRING || _la == MatchParserQUOTED_STRING) {

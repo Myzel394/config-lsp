@@ -2,15 +2,15 @@ package fields
 
 var AllowedDuplicateOptions = map[string]struct{}{
 	"CertificateFile": {},
-	"Match": {},
-	"Host": {},
+	"Match":           {},
+	"Host":            {},
 }
 
-// A list of 
+// A list of
 // <Option name> -> <List of fields that need to be present for the option>
 var DependentFields = map[string][]string{
 	"CanonicalDomains": {"CanonicalizeHostname"},
-	"ControlPersist": {"ControlMaster"},
+	"ControlPersist":   {"ControlMaster"},
 }
 
 var HostDisallowedOptions = map[string]struct{}{
@@ -18,4 +18,3 @@ var HostDisallowedOptions = map[string]struct{}{
 }
 
 var GlobalDisallowedOptions = map[string]struct{}{}
-

@@ -50,5 +50,3 @@ User root
 		t.Fatalf("Expected 1 error, got %v", errors)
 	}
 }
-
-

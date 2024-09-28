@@ -27,7 +27,7 @@ func analyzeQuotesAreValid(
 func checkIsUsingDoubleQuotes(
 	value commonparser.ParsedString,
 	valueRange common.LocationRange,
- ) []common.LSPError {
+) []common.LSPError {
 	singleQuotePosition := strings.Index(value.Raw, "'")
 
 	if singleQuotePosition != -1 {

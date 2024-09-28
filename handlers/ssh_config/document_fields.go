@@ -35,4 +35,3 @@ func (d SSHDocument) DoesOptionExist(
 ) bool {
 	return d.FindOptionByNameAndBlock(name, block) != nil
 }
-

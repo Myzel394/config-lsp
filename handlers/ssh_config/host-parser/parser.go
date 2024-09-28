@@ -2,8 +2,8 @@ package hostparser
 
 import (
 	"config-lsp/common"
-	"regexp"
 	commonparser "config-lsp/common/parser"
+	"regexp"
 )
 
 func NewHost() *Host {
@@ -36,11 +36,11 @@ func (h *Host) Parse(
 		host := HostValue{
 			LocationRange: common.LocationRange{
 				Start: common.Location{
-					Line: line,
+					Line:      line,
 					Character: startCharacter + uint32(startIndex),
 				},
 				End: common.Location{
-					Line: line,
+					Line:      line,
 					Character: startCharacter + uint32(endIndex),
 				},
 			},

@@ -13,4 +13,3 @@ type HostValue struct {
 	common.LocationRange
 	Value commonparser.ParsedString
 }
-

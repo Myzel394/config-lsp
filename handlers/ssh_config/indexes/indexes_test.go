@@ -44,7 +44,7 @@ Host nas01
 		opts[firstMatchBlock][0].OptionValue.Value.Value == "/nfs/shared/users/nixcraft/keys/server1/id_rsa") {
 		t.Errorf("Expected 3 IdentityFile options, but got %v", opts)
 	}
-		
+
 }
 
 // TODO: Add check for options that require other options to be present

@@ -33,17 +33,23 @@ func (s *BaseMatchListener) EnterMatchEntry(ctx *MatchEntryContext) {}
 // ExitMatchEntry is called when production matchEntry is exited.
 func (s *BaseMatchListener) ExitMatchEntry(ctx *MatchEntryContext) {}
 
+// EnterEntrySingle is called when production entrySingle is entered.
+func (s *BaseMatchListener) EnterEntrySingle(ctx *EntrySingleContext) {}
+
+// ExitEntrySingle is called when production entrySingle is exited.
+func (s *BaseMatchListener) ExitEntrySingle(ctx *EntrySingleContext) {}
+
+// EnterEntryWithValue is called when production entryWithValue is entered.
+func (s *BaseMatchListener) EnterEntryWithValue(ctx *EntryWithValueContext) {}
+
+// ExitEntryWithValue is called when production entryWithValue is exited.
+func (s *BaseMatchListener) ExitEntryWithValue(ctx *EntryWithValueContext) {}
+
 // EnterSeparator is called when production separator is entered.
 func (s *BaseMatchListener) EnterSeparator(ctx *SeparatorContext) {}
 
 // ExitSeparator is called when production separator is exited.
 func (s *BaseMatchListener) ExitSeparator(ctx *SeparatorContext) {}
-
-// EnterCriteria is called when production criteria is entered.
-func (s *BaseMatchListener) EnterCriteria(ctx *CriteriaContext) {}
-
-// ExitCriteria is called when production criteria is exited.
-func (s *BaseMatchListener) ExitCriteria(ctx *CriteriaContext) {}
 
 // EnterValues is called when production values is entered.
 func (s *BaseMatchListener) EnterValues(ctx *ValuesContext) {}
@@ -56,6 +62,18 @@ func (s *BaseMatchListener) EnterValue(ctx *ValueContext) {}
 
 // ExitValue is called when production value is exited.
 func (s *BaseMatchListener) ExitValue(ctx *ValueContext) {}
+
+// EnterCriteriaSingle is called when production criteriaSingle is entered.
+func (s *BaseMatchListener) EnterCriteriaSingle(ctx *CriteriaSingleContext) {}
+
+// ExitCriteriaSingle is called when production criteriaSingle is exited.
+func (s *BaseMatchListener) ExitCriteriaSingle(ctx *CriteriaSingleContext) {}
+
+// EnterCriteriaWithValue is called when production criteriaWithValue is entered.
+func (s *BaseMatchListener) EnterCriteriaWithValue(ctx *CriteriaWithValueContext) {}
+
+// ExitCriteriaWithValue is called when production criteriaWithValue is exited.
+func (s *BaseMatchListener) ExitCriteriaWithValue(ctx *CriteriaWithValueContext) {}
 
 // EnterString is called when production string is entered.
 func (s *BaseMatchListener) EnterString(ctx *StringContext) {}

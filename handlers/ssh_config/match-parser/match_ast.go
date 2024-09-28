@@ -12,6 +12,7 @@ type Match struct {
 type MatchCriteriaType string
 
 const (
+	MatchCriteriaTypeAll          MatchCriteriaType = "all"
 	MatchCriteriaTypeCanonical    MatchCriteriaType = "canonical"
 	MatchCriteriaTypeFinal        MatchCriteriaType = "final"
 	MatchCriteriaTypeExec         MatchCriteriaType = "exec"

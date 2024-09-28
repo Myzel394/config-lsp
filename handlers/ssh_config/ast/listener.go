@@ -176,9 +176,9 @@ func (s *sshParserListener) ExitEntry(ctx *parser.EntryContext) {
 
 			hostBlock := &SSHHostBlock{
 				LocationRange: location,
-				HostOption: s.sshContext.currentOption,
-				HostValue: host,
-				Options: treemap.NewWith(gods.UInt32Comparator),
+				HostOption:    s.sshContext.currentOption,
+				HostValue:     host,
+				Options:       treemap.NewWith(gods.UInt32Comparator),
 			}
 
 			s.Config.Options.Put(

@@ -140,4 +140,135 @@ func TestIncompleteBetweenValuesExample(
 	}
 }
 
+func TestSimpleSingleCriteriaExample(
+	t *testing.T,
+) {
+	input := "all"
 
+	match := NewMatch()
+	errors := match.Parse(input, 0, 0)
+
+	if len(errors) > 0 {
+		t.Fatalf("Expected no errors, but got %v", errors)
+	}
+
+	if !(len(match.Entries) == 1) {
+		t.Errorf("Expected 1 entries, but got %v", len(match.Entries))
+	}
+
+	if !(match.Entries[0].Criteria.Type == MatchCriteriaTypeAll) {
+		t.Errorf("Expected criteria to be of type 'all', but got %v", match.Entries[0])
+	}
+
+	if !(match.Entries[0].Values == nil) {
+		t.Errorf("Expected values to be nil, but got %v", match.Entries[0].Values)
+	}
+}
+
+func TestMixedCriteriaComplexExample(
+	t *testing.T,
+) {
+	input := "all user root localnetwork 192.168.1.1 final"
+
+	match := NewMatch()
+	errors := match.Parse(input, 0, 0)
+
+	if len(errors) > 0 {
+		t.Fatalf("Expected no errors, but got %v", errors)
+	}
+
+	if !(len(match.Entries) == 4) {
+		t.Errorf("Expected 4 entries, but got %v", len(match.Entries))
+	}
+
+	if !(match.Entries[0].Criteria.Type == MatchCriteriaTypeAll) {
+		t.Errorf("Expected criteria to be of type 'all', but got %v", match.Entries[0])
+	}
+
+	if !(match.Entries[1].Criteria.Type == MatchCriteriaTypeUser) {
+		t.Errorf("Expected criteria to be of type 'user', but got %v", match.Entries[1])
+	}
+
+	if !(match.Entries[2].Criteria.Type == MatchCriteriaTypeLocalNetwork) {
+		t.Errorf("Expected criteria to be of type 'localnetwork', but got %v", match.Entries[2])
+	}
+
+	if !(match.Entries[3].Criteria.Type == MatchCriteriaTypeFinal) {
+		t.Errorf("Expected criteria to be of type 'final', but got %v", match.Entries[3])
+	}
+
+	if !(match.Entries[1].Values.Values[0].Value.Value == "root") {
+		t.Errorf("Expected value to be 'root', but got %v", match.Entries[1].Values.Values[0])
+	}
+
+	if !(match.Entries[2].Values.Values[0].Value.Value == "192.168.1.1") {
+		t.Errorf("Expected value to be '192.168.1.1', but got %v", match.Entries[2].Values.Values[0])
+	}
+}
+
+func TestIncompleteWithSingleCriteriaExample(
+	t *testing.T,
+) {
+	input := `all `
+
+	match := NewMatch()
+	errors := match.Parse(input, 0, 0)
+
+	if len(errors) > 0 {
+		t.Fatalf("Expected no errors, but got %v", errors)
+	}
+
+	if !(len(match.Entries) == 1) {
+		t.Errorf("Expected 1 entries, but got %v", len(match.Entries))
+	}
+
+	if !(match.Entries[0].Criteria.Type == MatchCriteriaTypeAll) {
+		t.Errorf("Expected Host, but got %v", match.Entries[0])
+	}
+
+	if !(match.Entries[0].Values == nil) {
+		t.Errorf("Expected nil, but got %v", match.Entries[0].Values)
+	}
+}
+
+func TestIncompleteWithValueCriteriaExample(
+	t *testing.T,
+) {
+	input := `user `
+
+	match := NewMatch()
+	errors := match.Parse(input, 0, 0)
+
+	if len(errors) > 0 {
+		t.Fatalf("Expected no errors, but got %v", errors)
+	}
+
+	if !(len(match.Entries) == 1) {
+		t.Errorf("Expected 1 entries, but got %v", len(match.Entries))
+	}
+
+	if !(match.Entries[0].Criteria.Type == MatchCriteriaTypeUser) {
+		t.Errorf("Expected User, but got %v", match.Entries[0])
+	}
+
+	if match.Entries[0].Values == nil {
+		t.Errorf("Expected slice, but got %v", match.Entries[0].Values)
+	}
+}
+
+func TestIncompleteExampleWithNotFullyTypedCriteriaExample(
+	t *testing.T,
+) {
+	input := `us`
+
+	match := NewMatch()
+	errors := match.Parse(input, 0, 0)
+
+	if !(len(errors) == 1) {
+		t.Fatalf("Expected no errors, but got %v", errors)
+	}
+
+	if !(len(match.Entries) == 0) {
+		t.Errorf("Expected 0 entries, but got %v", len(match.Entries))
+	}
+}

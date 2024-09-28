@@ -5,7 +5,6 @@ import (
 	"config-lsp/handlers/ssh_config/ast"
 )
 
-
 type ValidPath string
 
 func (v ValidPath) AsURI() string {
@@ -21,9 +20,9 @@ type SSHIndexIncludeValue struct {
 }
 
 type SSHIndexIncludeLine struct {
-	Values     []*SSHIndexIncludeValue
-	Option     *ast.SSHOption
-	Block ast.SSHBlock
+	Values []*SSHIndexIncludeValue
+	Option *ast.SSHOption
+	Block  ast.SSHBlock
 }
 
 type SSHIndexes struct {
@@ -33,4 +32,3 @@ type SSHIndexes struct {
 
 	BlockRanges map[uint32]ast.SSHBlock
 }
-

@@ -62,25 +62,13 @@ func (s *matchParserListener) ExitMatchEntry(ctx *parser.MatchEntryContext) {
 	s.matchContext.currentEntry = nil
 }
 
-var availableCriteria = map[string]MatchCriteriaType{
-	string(MatchCriteriaTypeCanonical):    MatchCriteriaTypeCanonical,
-	string(MatchCriteriaTypeFinal):        MatchCriteriaTypeFinal,
-	string(MatchCriteriaTypeExec):         MatchCriteriaTypeExec,
-	string(MatchCriteriaTypeLocalNetwork): MatchCriteriaTypeLocalNetwork,
-	string(MatchCriteriaTypeHost):         MatchCriteriaTypeHost,
-	string(MatchCriteriaTypeOriginalHost): MatchCriteriaTypeOriginalHost,
-	string(MatchCriteriaTypeTagged):       MatchCriteriaTypeTagged,
-	string(MatchCriteriaTypeUser):         MatchCriteriaTypeUser,
-	string(MatchCriteriaTypeLocalUser):    MatchCriteriaTypeLocalUser,
-}
-
-func (s *matchParserListener) EnterCriteria(ctx *parser.CriteriaContext) {
+func (s *matchParserListener) EnterCriteriaSingle(ctx *parser.CriteriaSingleContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter)
 	location.ChangeBothLines(s.matchContext.line)
 
 	value := commonparser.ParseRawString(ctx.GetText(), commonparser.FullFeatures)
 
-	criteria, found := availableCriteria[value.Value]
+	criteria, found := availableCriteria[strings.ToLower(value.Value)]
 
 	if !found {
 		s.Errors = append(s.Errors, common.LSPError{
@@ -95,6 +83,42 @@ func (s *matchParserListener) EnterCriteria(ctx *parser.CriteriaContext) {
 		Type:          criteria,
 		Value:         value,
 	}
+}
+
+func (s *matchParserListener) EnterCriteriaWithValue(ctx *parser.CriteriaWithValueContext) {
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter)
+	location.ChangeBothLines(s.matchContext.line)
+
+	value := commonparser.ParseRawString(ctx.GetText(), commonparser.FullFeatures)
+
+	criteria, found := availableCriteria[strings.ToLower(value.Value)]
+
+	if !found {
+		s.Errors = append(s.Errors, common.LSPError{
+			Range: location,
+			Err:   errors.New(fmt.Sprintf("Unknown criteria: %s; It must be one of: %s", ctx.GetText(), strings.Join(utils.KeysOfMap(availableCriteria), ", "))),
+		})
+		return
+	}
+
+	s.matchContext.currentEntry.Criteria = MatchCriteria{
+		LocationRange: location,
+		Type:          criteria,
+		Value:         value,
+	}
+}
+
+var availableCriteria = map[string]MatchCriteriaType{
+	string(MatchCriteriaTypeAll):          MatchCriteriaTypeAll,
+	string(MatchCriteriaTypeCanonical):    MatchCriteriaTypeCanonical,
+	string(MatchCriteriaTypeFinal):        MatchCriteriaTypeFinal,
+	string(MatchCriteriaTypeExec):         MatchCriteriaTypeExec,
+	string(MatchCriteriaTypeLocalNetwork): MatchCriteriaTypeLocalNetwork,
+	string(MatchCriteriaTypeHost):         MatchCriteriaTypeHost,
+	string(MatchCriteriaTypeOriginalHost): MatchCriteriaTypeOriginalHost,
+	string(MatchCriteriaTypeTagged):       MatchCriteriaTypeTagged,
+	string(MatchCriteriaTypeUser):         MatchCriteriaTypeUser,
+	string(MatchCriteriaTypeLocalUser):    MatchCriteriaTypeLocalUser,
 }
 
 func (s *matchParserListener) EnterSeparator(ctx *parser.SeparatorContext) {

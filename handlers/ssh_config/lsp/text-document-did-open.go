@@ -3,8 +3,8 @@ package lsp
 import (
 	"config-lsp/common"
 	"config-lsp/handlers/ssh_config"
-	"config-lsp/handlers/ssh_config/ast"
 	"config-lsp/handlers/ssh_config/analyzer"
+	"config-lsp/handlers/ssh_config/ast"
 	"config-lsp/utils"
 
 	"github.com/tliron/glsp"
