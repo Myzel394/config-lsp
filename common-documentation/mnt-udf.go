@@ -2,7 +2,7 @@ package commondocumentation
 
 import docvalues "config-lsp/doc-values"
 
-var UdfDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
+var UdfDocumentationAssignable = map[docvalues.EnumString]docvalues.DeprecatedValue{
 	docvalues.CreateEnumStringWithDoc(
 		"uid",
 		"Make all files in the filesystem belong to the given user. uid=forget can be specified independently of (or usually in addition to) uid=<user> and results in UDF not storing uids to the media. In fact the recorded uid is the 32-bit overflow uid -1 as defined by the UDF standard. The value is given as either <user> which is a valid user name or the corresponding decimal user id, or the special string 'forget'.",

@@ -81,13 +81,13 @@ func GetOptionCompletions(
 	}
 
 	if entry.OptionValue == nil {
-		return option.FetchCompletions("", 0), nil
+		return option.DeprecatedFetchCompletions("", 0), nil
 	}
 
 	// Hello wo|rld
 	line := entry.OptionValue.Value.Raw
 	// NEW: docvalues index
-	return option.FetchCompletions(
+	return option.DeprecatedFetchCompletions(
 		line,
 		common.DeprecatedImprovedCursorToIndex(
 			cursor,

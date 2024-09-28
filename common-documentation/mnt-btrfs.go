@@ -4,7 +4,7 @@ import docvalues "config-lsp/doc-values"
 
 var maxInlineMin = 2048
 
-var BtrfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
+var BtrfsDocumentationAssignable = map[docvalues.EnumString]docvalues.DeprecatedValue{
 	docvalues.CreateEnumStringWithDoc(
 		"check_int_print_mask",
 		"These debugging options control the behavior of the integrity checking module (the BTRFS_FS_CHECK_INTEGRITY config option required). The main goal is to verify that all blocks from a given transaction period are properly linked.",
@@ -71,7 +71,7 @@ var BtrfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
 		"max_inline",
 		"Specify the maximum amount of space, that can be inlined in a metadata b-tree leaf. The value is specified in bytes, optionally with a K suffix (case insensitive). In practice, this value is limited by the filesystem block size (named sectorsize at mkfs time), and memory page size of the system. In case of sectorsize limit, there's some space unavailable due to leaf headers. For example, a 4Ki",
 	): docvalues.OrValue{
-		Values: []docvalues.Value{
+		Values: []docvalues.DeprecatedValue{
 			docvalues.EnumValue{
 				EnforceValues: true,
 				Values: []docvalues.EnumString{

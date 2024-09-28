@@ -88,7 +88,7 @@ func (e *FstabLine) CheckIsValid() []protocol.Diagnostic {
 	diagnostics := make([]protocol.Diagnostic, 0)
 
 	if e.Fields.Spec != nil {
-		errors := fstabdocumentation.SpecField.CheckIsValid(e.Fields.Spec.Value)
+		errors := fstabdocumentation.SpecField.DeprecatedCheckIsValid(e.Fields.Spec.Value)
 
 		if len(errors) > 0 {
 			diagnostics = append(
@@ -99,7 +99,7 @@ func (e *FstabLine) CheckIsValid() []protocol.Diagnostic {
 	}
 
 	if e.Fields.MountPoint != nil {
-		errors := fstabdocumentation.MountPointField.CheckIsValid(e.Fields.MountPoint.Value)
+		errors := fstabdocumentation.MountPointField.DeprecatedCheckIsValid(e.Fields.MountPoint.Value)
 
 		if len(errors) > 0 {
 			diagnostics = append(
@@ -112,7 +112,7 @@ func (e *FstabLine) CheckIsValid() []protocol.Diagnostic {
 	var fileSystemType string = ""
 
 	if e.Fields.FilesystemType != nil {
-		errors := fstabdocumentation.FileSystemTypeField.CheckIsValid(e.Fields.FilesystemType.Value)
+		errors := fstabdocumentation.FileSystemTypeField.DeprecatedCheckIsValid(e.Fields.FilesystemType.Value)
 
 		if len(errors) > 0 {
 			diagnostics = append(
@@ -125,7 +125,7 @@ func (e *FstabLine) CheckIsValid() []protocol.Diagnostic {
 	}
 
 	if e.Fields.Options != nil && fileSystemType != "" {
-		var optionsField docvalues.Value
+		var optionsField docvalues.DeprecatedValue
 
 		if foundField, found := fstabdocumentation.MountOptionsMapField[fileSystemType]; found {
 			optionsField = foundField
@@ -133,7 +133,7 @@ func (e *FstabLine) CheckIsValid() []protocol.Diagnostic {
 			optionsField = fstabdocumentation.DefaultMountOptionsField
 		}
 
-		errors := optionsField.CheckIsValid(e.Fields.Options.Value)
+		errors := optionsField.DeprecatedCheckIsValid(e.Fields.Options.Value)
 
 		if len(errors) > 0 {
 			diagnostics = append(
@@ -144,7 +144,7 @@ func (e *FstabLine) CheckIsValid() []protocol.Diagnostic {
 	}
 
 	if e.Fields.Freq != nil {
-		errors := fstabdocumentation.FreqField.CheckIsValid(e.Fields.Freq.Value)
+		errors := fstabdocumentation.FreqField.DeprecatedCheckIsValid(e.Fields.Freq.Value)
 
 		if len(errors) > 0 {
 			diagnostics = append(
@@ -155,7 +155,7 @@ func (e *FstabLine) CheckIsValid() []protocol.Diagnostic {
 	}
 
 	if e.Fields.Pass != nil {
-		errors := fstabdocumentation.PassField.CheckIsValid(e.Fields.Pass.Value)
+		errors := fstabdocumentation.PassField.DeprecatedCheckIsValid(e.Fields.Pass.Value)
 
 		if len(errors) > 0 {
 			diagnostics = append(

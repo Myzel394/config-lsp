@@ -25,7 +25,7 @@ func (v TimeFormatValue) GetTypeDescription() []string {
 	return []string{"Time value"}
 }
 
-func (v TimeFormatValue) CheckIsValid(value string) []*InvalidValue {
+func (v TimeFormatValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	if !timeFormatCheckPattern.MatchString(value) {
 		return []*InvalidValue{
 			{
@@ -56,7 +56,7 @@ func calculateInSeconds(value int, unit string) int {
 	}
 }
 
-func (v TimeFormatValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v TimeFormatValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	completions := make([]protocol.CompletionItem, 0)
 
 	if line != "" && !timeFormatCompletionsPattern.MatchString(line) {
@@ -106,6 +106,6 @@ func (v TimeFormatValue) FetchCompletions(line string, cursor uint32) []protocol
 	return completions
 }
 
-func (v TimeFormatValue) FetchHoverInfo(line string, cursor uint32) []string {
+func (v TimeFormatValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	return []string{}
 }

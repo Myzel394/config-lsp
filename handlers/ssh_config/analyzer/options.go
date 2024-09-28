@@ -82,7 +82,7 @@ func checkOption(
 		errs = append(
 			errs,
 			utils.Map(
-				docOption.CheckIsValid(option.OptionValue.Value.Value),
+				docOption.DeprecatedCheckIsValid(option.OptionValue.Value.Value),
 				func(invalidValue *docvalues.InvalidValue) common.LSPError {
 					err := docvalues.LSPErrorFromInvalidValue(option.Start.Line, *invalidValue)
 					err.ShiftCharacter(option.OptionValue.Start.Character)
@@ -137,4 +137,3 @@ func checkHostBlock(
 
 	return errs
 }
-

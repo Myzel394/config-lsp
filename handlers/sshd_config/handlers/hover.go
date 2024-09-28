@@ -55,7 +55,7 @@ func GetHoverInfoForOption(
 
 	if option.OptionValue != nil && option.OptionValue.ContainsPosition(index) {
 		line := option.OptionValue.Value.Raw
-		contents := docValue.FetchHoverInfo(
+		contents := docValue.DeprecatedFetchHoverInfo(
 			line,
 			uint32(option.OptionValue.Start.GetRelativeIndexPosition(index)),
 		)

@@ -5,7 +5,7 @@ import (
 	"config-lsp/utils"
 )
 
-var UmsdosDocumentationAssignable = utils.FilterMap(MsdosDocumentationAssignable, func(key docvalues.EnumString, value docvalues.Value) bool {
+var UmsdosDocumentationAssignable = utils.FilterMap(MsdosDocumentationAssignable, func(key docvalues.EnumString, value docvalues.DeprecatedValue) bool {
 	// `dotsOK` is explicitly not supported
 	if key.InsertText == "dotsOK" {
 		return false

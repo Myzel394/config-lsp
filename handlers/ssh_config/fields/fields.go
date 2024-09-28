@@ -27,8 +27,8 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"AddKeysToAgent": {
 		Documentation: `Specifies whether keys should be automatically added to a running ssh-agent(1). If this option is set to yes and a key is loaded from a file, the key and its passphrase are added to the agent with the default lifetime, as if by ssh-add(1). If this option is set to ask, ssh(1) will require confirmation using the SSH_ASKPASS program before adding a key (see ssh-add(1) for details). If this option is set to confirm, each use of the key must be confirmed, as if the -c option was specified to ssh-add(1). If this option is set to no, no keys are added to the agent. Alternately, this option may be specified as a time interval using the format described in the TIME FORMATS section of sshd_config(5) to specify the key's lifetime in ssh-agent(1), after which it will automatically be removed. The argument must be no (the default), yes, confirm (optionally followed by a time interval), ask or a time interval.`,
-		Value:         docvalues.OrValue{
-			Values: []docvalues.Value{
+		Value: docvalues.OrValue{
+			Values: []docvalues.DeprecatedValue{
 				docvalues.EnumValue{
 					EnforceValues: true,
 					Values: []docvalues.EnumString{
@@ -59,17 +59,17 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"BindAddress": {
 		Documentation: `Use the specified address on the local machine as the source address of the connection. Only useful on systems with more than one address.`,
-		Value:         docvalues.IPAddressValue{
-			AllowIPv4: true,
-			AllowIPv6: true,
+		Value: docvalues.IPAddressValue{
+			AllowIPv4:  true,
+			AllowIPv6:  true,
 			AllowRange: false,
 		},
 	},
 	"BindInterface": {
 		Documentation: `Use the address of the specified interface on the local machine as the source address of the connection.`,
-		Value:         docvalues.IPAddressValue{
-			AllowIPv4: false,
-			AllowIPv6: false,
+		Value: docvalues.IPAddressValue{
+			AllowIPv4:  false,
+			AllowIPv6:  false,
 			AllowRange: false,
 		},
 	},
@@ -96,9 +96,9 @@ var Options = map[string]docvalues.DocumentationValue{
         '*.a.example.com:*.b.example.com,*.c.example.com' will allow hostnames matching '*.a.example.com' to be canonicalized to names in the '*.b.example.com' or '*.c.example.com' domains.
     A single argument of 'none' causes no CNAMEs to be considered for canonicalization. This is the default behaviour.`,
 		Value: docvalues.ArrayValue{
-			Separator: ",",
+			Separator:           ",",
 			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
-			SubValue: docvalues.StringValue{},
+			SubValue:            docvalues.StringValue{},
 		},
 	},
 	"CASignatureAlgorithms": {
@@ -167,7 +167,7 @@ Note that in all the above cases, terminating an inactive session does not guara
 Moreover, terminating an inactive channel or session does not necessarily close the SSH connection, nor does it prevent a client from requesting another channel of the same type. In particular, expiring an inactive forwarding session does not prevent another identical forwarding from being subsequently created.
 
 The default is not to expire channels of any type for inactivity.`,
-	Value: docvalues.ArrayValue{
+		Value: docvalues.ArrayValue{
 			Separator:           " ",
 			DuplicatesExtractor: &channelTimeoutExtractor,
 			SubValue: docvalues.KeyValueAssignmentValue{
@@ -192,7 +192,7 @@ The default is not to expire channels of any type for inactivity.`,
 	},
 	"CheckHostIP": {
 		Documentation: `If set to yes, ssh(1) will additionally check the host IP address in the known_hosts file. This allows it to detect if a host key changed due to DNS spoofing and will add addresses of destination hosts to ~/.ssh/known_hosts in the process, regardless of the setting of StrictHostKeyChecking. If the option is set to no (the default), the check will not be executed.`,
-		Value: booleanEnumValue,
+		Value:         booleanEnumValue,
 	},
 	"Ciphers": {
 		Documentation: `Specifies the ciphers allowed and their order of preference. Multiple ciphers must be comma-separated. If the specified list begins with a
@@ -236,7 +236,7 @@ aes128-gcm@openssh.com,aes256-gcm@openssh.com
 	},
 	"Compression": {
 		Documentation: `Specifies whether to use compression. The argument must be yes or no (the default).`,
-		Value: booleanEnumValue,
+		Value:         booleanEnumValue,
 	},
 	"ConnectionAttempts": {
 		Documentation: `Specifies the number of tries (one per second) to make before exiting. The argument must be an integer. This may be useful in scripts if the connection sometimes fails. The default is 1.`,
@@ -264,12 +264,12 @@ aes128-gcm@openssh.com,aes256-gcm@openssh.com
 	},
 	"ControlPath": {
 		Documentation: `Specify the path to the control socket used for connection sharing as described in the ControlMaster section above or the string none to disable connection sharing. Arguments to ControlPath may use the tilde syntax to refer to a user's home directory, the tokens described in the TOKENS section and environment variables as described in the ENVIRONMENT VARIABLES section. It is recommended that any ControlPath used for opportunistic connection sharing include at least %h, %p, and %r (or alternatively %C) and be placed in a directory that is not writable by other users. This ensures that shared connections are uniquely identified.`,
-		Value: docvalues.StringValue{},
+		Value:         docvalues.StringValue{},
 	},
 	"ControlPersist": {
 		Documentation: `When used in conjunction with ControlMaster, specifies that the master connection should remain open in the background (waiting for future client connections) after the initial client connection has been closed. If set to no (the default), then the master connection will not be placed into the background, and will close as soon as the initial client connection is closed. If set to yes or 0, then the master connection will remain in the background indefinitely (until killed or closed via a mechanism such as the 'ssh -O exit'). If set to a time in seconds, or a time in any of the formats documented in sshd_config(5), then the backgrounded master connection will automatically terminate after it has remained idle (with no client connections) for the specified time.`,
 		Value: docvalues.OrValue{
-			Values: []docvalues.Value{
+			Values: []docvalues.DeprecatedValue{
 				booleanEnumValue,
 				docvalues.TimeFormatValue{},
 				docvalues.PositiveNumberValue(),
@@ -281,12 +281,12 @@ aes128-gcm@openssh.com,aes256-gcm@openssh.com
         [bind_address:]port. IPv6 addresses can be specified by enclosing addresses in square brackets. By default, the local port is bound in accordance with the GatewayPorts setting. However, an explicit bind_address may be used to bind the connection to a specific address. The bind_address of localhost indicates that the listening port be bound for local use only, while an empty address or ‘*’ indicates that the port should be available from all interfaces.
     Currently the SOCKS4 and SOCKS5 protocols are supported, and ssh(1) will act as a SOCKS server. Multiple forwardings may be specified, and additional forwardings can be given on the command line. Only the superuser can forward privileged ports.`,
 		Value: docvalues.OrValue{
-			Values: []docvalues.Value{
+			Values: []docvalues.DeprecatedValue{
 				docvalues.NumberValue{Min: &ZERO, Max: &MAX_PORT},
 				docvalues.KeyValueAssignmentValue{
 					Key: docvalues.IPAddressValue{
-						AllowIPv4: true,
-						AllowIPv6: true,
+						AllowIPv4:  true,
+						AllowIPv6:  true,
 						AllowRange: false,
 					},
 					Value: docvalues.NumberValue{Min: &ZERO, Max: &MAX_PORT},
@@ -296,7 +296,7 @@ aes128-gcm@openssh.com,aes256-gcm@openssh.com
 	},
 	"EnableEscapeCommandline": {
 		Documentation: `Enables the command line option in the EscapeChar menu for interactive sessions (default ‘~C’). By default, the command line is disabled.`,
-		Value: docvalues.StringValue{},
+		Value:         docvalues.StringValue{},
 	},
 	"EnableSSHKeysign": {
 		Documentation: `Setting this option to yes in the global client configuration file /etc/ssh/ssh_config enables the use of the helper program ssh-keysign(8) during HostbasedAuthentication. The argument must be yes or no (the default). This option should be placed in the non-hostspecific section. See ssh-keysign(8) for more information.`,
@@ -304,15 +304,15 @@ aes128-gcm@openssh.com,aes256-gcm@openssh.com
 	},
 	"EscapeChar": {
 		Documentation: `Sets the escape character (default: ‘~’). The escape character can also be set on the command line. The argument should be a single character, ‘^’ followed by a letter, or none to disable the escape character entirely (making the connection transparent for binary data).`,
-		Value: docvalues.StringValue{},
+		Value:         docvalues.StringValue{},
 	},
 	"ExitOnForwardFailure": {
 		Documentation: `Specifies whether ssh(1) should terminate the connection if it cannot set up all requested dynamic, tunnel, local, and remote port forwardings, (e.g. if either end is unable to bind and listen on a specified port). Note that ExitOnForwardFailure does not apply to connections made over port forwardings and will not, for example, cause ssh(1) to exit if TCP connections to the ultimate forwarding destination fail. The argument must be yes or no (the default).`,
-		Value: booleanEnumValue,
+		Value:         booleanEnumValue,
 	},
 	"FingerprintHash": {
 		Documentation: `Specifies the hash algorithm used when displaying key fingerprints. Valid options are: md5 and sha256 (the default).`,
-		Value:         docvalues.EnumValue{
+		Value: docvalues.EnumValue{
 			EnforceValues: true,
 			Values: []docvalues.EnumString{
 				docvalues.CreateEnumString("md5"),
@@ -328,8 +328,8 @@ aes128-gcm@openssh.com,aes256-gcm@openssh.com
 	"ForwardAgent": {
 		Documentation: `Specifies whether the connection to the authentication agent (if any) will be forwarded to the remote machine. The argument may be yes, no (the default), an explicit path to an agent socket or the name of an environment variable (beginning with ‘$’) in which to find the path.
     Agent forwarding should be enabled with caution. Users with the ability to bypass file permissions on the remote host (for the agent's Unix-domain socket) can access the local agent through the forwarded connection. An attacker cannot obtain key material from the agent, however they can perform operations on the keys that enable them to authenticate using the identities loaded into the agent.`,
-	Value: docvalues.OrValue{
-			Values: []docvalues.Value{
+		Value: docvalues.OrValue{
+			Values: []docvalues.DeprecatedValue{
 				booleanEnumValue,
 				docvalues.StringValue{},
 			},
@@ -342,7 +342,7 @@ aes128-gcm@openssh.com,aes256-gcm@openssh.com
 	},
 	"ForwardX11Timeout": {
 		Documentation: `Specify a timeout for untrusted X11 forwarding using the format described in the TIME FORMATS section of sshd_config(5). X11 connections received by ssh(1) after this time will be refused. Setting ForwardX11Timeout to zero will disable the timeout and permit X11 forwarding for the life of the connection. The default is to disable untrusted X11 forwarding after twenty minutes has elapsed.`,
-		Value: docvalues.TimeFormatValue{},
+		Value:         docvalues.TimeFormatValue{},
 	},
 	"ForwardX11Trusted": {
 		Documentation: `If this option is set to yes, remote X11 clients will have full access to the original X11 display.
@@ -352,7 +352,7 @@ aes128-gcm@openssh.com,aes256-gcm@openssh.com
 	},
 	"GatewayPorts": {
 		Documentation: `Specifies whether remote hosts are allowed to connect to local forwarded ports. By default, ssh(1) binds local port forwardings to the loopback address. This prevents other remote hosts from connecting to forwarded ports. GatewayPorts can be used to specify that ssh should bind local port forwardings to the wildcard address, thus allowing remote hosts to connect to forwarded ports. The argument must be yes or no (the default).`,
-		Value: booleanEnumValue,
+		Value:         booleanEnumValue,
 	},
 	"GlobalKnownHostsFile": {
 		Documentation: `Specifies one or more files to use for the global host key database, separated by whitespace. The default is
@@ -376,7 +376,7 @@ aes128-gcm@openssh.com,aes256-gcm@openssh.com
 	},
 	"HashKnownHosts": {
 		Documentation: `Indicates that ssh(1) should hash host names and addresses when they are added to ~/.ssh/known_hosts. These hashed names may be used normally by ssh(1) and sshd(8), but they do not visually reveal identifying information if the file's contents are disclosed. The default is no. Note that existing names and addresses in known hosts files will not be converted automatically, but may be manually hashed using ssh-keygen(1).`,
-		Value: booleanEnumValue,
+		Value:         booleanEnumValue,
 	},
 	"HostbasedAcceptedAlgorithms": {
 		Documentation: `Specifies the signature algorithms that will be used for hostbased authentication as a comma-separated list of patterns. Alternately if the specified list begins with a ‘+’ character, then the specified signature algorithms will be appended to the default set instead of replacing them. If the specified list begins with a ‘-’ character, then the specified signature algorithms (including wildcards) will be removed from the default set instead of replacing them. If the specified list begins with a ‘^’ character, then the specified signature algorithms will be placed at the head of the default set. The default for this option is:
@@ -396,16 +396,16 @@ sk-ecdsa-sha2-nistp256@openssh.com,
 rsa-sha2-512,rsa-sha2-256
 
     The -Q option of ssh(1) may be used to list supported signature algorithms. This was formerly named HostbasedKeyTypes.`,
-	Value: docvalues.CustomValue{
-		FetchValue: func(_ docvalues.CustomValueContext) docvalues.Value {
-			options, err := ssh.QueryOpenSSHOptions("HostbasedAcceptedAlgorithms")
+		Value: docvalues.CustomValue{
+			FetchValue: func(_ docvalues.CustomValueContext) docvalues.DeprecatedValue {
+				options, err := ssh.QueryOpenSSHOptions("HostbasedAcceptedAlgorithms")
 
-			if err != nil {
-				// Fallback
-				options, _ = ssh.QueryOpenSSHOptions("HostbasedAcceptedKeyTypes")
-			}
+				if err != nil {
+					// Fallback
+					options, _ = ssh.QueryOpenSSHOptions("HostbasedAcceptedKeyTypes")
+				}
 
-			return prefixPlusMinusCaret(options)
+				return prefixPlusMinusCaret(options)
 			},
 		},
 	},
@@ -435,7 +435,7 @@ rsa-sha2-512,rsa-sha2-256
     If hostkeys are known for the destination host then this default is modified to prefer their algorithms.
     The list of available signature algorithms may also be obtained using 'ssh -Q HostKeyAlgorithms'.`,
 		Value: docvalues.CustomValue{
-			FetchValue: func(_ docvalues.CustomValueContext) docvalues.Value {
+			FetchValue: func(_ docvalues.CustomValueContext) docvalues.DeprecatedValue {
 				options, _ := ssh.QueryOpenSSHOptions("HostKeyAlgorithms")
 
 				return prefixPlusMinusCaret(options)
@@ -452,7 +452,7 @@ rsa-sha2-512,rsa-sha2-256
 	},
 	"IdentitiesOnly": {
 		Documentation: `Specifies that ssh(1) should only use the configured authentication identity and certificate files (either the default files, or those explicitly configured in the ssh_config files or passed on the ssh(1) command-line), even if ssh-agent(1) or a PKCS11Provider or SecurityKeyProvider offers more identities. The argument to this keyword must be yes or no (the default). This option is intended for situations where ssh-agent offers many different identities.`,
-		Value:			 booleanEnumValue,
+		Value:         booleanEnumValue,
 	},
 	"IdentityAgent": {
 		Documentation: `Specifies the UNIX-domain socket used to communicate with the authentication agent. This option overrides the SSH_AUTH_SOCK environment variable and can be used to select a specific agent. Setting the socket name to none disables the use of an authentication agent. If the string 'SSH_AUTH_SOCK' is specified, the location of the socket will be read from the SSH_AUTH_SOCK environment variable. Otherwise if the specified value begins with a '$' character, then it will be treated as an environment variable containing the location of the socket.
@@ -473,7 +473,7 @@ rsa-sha2-512,rsa-sha2-256
 	// TODO: Add
 	"IgnoreUnknown": {
 		Documentation: `Specifies a pattern-list of unknown options to be ignored if they are encountered in configuration parsing. This may be used to suppress errors if ssh_config contains options that are unrecognised by ssh(1). It is recommended that IgnoreUnknown be listed early in the configuration file as it will not be applied to unknown options that appear before it.`,
-		Value: docvalues.StringValue{},
+		Value:         docvalues.StringValue{},
 	},
 	"Include": {
 		Documentation: `Include the specified configuration file(s). Multiple pathnames may be specified and each pathname may contain glob(7) wildcards, tokens as described in the TOKENS section, environment variables as described in the ENVIRONMENT VARIABLES section and, for user configurations, shell-like ‘~’ references to user home directories. Wildcards will be expanded and processed in lexical order. Files without absolute paths are assumed to be in ~/.ssh if included in a user configuration file or /etc/ssh if included from the system configuration file. Include directive may appear inside a Match or Host block to perform conditional inclusion.`,
@@ -486,7 +486,7 @@ rsa-sha2-512,rsa-sha2-256
 	"IPQoS": {
 		Documentation: `Specifies the IPv4 type-of-service or DSCP class for connections. Accepted values are af11, af12, af13, af21, af22, af23, af31, af32, af33, af41, af42, af43, cs0, cs1, cs2, cs3, cs4, cs5, cs6, cs7, ef, le, lowdelay, throughput, reliability, a numeric value, or none to use the operating system default. This option may take one or two arguments, separated by whitespace. If one argument is specified, it is used as the packet class unconditionally. If two values are specified, the first is automatically selected for interactive sessions and the second for non-interactive sessions. The default is af21 (Low-Latency Data) for interactive sessions and cs1 (Lower Effort) for non-interactive sessions.`,
 		Value: docvalues.OrValue{
-			Values: []docvalues.Value{
+			Values: []docvalues.DeprecatedValue{
 				docvalues.NumberValue{},
 				docvalues.EnumValue{
 					Values: []docvalues.EnumString{
@@ -537,8 +537,8 @@ rsa-sha2-512,rsa-sha2-256
 	},
 	"KbdInteractiveDevices": {
 		Documentation: `Specifies the list of methods to use in keyboard-interactive authentication. Multiple method names must be comma-separated. The default is to use the server specified list. The methods available vary depending on what the server supports. For an OpenSSH server, it may be zero or more of: bsdauth, pam, and skey.`,
-		Value:         docvalues.ArrayValue{
-			Separator: ",",
+		Value: docvalues.ArrayValue{
+			Separator:           ",",
 			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
 			SubValue: docvalues.EnumValue{
 				EnforceValues: true,
@@ -597,12 +597,12 @@ diffie-hellman-group14-sha256
       [bind_address:]port or a Unix domain socket path. The second argument is the destination and may be host:hostport or a Unix domain socket path if the remote host supports it.
     IPv6 addresses can be specified by enclosing addresses in square brackets. Multiple forwardings may be specified, and additional forwardings can be given on the command line. Only the superuser can forward privileged ports. By default, the local port is bound in accordance with the GatewayPorts setting. However, an explicit bind_address may be used to bind the connection to a specific address. The bind_address of localhost indicates that the listening port be bound for local use only, while an empty address or ‘*’ indicates that the port should be available from all interfaces. Unix domain socket paths may use the tokens described in the TOKENS section and environment variables as described in the ENVIRONMENT VARIABLES section.`,
 		Value: docvalues.OrValue{
-			Values: []docvalues.Value{
+			Values: []docvalues.DeprecatedValue{
 				docvalues.NumberValue{Min: &ZERO, Max: &MAX_PORT},
 				docvalues.KeyValueAssignmentValue{
 					Key: docvalues.IPAddressValue{
-						AllowIPv4: true,
-						AllowIPv6: true,
+						AllowIPv4:  true,
+						AllowIPv6:  true,
 						AllowRange: false,
 					},
 				},
@@ -611,7 +611,7 @@ diffie-hellman-group14-sha256
 	},
 	"LogLevel": {
 		Documentation: `Gives the verbosity level that is used when logging messages from ssh(1). The possible values are: QUIET, FATAL, ERROR, INFO, VERBOSE, DEBUG, DEBUG1, DEBUG2, and DEBUG3. The default is INFO. DEBUG and DEBUG1 are equivalent. DEBUG2 and DEBUG3 each specify higher levels of verbose output.`,
-		Value:         docvalues.EnumValue{
+		Value: docvalues.EnumValue{
 			EnforceValues: true,
 			Values: []docvalues.EnumString{
 				docvalues.CreateEnumString("QUIET"),
@@ -677,8 +677,8 @@ hmac-sha2-256,hmac-sha2-512,hmac-sha1
 	},
 	"ObscureKeystrokeTiming": {
 		Documentation: `Specifies whether ssh(1) should try to obscure inter-keystroke timings from passive observers of network traffic. If enabled, then for interactive sessions, ssh(1) will send keystrokes at fixed intervals of a few tens of milliseconds and will send fake keystroke packets for some time after typing ceases. The argument to this keyword must be yes, no or an interval specifier of the form interval:milliseconds (e.g. interval:80 for 80 milliseconds). The default is to obscure keystrokes using a 20ms packet interval. Note that smaller intervals will result in higher fake keystroke packet rates.`,
-		Value:         docvalues.OrValue{
-			Values: []docvalues.Value{
+		Value: docvalues.OrValue{
+			Values: []docvalues.DeprecatedValue{
 				booleanEnumValue,
 				docvalues.RegexValue{
 					Regex: *regexp.MustCompile(`^interval:[0-9]+$`),
@@ -700,7 +700,7 @@ hmac-sha2-256,hmac-sha2-512,hmac-sha1
      PermitRemoteOpen host:port PermitRemoteOpen IPv4_addr:port PermitRemoteOpen [IPv6_addr]:port
     
     Multiple forwards may be specified by separating them with whitespace. An argument of any can be used to remove all restrictions and permit any forwarding requests. An argument of none can be used to prohibit all forwarding requests. The wildcard ‘*’ can be used for host or port to allow all hosts or ports respectively. Otherwise, no pattern matching or address lookups are performed on supplied names.`,
-	// TODO: Improve
+		// TODO: Improve
 		Value: docvalues.StringValue{},
 	},
 	"PKCS11Provider": {
@@ -768,7 +768,7 @@ rsa-sha2-512,rsa-sha2-256
 
     The list of available signature algorithms may also be obtained using 'ssh -Q PubkeyAcceptedAlgorithms'.`,
 		Value: docvalues.CustomValue{
-			FetchValue: func(_ docvalues.CustomValueContext) docvalues.Value {
+			FetchValue: func(_ docvalues.CustomValueContext) docvalues.DeprecatedValue {
 				options, _ := ssh.QueryOpenSSHOptions("PubkeyAcceptedAlgorithms")
 
 				return prefixPlusMinusCaret(options)
@@ -847,7 +847,7 @@ rsa-sha2-512,rsa-sha2-256
 	},
 	"SessionType": {
 		Documentation: `May be used to either request invocation of a subsystem on the remote system, or to prevent the execution of a remote command at all. The latter is useful for just forwarding ports. The argument to this keyword must be none (same as the -N option), subsystem (same as the -s option) or default (shell or command execution).`,
-		Value: docvalues.StringValue{},
+		Value:         docvalues.StringValue{},
 	},
 	"SetEnv": {
 		Documentation: `Directly specify one or more environment variables and their contents to be sent to the server. Similarly to SendEnv, with the exception of the TERM variable, the server must be prepared to accept the environment variable.`,
@@ -855,7 +855,7 @@ rsa-sha2-512,rsa-sha2-256
 	},
 	"StdinNull": {
 		Documentation: `Redirects stdin from /dev/null (actually, prevents reading from stdin). Either this or the equivalent -n option must be used when ssh is run in the background. The argument to this keyword must be yes (same as the -n option) or no (the default).`,
-		Value: 	   booleanEnumValue,
+		Value:         booleanEnumValue,
 	},
 	"StreamLocalBindMask": {
 		Documentation: `Sets the octal file creation mode mask (umask) used when creating a Unix-domain socket file for local or remote port forwarding. This option is only used for port forwarding to a Unix-domain socket file.
@@ -883,7 +883,7 @@ rsa-sha2-512,rsa-sha2-256
 	},
 	"SyslogFacility": {
 		Documentation: `Gives the facility code that is used when logging messages from ssh(1). The possible values are: DAEMON, USER, AUTH, LOCAL0, LOCAL1, LOCAL2, LOCAL3, LOCAL4, LOCAL5, LOCAL6, LOCAL7. The default is USER.`,
-		Value:         docvalues.EnumValue{
+		Value: docvalues.EnumValue{
 			EnforceValues: true,
 			Values: []docvalues.EnumString{
 				docvalues.CreateEnumString("DAEMON"),
@@ -913,7 +913,7 @@ rsa-sha2-512,rsa-sha2-256
 	},
 	"Tunnel": {
 		Documentation: `Request tun(4) device forwarding between the client and the server. The argument must be yes, point-to-point (layer 3), ethernet (layer 2), or no (the default). Specifying yes requests the default tunnel mode, which is point-to-point.`,
-		Value:         docvalues.EnumValue{
+		Value: docvalues.EnumValue{
 			EnforceValues: true,
 			Values: []docvalues.EnumString{
 				docvalues.CreateEnumString("yes"),
@@ -954,7 +954,7 @@ rsa-sha2-512,rsa-sha2-256
       ~/.ssh/known_hosts2.`,
 		Value: docvalues.ArrayValue{
 			Separator: " ",
-			SubValue:     docvalues.PathValue{
+			SubValue: docvalues.PathValue{
 				RequiredType: docvalues.PathTypeFile,
 			},
 		},
@@ -973,11 +973,11 @@ rsa-sha2-512,rsa-sha2-256
 	},
 	"VisualHostKey": {
 		Documentation: `If this flag is set to yes, an ASCII art representation of the remote host key fingerprint is printed in addition to the fingerprint string at login and for unknown host keys. If this flag is set to no (the default), no fingerprint strings are printed at login and only the fingerprint string will be printed for unknown host keys.`,
-		Value:      booleanEnumValue,
+		Value:         booleanEnumValue,
 	},
 	"XAuthLocation": {
 		Documentation: `Specifies the full pathname of the xauth(1) program. The default is /usr/X11R6/bin/xauth.`,
-		Value:         docvalues.PathValue{
+		Value: docvalues.PathValue{
 			RequiredType: docvalues.PathTypeFile,
 		},
 	},

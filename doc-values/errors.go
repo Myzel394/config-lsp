@@ -68,7 +68,7 @@ func (e ValueError) GetPublishDiagnosticsParams() protocol.Diagnostic {
 	}
 }
 func (e ValueError) Error() string {
-	return "Value error"
+	return "DeprecatedValue error"
 }
 
 type OptionAlreadyExistsError struct {

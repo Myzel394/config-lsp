@@ -17,21 +17,21 @@ func (EmptyValueContext) GetIsContext() bool {
 var EmptyValueContextInstance = EmptyValueContext{}
 
 type CustomValue struct {
-	FetchValue func(context CustomValueContext) Value
+	FetchValue func(context CustomValueContext) DeprecatedValue
 }
 
 func (v CustomValue) GetTypeDescription() []string {
 	return v.FetchValue(EmptyValueContextInstance).GetTypeDescription()
 }
 
-func (v CustomValue) CheckIsValid(value string) []*InvalidValue {
-	return v.FetchValue(EmptyValueContextInstance).CheckIsValid(value)
+func (v CustomValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
+	return v.FetchValue(EmptyValueContextInstance).DeprecatedCheckIsValid(value)
 }
 
-func (v CustomValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
-	return v.FetchValue(EmptyValueContextInstance).FetchCompletions(line, cursor)
+func (v CustomValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+	return v.FetchValue(EmptyValueContextInstance).DeprecatedFetchCompletions(line, cursor)
 }
 
-func (v CustomValue) FetchHoverInfo(line string, cursor uint32) []string {
-	return v.FetchValue(EmptyValueContextInstance).FetchHoverInfo(line, cursor)
+func (v CustomValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
+	return v.FetchValue(EmptyValueContextInstance).DeprecatedFetchHoverInfo(line, cursor)
 }

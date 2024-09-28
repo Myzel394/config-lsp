@@ -5,7 +5,7 @@ import docvalues "config-lsp/doc-values"
 var zero = 0
 var maxJournalIOPrio = 7
 
-var Ext4DocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
+var Ext4DocumentationAssignable = map[docvalues.EnumString]docvalues.DeprecatedValue{
 	docvalues.CreateEnumStringWithDoc(
 		"inode_readahead_blks",
 		"This tuning parameter controls the maximum number of inode table blocks that ext4's inode table readahead algorithm will pre-read into the buffer cache.  The value must be a power of 2. The default value is 32 blocks.",

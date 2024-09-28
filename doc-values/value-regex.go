@@ -25,7 +25,7 @@ func (v RegexValue) GetTypeDescription() []string {
 	}
 }
 
-func (v RegexValue) CheckIsValid(value string) []*InvalidValue {
+func (v RegexValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	if !v.Regex.MatchString(value) {
 		return []*InvalidValue{{
 			Err:   RegexInvalidError{Regex: v.Regex.String()},
@@ -37,11 +37,11 @@ func (v RegexValue) CheckIsValid(value string) []*InvalidValue {
 	return []*InvalidValue{}
 }
 
-func (v RegexValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v RegexValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	return []protocol.CompletionItem{}
 }
 
-func (v RegexValue) FetchHoverInfo(line string, cursor uint32) []string {
+func (v RegexValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	return []string{
 		fmt.Sprintf("Pattern: `%s`", v.Regex.String()),
 	}

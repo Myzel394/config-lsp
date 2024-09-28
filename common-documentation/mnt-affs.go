@@ -4,7 +4,7 @@ import docvalues "config-lsp/doc-values"
 
 var prefixMaxLength = uint32(30)
 
-var AffsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
+var AffsDocumentationAssignable = map[docvalues.EnumString]docvalues.DeprecatedValue{
 	docvalues.CreateEnumStringWithDoc(
 		"uid",
 		"Set the owner and group of the root of the filesystem (default: uid=gid=0, but with option uid or gid without specified value, the UID and GID of the current process are taken).",

@@ -37,7 +37,7 @@ func analyzeMatchBlocks(
 				})
 
 				continue
-			} 
+			}
 
 			errs = append(errs, analyzeMatchValuesContainsPositiveValue(entry.Values)...)
 
@@ -127,7 +127,7 @@ func analyzeMatchValueIsValid(
 	}
 
 	docOption := fields.MatchValueFieldMap[criteria]
-	invalidValues := docOption.CheckIsValid(value.Value.Raw)
+	invalidValues := docOption.DeprecatedCheckIsValid(value.Value.Raw)
 
 	errs = append(
 		errs,
@@ -144,4 +144,3 @@ func analyzeMatchValueIsValid(
 
 	return errs
 }
-

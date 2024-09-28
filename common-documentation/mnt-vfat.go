@@ -2,7 +2,7 @@ package commondocumentation
 
 import docvalues "config-lsp/doc-values"
 
-var VfatDocumentationAssignable = docvalues.MergeKeyEnumAssignmentMaps(FatDocumentationAssignable, map[docvalues.EnumString]docvalues.Value{
+var VfatDocumentationAssignable = docvalues.MergeKeyEnumAssignmentMaps(FatDocumentationAssignable, map[docvalues.EnumString]docvalues.DeprecatedValue{
 	docvalues.CreateEnumStringWithDoc(
 		"shortname",
 		"Defines the behavior for creation and display of filenames which fit into 8.3 characters. If a long name for a file exists, it will always be the preferred one for display",

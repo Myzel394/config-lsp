@@ -109,7 +109,7 @@ https://git.zx2c4.com/WireGuard/about/src/tools/man/wg-quick.8
 	Table = 1234
 	`,
 		Value: docvalues.OrValue{
-			Values: []docvalues.Value{
+			Values: []docvalues.DeprecatedValue{
 				docvalues.EnumValue{
 					EnforceValues: false,
 					Values: []docvalues.EnumString{

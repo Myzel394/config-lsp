@@ -34,7 +34,7 @@ func isPowerOfTwo(number int) bool {
 	return true
 }
 
-func (v PowerOfTwoValue) CheckIsValid(value string) []*InvalidValue {
+func (v PowerOfTwoValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	number, err := strconv.Atoi(value)
 
 	if err != nil {
@@ -60,7 +60,7 @@ func (v PowerOfTwoValue) CheckIsValid(value string) []*InvalidValue {
 
 var powers = []int{1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536}
 
-func (v PowerOfTwoValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v PowerOfTwoValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	textFormat := protocol.InsertTextFormatPlainText
 	kind := protocol.CompletionItemKindValue
 
@@ -76,6 +76,6 @@ func (v PowerOfTwoValue) FetchCompletions(line string, cursor uint32) []protocol
 	)
 }
 
-func (v PowerOfTwoValue) FetchHoverInfo(line string, cursor uint32) []string {
+func (v PowerOfTwoValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	return []string{}
 }

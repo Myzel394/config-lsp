@@ -3,7 +3,7 @@ package fstabdocumentation
 import docvalues "config-lsp/doc-values"
 
 var PassField = docvalues.OrValue{
-	Values: []docvalues.Value{
+	Values: []docvalues.DeprecatedValue{
 		docvalues.EnumValue{
 			EnforceValues: false,
 			Values: []docvalues.EnumString{

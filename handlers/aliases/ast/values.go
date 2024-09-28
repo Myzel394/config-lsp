@@ -71,7 +71,7 @@ type AliasValueInclude struct {
 
 func (a AliasValueInclude) CheckIsValid() []common.LSPError {
 	return utils.Map(
-		fields.PathField.CheckIsValid(string(a.Path.Path)),
+		fields.PathField.DeprecatedCheckIsValid(string(a.Path.Path)),
 		func(invalidValue *docvalues.InvalidValue) common.LSPError {
 			return docvalues.LSPErrorFromInvalidValue(a.Location.Start.Line, *invalidValue)
 		},
@@ -88,7 +88,7 @@ type AliasValueEmail struct {
 
 func (a AliasValueEmail) CheckIsValid() []common.LSPError {
 	return utils.Map(
-		fields.PathField.CheckIsValid(a.Value),
+		fields.PathField.DeprecatedCheckIsValid(a.Value),
 		func(invalidValue *docvalues.InvalidValue) common.LSPError {
 			return docvalues.LSPErrorFromInvalidValue(a.Location.Start.Line, *invalidValue)
 		},

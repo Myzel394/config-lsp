@@ -2,7 +2,7 @@ package commondocumentation
 
 import docvalues "config-lsp/doc-values"
 
-var UsbfsDocumentationAssignable = docvalues.MergeKeyEnumAssignmentMaps(FatDocumentationAssignable, map[docvalues.EnumString]docvalues.Value{
+var UsbfsDocumentationAssignable = docvalues.MergeKeyEnumAssignmentMaps(FatDocumentationAssignable, map[docvalues.EnumString]docvalues.DeprecatedValue{
 	docvalues.CreateEnumStringWithDoc(
 		"devuid",
 		"Set the owner of the device files in the usbfs filesystem (default: uid=gid=0)",

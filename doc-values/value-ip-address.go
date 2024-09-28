@@ -66,7 +66,7 @@ func (v IPAddressValue) GetTypeDescription() []string {
 	return []string{"An IP Address"}
 }
 
-func (v IPAddressValue) CheckIsValid(value string) []*InvalidValue {
+func (v IPAddressValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	var ip net.Prefix
 
 	if v.AllowRange {
@@ -151,7 +151,7 @@ func (v IPAddressValue) CheckIsValid(value string) []*InvalidValue {
 	}
 }
 
-func (v IPAddressValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v IPAddressValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	if v.AllowedIPs != nil && len(*v.AllowedIPs) != 0 {
 		kind := protocol.CompletionItemKindValue
 
@@ -184,7 +184,7 @@ func (v IPAddressValue) FetchCompletions(line string, cursor uint32) []protocol.
 	return []protocol.CompletionItem{}
 }
 
-func (v IPAddressValue) FetchHoverInfo(line string, cursor uint32) []string {
+func (v IPAddressValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	if v.AllowRange {
 		ip, err := net.ParsePrefix(line)
 

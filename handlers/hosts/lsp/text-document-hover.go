@@ -42,7 +42,7 @@ func TextDocumentHover(
 	case handlers.HoverTargetIPAddress:
 		line := entry.IPAddress.Value.String()
 		relativeCursor := uint32(entry.IPAddress.Location.Start.GetRelativeIndexPosition(index))
-		hover := fields.IPAddressField.FetchHoverInfo(line, relativeCursor)
+		hover := fields.IPAddressField.DeprecatedFetchHoverInfo(line, relativeCursor)
 
 		return &protocol.Hover{
 			Contents: hover,

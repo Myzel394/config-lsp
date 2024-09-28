@@ -35,7 +35,7 @@ func (v GIDValue) GetTypeDescription() []string {
 	return []string{"Group ID"}
 }
 
-func (v GIDValue) CheckIsValid(value string) []*InvalidValue {
+func (v GIDValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	uid, err := strconv.Atoi(value)
 
 	if err != nil {
@@ -90,7 +90,7 @@ var defaultGIDsExplanation = []EnumString{
 	},
 }
 
-func (v GIDValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v GIDValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	infos, err := common.FetchGroupInfo()
 
 	if err != nil {
@@ -128,7 +128,7 @@ func (v GIDValue) FetchCompletions(line string, cursor uint32) []protocol.Comple
 
 	return completions
 }
-func (v GIDValue) FetchHoverInfo(line string, cursor uint32) []string {
+func (v GIDValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	uid, err := strconv.Atoi(line)
 
 	if err != nil {

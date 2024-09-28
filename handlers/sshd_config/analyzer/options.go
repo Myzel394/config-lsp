@@ -75,7 +75,7 @@ func checkOption(
 		errs = append(errs, checkIsUsingDoubleQuotes(option.OptionValue.Value, option.OptionValue.LocationRange)...)
 		errs = append(errs, checkQuotesAreClosed(option.OptionValue.Value, option.OptionValue.LocationRange)...)
 
-		invalidValues := docOption.CheckIsValid(option.OptionValue.Value.Value)
+		invalidValues := docOption.DeprecatedCheckIsValid(option.OptionValue.Value.Value)
 
 		errs = append(
 			errs,

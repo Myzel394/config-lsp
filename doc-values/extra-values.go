@@ -6,11 +6,11 @@ import (
 	"regexp"
 )
 
-// UserValue returns a Value that fetches user names from /etc/passwd
+// UserValue returns a DeprecatedValue that fetches user names from /etc/passwd
 // if `separatorForMultiple` is not empty, it will return an ArrayValue
-func UserValue(separatorForMultiple string, enforceValues bool) Value {
+func UserValue(separatorForMultiple string, enforceValues bool) DeprecatedValue {
 	return CustomValue{
-		FetchValue: func(context CustomValueContext) Value {
+		FetchValue: func(context CustomValueContext) DeprecatedValue {
 			infos, err := common.FetchPasswdInfo()
 
 			if err != nil {
@@ -37,9 +37,9 @@ func UserValue(separatorForMultiple string, enforceValues bool) Value {
 	}
 }
 
-func GroupValue(separatorForMultiple string, enforceValues bool) Value {
+func GroupValue(separatorForMultiple string, enforceValues bool) DeprecatedValue {
 	return CustomValue{
-		FetchValue: func(context CustomValueContext) Value {
+		FetchValue: func(context CustomValueContext) DeprecatedValue {
 			infos, err := common.FetchGroupInfo()
 
 			if err != nil {
@@ -66,14 +66,14 @@ func GroupValue(separatorForMultiple string, enforceValues bool) Value {
 	}
 }
 
-func PositiveNumberValue() Value {
+func PositiveNumberValue() DeprecatedValue {
 	zero := 0
 	return NumberValue{
 		Min: &zero,
 	}
 }
 
-func MaskValue() Value {
+func MaskValue() DeprecatedValue {
 	min := 0
 	max := 777
 	return NumberValue{Min: &min, Max: &max}
@@ -88,7 +88,7 @@ func SingleEnumValue(value string) EnumValue {
 	}
 }
 
-func DomainValue() Value {
+func DomainValue() DeprecatedValue {
 	return RegexValue{
 		Regex: *regexp.MustCompile(`^.+?\..+$`),
 	}

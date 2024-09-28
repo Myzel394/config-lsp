@@ -46,7 +46,7 @@ func (v PathValue) GetTypeDescription() []string {
 	return []string{strings.Join(hints, ", ")}
 }
 
-func (v PathValue) CheckIsValid(value string) []*InvalidValue {
+func (v PathValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	if !utils.DoesPathExist(value) {
 		return []*InvalidValue{{
 			Err:   PathDoesNotExistError{},
@@ -78,10 +78,10 @@ func (v PathValue) CheckIsValid(value string) []*InvalidValue {
 	}
 }
 
-func (v PathValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v PathValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	return []protocol.CompletionItem{}
 }
 
-func (v PathValue) FetchHoverInfo(line string, cursor uint32) []string {
+func (v PathValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	return []string{}
 }

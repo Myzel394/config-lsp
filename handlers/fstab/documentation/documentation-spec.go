@@ -13,14 +13,14 @@ var LabelField = docvalues.RegexValue{
 }
 
 var SpecField = docvalues.OrValue{
-	Values: []docvalues.Value{
+	Values: []docvalues.DeprecatedValue{
 		// docvalues.PathValue{
 		// 	RequiredType: docvalues.PathTypeFile & docvalues.PathTypeExistenceOptional,
 		// },
 		docvalues.KeyEnumAssignmentValue{
 			Separator:       "=",
 			ValueIsOptional: false,
-			Values: map[docvalues.EnumString]docvalues.Value{
+			Values: map[docvalues.EnumString]docvalues.DeprecatedValue{
 				docvalues.CreateEnumString("UUID"):      UuidField,
 				docvalues.CreateEnumString("PARTUUID"):  UuidField,
 				docvalues.CreateEnumString("LABEL"):     LabelField,

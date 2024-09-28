@@ -53,7 +53,7 @@ func analyzeEntriesAreValid(
 		err = append(
 			err,
 			utils.Map(
-				fields.IPAddressField.CheckIsValid(entry.IPAddress.Value.String()),
+				fields.IPAddressField.DeprecatedCheckIsValid(entry.IPAddress.Value.String()),
 				func(val *docvalues.InvalidValue) common.LSPError {
 					return common.LSPError{
 						Range: entry.IPAddress.Location,
@@ -66,7 +66,7 @@ func analyzeEntriesAreValid(
 		err = append(
 			err,
 			utils.Map(
-				fields.HostnameField.CheckIsValid(entry.Hostname.Value),
+				fields.HostnameField.DeprecatedCheckIsValid(entry.Hostname.Value),
 				func(val *docvalues.InvalidValue) common.LSPError {
 					return common.LSPError{
 						Range: entry.Hostname.Location,
@@ -80,7 +80,7 @@ func analyzeEntriesAreValid(
 			err = append(
 				err,
 				utils.Map(
-					fields.HostnameField.CheckIsValid(alias.Value),
+					fields.HostnameField.DeprecatedCheckIsValid(alias.Value),
 					func(val *docvalues.InvalidValue) common.LSPError {
 						return common.LSPError{
 							Range: alias.Location,

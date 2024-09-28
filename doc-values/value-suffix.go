@@ -15,7 +15,7 @@ type Suffix struct {
 
 type SuffixWithMeaningValue struct {
 	Suffixes []Suffix
-	SubValue Value
+	SubValue DeprecatedValue
 }
 
 func (v SuffixWithMeaningValue) GetTypeDescription() []string {
@@ -33,17 +33,17 @@ func (v SuffixWithMeaningValue) GetTypeDescription() []string {
 	)
 }
 
-func (v SuffixWithMeaningValue) CheckIsValid(value string) []*InvalidValue {
+func (v SuffixWithMeaningValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	for _, suffix := range v.Suffixes {
 		if strings.HasSuffix(value, suffix.Suffix) {
-			return v.SubValue.CheckIsValid(value[:len(value)-len(suffix.Suffix)])
+			return v.SubValue.DeprecatedCheckIsValid(value[:len(value)-len(suffix.Suffix)])
 		}
 	}
 
-	return v.SubValue.CheckIsValid(value)
+	return v.SubValue.DeprecatedCheckIsValid(value)
 }
 
-func (v SuffixWithMeaningValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v SuffixWithMeaningValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	textFormat := protocol.InsertTextFormatPlainText
 	kind := protocol.CompletionItemKindText
 
@@ -56,19 +56,19 @@ func (v SuffixWithMeaningValue) FetchCompletions(line string, cursor uint32) []p
 		}
 	})
 
-	return append(suffixCompletions, v.SubValue.FetchCompletions(line, cursor)...)
+	return append(suffixCompletions, v.SubValue.DeprecatedFetchCompletions(line, cursor)...)
 }
 
-func (v SuffixWithMeaningValue) FetchHoverInfo(line string, cursor uint32) []string {
+func (v SuffixWithMeaningValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	for _, suffix := range v.Suffixes {
 		if strings.HasSuffix(line, suffix.Suffix) {
 			return append([]string{
 				fmt.Sprintf("Suffix: _%s_ -> %s", suffix.Suffix, suffix.Meaning),
 			},
-				v.SubValue.FetchHoverInfo(line[:len(line)-len(suffix.Suffix)], cursor)...,
+				v.SubValue.DeprecatedFetchHoverInfo(line[:len(line)-len(suffix.Suffix)], cursor)...,
 			)
 		}
 	}
 
-	return v.SubValue.FetchHoverInfo(line, cursor)
+	return v.SubValue.DeprecatedFetchHoverInfo(line, cursor)
 }

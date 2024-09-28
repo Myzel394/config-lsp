@@ -35,7 +35,7 @@ func (v UIDValue) GetTypeDescription() []string {
 	return []string{"User ID"}
 }
 
-func (v UIDValue) CheckIsValid(value string) []*InvalidValue {
+func (v UIDValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	uid, err := strconv.Atoi(value)
 
 	if err != nil {
@@ -90,7 +90,7 @@ var defaultUIDsExplanation = []EnumString{
 	},
 }
 
-func (v UIDValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v UIDValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	infos, err := common.FetchPasswdInfo()
 
 	if err != nil {
@@ -129,7 +129,7 @@ func (v UIDValue) FetchCompletions(line string, cursor uint32) []protocol.Comple
 	return completions
 }
 
-func (v UIDValue) FetchHoverInfo(line string, cursor uint32) []string {
+func (v UIDValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	uid, err := strconv.Atoi(line)
 
 	if err != nil {

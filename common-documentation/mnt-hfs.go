@@ -2,7 +2,7 @@ package commondocumentation
 
 import docvalues "config-lsp/doc-values"
 
-var HfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
+var HfsDocumentationAssignable = map[docvalues.EnumString]docvalues.DeprecatedValue{
 	docvalues.CreateEnumStringWithDoc(
 		"creator",
 		"Set the creator/type values as shown by the MacOS finder used for creating new files. Default values: '????'.",

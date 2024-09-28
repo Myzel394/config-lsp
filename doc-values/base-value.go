@@ -5,11 +5,11 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-type Value interface {
+type DeprecatedValue interface {
 	GetTypeDescription() []string
-	CheckIsValid(value string) []*InvalidValue
-	FetchCompletions(line string, cursor uint32) []protocol.CompletionItem
-	FetchHoverInfo(line string, cursor uint32) []string
+	DeprecatedCheckIsValid(value string) []*InvalidValue
+	DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem
+	DeprecatedFetchHoverInfo(line string, cursor uint32) []string
 }
 
 type InvalidValue struct {

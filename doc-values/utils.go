@@ -20,9 +20,9 @@ func GenerateBase10Completions(prefix string) []protocol.CompletionItem {
 	)
 }
 
-func MergeKeyEnumAssignmentMaps(maps ...map[EnumString]Value) map[EnumString]Value {
+func MergeKeyEnumAssignmentMaps(maps ...map[EnumString]DeprecatedValue) map[EnumString]DeprecatedValue {
 	existingEnums := make(map[string]interface{})
-	result := make(map[EnumString]Value)
+	result := make(map[EnumString]DeprecatedValue)
 
 	slices.Reverse(maps)
 

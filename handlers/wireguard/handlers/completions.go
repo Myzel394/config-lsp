@@ -150,11 +150,11 @@ func GetCompletionsForSectionPropertyLine(
 
 	if property.Value == nil {
 		if character >= property.Separator.Location.End {
-			return option.FetchCompletions("", 0), nil
+			return option.DeprecatedFetchCompletions("", 0), nil
 		}
 	}
 
 	relativeCursor := character - property.Value.Location.Start
 
-	return option.FetchCompletions(property.Value.Value, relativeCursor), nil
+	return option.DeprecatedFetchCompletions(property.Value.Value, relativeCursor), nil
 }

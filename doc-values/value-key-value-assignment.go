@@ -23,9 +23,9 @@ func (KeyValueAssignmentContext) GetIsContext() bool {
 }
 
 type KeyValueAssignmentValue struct {
-	Key Value
+	Key DeprecatedValue
 	// If this is a `CustomValue`, it will receive a `KeyValueAssignmentContext`
-	Value           Value
+	Value           DeprecatedValue
 	ValueIsOptional bool
 	Separator       string
 }
@@ -36,18 +36,18 @@ func (v KeyValueAssignmentValue) GetTypeDescription() []string {
 
 	if len(keyDescription) == 1 && len(valueDescription) == 1 {
 		return []string{
-			fmt.Sprintf("Key-Value pair in form of '<%s>%s<%s>'", keyDescription[0], v.Separator, valueDescription[0]),
+			fmt.Sprintf("Key-DeprecatedValue pair in form of '<%s>%s<%s>'", keyDescription[0], v.Separator, valueDescription[0]),
 		}
 	} else {
 		return []string{
-			fmt.Sprintf("Key-Value pair in form of 'key%svalue'", v.Separator),
+			fmt.Sprintf("Key-DeprecatedValue pair in form of 'key%svalue'", v.Separator),
 			fmt.Sprintf("#### Key\n%s", strings.Join(v.Key.GetTypeDescription(), "\n")),
-			fmt.Sprintf("#### Value:\n%s", strings.Join(v.Value.GetTypeDescription(), "\n")),
+			fmt.Sprintf("#### DeprecatedValue:\n%s", strings.Join(v.Value.GetTypeDescription(), "\n")),
 		}
 	}
 }
 
-func (v KeyValueAssignmentValue) getValue(selectedKey string) Value {
+func (v KeyValueAssignmentValue) getValue(selectedKey string) DeprecatedValue {
 	switch v.Value.(type) {
 	case CustomValue:
 		{
@@ -65,7 +65,7 @@ func (v KeyValueAssignmentValue) getValue(selectedKey string) Value {
 	}
 }
 
-func (v KeyValueAssignmentValue) CheckIsValid(value string) []*InvalidValue {
+func (v KeyValueAssignmentValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	parts := strings.Split(value, v.Separator)
 
 	if len(parts) == 0 || parts[0] == "" {
@@ -73,7 +73,7 @@ func (v KeyValueAssignmentValue) CheckIsValid(value string) []*InvalidValue {
 		return nil
 	}
 
-	err := v.Key.CheckIsValid(parts[0])
+	err := v.Key.DeprecatedCheckIsValid(parts[0])
 
 	if err != nil {
 		return err
@@ -93,7 +93,7 @@ func (v KeyValueAssignmentValue) CheckIsValid(value string) []*InvalidValue {
 		}
 	}
 
-	errors := v.getValue(parts[0]).CheckIsValid(parts[1])
+	errors := v.getValue(parts[0]).DeprecatedCheckIsValid(parts[1])
 
 	if len(errors) > 0 {
 		ShiftInvalidValues(uint32(len(parts[0])+len(v.Separator)), errors)
@@ -103,9 +103,9 @@ func (v KeyValueAssignmentValue) CheckIsValid(value string) []*InvalidValue {
 	return nil
 }
 
-func (v KeyValueAssignmentValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v KeyValueAssignmentValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	if cursor == 0 || line == "" {
-		return v.Key.FetchCompletions(line, cursor)
+		return v.Key.DeprecatedFetchCompletions(line, cursor)
 	}
 
 	relativePosition, found := utils.FindPreviousCharacter(
@@ -119,9 +119,9 @@ func (v KeyValueAssignmentValue) FetchCompletions(line string, cursor uint32) []
 		line = line[uint32(relativePosition+len(v.Separator)):]
 		cursor -= uint32(relativePosition)
 
-		return v.getValue(selectedKey).FetchCompletions(line, cursor)
+		return v.getValue(selectedKey).DeprecatedFetchCompletions(line, cursor)
 	} else {
-		return v.Key.FetchCompletions(line, cursor)
+		return v.Key.DeprecatedFetchCompletions(line, cursor)
 	}
 }
 
@@ -129,7 +129,7 @@ func (v KeyValueAssignmentValue) getValueAtCursor(line string, cursor uint32) (s
 	relativePosition, found := utils.FindPreviousCharacter(line, v.Separator, int(cursor))
 
 	if found {
-		// Value found
+		// DeprecatedValue found
 		selected := valueSelected
 		return line[:uint32(relativePosition)], &selected, cursor - uint32(relativePosition)
 	}
@@ -147,8 +147,8 @@ func (v KeyValueAssignmentValue) getValueAtCursor(line string, cursor uint32) (s
 	return line, &selected, cursor
 }
 
-func (v KeyValueAssignmentValue) FetchHoverInfo(line string, cursor uint32) []string {
-	if len(v.CheckIsValid(line)) != 0 {
+func (v KeyValueAssignmentValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
+	if len(v.DeprecatedCheckIsValid(line)) != 0 {
 		return []string{}
 	}
 
@@ -160,12 +160,12 @@ func (v KeyValueAssignmentValue) FetchHoverInfo(line string, cursor uint32) []st
 
 	if *selected == keySelected {
 		// Get key documentation
-		return v.Key.FetchHoverInfo(value, cursor)
+		return v.Key.DeprecatedFetchHoverInfo(value, cursor)
 	} else if *selected == valueSelected {
 		// Get for value documentation
 		key := strings.SplitN(line, v.Separator, 2)[0]
 
-		return v.getValue(key).FetchHoverInfo(value, cursor)
+		return v.getValue(key).DeprecatedFetchHoverInfo(value, cursor)
 	}
 
 	return []string{}

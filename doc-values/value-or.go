@@ -8,14 +8,14 @@ import (
 )
 
 type OrValue struct {
-	Values []Value
+	Values []DeprecatedValue
 }
 
 func (v OrValue) GetTypeDescription() []string {
 	lines := make([]string, 0)
 
 	for _, subValueRaw := range v.Values {
-		subValue := subValueRaw.(Value)
+		subValue := subValueRaw.(DeprecatedValue)
 		subLines := subValue.GetTypeDescription()
 
 		for index, line := range subLines {
@@ -34,11 +34,11 @@ func (v OrValue) GetTypeDescription() []string {
 		lines...,
 	)
 }
-func (v OrValue) CheckIsValid(value string) []*InvalidValue {
+func (v OrValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	errors := make([]*InvalidValue, 0)
 
 	for _, subValue := range v.Values {
-		valueErrors := subValue.CheckIsValid(value)
+		valueErrors := subValue.DeprecatedCheckIsValid(value)
 
 		if len(valueErrors) == 0 {
 			return nil
@@ -49,7 +49,7 @@ func (v OrValue) CheckIsValid(value string) []*InvalidValue {
 
 	return errors
 }
-func (v OrValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v OrValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	// Check for special cases
 	if len(v.Values) == 2 {
 		switch v.Values[0].(type) {
@@ -67,7 +67,7 @@ func (v OrValue) FetchCompletions(line string, cursor uint32) []protocol.Complet
 				)
 
 				if found {
-					return keyEnumValue.FetchCompletions(line, cursor)
+					return keyEnumValue.DeprecatedFetchCompletions(line, cursor)
 				}
 			}
 		}
@@ -76,19 +76,19 @@ func (v OrValue) FetchCompletions(line string, cursor uint32) []protocol.Complet
 	completions := make([]protocol.CompletionItem, 0)
 
 	for _, subValue := range v.Values {
-		completions = append(completions, subValue.FetchCompletions(line, cursor)...)
+		completions = append(completions, subValue.DeprecatedFetchCompletions(line, cursor)...)
 	}
 
 	return completions
 }
 
-func (v OrValue) FetchHoverInfo(line string, cursor uint32) []string {
+func (v OrValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	for _, subValue := range v.Values {
-		valueErrors := subValue.CheckIsValid(line)
+		valueErrors := subValue.DeprecatedCheckIsValid(line)
 
 		if len(valueErrors) == 0 {
 			// Found
-			return subValue.FetchHoverInfo(line, cursor)
+			return subValue.DeprecatedFetchHoverInfo(line, cursor)
 		}
 	}
 

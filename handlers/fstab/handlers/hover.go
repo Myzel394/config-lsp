@@ -21,7 +21,7 @@ func GetHoverInfo(entry *parser.FstabEntry, cursor uint32) (*protocol.Hover, err
 		return &FileSystemTypeField, nil
 	case parser.FstabFieldOptions:
 		fileSystemType := line.Fields.FilesystemType.Value
-		var optionsField docvalues.Value
+		var optionsField docvalues.DeprecatedValue
 
 		if foundField, found := fstabdocumentation.MountOptionsMapField[fileSystemType]; found {
 			optionsField = foundField
@@ -30,7 +30,7 @@ func GetHoverInfo(entry *parser.FstabEntry, cursor uint32) (*protocol.Hover, err
 		}
 
 		relativeCursor := cursor - line.Fields.Options.Start
-		fieldInfo := optionsField.FetchHoverInfo(line.Fields.Options.Value, relativeCursor)
+		fieldInfo := optionsField.DeprecatedFetchHoverInfo(line.Fields.Options.Value, relativeCursor)
 
 		hover := protocol.Hover{
 			Contents: protocol.MarkupContent{

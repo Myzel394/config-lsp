@@ -6,7 +6,7 @@ import (
 )
 
 var MountPointField = docvalues.OrValue{
-	Values: []docvalues.Value{
+	Values: []docvalues.DeprecatedValue{
 		docvalues.EnumValue{
 			Values: []docvalues.EnumString{
 				{

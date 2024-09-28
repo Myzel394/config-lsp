@@ -2,7 +2,7 @@ package commondocumentation
 
 import docvalues "config-lsp/doc-values"
 
-var AdfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
+var AdfsDocumentationAssignable = map[docvalues.EnumString]docvalues.DeprecatedValue{
 	docvalues.CreateEnumStringWithDoc(
 		"uid",
 		"Set the owner of the files in the filesystem (default: uid=0).",

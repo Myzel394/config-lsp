@@ -79,10 +79,10 @@ var MatchAddressField = docvalues.IPAddressValue{
 	AllowRange: true,
 }
 
-var MatchValueFieldMap = map[matchparser.MatchCriteriaType]docvalues.Value{
-	matchparser.MatchCriteriaTypeUser:        MatchUserField,
-	matchparser.MatchCriteriaTypeGroup:       MatchGroupField,
-	matchparser.MatchCriteriaTypeHost:        MatchHostField,
+var MatchValueFieldMap = map[matchparser.MatchCriteriaType]docvalues.DeprecatedValue{
+	matchparser.MatchCriteriaTypeUser:         MatchUserField,
+	matchparser.MatchCriteriaTypeGroup:        MatchGroupField,
+	matchparser.MatchCriteriaTypeHost:         MatchHostField,
 	matchparser.MatchCriteriaTypeLocalAddress: MatchLocalAddressField,
 	matchparser.MatchCriteriaTypeLocalPort:    MatchLocalPortField,
 	matchparser.MatchCriteriaTypeRDomain:      MatchRDomainField,

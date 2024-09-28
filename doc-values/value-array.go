@@ -35,7 +35,7 @@ var ExtractKeyDuplicatesExtractor = func(separator string) func(string) string {
 var DuplicatesAllowedExtractor func(string) string = nil
 
 type ArrayValue struct {
-	SubValue  Value
+	SubValue  DeprecatedValue
 	Separator string
 	// If this function is nil, no duplicate check is done.
 	// (value) => Extracted value
@@ -45,7 +45,7 @@ type ArrayValue struct {
 }
 
 func (v ArrayValue) GetTypeDescription() []string {
-	subValue := v.SubValue.(Value)
+	subValue := v.SubValue.(DeprecatedValue)
 
 	return append(
 		[]string{fmt.Sprintf("An Array separated by '%s' of:", v.Separator)},
@@ -53,7 +53,7 @@ func (v ArrayValue) GetTypeDescription() []string {
 	)
 }
 
-func (v ArrayValue) CheckIsValid(value string) []*InvalidValue {
+func (v ArrayValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	errors := []*InvalidValue{}
 	values := strings.Split(value, v.Separator)
 
@@ -100,7 +100,7 @@ func (v ArrayValue) CheckIsValid(value string) []*InvalidValue {
 
 	currentIndex := uint32(0)
 	for _, subValue := range values {
-		newErrors := v.SubValue.CheckIsValid(subValue)
+		newErrors := v.SubValue.DeprecatedCheckIsValid(subValue)
 
 		if len(newErrors) > 0 {
 			ShiftInvalidValues(currentIndex, newErrors)
@@ -173,15 +173,15 @@ func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32)
 	return line[start : end+1], cursor - start
 }
 
-func (v ArrayValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v ArrayValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	value, cursor := v.getCurrentValue(line, cursor)
 
 	println("after array", value, cursor)
-	return v.SubValue.FetchCompletions(value, cursor)
+	return v.SubValue.DeprecatedFetchCompletions(value, cursor)
 }
 
-func (v ArrayValue) FetchHoverInfo(line string, cursor uint32) []string {
+func (v ArrayValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	value, cursor := v.getCurrentValue(line, cursor)
 
-	return v.SubValue.FetchHoverInfo(value, cursor)
+	return v.SubValue.DeprecatedFetchHoverInfo(value, cursor)
 }

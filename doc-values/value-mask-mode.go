@@ -29,7 +29,7 @@ func (v MaskModeValue) GetTypeDescription() []string {
 
 var maskModePattern = regexp.MustCompile("^[0-7]{4}$")
 
-func (v MaskModeValue) CheckIsValid(value string) []*InvalidValue {
+func (v MaskModeValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	if !maskModePattern.MatchString(value) {
 		return []*InvalidValue{{
 			Err:   MaskModeInvalidError{},
@@ -41,7 +41,7 @@ func (v MaskModeValue) CheckIsValid(value string) []*InvalidValue {
 	return []*InvalidValue{}
 }
 
-func (v MaskModeValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v MaskModeValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	kind := protocol.CompletionItemKindValue
 
 	perm0644 := "0644"
@@ -147,7 +147,7 @@ func getMaskRepresentation(digit uint8) string {
 	return ""
 }
 
-func (v MaskModeValue) FetchHoverInfo(line string, cursor uint32) []string {
+func (v MaskModeValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	if !maskModePattern.MatchString(line) {
 		return []string{}
 	}

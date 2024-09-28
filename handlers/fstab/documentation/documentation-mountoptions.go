@@ -195,10 +195,10 @@ var defaultOptions = []docvalues.EnumString{
 
 type assignOption struct {
 	Documentation string
-	Handler       func(context docvalues.KeyValueAssignmentContext) docvalues.Value
+	Handler       func(context docvalues.KeyValueAssignmentContext) docvalues.DeprecatedValue
 }
 
-var defaultAssignOptions = map[docvalues.EnumString]docvalues.Value{
+var defaultAssignOptions = map[docvalues.EnumString]docvalues.DeprecatedValue{
 	docvalues.CreateEnumStringWithDoc(
 		"context",
 		"The context= option is useful when mounting filesystems that do not support extended attributes, such as a floppy or hard disk formatted with VFAT, or systems that are not normally running under SELinux, such as an ext3 or ext4 formatted disk from a non-SELinux workstation. You can also use context= on filesystems you do not trust, such as a floppy. It also helps in compatibility with xattr-supporting filesystems on earlier 2.4.<x> kernel versions. Even where xattrs are supported, you can save time not having to label every file by assigning the entire disk one security context. A commonly used option for removable media is context=\"system_u:object_r:removable_t\".",
@@ -219,15 +219,15 @@ var defaultAssignOptions = map[docvalues.EnumString]docvalues.Value{
 
 func createMountOptionField(
 	options []docvalues.EnumString,
-	assignOption map[docvalues.EnumString]docvalues.Value,
-) docvalues.Value {
+	assignOption map[docvalues.EnumString]docvalues.DeprecatedValue,
+) docvalues.DeprecatedValue {
 	dynamicOptions := docvalues.MergeKeyEnumAssignmentMaps(defaultAssignOptions, assignOption)
 
 	return docvalues.ArrayValue{
 		Separator:           ",",
 		DuplicatesExtractor: &mountOptionsExtractor,
 		SubValue: docvalues.OrValue{
-			Values: []docvalues.Value{
+			Values: []docvalues.DeprecatedValue{
 				docvalues.KeyEnumAssignmentValue{
 					Values:          dynamicOptions,
 					ValueIsOptional: false,
@@ -242,9 +242,9 @@ func createMountOptionField(
 	}
 }
 
-var DefaultMountOptionsField = createMountOptionField([]docvalues.EnumString{}, map[docvalues.EnumString]docvalues.Value{})
+var DefaultMountOptionsField = createMountOptionField([]docvalues.EnumString{}, map[docvalues.EnumString]docvalues.DeprecatedValue{})
 
-var MountOptionsMapField = map[string]docvalues.Value{
+var MountOptionsMapField = map[string]docvalues.DeprecatedValue{
 	"adfs": createMountOptionField(
 		commondocumentation.AdfsDocumentationEnums,
 		commondocumentation.AdfsDocumentationAssignable,

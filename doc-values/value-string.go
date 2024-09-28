@@ -24,7 +24,7 @@ func (v StringValue) GetTypeDescription() []string {
 	return []string{"String"}
 }
 
-func (v StringValue) CheckIsValid(value string) []*InvalidValue {
+func (v StringValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	if value == "" {
 		return []*InvalidValue{{
 			Err:   EmptyStringError{},
@@ -45,10 +45,10 @@ func (v StringValue) CheckIsValid(value string) []*InvalidValue {
 	return nil
 }
 
-func (v StringValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v StringValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	return []protocol.CompletionItem{}
 }
 
-func (v StringValue) FetchHoverInfo(line string, cursor uint32) []string {
+func (v StringValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	return []string{}
 }

@@ -22,7 +22,7 @@ func (v DataAmountValue) GetTypeDescription() []string {
 	return []string{"Data amount"}
 }
 
-func (v DataAmountValue) CheckIsValid(value string) []*InvalidValue {
+func (v DataAmountValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	if !dataAmountCheckPattern.MatchString(value) {
 		return []*InvalidValue{
 			{
@@ -55,7 +55,7 @@ func calculateLineToKilobyte(value string, unit string) string {
 	}
 }
 
-func (v DataAmountValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v DataAmountValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	completions := make([]protocol.CompletionItem, 0)
 
 	if line != "" && !dataAmountCheckPattern.MatchString(line) {
@@ -91,6 +91,6 @@ func (v DataAmountValue) FetchCompletions(line string, cursor uint32) []protocol
 	return completions
 }
 
-func (v DataAmountValue) FetchHoverInfo(line string, cursor uint32) []string {
+func (v DataAmountValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	return []string{}
 }

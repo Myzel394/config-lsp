@@ -2,7 +2,7 @@ package commondocumentation
 
 import docvalues "config-lsp/doc-values"
 
-var ReiserfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
+var ReiserfsDocumentationAssignable = map[docvalues.EnumString]docvalues.DeprecatedValue{
 	docvalues.CreateEnumStringWithDoc(
 		"hash",
 		"Choose which hash function reiserfs will use to find files within directories.",

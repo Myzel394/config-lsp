@@ -2,7 +2,7 @@ package commondocumentation
 
 import docvalues "config-lsp/doc-values"
 
-var DebugfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
+var DebugfsDocumentationAssignable = map[docvalues.EnumString]docvalues.DeprecatedValue{
 	docvalues.CreateEnumStringWithDoc(
 		"uid",
 		"Set the owner of the mountpoint.",

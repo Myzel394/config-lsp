@@ -17,28 +17,28 @@ func GetCompletion(
 	case parser.FstabFieldSpec:
 		value, cursor := GetFieldSafely(line.Fields.Spec, cursor)
 
-		return fstabdocumentation.SpecField.FetchCompletions(
+		return fstabdocumentation.SpecField.DeprecatedFetchCompletions(
 			value,
 			cursor,
 		), nil
 	case parser.FstabFieldMountPoint:
 		value, cursor := GetFieldSafely(line.Fields.MountPoint, cursor)
 
-		return fstabdocumentation.MountPointField.FetchCompletions(
+		return fstabdocumentation.MountPointField.DeprecatedFetchCompletions(
 			value,
 			cursor,
 		), nil
 	case parser.FstabFieldFileSystemType:
 		value, cursor := GetFieldSafely(line.Fields.FilesystemType, cursor)
 
-		return fstabdocumentation.FileSystemTypeField.FetchCompletions(
+		return fstabdocumentation.FileSystemTypeField.DeprecatedFetchCompletions(
 			value,
 			cursor,
 		), nil
 	case parser.FstabFieldOptions:
 		fileSystemType := line.Fields.FilesystemType.Value
 
-		var optionsField docvalues.Value
+		var optionsField docvalues.DeprecatedValue
 
 		if foundField, found := fstabdocumentation.MountOptionsMapField[fileSystemType]; found {
 			optionsField = foundField
@@ -48,7 +48,7 @@ func GetCompletion(
 
 		value, cursor := GetFieldSafely(line.Fields.Options, cursor)
 
-		completions := optionsField.FetchCompletions(
+		completions := optionsField.DeprecatedFetchCompletions(
 			value,
 			cursor,
 		)
@@ -57,14 +57,14 @@ func GetCompletion(
 	case parser.FstabFieldFreq:
 		value, cursor := GetFieldSafely(line.Fields.Freq, cursor)
 
-		return fstabdocumentation.FreqField.FetchCompletions(
+		return fstabdocumentation.FreqField.DeprecatedFetchCompletions(
 			value,
 			cursor,
 		), nil
 	case parser.FstabFieldPass:
 		value, cursor := GetFieldSafely(line.Fields.Pass, cursor)
 
-		return fstabdocumentation.PassField.FetchCompletions(
+		return fstabdocumentation.PassField.DeprecatedFetchCompletions(
 			value,
 			cursor,
 		), nil

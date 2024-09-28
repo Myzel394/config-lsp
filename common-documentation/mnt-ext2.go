@@ -3,7 +3,7 @@ package commondocumentation
 
 import docvalues "config-lsp/doc-values"
 
-var Ext2DocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
+var Ext2DocumentationAssignable = map[docvalues.EnumString]docvalues.DeprecatedValue{
 	docvalues.CreateEnumStringWithDoc(
 		"none",
 		"No checking is done at mount time. This is the default. This is fast.  It is wise to invoke e2fsck(8) every now and then, e.g. at boot time. The non-default behavior is unsupported (check=normal and check=strict options have been removed). Note that these mount options don't have to be supported if ext4 kernel driver is used for ext2 and ext3 file systems.",

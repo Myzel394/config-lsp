@@ -9,7 +9,7 @@ import (
 )
 
 type KeyEnumAssignmentValue struct {
-	Values          map[EnumString]Value
+	Values          map[EnumString]DeprecatedValue
 	Separator       string
 	ValueIsOptional bool
 }
@@ -21,7 +21,7 @@ func (v KeyEnumAssignmentValue) GetTypeDescription() []string {
 
 		if len(valueDescription) == 1 {
 			return []string{
-				fmt.Sprintf("Key-Value pair in form of '<%s>%s<%s>'", firstKey.DescriptionText, v.Separator, valueDescription[0]),
+				fmt.Sprintf("Key-DeprecatedValue pair in form of '<%s>%s<%s>'", firstKey.DescriptionText, v.Separator, valueDescription[0]),
 			}
 		}
 	}
@@ -33,11 +33,11 @@ func (v KeyEnumAssignmentValue) GetTypeDescription() []string {
 	}
 
 	return append([]string{
-		"Key-Value pair in form of 'key%svalue'", v.Separator,
+		"Key-DeprecatedValue pair in form of 'key%svalue'", v.Separator,
 	}, result...)
 }
 
-func (v KeyEnumAssignmentValue) getValue(findKey string) (*Value, bool) {
+func (v KeyEnumAssignmentValue) getValue(findKey string) (*DeprecatedValue, bool) {
 	for key, value := range v.Values {
 		if key.InsertText == findKey {
 			switch value.(type) {
@@ -59,7 +59,7 @@ func (v KeyEnumAssignmentValue) getValue(findKey string) (*Value, bool) {
 	return nil, false
 }
 
-func (v KeyEnumAssignmentValue) CheckIsValid(value string) []*InvalidValue {
+func (v KeyEnumAssignmentValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	parts := strings.Split(value, v.Separator)
 
 	if len(parts) == 0 || parts[0] == "" {
@@ -96,7 +96,7 @@ func (v KeyEnumAssignmentValue) CheckIsValid(value string) []*InvalidValue {
 		}
 	}
 
-	errors := (*checkValue).CheckIsValid(parts[1])
+	errors := (*checkValue).DeprecatedCheckIsValid(parts[1])
 
 	if len(errors) > 0 {
 		ShiftInvalidValues(uint32(len(parts[0])+len(v.Separator)), errors)
@@ -147,7 +147,7 @@ func (v KeyEnumAssignmentValue) getValueAtCursor(line string, cursor uint32) (st
 	relativePosition, found := utils.FindPreviousCharacter(line, v.Separator, int(cursor))
 
 	if found {
-		// Value found
+		// DeprecatedValue found
 		selected := valueSelected
 		return line[uint32(relativePosition+1):], &selected, cursor - uint32(relativePosition)
 	}
@@ -165,7 +165,7 @@ func (v KeyEnumAssignmentValue) getValueAtCursor(line string, cursor uint32) (st
 	return line, &selected, cursor
 }
 
-func (v KeyEnumAssignmentValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v KeyEnumAssignmentValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	if cursor == 0 {
 		return v.FetchEnumCompletions()
 	}
@@ -188,14 +188,14 @@ func (v KeyEnumAssignmentValue) FetchCompletions(line string, cursor uint32) []p
 			return v.FetchEnumCompletions()
 		}
 
-		return (*keyValue).FetchCompletions(line, cursor)
+		return (*keyValue).DeprecatedFetchCompletions(line, cursor)
 	} else {
 		return v.FetchEnumCompletions()
 	}
 }
 
-func (v KeyEnumAssignmentValue) FetchHoverInfo(line string, cursor uint32) []string {
-	if len(v.CheckIsValid(line)) != 0 {
+func (v KeyEnumAssignmentValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
+	if len(v.DeprecatedCheckIsValid(line)) != 0 {
 		return []string{}
 	}
 
@@ -228,7 +228,7 @@ func (v KeyEnumAssignmentValue) FetchHoverInfo(line string, cursor uint32) []str
 			return []string{}
 		}
 
-		info := (*checkValue).FetchHoverInfo(value, cursor)
+		info := (*checkValue).DeprecatedFetchHoverInfo(value, cursor)
 
 		return append(
 			[]string{

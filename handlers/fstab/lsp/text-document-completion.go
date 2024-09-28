@@ -17,7 +17,7 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 
 	if !found {
 		// Empty line, return spec completions
-		return fstabdocumentation.SpecField.FetchCompletions(
+		return fstabdocumentation.SpecField.DeprecatedFetchCompletions(
 			"",
 			params.Position.Character,
 		), nil

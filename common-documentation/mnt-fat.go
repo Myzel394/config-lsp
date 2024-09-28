@@ -4,7 +4,7 @@ import (
 	docvalues "config-lsp/doc-values"
 )
 
-var FatDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
+var FatDocumentationAssignable = map[docvalues.EnumString]docvalues.DeprecatedValue{
 	docvalues.CreateEnumStringWithDoc(
 		"blocksize",
 		"Set blocksize (default 512). This option is obsolete.",

@@ -2,7 +2,7 @@ package commondocumentation
 
 import docvalues "config-lsp/doc-values"
 
-var HpfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
+var HpfsDocumentationAssignable = map[docvalues.EnumString]docvalues.DeprecatedValue{
 	docvalues.CreateEnumStringWithDoc(
 		"uid",
 		"Set the owner and group of all files. (Default: the UID and GID of the current process.)",

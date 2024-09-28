@@ -2,7 +2,7 @@ package commondocumentation
 
 import docvalues "config-lsp/doc-values"
 
-var OverlayDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
+var OverlayDocumentationAssignable = map[docvalues.EnumString]docvalues.DeprecatedValue{
 	docvalues.CreateEnumStringWithDoc(
 		"lowerdir",
 		"Any filesystem, does not need to be on a writable filesystem.",

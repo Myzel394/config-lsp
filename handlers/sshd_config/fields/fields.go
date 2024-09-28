@@ -75,7 +75,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
  Note that each authentication method listed should also be explicitly enabled in the configuration.
  The available authentication methods are: "gssapi-with-mic", "hostbased", "keyboard-interactive", "none" (used for access to password-less accounts when PermitEmptyPasswords is enabled), "password" and "publickey".`,
 		Value: docvalues.OrValue{
-			Values: []docvalues.Value{
+			Values: []docvalues.DeprecatedValue{
 				docvalues.EnumValue{
 					EnforceValues: true,
 					Values: []docvalues.EnumString{
@@ -315,7 +315,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	ssh-ed25519-cert-v01@openssh.com, ecdsa-sha2-nistp256-cert-v01@openssh.com, ecdsa-sha2-nistp384-cert-v01@openssh.com, ecdsa-sha2-nistp521-cert-v01@openssh.com, sk-ssh-ed25519-cert-v01@openssh.com, sk-ecdsa-sha2-nistp256-cert-v01@openssh.com, rsa-sha2-512-cert-v01@openssh.com, rsa-sha2-256-cert-v01@openssh.com, ssh-ed25519, ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521, sk-ssh-ed25519@openssh.com, sk-ecdsa-sha2-nistp256@openssh.com, rsa-sha2-512,rsa-sha2-256
 	The list of available signature algorithms may also be obtained using "ssh -Q HostbasedAcceptedAlgorithms". This was formerly named HostbasedAcceptedKeyTypes.`,
 		Value: docvalues.CustomValue{
-			FetchValue: func(_ docvalues.CustomValueContext) docvalues.Value {
+			FetchValue: func(_ docvalues.CustomValueContext) docvalues.DeprecatedValue {
 				options, err := ssh.QueryOpenSSHOptions("HostbasedAcceptedAlgorithms")
 
 				if err != nil {
@@ -348,7 +348,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	"HostKeyAgent": {
 		Documentation: `Identifies the UNIX-domain socket used to communicate with an agent that has access to the private host keys. If the string "SSH_AUTH_SOCK" is specified, the location of the socket will be read from the SSH_AUTH_SOCK environment variable.`,
 		Value: docvalues.OrValue{
-			Values: []docvalues.Value{
+			Values: []docvalues.DeprecatedValue{
 				docvalues.EnumValue{
 					EnforceValues: true,
 					Values: []docvalues.EnumString{
@@ -364,7 +364,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	ssh-ed25519-cert-v01@openssh.com, ecdsa-sha2-nistp256-cert-v01@openssh.com, ecdsa-sha2-nistp384-cert-v01@openssh.com, ecdsa-sha2-nistp521-cert-v01@openssh.com, sk-ssh-ed25519-cert-v01@openssh.com, sk-ecdsa-sha2-nistp256-cert-v01@openssh.com, rsa-sha2-512-cert-v01@openssh.com, rsa-sha2-256-cert-v01@openssh.com, ssh-ed25519, ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521, sk-ssh-ed25519@openssh.com, sk-ecdsa-sha2-nistp256@openssh.com, rsa-sha2-512,rsa-sha2-256
 	The list of available signature algorithms may also be obtained using "ssh -Q HostKeyAlgorithms".`,
 		Value: docvalues.CustomValue{
-			FetchValue: func(_ docvalues.CustomValueContext) docvalues.Value {
+			FetchValue: func(_ docvalues.CustomValueContext) docvalues.DeprecatedValue {
 				options, _ := ssh.QueryOpenSSHOptions("HostKeyAlgorithms")
 
 				return prefixPlusMinusCaret(options)
@@ -400,7 +400,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	"IPQoS": {
 		Documentation: `Specifies the IPv4 type-of-service or DSCP class for the connection. Accepted values are af11, af12, af13, af21, af22, af23, af31, af32, af33, af41, af42, af43, cs0, cs1, cs2, cs3, cs4, cs5, cs6, cs7, ef, le, lowdelay, throughput, reliability, a numeric value, or none to use the operating system default. This option may take one or two arguments, separated by whitespace. If one argument is specified, it is used as the packet class unconditionally. If two values are specified, the first is automatically selected for interactive sessions and the second for non-interactive sessions. The default is af21 (Low-Latency Data) for interactive sessions and cs1 (Lower Effort) for non-interactive sessions.`,
 		Value: docvalues.OrValue{
-			Values: []docvalues.Value{
+			Values: []docvalues.DeprecatedValue{
 				docvalues.NumberValue{},
 				docvalues.EnumValue{
 					Values: []docvalues.EnumString{
@@ -613,7 +613,7 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 				},
 				Separator: ":",
 				Value: docvalues.OrValue{
-					Values: []docvalues.Value{
+					Values: []docvalues.DeprecatedValue{
 						docvalues.EnumValue{
 							Values: []docvalues.EnumString{
 								{
@@ -640,7 +640,7 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 			SubValue: docvalues.KeyValueAssignmentValue{
 				ValueIsOptional: true,
 				Key: docvalues.OrValue{
-					Values: []docvalues.Value{
+					Values: []docvalues.DeprecatedValue{
 						docvalues.EnumValue{
 							Values: []docvalues.EnumString{
 								{
@@ -660,7 +660,7 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 				},
 				Separator: ":",
 				Value: docvalues.OrValue{
-					Values: []docvalues.Value{
+					Values: []docvalues.DeprecatedValue{
 						docvalues.EnumValue{
 							Values: []docvalues.EnumString{
 								{
@@ -712,7 +712,7 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 	"PermitUserEnvironment": {
 		Documentation: `Specifies whether ~/.ssh/environment and environment= options in ~/.ssh/authorized_keys are processed by sshd(8). Valid options are yes, no or a pattern-list specifying which environment variable names to accept (for example "LANG,LC_*"). The default is no. Enabling environment processing may enable users to bypass access restrictions in some configurations using mechanisms such as LD_PRELOAD.`,
 		Value: docvalues.OrValue{
-			Values: []docvalues.Value{
+			Values: []docvalues.DeprecatedValue{
 				docvalues.EnumValue{
 					Values: []docvalues.EnumString{
 						docvalues.CreateEnumString("yes"),
@@ -734,7 +734,7 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 	"PerSourceMaxStartups": {
 		Documentation: `Specifies the number of unauthenticated connections allowed from a given source address, or “none” if there is no limit. This limit is applied in addition to MaxStartups, whichever is lower. The default is none.`,
 		Value: docvalues.OrValue{
-			Values: []docvalues.Value{
+			Values: []docvalues.DeprecatedValue{
 				docvalues.EnumValue{
 					EnforceValues: true,
 					Values: []docvalues.EnumString{
@@ -780,7 +780,7 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 	ssh-ed25519-cert-v01@openssh.com, ecdsa-sha2-nistp256-cert-v01@openssh.com, ecdsa-sha2-nistp384-cert-v01@openssh.com, ecdsa-sha2-nistp521-cert-v01@openssh.com, sk-ssh-ed25519-cert-v01@openssh.com, sk-ecdsa-sha2-nistp256-cert-v01@openssh.com, rsa-sha2-512-cert-v01@openssh.com, rsa-sha2-256-cert-v01@openssh.com, ssh-ed25519, ecdsa-sha2-nistp256,ecdsa-sha2-nistp384,ecdsa-sha2-nistp521, sk-ssh-ed25519@openssh.com, sk-ecdsa-sha2-nistp256@openssh.com, rsa-sha2-512,rsa-sha2-256
 	The list of available signature algorithms may also be obtained using "ssh -Q PubkeyAcceptedAlgorithms".`,
 		Value: docvalues.CustomValue{
-			FetchValue: func(_ docvalues.CustomValueContext) docvalues.Value {
+			FetchValue: func(_ docvalues.CustomValueContext) docvalues.DeprecatedValue {
 				options, _ := ssh.QueryOpenSSHOptions("PubkeyAcceptedAlgorithms")
 
 				return prefixPlusMinusCaret(options)
@@ -828,7 +828,7 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 	"RDomain": {
 		Documentation: `Specifies an explicit routing domain that is applied after authentication has completed. The user session, as well as any forwarded or listening IP sockets, will be bound to this rdomain(4). If the routing domain is set to %D, then the domain in which the incoming connection was received will be applied.`,
 		Value: docvalues.OrValue{
-			Values: []docvalues.Value{
+			Values: []docvalues.DeprecatedValue{
 				docvalues.EnumValue{
 					Values: []docvalues.EnumString{
 						{
@@ -933,7 +933,7 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 	"VersionAddendum": {
 		Documentation: `Optionally specifies additional text to append to the SSH protocol banner sent by the server upon connection. The default is none.`,
 		Value: docvalues.OrValue{
-			Values: []docvalues.Value{
+			Values: []docvalues.DeprecatedValue{
 				docvalues.EnumValue{
 					EnforceValues: true,
 					Values: []docvalues.EnumString{

@@ -14,7 +14,7 @@ type Prefix struct {
 }
 type PrefixWithMeaningValue struct {
 	Prefixes []Prefix
-	SubValue Value
+	SubValue DeprecatedValue
 }
 
 func (v PrefixWithMeaningValue) GetTypeDescription() []string {
@@ -32,17 +32,17 @@ func (v PrefixWithMeaningValue) GetTypeDescription() []string {
 	)
 }
 
-func (v PrefixWithMeaningValue) CheckIsValid(value string) []*InvalidValue {
+func (v PrefixWithMeaningValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	for _, prefix := range v.Prefixes {
 		if strings.HasPrefix(value, prefix.Prefix) {
-			return v.SubValue.CheckIsValid(value[len(prefix.Prefix):])
+			return v.SubValue.DeprecatedCheckIsValid(value[len(prefix.Prefix):])
 		}
 	}
 
-	return v.SubValue.CheckIsValid(value)
+	return v.SubValue.DeprecatedCheckIsValid(value)
 }
 
-func (v PrefixWithMeaningValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v PrefixWithMeaningValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	textFormat := protocol.InsertTextFormatPlainText
 	kind := protocol.CompletionItemKindText
 
@@ -67,19 +67,19 @@ func (v PrefixWithMeaningValue) FetchCompletions(line string, cursor uint32) []p
 		})
 	}
 
-	return append(prefixCompletions, v.SubValue.FetchCompletions(line, cursor)...)
+	return append(prefixCompletions, v.SubValue.DeprecatedFetchCompletions(line, cursor)...)
 }
 
-func (v PrefixWithMeaningValue) FetchHoverInfo(line string, cursor uint32) []string {
+func (v PrefixWithMeaningValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	for _, prefix := range v.Prefixes {
 		if strings.HasPrefix(line, prefix.Prefix) {
 			return append([]string{
 				fmt.Sprintf("Prefix: _%s_ -> %s", prefix.Prefix, prefix.Meaning),
 			},
-				v.SubValue.FetchHoverInfo(line[1:], cursor)...,
+				v.SubValue.DeprecatedFetchHoverInfo(line[1:], cursor)...,
 			)
 		}
 	}
 
-	return v.SubValue.FetchHoverInfo(line[1:], cursor)
+	return v.SubValue.DeprecatedFetchHoverInfo(line[1:], cursor)
 }

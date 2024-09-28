@@ -5,7 +5,7 @@ package commondocumentation
 
 import docvalues "config-lsp/doc-values"
 
-var Ext3DocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
+var Ext3DocumentationAssignable = map[docvalues.EnumString]docvalues.DeprecatedValue{
 	docvalues.CreateEnumStringWithDoc(
 		"journal_dev",
 		"When the external journal device's major/minor numbers have changed, these options allow the user to specify the new journal location.  The journal device is identified either through its new major/minor numbers encoded in devnum, or via a path to the device.",

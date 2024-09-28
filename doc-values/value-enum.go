@@ -78,7 +78,7 @@ func (v EnumValue) GetTypeDescription() []string {
 
 	return lines
 }
-func (v EnumValue) CheckIsValid(value string) []*InvalidValue {
+func (v EnumValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	if !v.EnforceValues {
 		return nil
 	}
@@ -101,7 +101,7 @@ func (v EnumValue) CheckIsValid(value string) []*InvalidValue {
 		},
 	}
 }
-func (v EnumValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v EnumValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	completions := make([]protocol.CompletionItem, len(v.Values))
 
 	for index, value := range v.Values {
@@ -118,7 +118,7 @@ func (v EnumValue) FetchCompletions(line string, cursor uint32) []protocol.Compl
 
 	return completions
 }
-func (v EnumValue) FetchHoverInfo(line string, cursor uint32) []string {
+func (v EnumValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	for _, value := range v.Values {
 		if value.InsertText == line {
 			return []string{

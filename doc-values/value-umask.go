@@ -28,7 +28,7 @@ func (v UmaskValue) GetTypeDescription() []string {
 
 var umaskPattern = regexp.MustCompile("^[0-7]{4}$")
 
-func (v UmaskValue) CheckIsValid(value string) []*InvalidValue {
+func (v UmaskValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	if !umaskPattern.MatchString(value) {
 		return []*InvalidValue{{
 			Err:   UmaskInvalidError{},
@@ -40,7 +40,7 @@ func (v UmaskValue) CheckIsValid(value string) []*InvalidValue {
 	return []*InvalidValue{}
 }
 
-func (v UmaskValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v UmaskValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	kind := protocol.CompletionItemKindValue
 
 	return []protocol.CompletionItem{
@@ -111,6 +111,6 @@ func (v UmaskValue) FetchCompletions(line string, cursor uint32) []protocol.Comp
 	}
 }
 
-func (v UmaskValue) FetchHoverInfo(line string, cursor uint32) []string {
+func (v UmaskValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	return []string{}
 }

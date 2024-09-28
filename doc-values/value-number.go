@@ -48,7 +48,7 @@ func (v NumberValue) GetTypeDescription() []string {
 
 	return []string{"A number"}
 }
-func (v NumberValue) CheckIsValid(value string) []*InvalidValue {
+func (v NumberValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	number, err := strconv.Atoi(value)
 
 	if err != nil {
@@ -73,10 +73,10 @@ func (v NumberValue) CheckIsValid(value string) []*InvalidValue {
 
 	return nil
 }
-func (v NumberValue) FetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v NumberValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	return []protocol.CompletionItem{}
 }
 
-func (v NumberValue) FetchHoverInfo(line string, cursor uint32) []string {
+func (v NumberValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	return []string{}
 }

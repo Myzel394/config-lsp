@@ -232,7 +232,7 @@ func analyzeProperty(
 		}
 	}
 
-	errors := option.CheckIsValid(p.Value.Value)
+	errors := option.DeprecatedCheckIsValid(p.Value.Value)
 
 	return utils.Map(errors, func(err *docvalues.InvalidValue) protocol.Diagnostic {
 		severity := protocol.DiagnosticSeverityError

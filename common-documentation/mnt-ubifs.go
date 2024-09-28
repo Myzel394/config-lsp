@@ -2,7 +2,7 @@ package commondocumentation
 
 import docvalues "config-lsp/doc-values"
 
-var UbifsDocumentationAssignable = map[docvalues.EnumString]docvalues.Value{
+var UbifsDocumentationAssignable = map[docvalues.EnumString]docvalues.DeprecatedValue{
 	docvalues.CreateEnumStringWithDoc(
 		"compr",
 		"Select the default compressor which is used when new files are written. It is still possible to read compressed files if mounted with the none option.",
