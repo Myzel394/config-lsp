@@ -147,6 +147,10 @@ func (c SSHConfig) FindOption(line uint32) (*SSHOption, SSHBlock) {
 			option = rawOption.(*SSHOption)
 		}
 	} else {
+		if line == block.GetLocation().Start.Line {
+			return block.GetEntryOption(), block
+		}
+
 		if rawOption, found := block.GetOptions().Get(line); found {
 			option = rawOption.(*SSHOption)
 		}

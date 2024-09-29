@@ -257,6 +257,72 @@ Match originalhost laptop exec "[[ $(/usr/bin/dig +short laptop.lan) == '' ]]"
 	}
 }
 
+func TestIncompleteExample(
+	t *testing.T,
+) {
+	input := utils.Dedent(`
+User 
+`)
+	p := NewSSHConfig()
+
+	errors := p.Parse(input)
+
+	if len(errors) > 0 {
+		t.Fatalf("Expected no errors, got %v", errors)
+	}
+
+	if !(p.Options.Size() == 1) {
+		t.Errorf("Expected 1 option, but got: %v", p.Options.Size())
+	}
+
+	if !(len(utils.KeysOfMap(p.CommentLines)) == 0) {
+		t.Errorf("Expected no comment lines, but got: %v", len(p.CommentLines))
+	}
+
+	rawFirstEntry, _ := p.Options.Get(uint32(0))
+	firstEntry := rawFirstEntry.(*SSHOption)
+	if !(firstEntry.Value.Raw == "User " && firstEntry.Key.Value.Raw == "User") {
+		t.Errorf("Expected first entry to be User, but got: %v", firstEntry)
+	}
+
+	if !(firstEntry.OptionValue != nil && firstEntry.OptionValue.Value.Raw == "") {
+		t.Errorf("Expected first entry to have an empty value, but got: %v", firstEntry)
+	}
+}
+
+func TestIncompleteMatch(
+	t *testing.T,
+) {
+	input := utils.Dedent(`
+Match 
+`)
+	p := NewSSHConfig()
+
+	errors := p.Parse(input)
+
+	if len(errors) > 0 {
+		t.Fatalf("Expected no errors, got %v", errors)
+	}
+
+	if !(p.Options.Size() == 1) {
+		t.Errorf("Expected 1 option, but got: %v", p.Options.Size())
+	}
+
+	if !(len(utils.KeysOfMap(p.CommentLines)) == 0) {
+		t.Errorf("Expected no comment lines, but got: %v", len(p.CommentLines))
+	}
+
+	rawFirstEntry, _ := p.Options.Get(uint32(0))
+	firstEntry := rawFirstEntry.(*SSHMatchBlock)
+	if !(firstEntry.MatchOption.Key.Value.Raw == "Match") {
+		t.Errorf("Expected first entry to be User, but got: %v", firstEntry)
+	}
+
+	if !(firstEntry.MatchOption.OptionValue != nil && firstEntry.MatchOption.OptionValue.Value.Raw == "") {
+		t.Errorf("Expected first entry to have an empty value, but got: %v", firstEntry)
+	}
+}
+
 func TestComplexBigExample(
 	t *testing.T,
 ) {

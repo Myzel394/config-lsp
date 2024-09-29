@@ -72,12 +72,12 @@ func GetOptionCompletions(
 	}
 
 	if entry.Key.Key == "Match" {
-		return nil, nil
-		// return getMatchCompletions(
-		// 	d,
-		// 	cursor,
-		// 	matchBlock.MatchValue,
-		// )
+		matchBlock := block.(*ast.SSHMatchBlock)
+		return getMatchCompletions(
+			d,
+			cursor,
+			matchBlock.MatchValue,
+		)
 	}
 
 	if entry.OptionValue == nil {

@@ -3,8 +3,9 @@ package handlers
 import (
 	"config-lsp/common"
 	sshconfig "config-lsp/handlers/ssh_config"
+	"config-lsp/handlers/ssh_config/fields"
 	matchparser "config-lsp/handlers/ssh_config/match-parser"
-	"config-lsp/handlers/sshd_config/fields"
+
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
@@ -103,20 +104,20 @@ func getMatchValueCompletions(
 	}
 
 	switch entry.Criteria.Type {
-	case matchparser.MatchCriteriaTypeUser:
-		return fields.MatchUserField.DeprecatedFetchCompletions(line, relativeCursor)
-	case matchparser.MatchCriteriaTypeGroup:
-		return fields.MatchGroupField.DeprecatedFetchCompletions(line, relativeCursor)
+	case matchparser.MatchCriteriaTypeExec:
+		return fields.MatchExecField.DeprecatedFetchCompletions(line, relativeCursor)
+	case matchparser.MatchCriteriaTypeLocalNetwork:
+		return fields.MatchLocalNetworkField.DeprecatedFetchCompletions(line, relativeCursor)
 	case matchparser.MatchCriteriaTypeHost:
 		return fields.MatchHostField.DeprecatedFetchCompletions(line, relativeCursor)
-	case matchparser.MatchCriteriaTypeAddress:
-		return fields.MatchAddressField.DeprecatedFetchCompletions(line, relativeCursor)
-	case matchparser.MatchCriteriaTypeLocalAddress:
-		return fields.MatchLocalAddressField.DeprecatedFetchCompletions(line, relativeCursor)
-	case matchparser.MatchCriteriaTypeLocalPort:
-		return fields.MatchLocalPortField.DeprecatedFetchCompletions(line, relativeCursor)
-	case matchparser.MatchCriteriaTypeRDomain:
-		return fields.MatchRDomainField.DeprecatedFetchCompletions(line, relativeCursor)
+	case matchparser.MatchCriteriaTypeOriginalHost:
+		return fields.MatchOriginalHostField.DeprecatedFetchCompletions(line, relativeCursor)
+	case matchparser.MatchCriteriaTypeTagged:
+		return fields.MatchTypeTaggedField.DeprecatedFetchCompletions(line, relativeCursor)
+	case matchparser.MatchCriteriaTypeUser:
+		return fields.MatchUserField.DeprecatedFetchCompletions(line, relativeCursor)
+	case matchparser.MatchCriteriaTypeLocalUser:
+		return fields.MatchTypeLocalUserField.DeprecatedFetchCompletions(line, relativeCursor)
 	}
 
 	return nil
