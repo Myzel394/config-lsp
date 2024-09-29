@@ -27,7 +27,7 @@ var MatchValueFieldMap = map[matchparser.MatchCriteriaType]docvalues.DeprecatedV
 	matchparser.MatchCriteriaTypeLocalUser:    MatchTypeLocalUserField,
 }
 
-var MatchAllOptionAllowedPreviousOptions = map[matchparser.MatchCriteriaType]struct{}{
+var MatchAllArgumentAllowedPreviousOptions = map[matchparser.MatchCriteriaType]struct{}{
 	matchparser.MatchCriteriaTypeCanonical: {},
 	matchparser.MatchCriteriaTypeFinal:     {},
 }

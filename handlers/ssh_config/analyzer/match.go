@@ -81,7 +81,7 @@ func checkMatch(
 		allEntry := allEntries[0]
 		previousEntry := m.GetPreviousEntry(allEntry)
 
-		if previousEntry != nil && !utils.KeyExists(fields.MatchAllOptionAllowedPreviousOptions, previousEntry.Criteria.Type) {
+		if previousEntry != nil && !utils.KeyExists(fields.MatchAllArgumentAllowedPreviousOptions, previousEntry.Criteria.Type) {
 			errs = append(errs, common.LSPError{
 				Range: allEntry.LocationRange,
 				Err:   errors.New("'all' should either be the first entry or immediately follow 'final' or 'canonical'"),

@@ -5,6 +5,7 @@ import (
 	sshconfig "config-lsp/handlers/ssh_config"
 	"config-lsp/handlers/ssh_config/fields"
 	matchparser "config-lsp/handlers/ssh_config/match-parser"
+	"config-lsp/utils"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -24,7 +25,21 @@ func getMatchCompletions(
 	entry := match.GetEntryAtPosition(cursor)
 
 	if entry == nil || entry.Criteria.ContainsPosition(cursor) {
-		return getMatchCriteriaCompletions(), nil
+		completions := getMatchCriteriaCompletions()
+
+		var showAllArgument = true
+
+		previousEntry := match.GetPreviousEntryFromCursor(cursor)
+
+		if previousEntry != nil && !utils.KeyExists(fields.MatchAllArgumentAllowedPreviousOptions, previousEntry.Criteria.Type) {
+			showAllArgument = false
+		}
+
+		if showAllArgument {
+			completions = append(completions, getMatchAllKeywordCompletion())
+		}
+
+		return completions, nil
 	}
 
 	return getMatchValueCompletions(entry, cursor), nil

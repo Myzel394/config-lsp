@@ -53,6 +53,19 @@ func (m Match) GetPreviousEntry(e *MatchEntry) *MatchEntry {
 	return m.Entries[index-1]
 }
 
+func (m Match) GetPreviousEntryFromCursor(cursor common.CursorPosition) *MatchEntry {
+	entries := slices.Clone(m.Entries)
+	slices.Reverse(entries)
+
+	for _, entry := range entries {
+		if entry.IsPositionAfterStart(cursor) {
+			return entry
+		}
+	}
+
+	return nil
+}
+
 func (e MatchEntry) GetValueAtPosition(position common.Position) *MatchValue {
 	if e.Values == nil {
 		return nil
