@@ -4,6 +4,7 @@ import (
 	"config-lsp/common"
 	commonparser "config-lsp/common/parser"
 	sshconfig "config-lsp/handlers/ssh_config"
+	"config-lsp/utils"
 	"errors"
 	"strings"
 )
@@ -28,9 +29,11 @@ func checkIsUsingDoubleQuotes(
 	value commonparser.ParsedString,
 	valueRange common.LocationRange,
 ) []common.LSPError {
+	quoteRanges := utils.GetQuoteRanges(value.Raw)
 	singleQuotePosition := strings.Index(value.Raw, "'")
 
-	if singleQuotePosition != -1 {
+	// Single quoe
+	if singleQuotePosition != -1 && !quoteRanges.IsCharInside(singleQuotePosition) {
 		return []common.LSPError{
 			{
 				Range: valueRange,
