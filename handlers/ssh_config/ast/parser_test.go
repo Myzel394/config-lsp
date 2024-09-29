@@ -1,6 +1,7 @@
 package ast
 
 import (
+	matchparser "config-lsp/handlers/ssh_config/match-parser"
 	"config-lsp/utils"
 	"testing"
 )
@@ -320,6 +321,57 @@ Match
 
 	if !(firstEntry.MatchOption.OptionValue != nil && firstEntry.MatchOption.OptionValue.Value.Raw == "") {
 		t.Errorf("Expected first entry to have an empty value, but got: %v", firstEntry)
+	}
+}
+
+func TestMatchWithIncompleteEntry(
+	t *testing.T,
+) {
+	input := utils.Dedent(`
+Match user 
+`)
+	p := NewSSHConfig()
+
+	errors := p.Parse(input)
+
+	if len(errors) > 0 {
+		t.Fatalf("Expected no errors, got %v", errors)
+	}
+
+	if !(p.Options.Size() == 1) {
+		t.Errorf("Expected 1 option, but got: %v", p.Options.Size())
+	}
+
+	if !(len(utils.KeysOfMap(p.CommentLines)) == 0) {
+		t.Errorf("Expected no comment lines, but got: %v", len(p.CommentLines))
+	}
+
+	rawFirstEntry, _ := p.Options.Get(uint32(0))
+	firstEntry := rawFirstEntry.(*SSHMatchBlock)
+	if !(firstEntry.MatchOption.Key.Value.Raw == "Match") {
+		t.Errorf("Expected first entry to be User, but got: %v", firstEntry)
+	}
+
+	if !(firstEntry.MatchOption.OptionValue != nil && firstEntry.MatchOption.OptionValue.Value.Raw == "user ") {
+		t.Errorf("Expected first entry to have an empty value, but got: %v", firstEntry)
+	}
+
+	if !(firstEntry.MatchValue.Entries[0].Criteria.Type == matchparser.MatchCriteriaTypeUser) {
+		t.Errorf("Expected first entry to have a user criteria, but got: %v", firstEntry)
+	}
+}
+
+func TestInvalidMatchExample(
+	t *testing.T,
+) {
+	input := utils.Dedent(`
+Match us
+`)
+	p := NewSSHConfig()
+	errors := p.Parse(input)
+
+	if len(errors) == 0 {
+		t.Fatalf("Expected errors, got none")
 	}
 }
 

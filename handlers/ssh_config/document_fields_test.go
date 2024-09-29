@@ -56,4 +56,9 @@ Match originalhost laptop exec "[[ $(/usr/bin/dig +short laptop.lan) == '' ]]"
 	if !(d.FindOptionByNameAndBlock("ProxyCommand", nil).Option.Start.Line == 0) {
 		t.Errorf("Expected 0, got %v", d.FindOptionByNameAndBlock("ProxyCommand", nil).Option.Start.Line)
 	}
+
+	matchBlocks := d.GetAllMatchBlocks()
+	if !(len(matchBlocks) == 1 && matchBlocks[0].Start.Line == 6) {
+		t.Errorf("Expected 1 match block, got %v", matchBlocks)
+	}
 }

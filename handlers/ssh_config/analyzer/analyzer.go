@@ -28,6 +28,7 @@ func Analyze(
 	}
 
 	errors = append(errors, analyzeDependents(d)...)
+	errors = append(errors, analyzeMatchBlocks(d)...)
 
 	return common.ErrsToDiagnostics(errors)
 }

@@ -1,6 +1,9 @@
 package sshconfig
 
-import "config-lsp/handlers/ssh_config/ast"
+import (
+	"config-lsp/handlers/ssh_config/ast"
+	"config-lsp/utils"
+)
 
 func (d SSHDocument) FindOptionByNameAndBlock(
 	name string,
@@ -34,4 +37,20 @@ func (d SSHDocument) DoesOptionExist(
 	block ast.SSHBlock,
 ) bool {
 	return d.FindOptionByNameAndBlock(name, block) != nil
+}
+
+func (d SSHDocument) GetAllMatchBlocks() []*ast.SSHMatchBlock {
+	matchBlocks := make([]*ast.SSHMatchBlock, 0, 5)
+
+	options := d.Indexes.AllOptionsPerName["Match"]
+	blocks := utils.KeysOfMap(options)
+
+	for _, block := range blocks {
+		switch block.GetBlockType() {
+		case ast.SSHBlockTypeMatch:
+			matchBlocks = append(matchBlocks, block.(*ast.SSHMatchBlock))
+		}
+	}
+
+	return matchBlocks
 }

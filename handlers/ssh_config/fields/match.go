@@ -26,3 +26,14 @@ var MatchValueFieldMap = map[matchparser.MatchCriteriaType]docvalues.DeprecatedV
 	matchparser.MatchCriteriaTypeUser:         MatchUserField,
 	matchparser.MatchCriteriaTypeLocalUser:    MatchTypeLocalUserField,
 }
+
+var MatchAllOptionAllowedPreviousOptions = map[matchparser.MatchCriteriaType]struct{}{
+	matchparser.MatchCriteriaTypeCanonical: {},
+	matchparser.MatchCriteriaTypeFinal:     {},
+}
+
+var MatchSingleOptionCriterias = map[matchparser.MatchCriteriaType]struct{}{
+	matchparser.MatchCriteriaTypeAll:       {},
+	matchparser.MatchCriteriaTypeCanonical: {},
+	matchparser.MatchCriteriaTypeFinal:     {},
+}

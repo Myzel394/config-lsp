@@ -25,10 +25,10 @@ func analyzeStructureIsValid(
 			errs = append(errs, checkOption(d, entry.(*ast.SSHOption), nil)...)
 		case *ast.SSHMatchBlock:
 			matchBlock := entry.(*ast.SSHMatchBlock)
-			errs = append(errs, checkMatchBlock(d, matchBlock)...)
+			errs = append(errs, checkBlock(d, matchBlock)...)
 		case *ast.SSHHostBlock:
 			hostBlock := entry.(*ast.SSHHostBlock)
-			errs = append(errs, checkHostBlock(d, hostBlock)...)
+			errs = append(errs, checkBlock(d, hostBlock)...)
 		}
 
 	}
@@ -106,33 +106,19 @@ func checkOption(
 	return errs
 }
 
-func checkMatchBlock(
+func checkBlock(
 	d *sshconfig.SSHDocument,
-	matchBlock *ast.SSHMatchBlock,
+	block ast.SSHBlock,
 ) []common.LSPError {
 	errs := make([]common.LSPError, 0)
 
-	it := matchBlock.Options.Iterator()
+	errs = append(errs, checkOption(d, block.GetEntryOption(), block)...)
+
+	it := block.GetOptions().Iterator()
 	for it.Next() {
 		option := it.Value().(*ast.SSHOption)
 
-		errs = append(errs, checkOption(d, option, matchBlock)...)
-	}
-
-	return errs
-}
-
-func checkHostBlock(
-	d *sshconfig.SSHDocument,
-	hostBlock *ast.SSHHostBlock,
-) []common.LSPError {
-	errs := make([]common.LSPError, 0)
-
-	it := hostBlock.Options.Iterator()
-	for it.Next() {
-		option := it.Value().(*ast.SSHOption)
-
-		errs = append(errs, checkOption(d, option, hostBlock)...)
+		errs = append(errs, checkOption(d, option, block)...)
 	}
 
 	return errs
