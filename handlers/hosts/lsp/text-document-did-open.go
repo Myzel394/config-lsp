@@ -7,7 +7,6 @@ import (
 	"config-lsp/handlers/hosts/ast"
 	"config-lsp/handlers/hosts/indexes"
 	"config-lsp/utils"
-	"fmt"
 
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -30,7 +29,6 @@ func TextDocumentDidOpen(
 	errors := parser.Parse(params.TextDocument.Text)
 	diagnostics := make([]protocol.Diagnostic, 0)
 
-	println(fmt.Sprintf("Errors: %v", errors))
 	if len(errors) > 0 {
 		diagnostics = utils.Map(
 			errors,
