@@ -29,19 +29,19 @@ func TextDocumentDidOpen(
 		sshconfig.DocumentParserMap[params.TextDocument.URI] = document
 	}
 
+	diagnostics := make([]protocol.Diagnostic, 0)
 	errors := document.Config.Parse(params.TextDocument.Text)
 
-	diagnostics := utils.Map(
-		errors,
-		func(err common.LSPError) protocol.Diagnostic {
-			return err.ToDiagnostic()
-		},
-	)
-
-	diagnostics = append(
-		diagnostics,
-		analyzer.Analyze(document)...,
-	)
+	if len(errors) > 0 {
+		diagnostics = append(diagnostics, utils.Map(
+			errors,
+			func(err common.LSPError) protocol.Diagnostic {
+				return err.ToDiagnostic()
+			},
+		)...)
+	} else {
+		diagnostics = append(diagnostics, analyzer.Analyze(document)...)
+	}
 
 	if len(diagnostics) > 0 {
 		common.SendDiagnostics(context, params.TextDocument.URI, diagnostics)
