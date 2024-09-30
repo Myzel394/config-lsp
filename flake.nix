@@ -43,9 +43,10 @@
         devShells.default = pkgs.mkShell {
           buildInputs = inputs ++ (with pkgs; [
             mailutils
-            postfix
             wireguard-tools
-          ]);
+          ]) ++ (if pkgs.stdenv.isLinux then with pkgs; [
+            postfix
+          ] else []);
         };
       }
     );
