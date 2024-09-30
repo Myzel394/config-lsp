@@ -69,7 +69,7 @@ Host server1
 	indexes, errors := CreateIndexes(*config)
 
 	if !(len(errors) == 1) {
-		t.Errorf("Expected 1 error, but got %v", errors)
+		t.Fatalf("Expected 1 error, but got %v", errors)
 	}
 
 	if !(errors[0].Range.Start.Line == 4) {
@@ -78,5 +78,38 @@ Host server1
 
 	if !(len(indexes.AllOptionsPerName["User"]) == 1) {
 		t.Errorf("Expected 1 User option, but got %v", indexes.AllOptionsPerName["User"])
+	}
+}
+
+func TestIgnoredUnknownExample(
+	t *testing.T,
+) {
+	input := utils.Dedent(`
+IgnoreUnknown UseKeychain
+User root
+UseKeychain yes
+`)
+	config := ast.NewSSHConfig()
+
+	errors := config.Parse(input)
+
+	if len(errors) > 0 {
+		t.Fatalf("Expected no errors, but got %v", len(errors))
+	}
+
+	indexes, errors := CreateIndexes(*config)
+
+	if len(errors) > 0 {
+		t.Fatalf("Expected 1 error, but got %v", errors)
+	}
+
+	firstOption, _ := config.Options.Get(uint32(0))
+	option := firstOption.(*ast.SSHOption)
+	if !(indexes.IgnoredOptions[nil].OptionValue == option) {
+		t.Errorf("Expected IgnoredOptions to be first option, but got %v", option)
+	}
+
+	if !(len(indexes.IgnoredOptions[nil].IgnoredOptions) == 1 && utils.KeyExists(indexes.IgnoredOptions[nil].IgnoredOptions, "UseKeychain")) {
+		t.Errorf("Expected IgnoreOptions to contain 'UseKeychain', but got: %v", indexes.IgnoredOptions[nil].IgnoredOptions)
 	}
 }

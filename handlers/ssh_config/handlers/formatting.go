@@ -44,4 +44,3 @@ func FormatDocument(
 
 	return edits, nil
 }
-

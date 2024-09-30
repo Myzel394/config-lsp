@@ -4,6 +4,7 @@ import (
 	"config-lsp/common"
 	"config-lsp/handlers/ssh_config/ast"
 	"config-lsp/handlers/ssh_config/fields"
+	"config-lsp/utils"
 	"errors"
 	"fmt"
 	"regexp"
@@ -15,6 +16,7 @@ func NewSSHIndexes() *SSHIndexes {
 	return &SSHIndexes{
 		AllOptionsPerName: make(map[string](map[ast.SSHBlock]([]*ast.SSHOption)), 0),
 		Includes:          make([]*SSHIndexIncludeLine, 0),
+		IgnoredOptions:    make(map[ast.SSHBlock]SSHIndexIgnoredUnknowns),
 	}
 }
 
@@ -125,5 +127,31 @@ func addOption(
 		}
 	}
 
+	ignoredOptions, found := i.AllOptionsPerName["IgnoreUnknown"]
+
+	if found {
+		for block, options := range ignoredOptions {
+			// Only using first options as multiple `IgnoreUnknown`s are not allowed anyway
+			addIgnoredOption(i, options[0], block)
+		}
+	}
+
 	return errs
+}
+
+var ignoredValuesPattern = regexp.MustCompile(`\S+`)
+
+func addIgnoredOption(
+	i *SSHIndexes,
+	option *ast.SSHOption,
+	block ast.SSHBlock,
+) {
+	rawIgnored := option.OptionValue.Value.Value
+	ignoredAsSlice := ignoredValuesPattern.FindAllString(rawIgnored, -1)
+	ignored := utils.SliceToMap(ignoredAsSlice, struct{}{})
+
+	i.IgnoredOptions[block] = SSHIndexIgnoredUnknowns{
+		OptionValue:    option,
+		IgnoredOptions: ignored,
+	}
 }
