@@ -13,11 +13,14 @@ func TestSimpleInvalidQuotesExample(
 	d := testutils_test.DocumentFromInput(t, `
 PermitRootLogin 'yes'
 `)
+	ctx := &analyzerContext{
+		document:    d,
+		diagnostics: make([]protocol.Diagnostic, 0),
+	}
+	analyzeQuotesAreValid(ctx)
 
-	errors := analyzeQuotesAreValid(d)
-
-	if !(len(errors) == 1) {
-		t.Errorf("Expected 1 error, got %v", len(errors))
+	if !(len(ctx.diagnostics) == 1) {
+		t.Errorf("Expected 1 error, got %v", len(ctx.diagnostics))
 	}
 }
 
@@ -27,11 +30,14 @@ func TestSingleQuotesKeyAndOptionExample(
 	d := testutils_test.DocumentFromInput(t, `
 'Port' '22'
 `)
+	ctx := &analyzerContext{
+		document:    d,
+		diagnostics: make([]protocol.Diagnostic, 0),
+	}
+	analyzeQuotesAreValid(ctx)
 
-	errors := analyzeQuotesAreValid(d)
-
-	if !(len(errors) == 2) {
-		t.Errorf("Expected 2 errors, got %v", len(errors))
+	if !(len(ctx.diagnostics) == 2) {
+		t.Errorf("Expected 2 ctx.diagnostics, got %v", len(ctx.diagnostics))
 	}
 }
 
@@ -41,11 +47,14 @@ func TestSimpleUnclosedQuoteExample(
 	d := testutils_test.DocumentFromInput(t, `
 PermitRootLogin "yes
 `)
+	ctx := &analyzerContext{
+		document:    d,
+		diagnostics: make([]protocol.Diagnostic, 0),
+	}
+	analyzeQuotesAreValid(ctx)
 
-	errors := analyzeQuotesAreValid(d)
-
-	if !(len(errors) == 1) {
-		t.Errorf("Expected 1 error, got %v", len(errors))
+	if !(len(ctx.diagnostics) == 1) {
+		t.Errorf("Expected 1 error, got %v", len(ctx.diagnostics))
 	}
 }
 
@@ -55,11 +64,14 @@ func TestIncompleteQuotesExample(
 	d := testutils_test.DocumentFromInput(t, `
 "Port 
 `)
+	ctx := &analyzerContext{
+		document:    d,
+		diagnostics: make([]protocol.Diagnostic, 0),
+	}
+	analyzeQuotesAreValid(ctx)
 
-	errors := analyzeQuotesAreValid(d)
-
-	if !(len(errors) == 1) {
-		t.Errorf("Expected 1 error, got %v", len(errors))
+	if !(len(ctx.diagnostics) == 1) {
+		t.Errorf("Expected 1 error, got %v", len(ctx.diagnostics))
 	}
 }
 
@@ -71,7 +83,7 @@ Port 1234
 CanonicalDomains example.com
 `)
 	ctx := &analyzerContext{
-		document:    *d,
+		document:    d,
 		diagnostics: make([]protocol.Diagnostic, 0),
 	}
 
@@ -92,7 +104,7 @@ CanonicalizeHostname yes
 CanonicalDomains example.com
 `)
 	ctx := &analyzerContext{
-		document:    *d,
+		document:    d,
 		diagnostics: make([]protocol.Diagnostic, 0),
 	}
 

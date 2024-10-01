@@ -14,7 +14,7 @@ func TestMatchInvalidAllArgument(
 Match user lena all
 `)
 	ctx := &analyzerContext{
-		document:    *d,
+		document:    d,
 		diagnostics: make([]protocol.Diagnostic, 0),
 	}
 

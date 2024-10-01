@@ -14,7 +14,7 @@ func TestBlockEmptyBlock(
 Host *
 `)
 	ctx := &analyzerContext{
-		document:    *d,
+		document:    d,
 		diagnostics: make([]protocol.Diagnostic, 0),
 	}
 

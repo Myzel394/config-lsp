@@ -2,100 +2,92 @@ package analyzer
 
 import (
 	"config-lsp/common"
-	sshconfig "config-lsp/handlers/ssh_config"
 	"config-lsp/handlers/ssh_config/ast"
 	"config-lsp/handlers/ssh_config/fields"
 	"config-lsp/utils"
-	"errors"
 	"fmt"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func analyzeStructureIsValid(
-	d *sshconfig.SSHDocument,
-) []common.LSPError {
-	errs := make([]common.LSPError, 0)
-	it := d.Config.Options.Iterator()
+	ctx *analyzerContext,
+) {
+	it := ctx.document.Config.Options.Iterator()
 
 	for it.Next() {
 		entry := it.Value().(ast.SSHEntry)
 
 		switch entry.(type) {
 		case *ast.SSHOption:
-			errs = append(errs, checkOption(d, entry.(*ast.SSHOption), nil)...)
+			checkOption(ctx, entry.(*ast.SSHOption), nil)
 		case *ast.SSHMatchBlock:
 			matchBlock := entry.(*ast.SSHMatchBlock)
-			errs = append(errs, checkBlock(d, matchBlock)...)
+			checkBlock(ctx, matchBlock)
 		case *ast.SSHHostBlock:
 			hostBlock := entry.(*ast.SSHHostBlock)
-			errs = append(errs, checkBlock(d, hostBlock)...)
+			checkBlock(ctx, hostBlock)
 		}
 
 	}
-
-	return errs
 }
 
 func checkOption(
-	d *sshconfig.SSHDocument,
+	ctx *analyzerContext,
 	option *ast.SSHOption,
 	block ast.SSHBlock,
-) []common.LSPError {
-	errs := make([]common.LSPError, 0)
-
+) {
 	if option.Key == nil {
-		return errs
+		return
 	}
 
-	errs = append(errs, checkIsUsingDoubleQuotes(option.Key.Value, option.Key.LocationRange)...)
-	errs = append(errs, checkQuotesAreClosed(option.Key.Value, option.Key.LocationRange)...)
+	checkIsUsingDoubleQuotes(ctx, option.Key.Value, option.Key.LocationRange)
+	checkQuotesAreClosed(ctx, option.Key.Value, option.Key.LocationRange)
 
 	// Check for values that are not allowed in Host blocks
 	if block != nil && block.GetBlockType() == ast.SSHBlockTypeHost {
 		if utils.KeyExists(fields.HostDisallowedOptions, option.Key.Key) {
-			errs = append(errs, common.LSPError{
-				Range: option.Key.LocationRange,
-				Err:   errors.New(fmt.Sprintf("Option '%s' is not allowed in Host blocks", option.Key.Key)),
+			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+				Range:    option.Key.LocationRange.ToLSPRange(),
+				Message:  fmt.Sprintf("Option '%s' is not allowed in Host blocks", option.Key.Key),
+				Severity: &common.SeverityError,
 			})
 		}
 	}
 
 	if option.OptionValue == nil || option.OptionValue.Value.Value == "" {
-		errs = append(errs, common.LSPError{
-			Range: option.Key.LocationRange,
-			Err:   errors.New(fmt.Sprintf("Option '%s' requires a value", option.Key.Key)),
+		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+			Range:    option.Key.LocationRange.ToLSPRange(),
+			Message:  fmt.Sprintf("Option '%s' requires a value", option.Key.Key),
+			Severity: &common.SeverityError,
 		})
 	} else {
-		errs = append(errs, checkIsUsingDoubleQuotes(option.OptionValue.Value, option.OptionValue.LocationRange)...)
-		errs = append(errs, checkQuotesAreClosed(option.OptionValue.Value, option.OptionValue.LocationRange)...)
+		checkIsUsingDoubleQuotes(ctx, option.OptionValue.Value, option.OptionValue.LocationRange)
+		checkQuotesAreClosed(ctx, option.OptionValue.Value, option.OptionValue.LocationRange)
 	}
 
 	if option.Separator == nil || option.Separator.Value.Value == "" {
-		errs = append(errs, common.LSPError{
-			Range: option.Key.LocationRange,
-			Err:   errors.New(fmt.Sprintf("There should be a separator between an option and its value")),
+		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+			Range:    option.Key.LocationRange.ToLSPRange(),
+			Message:  fmt.Sprintf("There should be a separator between an option and its value"),
+			Severity: &common.SeverityError,
 		})
 	} else {
-		errs = append(errs, checkIsUsingDoubleQuotes(option.Separator.Value, option.Separator.LocationRange)...)
-		errs = append(errs, checkQuotesAreClosed(option.Separator.Value, option.Separator.LocationRange)...)
+		checkIsUsingDoubleQuotes(ctx, option.Separator.Value, option.Separator.LocationRange)
+		checkQuotesAreClosed(ctx, option.Separator.Value, option.Separator.LocationRange)
 	}
-
-	return errs
 }
 
 func checkBlock(
-	d *sshconfig.SSHDocument,
+	ctx *analyzerContext,
 	block ast.SSHBlock,
-) []common.LSPError {
-	errs := make([]common.LSPError, 0)
-
-	errs = append(errs, checkOption(d, block.GetEntryOption(), block)...)
+) {
+	checkOption(ctx, block.GetEntryOption(), block)
 
 	it := block.GetOptions().Iterator()
 	for it.Next() {
 		option := it.Value().(*ast.SSHOption)
 
-		errs = append(errs, checkOption(d, option, block)...)
+		checkOption(ctx, option, block)
 	}
-
-	return errs
 }

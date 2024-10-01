@@ -9,33 +9,31 @@ import (
 )
 
 type analyzerContext struct {
-	document    sshconfig.SSHDocument
+	document    *sshconfig.SSHDocument
 	diagnostics []protocol.Diagnostic
 }
 
 func Analyze(
 	d *sshconfig.SSHDocument,
 ) []protocol.Diagnostic {
-	errors := analyzeStructureIsValid(d)
+	ctx := &analyzerContext{
+		document:    d,
+		diagnostics: make([]protocol.Diagnostic, 0),
+	}
 
-	if len(errors) > 0 {
-		return common.ErrsToDiagnostics(errors)
+	analyzeStructureIsValid(ctx)
+
+	if len(ctx.diagnostics) > 0 {
+		return ctx.diagnostics
 	}
 
 	i, indexErrors := indexes.CreateIndexes(*d.Config)
 
+	if len(indexErrors) > 0 {
+		return common.ErrsToDiagnostics(indexErrors)
+	}
+
 	d.Indexes = i
-
-	errors = append(errors, indexErrors...)
-
-	if len(errors) > 0 {
-		return common.ErrsToDiagnostics(errors)
-	}
-
-	ctx := &analyzerContext{
-		document:    *d,
-		diagnostics: make([]protocol.Diagnostic, 0),
-	}
 
 	analyzeValuesAreValid(ctx)
 	analyzeDependents(ctx)

@@ -14,7 +14,7 @@ func TestUnknownOptionExample(
 ThisOptionDoesNotExist okay
 `)
 	ctx := &analyzerContext{
-		document:    *d,
+		document:    d,
 		diagnostics: make([]protocol.Diagnostic, 0),
 	}
 
@@ -33,7 +33,7 @@ IgnoreUnknown ThisOptionDoesNotExist
 ThisOptionDoesNotExist okay
 `)
 	ctx := &analyzerContext{
-		document:    *d,
+		document:    d,
 		diagnostics: make([]protocol.Diagnostic, 0),
 	}
 
@@ -52,7 +52,7 @@ ThisOptionDoesNotExist okay
 IgnoreUnknown ThisOptionDoesNotExist
 `)
 	ctx := &analyzerContext{
-		document:    *d,
+		document:    d,
 		diagnostics: make([]protocol.Diagnostic, 0),
 	}
 

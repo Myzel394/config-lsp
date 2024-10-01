@@ -3,60 +3,52 @@ package analyzer
 import (
 	"config-lsp/common"
 	commonparser "config-lsp/common/parser"
-	sshconfig "config-lsp/handlers/ssh_config"
 	"config-lsp/utils"
-	"errors"
 	"strings"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func analyzeQuotesAreValid(
-	d *sshconfig.SSHDocument,
-) []common.LSPError {
-	errs := make([]common.LSPError, 0)
+	ctx *analyzerContext,
+) {
+	for _, info := range ctx.document.Config.GetAllOptions() {
+		checkIsUsingDoubleQuotes(ctx, info.Option.Key.Value, info.Option.Key.LocationRange)
+		checkIsUsingDoubleQuotes(ctx, info.Option.OptionValue.Value, info.Option.OptionValue.LocationRange)
 
-	for _, info := range d.Config.GetAllOptions() {
-		errs = append(errs, checkIsUsingDoubleQuotes(info.Option.Key.Value, info.Option.Key.LocationRange)...)
-		errs = append(errs, checkIsUsingDoubleQuotes(info.Option.OptionValue.Value, info.Option.OptionValue.LocationRange)...)
-
-		errs = append(errs, checkQuotesAreClosed(info.Option.Key.Value, info.Option.Key.LocationRange)...)
-		errs = append(errs, checkQuotesAreClosed(info.Option.OptionValue.Value, info.Option.OptionValue.LocationRange)...)
+		checkQuotesAreClosed(ctx, info.Option.Key.Value, info.Option.Key.LocationRange)
+		checkQuotesAreClosed(ctx, info.Option.OptionValue.Value, info.Option.OptionValue.LocationRange)
 	}
-
-	return errs
 }
 
 func checkIsUsingDoubleQuotes(
+	ctx *analyzerContext,
 	value commonparser.ParsedString,
 	valueRange common.LocationRange,
-) []common.LSPError {
+) {
 	quoteRanges := utils.GetQuoteRanges(value.Raw)
 	singleQuotePosition := strings.Index(value.Raw, "'")
 
 	// Single quoe
 	if singleQuotePosition != -1 && !quoteRanges.IsCharInside(singleQuotePosition) {
-		return []common.LSPError{
-			{
-				Range: valueRange,
-				Err:   errors.New("ssh_config does not support single quotes. Use double quotes (\") instead."),
-			},
-		}
+		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+			Range:    valueRange.ToLSPRange(),
+			Message:  "ssh_config does not support single quotes. Use double quotes (\") instead.",
+			Severity: &common.SeverityError,
+		})
 	}
-
-	return nil
 }
 
 func checkQuotesAreClosed(
+	ctx *analyzerContext,
 	value commonparser.ParsedString,
 	valueRange common.LocationRange,
-) []common.LSPError {
+) {
 	if strings.Count(value.Raw, "\"")%2 != 0 {
-		return []common.LSPError{
-			{
-				Range: valueRange,
-				Err:   errors.New("There are unclosed quotes here. Make sure all quotes are closed."),
-			},
-		}
+		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+			Range:    valueRange.ToLSPRange(),
+			Message:  "There are unclosed quotes here. Make sure all quotes are closed.",
+			Severity: &common.SeverityError,
+		})
 	}
-
-	return nil
 }

@@ -3,6 +3,8 @@ package analyzer
 import (
 	testutils_test "config-lsp/handlers/ssh_config/test_utils"
 	"testing"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func TestSimpleExample(
@@ -13,11 +15,15 @@ ProxyCommand hello
 
 User root
 `)
+	ctx := &analyzerContext{
+		document:    d,
+		diagnostics: make([]protocol.Diagnostic, 0),
+	}
 
-	errors := analyzeStructureIsValid(d)
+	analyzeStructureIsValid(ctx)
 
-	if len(errors) != 0 {
-		t.Fatalf("Expected no errors, got %v", errors)
+	if len(ctx.diagnostics) != 0 {
+		t.Fatalf("Expected no errors, got %v", ctx.diagnostics)
 	}
 }
 
@@ -29,10 +35,15 @@ ProxyCommand
 
 User root
 `)
-	errors := analyzeStructureIsValid(d)
+	ctx := &analyzerContext{
+		document:    d,
+		diagnostics: make([]protocol.Diagnostic, 0),
+	}
 
-	if len(errors) != 1 {
-		t.Fatalf("Expected 1 error, got %v", errors)
+	analyzeStructureIsValid(ctx)
+
+	if len(ctx.diagnostics) != 1 {
+		t.Fatalf("Expected 1 error, got %v", ctx.diagnostics)
 	}
 }
 
@@ -44,10 +55,15 @@ func TestNoSeparator(
 
 User root
 `)
-	errors := analyzeStructureIsValid(d)
+	ctx := &analyzerContext{
+		document:    d,
+		diagnostics: make([]protocol.Diagnostic, 0),
+	}
 
-	if len(errors) != 1 {
-		t.Fatalf("Expected 1 error, got %v", errors)
+	analyzeStructureIsValid(ctx)
+
+	if len(ctx.diagnostics) != 1 {
+		t.Fatalf("Expected 1 error, got %v", ctx.diagnostics)
 	}
 }
 
@@ -62,10 +78,15 @@ Host example.com
 
 Match
 `)
-	errors := analyzeStructureIsValid(d)
+	ctx := &analyzerContext{
+		document:    d,
+		diagnostics: make([]protocol.Diagnostic, 0),
+	}
 
-	if len(errors) != 2 {
-		t.Fatalf("Expected 1 error, got %v", errors)
+	analyzeStructureIsValid(ctx)
+
+	if len(ctx.diagnostics) != 2 {
+		t.Fatalf("Expected 1 error, got %v", ctx.diagnostics)
 	}
 }
 
@@ -80,9 +101,14 @@ Host example.com
 
 Match 
 `)
-	errors := analyzeStructureIsValid(d)
+	ctx := &analyzerContext{
+		document:    d,
+		diagnostics: make([]protocol.Diagnostic, 0),
+	}
 
-	if len(errors) != 1 {
-		t.Fatalf("Expected 1 error, got %v", errors)
+	analyzeStructureIsValid(ctx)
+
+	if len(ctx.diagnostics) != 1 {
+		t.Fatalf("Expected 1 error, got %v", ctx.diagnostics)
 	}
 }
