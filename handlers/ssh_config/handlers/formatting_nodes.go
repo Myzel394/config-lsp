@@ -3,6 +3,7 @@ package handlers
 import (
 	"config-lsp/common/formatting"
 	"config-lsp/handlers/ssh_config/ast"
+	"config-lsp/handlers/ssh_config/fields"
 	hostparser "config-lsp/handlers/ssh_config/host-parser"
 	matchparser "config-lsp/handlers/ssh_config/match-parser"
 	"config-lsp/utils"
@@ -30,7 +31,7 @@ func formatSSHOption(
 	var key string
 
 	if option.Key != nil {
-		key = string(option.Key.Key)
+		key = fields.FieldsNameFormattedMap[option.Key.Key]
 	} else {
 		key = ""
 	}
@@ -58,11 +59,12 @@ func formatSSHMatchBlock(
 ) []protocol.TextEdit {
 	edits := make([]protocol.TextEdit, 0)
 
+	key := fields.FieldsNameFormattedMap[matchBlock.GetEntryOption().Key.Key]
 	edits = append(edits, protocol.TextEdit{
 		Range: matchBlock.GetEntryOption().ToLSPRange(),
 		NewText: matchTemplate.Format(
 			options,
-			matchBlock.GetEntryOption().Key.Key,
+			key,
 			formatMatchToString(matchBlock.MatchValue),
 		),
 	})
@@ -117,11 +119,12 @@ func formatSSHHostBlock(
 ) []protocol.TextEdit {
 	edits := make([]protocol.TextEdit, 0)
 
+	key := fields.FieldsNameFormattedMap[hostBlock.GetEntryOption().Key.Key]
 	edits = append(edits, protocol.TextEdit{
 		Range: hostBlock.GetEntryOption().ToLSPRange(),
 		NewText: matchTemplate.Format(
 			options,
-			hostBlock.GetEntryOption().Key.Key,
+			key,
 			formatHostToString(hostBlock.HostValue),
 		),
 	})
