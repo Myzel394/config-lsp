@@ -39,7 +39,9 @@ func GetRootCompletions(
 
 	return utils.MapMapToSlice(
 		availableOptions,
-		func(name fields.NormalizedOptionName, doc docvalues.DocumentationValue) protocol.CompletionItem {
+		func(normalizedName fields.NormalizedOptionName, doc docvalues.DocumentationValue) protocol.CompletionItem {
+			name := fields.FieldsNameFormattedMap[normalizedName]
+
 			completion := &protocol.CompletionItem{
 				Label:         string(name),
 				Kind:          &kind,

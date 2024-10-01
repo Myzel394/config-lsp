@@ -29,7 +29,7 @@ func analyzeValuesAreValid(
 
 			errs = append(errs, common.LSPError{
 				Range: option.Key.LocationRange,
-				Err:   errors.New(fmt.Sprintf("Unknown option: %s", option.Key.Key)),
+				Err:   errors.New(fmt.Sprintf("Unknown option: %s", option.Key.Value.Value)),
 			})
 
 			continue
