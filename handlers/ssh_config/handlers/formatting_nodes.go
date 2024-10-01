@@ -59,6 +59,10 @@ func formatHostBlock(
 	hostBlock *ast.SSHHostBlock,
 	options protocol.FormattingOptions,
 ) []protocol.TextEdit {
+	if hostBlock.HostValue == nil || hostBlock.HostValue.Hosts == nil {
+		return nil
+	}
+
 	edits := make([]protocol.TextEdit, 0)
 
 	key := fields.FieldsNameFormattedMap[hostBlock.GetEntryOption().Key.Key]
@@ -78,6 +82,10 @@ func formatMatchBlock(
 	matchBlock *ast.SSHMatchBlock,
 	options protocol.FormattingOptions,
 ) []protocol.TextEdit {
+	if matchBlock.MatchValue == nil || matchBlock.MatchValue.Entries == nil {
+		return nil
+	}
+
 	edits := make([]protocol.TextEdit, 0)
 
 	key := fields.FieldsNameFormattedMap[matchBlock.GetEntryOption().Key.Key]
