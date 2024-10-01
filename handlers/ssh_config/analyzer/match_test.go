@@ -3,6 +3,8 @@ package analyzer
 import (
 	testutils_test "config-lsp/handlers/ssh_config/test_utils"
 	"testing"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func TestMatchInvalidAllArgument(
@@ -11,10 +13,14 @@ func TestMatchInvalidAllArgument(
 	d := testutils_test.DocumentFromInput(t, `
 Match user lena all
 `)
+	ctx := &analyzerContext{
+		document:    *d,
+		diagnostics: make([]protocol.Diagnostic, 0),
+	}
 
-	errors := analyzeMatchBlocks(d)
+	analyzeMatchBlocks(ctx)
 
-	if !(len(errors) == 1 && errors[0].Range.Start.Line == 0) {
-		t.Fatalf("Expected one error, got %v", errors)
+	if !(len(ctx.diagnostics) == 1 && ctx.diagnostics[0].Range.Start.Line == 0) {
+		t.Fatalf("Expected one error, got %v", ctx.diagnostics)
 	}
 }

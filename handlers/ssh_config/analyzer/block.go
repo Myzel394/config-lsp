@@ -2,23 +2,23 @@ package analyzer
 
 import (
 	"config-lsp/common"
-	sshconfig "config-lsp/handlers/ssh_config"
-	"errors"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func analyzeBlocks(
-	d *sshconfig.SSHDocument,
-) []common.LSPError {
-	errs := make([]common.LSPError, 0)
-
-	for _, block := range d.GetAllBlocks() {
+	ctx *analyzerContext,
+) {
+	for _, block := range ctx.document.GetAllBlocks() {
 		if block.GetOptions().Size() == 0 {
-			errs = append(errs, common.LSPError{
-				Range: block.GetEntryOption().LocationRange,
-				Err:   errors.New("This block is empty"),
+			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+				Range:    block.GetEntryOption().LocationRange.ToLSPRange(),
+				Message:  "This block is empty",
+				Severity: &common.SeverityHint,
+				Tags: []protocol.DiagnosticTag{
+					protocol.DiagnosticTagUnnecessary,
+				},
 			})
 		}
 	}
-
-	return errs
 }

@@ -38,12 +38,9 @@ func Analyze(
 	}
 
 	analyzeValuesAreValid(ctx)
+	analyzeDependents(ctx)
+	analyzeBlocks(ctx)
+	analyzeMatchBlocks(ctx)
 
 	return ctx.diagnostics
-
-	errors = append(errors, analyzeDependents(d)...)
-	errors = append(errors, analyzeBlocks(d)...)
-	errors = append(errors, analyzeMatchBlocks(d)...)
-
-	return common.ErrsToDiagnostics(errors)
 }

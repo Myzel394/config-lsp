@@ -2,40 +2,34 @@ package analyzer
 
 import (
 	"config-lsp/common"
-	sshconfig "config-lsp/handlers/ssh_config"
 	"config-lsp/handlers/ssh_config/ast"
 	"config-lsp/handlers/ssh_config/fields"
-	"errors"
 	"fmt"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func analyzeDependents(
-	d *sshconfig.SSHDocument,
-) []common.LSPError {
-	errs := make([]common.LSPError, 0)
-
-	for _, option := range d.Config.GetAllOptions() {
-		errs = append(errs, checkIsDependent(d, option.Option.Key, option.Block)...)
+	ctx *analyzerContext,
+) {
+	for _, option := range ctx.document.Config.GetAllOptions() {
+		checkIsDependent(ctx, option.Option.Key, option.Block)
 	}
-
-	return errs
 }
 
 func checkIsDependent(
-	d *sshconfig.SSHDocument,
+	ctx *analyzerContext,
 	key *ast.SSHKey,
 	block ast.SSHBlock,
-) []common.LSPError {
-	errs := make([]common.LSPError, 0)
-
+) {
 	dependentOptions, found := fields.DependentFields[key.Key]
 
 	if !found {
-		return errs
+		return
 	}
 
 	for _, dependentOption := range dependentOptions {
-		if opts, found := d.Indexes.AllOptionsPerName[dependentOption]; found {
+		if opts, found := ctx.document.Indexes.AllOptionsPerName[dependentOption]; found {
 			_, existsInBlock := opts[block]
 			_, existsInGlobal := opts[nil]
 
@@ -44,11 +38,10 @@ func checkIsDependent(
 			}
 		}
 
-		errs = append(errs, common.LSPError{
-			Range: key.LocationRange,
-			Err:   errors.New(fmt.Sprintf("Option '%s' requires option '%s' to be present", key.Key, dependentOption)),
+		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+			Range:    key.LocationRange.ToLSPRange(),
+			Message:  fmt.Sprintf("Option '%s' requires option '%s' to be present", key.Key, dependentOption),
+			Severity: &common.SeverityError,
 		})
 	}
-
-	return errs
 }

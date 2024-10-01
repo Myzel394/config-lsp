@@ -3,6 +3,8 @@ package analyzer
 import (
 	testutils_test "config-lsp/handlers/ssh_config/test_utils"
 	"testing"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func TestSimpleInvalidQuotesExample(
@@ -68,12 +70,16 @@ func TestDependentOptionsExample(
 Port 1234
 CanonicalDomains example.com
 `)
+	ctx := &analyzerContext{
+		document:    *d,
+		diagnostics: make([]protocol.Diagnostic, 0),
+	}
 
 	option := d.FindOptionsByName("canonicaldomains")[0]
-	errors := checkIsDependent(d, option.Option.Key, option.Block)
+	checkIsDependent(ctx, option.Option.Key, option.Block)
 
-	if !(len(errors) == 1) {
-		t.Errorf("Expected 1 error, got %v", len(errors))
+	if !(len(ctx.diagnostics) == 1) {
+		t.Errorf("Expected 1 error, got %v", len(ctx.diagnostics))
 	}
 }
 
@@ -85,11 +91,15 @@ Port 1234
 CanonicalizeHostname yes
 CanonicalDomains example.com
 `)
+	ctx := &analyzerContext{
+		document:    *d,
+		diagnostics: make([]protocol.Diagnostic, 0),
+	}
 
 	option := d.FindOptionsByName("canonicaldomains")[0]
-	errors := checkIsDependent(d, option.Option.Key, option.Block)
+	checkIsDependent(ctx, option.Option.Key, option.Block)
 
-	if len(errors) > 0 {
-		t.Errorf("Expected no errors, got %v", len(errors))
+	if len(ctx.diagnostics) > 0 {
+		t.Errorf("Expected no errors, got %v", len(ctx.diagnostics))
 	}
 }
