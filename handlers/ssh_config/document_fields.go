@@ -49,11 +49,39 @@ func (d SSHDocument) GetAllMatchBlocks() []*ast.SSHMatchBlock {
 	blocks := utils.KeysOfMap(options)
 
 	for _, block := range blocks {
-		switch block.GetBlockType() {
-		case ast.SSHBlockTypeMatch:
-			matchBlocks = append(matchBlocks, block.(*ast.SSHMatchBlock))
-		}
+		matchBlocks = append(matchBlocks, block.(*ast.SSHMatchBlock))
 	}
 
 	return matchBlocks
+}
+
+var hostOption = fields.CreateNormalizedName("Host")
+
+func (d SSHDocument) GetAllHostBlocks() []*ast.SSHHostBlock {
+	hostBlocks := make([]*ast.SSHHostBlock, 0, 5)
+
+	options := d.Indexes.AllOptionsPerName[hostOption]
+	blocks := utils.KeysOfMap(options)
+
+	for _, block := range blocks {
+		hostBlocks = append(hostBlocks, block.(*ast.SSHHostBlock))
+	}
+
+	return hostBlocks
+}
+
+// GetAllBlocks returns all blocks in the document
+// Note: The blocks are **not** sorted
+func (d SSHDocument) GetAllBlocks() []ast.SSHBlock {
+	blocks := make([]ast.SSHBlock, 0)
+
+	for _, block := range d.GetAllHostBlocks() {
+		blocks = append(blocks, block)
+	}
+
+	for _, block := range d.GetAllMatchBlocks() {
+		blocks = append(blocks, block)
+	}
+
+	return blocks
 }
