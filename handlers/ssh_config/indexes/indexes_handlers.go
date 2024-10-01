@@ -4,7 +4,6 @@ import (
 	"config-lsp/common"
 	"config-lsp/handlers/ssh_config/ast"
 	"config-lsp/handlers/ssh_config/fields"
-	"config-lsp/utils"
 	"errors"
 	"fmt"
 	"regexp"
@@ -14,11 +13,13 @@ var whitespacePattern = regexp.MustCompile(`\S+`)
 
 func NewSSHIndexes() *SSHIndexes {
 	return &SSHIndexes{
-		AllOptionsPerName: make(map[string](map[ast.SSHBlock]([]*ast.SSHOption)), 0),
+		AllOptionsPerName: make(map[fields.NormalizedOptionName](map[ast.SSHBlock]([]*ast.SSHOption)), 0),
 		Includes:          make([]*SSHIndexIncludeLine, 0),
 		IgnoredOptions:    make(map[ast.SSHBlock]SSHIndexIgnoredUnknowns),
 	}
 }
+
+var includeOption = fields.NormalizedOptionName("Include")
 
 func CreateIndexes(config ast.SSHConfig) (*SSHIndexes, []common.LSPError) {
 	errs := make([]common.LSPError, 0)
@@ -48,7 +49,7 @@ func CreateIndexes(config ast.SSHConfig) (*SSHIndexes, []common.LSPError) {
 	}
 
 	// Add Includes
-	for block, options := range indexes.AllOptionsPerName["Include"] {
+	for block, options := range indexes.AllOptionsPerName[includeOption] {
 		includeOption := options[0]
 		rawValue := includeOption.OptionValue.Value.Value
 		pathIndexes := whitespacePattern.FindAllStringIndex(rawValue, -1)
@@ -89,6 +90,8 @@ func CreateIndexes(config ast.SSHConfig) (*SSHIndexes, []common.LSPError) {
 	return indexes, errs
 }
 
+var ignoreUnknownOption = fields.CreateNormalizedName("IgnoreUnknown")
+
 func addOption(
 	i *SSHIndexes,
 	option *ast.SSHOption,
@@ -127,7 +130,7 @@ func addOption(
 		}
 	}
 
-	ignoredOptions, found := i.AllOptionsPerName["IgnoreUnknown"]
+	ignoredOptions, found := i.AllOptionsPerName[ignoreUnknownOption]
 
 	if found {
 		for block, options := range ignoredOptions {
@@ -148,7 +151,11 @@ func addIgnoredOption(
 ) {
 	rawIgnored := option.OptionValue.Value.Value
 	ignoredAsSlice := ignoredValuesPattern.FindAllString(rawIgnored, -1)
-	ignored := utils.SliceToMap(ignoredAsSlice, struct{}{})
+	ignored := make(map[fields.NormalizedOptionName]struct{}, 0)
+
+	for _, ig := range ignoredAsSlice {
+		ignored[fields.CreateNormalizedName(ig)] = struct{}{}
+	}
 
 	i.IgnoredOptions[block] = SSHIndexIgnoredUnknowns{
 		OptionValue:    option,

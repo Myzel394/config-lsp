@@ -69,7 +69,7 @@ Port 1234
 CanonicalDomains example.com
 `)
 
-	option := d.FindOptionsByName("CanonicalDomains")[0]
+	option := d.FindOptionsByName("canonicaldomains")[0]
 	errors := checkIsDependent(d, option.Option.Key, option.Block)
 
 	if !(len(errors) == 1) {
@@ -86,7 +86,7 @@ CanonicalizeHostname yes
 CanonicalDomains example.com
 `)
 
-	option := d.FindOptionsByName("CanonicalDomains")[0]
+	option := d.FindOptionsByName("canonicaldomains")[0]
 	errors := checkIsDependent(d, option.Option.Key, option.Block)
 
 	if len(errors) > 0 {

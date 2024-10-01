@@ -3,6 +3,7 @@ package indexes
 import (
 	"config-lsp/common"
 	"config-lsp/handlers/ssh_config/ast"
+	"config-lsp/handlers/ssh_config/fields"
 )
 
 type ValidPath string
@@ -27,11 +28,11 @@ type SSHIndexIncludeLine struct {
 
 type SSHIndexIgnoredUnknowns struct {
 	OptionValue    *ast.SSHOption
-	IgnoredOptions map[string]struct{}
+	IgnoredOptions map[fields.NormalizedOptionName]struct{}
 }
 
 type SSHIndexes struct {
-	AllOptionsPerName map[string](map[ast.SSHBlock]([]*ast.SSHOption))
+	AllOptionsPerName map[fields.NormalizedOptionName](map[ast.SSHBlock]([]*ast.SSHOption))
 
 	Includes []*SSHIndexIncludeLine
 

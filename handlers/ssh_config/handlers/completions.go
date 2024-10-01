@@ -18,7 +18,7 @@ func GetRootCompletions(
 ) ([]protocol.CompletionItem, error) {
 	kind := protocol.CompletionItemKindField
 
-	availableOptions := make(map[string]docvalues.DocumentationValue, 0)
+	availableOptions := make(map[fields.NormalizedOptionName]docvalues.DocumentationValue, 0)
 
 	for key, option := range fields.Options {
 		// Check for duplicates
@@ -39,16 +39,16 @@ func GetRootCompletions(
 
 	return utils.MapMapToSlice(
 		availableOptions,
-		func(name string, doc docvalues.DocumentationValue) protocol.CompletionItem {
+		func(name fields.NormalizedOptionName, doc docvalues.DocumentationValue) protocol.CompletionItem {
 			completion := &protocol.CompletionItem{
-				Label:         name,
+				Label:         string(name),
 				Kind:          &kind,
 				Documentation: doc.Documentation,
 			}
 
 			if suggestValue {
 				format := protocol.InsertTextFormatSnippet
-				insertText := name + " " + "${1:value}"
+				insertText := string(name) + " " + "${1:value}"
 
 				completion.InsertTextFormat = &format
 				completion.InsertText = &insertText

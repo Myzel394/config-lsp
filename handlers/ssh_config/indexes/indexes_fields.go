@@ -2,9 +2,10 @@ package indexes
 
 import (
 	"config-lsp/handlers/ssh_config/ast"
+	"config-lsp/handlers/ssh_config/fields"
 )
 
-func (u SSHIndexIgnoredUnknowns) GetIgnoredForLine(line uint32) map[string]struct{} {
+func (u SSHIndexIgnoredUnknowns) GetIgnoredForLine(line uint32) map[fields.NormalizedOptionName]struct{} {
 	if line >= u.OptionValue.Start.Line {
 		return u.IgnoredOptions
 	}

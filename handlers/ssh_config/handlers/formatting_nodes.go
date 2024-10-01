@@ -30,7 +30,7 @@ func formatSSHOption(
 	var key string
 
 	if option.Key != nil {
-		key = option.Key.Key
+		key = string(option.Key.Key)
 	} else {
 		key = ""
 	}

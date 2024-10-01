@@ -38,7 +38,7 @@ Host nas01
 	}
 
 	firstMatchBlock := config.FindBlock(uint32(6))
-	opts := indexes.AllOptionsPerName["IdentityFile"]
+	opts := indexes.AllOptionsPerName["identityfile"]
 	if !(len(opts) == 3 &&
 		opts[nil][0].OptionValue.Value.Value == "~/.ssh/id_rsa" &&
 		opts[firstMatchBlock][0].OptionValue.Value.Value == "/nfs/shared/users/nixcraft/keys/server1/id_rsa") {
@@ -76,8 +76,8 @@ Host server1
 		t.Errorf("Expected error on line 4, but got %v", errors[0].Range.Start.Line)
 	}
 
-	if !(len(indexes.AllOptionsPerName["User"]) == 1) {
-		t.Errorf("Expected 1 User option, but got %v", indexes.AllOptionsPerName["User"])
+	if !(len(indexes.AllOptionsPerName["user"]) == 1) {
+		t.Errorf("Expected 1 User option, but got %v", indexes.AllOptionsPerName["user"])
 	}
 }
 
@@ -109,7 +109,7 @@ UseKeychain yes
 		t.Errorf("Expected IgnoredOptions to be first option, but got %v", option)
 	}
 
-	if !(len(indexes.IgnoredOptions[nil].IgnoredOptions) == 1 && utils.KeyExists(indexes.IgnoredOptions[nil].IgnoredOptions, "UseKeychain")) {
+	if !(len(indexes.IgnoredOptions[nil].IgnoredOptions) == 1 && utils.KeyExists(indexes.IgnoredOptions[nil].IgnoredOptions, "usekeychain")) {
 		t.Errorf("Expected IgnoreOptions to contain 'UseKeychain', but got: %v", indexes.IgnoredOptions[nil].IgnoredOptions)
 	}
 }

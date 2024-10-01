@@ -4,6 +4,7 @@ import (
 	"config-lsp/common"
 	commonparser "config-lsp/common/parser"
 	"config-lsp/handlers/ssh_config/ast/parser"
+	"config-lsp/handlers/ssh_config/fields"
 	hostparser "config-lsp/handlers/ssh_config/host-parser"
 	"config-lsp/handlers/ssh_config/match-parser"
 	"strings"
@@ -62,10 +63,10 @@ func (s *sshParserListener) EnterKey(ctx *parser.KeyContext) {
 
 	text := ctx.GetText()
 	value := commonparser.ParseRawString(text, commonparser.FullFeatures)
-	key := strings.Trim(
+	key := fields.CreateNormalizedName(strings.Trim(
 		value.Value,
 		" ",
-	)
+	))
 
 	switch strings.ToLower(text) {
 	case "match":

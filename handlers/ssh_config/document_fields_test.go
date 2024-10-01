@@ -38,23 +38,23 @@ Match originalhost laptop exec "[[ $(/usr/bin/dig +short laptop.lan) == '' ]]"
 		Indexes: i,
 	}
 
-	options := d.FindOptionsByName("ProxyCommand")
+	options := d.FindOptionsByName("proxycommand")
 	if !(len(options) == 2 && options[0].Option.Start.Line == 0 && options[1].Option.Start.Line == 4) {
 		t.Errorf("Expected 2 options, got %v", options)
 	}
 
-	options = d.FindOptionsByName("HostName")
+	options = d.FindOptionsByName("hostname")
 	if !(len(options) == 2 && options[0].Option.Start.Line == 3 && options[1].Option.Start.Line == 7) {
 		t.Errorf("Expected 2 options, got %v", options)
 	}
 
 	block := d.Config.FindBlock(4)
-	if !(d.FindOptionByNameAndBlock("ProxyCommand", block).Option.Start.Line == 4) {
-		t.Errorf("Expected 4, got %v", d.FindOptionByNameAndBlock("PorxyCommand", block).Option.Start.Line)
+	if !(d.FindOptionByNameAndBlock("proxycommand", block).Option.Start.Line == 4) {
+		t.Errorf("Expected 4, got %v", d.FindOptionByNameAndBlock("proxycommand", block).Option.Start.Line)
 	}
 
-	if !(d.FindOptionByNameAndBlock("ProxyCommand", nil).Option.Start.Line == 0) {
-		t.Errorf("Expected 0, got %v", d.FindOptionByNameAndBlock("ProxyCommand", nil).Option.Start.Line)
+	if !(d.FindOptionByNameAndBlock("proxycommand", nil).Option.Start.Line == 0) {
+		t.Errorf("Expected 0, got %v", d.FindOptionByNameAndBlock("proxycommand", nil).Option.Start.Line)
 	}
 
 	matchBlocks := d.GetAllMatchBlocks()

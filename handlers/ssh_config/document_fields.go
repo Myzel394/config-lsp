@@ -2,14 +2,15 @@ package sshconfig
 
 import (
 	"config-lsp/handlers/ssh_config/ast"
+	"config-lsp/handlers/ssh_config/fields"
 	"config-lsp/utils"
 )
 
 func (d SSHDocument) FindOptionByNameAndBlock(
-	name string,
+	option fields.NormalizedOptionName,
 	block ast.SSHBlock,
 ) *ast.AllOptionInfo {
-	for _, info := range d.FindOptionsByName(name) {
+	for _, info := range d.FindOptionsByName(option) {
 		if info.Block == block {
 			return &info
 		}
@@ -19,12 +20,12 @@ func (d SSHDocument) FindOptionByNameAndBlock(
 }
 
 func (d SSHDocument) FindOptionsByName(
-	name string,
+	option fields.NormalizedOptionName,
 ) []ast.AllOptionInfo {
 	options := make([]ast.AllOptionInfo, 0, 5)
 
 	for _, info := range d.Config.GetAllOptions() {
-		if info.Option.Key.Key == name {
+		if info.Option.Key.Key == option {
 			options = append(options, info)
 		}
 	}
@@ -33,16 +34,18 @@ func (d SSHDocument) FindOptionsByName(
 }
 
 func (d SSHDocument) DoesOptionExist(
-	name string,
+	option fields.NormalizedOptionName,
 	block ast.SSHBlock,
 ) bool {
-	return d.FindOptionByNameAndBlock(name, block) != nil
+	return d.FindOptionByNameAndBlock(option, block) != nil
 }
+
+var matchOption = fields.CreateNormalizedName("Match")
 
 func (d SSHDocument) GetAllMatchBlocks() []*ast.SSHMatchBlock {
 	matchBlocks := make([]*ast.SSHMatchBlock, 0, 5)
 
-	options := d.Indexes.AllOptionsPerName["Match"]
+	options := d.Indexes.AllOptionsPerName[matchOption]
 	blocks := utils.KeysOfMap(options)
 
 	for _, block := range blocks {

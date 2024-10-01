@@ -3,6 +3,7 @@ package ast
 import (
 	"config-lsp/common"
 	commonparser "config-lsp/common/parser"
+	"config-lsp/handlers/ssh_config/fields"
 	hostparser "config-lsp/handlers/ssh_config/host-parser"
 	"config-lsp/handlers/ssh_config/match-parser"
 
@@ -12,7 +13,7 @@ import (
 type SSHKey struct {
 	common.LocationRange
 	Value commonparser.ParsedString
-	Key   string
+	Key   fields.NormalizedOptionName
 }
 
 type SSHSeparator struct {
