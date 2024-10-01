@@ -8,6 +8,11 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
+type analyzerContext struct {
+	document    sshconfig.SSHDocument
+	diagnostics []protocol.Diagnostic
+}
+
 func Analyze(
 	d *sshconfig.SSHDocument,
 ) []protocol.Diagnostic {
@@ -27,7 +32,15 @@ func Analyze(
 		return common.ErrsToDiagnostics(errors)
 	}
 
-	errors = append(errors, analyzeValuesAreValid(d)...)
+	ctx := &analyzerContext{
+		document:    *d,
+		diagnostics: make([]protocol.Diagnostic, 0),
+	}
+
+	analyzeValuesAreValid(ctx)
+
+	return ctx.diagnostics
+
 	errors = append(errors, analyzeDependents(d)...)
 	errors = append(errors, analyzeBlocks(d)...)
 	errors = append(errors, analyzeMatchBlocks(d)...)

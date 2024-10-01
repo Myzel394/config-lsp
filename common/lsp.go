@@ -1,5 +1,7 @@
 package common
 
+import protocol "github.com/tliron/glsp/protocol_3_16"
+
 // LSPCharacterAsCursorPosition:
 // @deprecated
 func CursorToCharacterIndex(cursor uint32) uint32 {
@@ -17,3 +19,8 @@ func DeprecatedImprovedCursorToIndex(
 
 	return min(uint32(len(line)-1), uint32(c)-offset+1)
 }
+
+var SeverityError = protocol.DiagnosticSeverityError
+var SeverityWarning = protocol.DiagnosticSeverityWarning
+var SeverityInformation = protocol.DiagnosticSeverityInformation
+var SeverityHint = protocol.DiagnosticSeverityHint
