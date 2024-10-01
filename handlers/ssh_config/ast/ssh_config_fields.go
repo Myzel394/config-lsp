@@ -229,3 +229,15 @@ func (c SSHConfig) GetAllOptions() []AllOptionInfo {
 
 	return options
 }
+
+func (c SSHConfig) GetOptionsInRange(startLine uint32, endLine uint32) []AllOptionInfo {
+	options := make([]AllOptionInfo, 0, 50)
+
+	for _, info := range c.GetAllOptions() {
+		if info.Option.LocationRange.Start.Line >= startLine && info.Option.LocationRange.End.Line <= endLine {
+			options = append(options, info)
+		}
+	}
+
+	return options
+}

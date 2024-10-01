@@ -16,12 +16,82 @@ import (
 var optionTemplate = formatting.FormatTemplate(
 	"%s /!'%s/!'",
 )
+var blockOptionTemplate = formatting.FormatTemplate(
+	"    %s /!'%s/!'",
+)
 var matchTemplate = formatting.FormatTemplate(
 	"%s %s",
 )
-var matchOptionTemplate = formatting.FormatTemplate(
-	"    %s /!'%s/!'",
-)
+
+func formatOption(
+	option *ast.SSHOption,
+	block ast.SSHBlock,
+	options protocol.FormattingOptions,
+) []protocol.TextEdit {
+	if option.Key == nil || option.OptionValue == nil {
+		return nil
+	}
+
+	edits := make([]protocol.TextEdit, 0)
+
+	if option.Key.Key == hostOption {
+		edits = append(edits, formatHostBlock(block.(*ast.SSHHostBlock), options)...)
+	} else if option.Key.Key == matchOption {
+		edits = append(edits, formatMatchBlock(block.(*ast.SSHMatchBlock), options)...)
+	} else {
+		var template formatting.FormatTemplate
+
+		if block == nil {
+			template = optionTemplate
+		} else if block.GetBlockType() == ast.SSHBlockTypeMatch {
+			template = blockOptionTemplate
+		} else if block.GetBlockType() == ast.SSHBlockTypeHost {
+			template = blockOptionTemplate
+		}
+
+		edits = append(edits, formatSSHOption(option, options, template)...)
+	}
+
+	return edits
+}
+
+func formatHostBlock(
+	hostBlock *ast.SSHHostBlock,
+	options protocol.FormattingOptions,
+) []protocol.TextEdit {
+	edits := make([]protocol.TextEdit, 0)
+
+	key := fields.FieldsNameFormattedMap[hostBlock.GetEntryOption().Key.Key]
+	edits = append(edits, protocol.TextEdit{
+		Range: hostBlock.GetEntryOption().ToLSPRange(),
+		NewText: matchTemplate.Format(
+			options,
+			key,
+			formatHostToString(hostBlock.HostValue),
+		),
+	})
+
+	return edits
+}
+
+func formatMatchBlock(
+	matchBlock *ast.SSHMatchBlock,
+	options protocol.FormattingOptions,
+) []protocol.TextEdit {
+	edits := make([]protocol.TextEdit, 0)
+
+	key := fields.FieldsNameFormattedMap[matchBlock.GetEntryOption().Key.Key]
+	edits = append(edits, protocol.TextEdit{
+		Range: matchBlock.GetEntryOption().ToLSPRange(),
+		NewText: matchTemplate.Format(
+			options,
+			key,
+			formatMatchToString(matchBlock.MatchValue),
+		),
+	})
+
+	return edits
+}
 
 func formatSSHOption(
 	option *ast.SSHOption,
@@ -52,41 +122,6 @@ func formatSSHOption(
 	}
 }
 
-func formatSSHMatchBlock(
-	textRange protocol.Range,
-	matchBlock *ast.SSHMatchBlock,
-	options protocol.FormattingOptions,
-) []protocol.TextEdit {
-	edits := make([]protocol.TextEdit, 0)
-
-	key := fields.FieldsNameFormattedMap[matchBlock.GetEntryOption().Key.Key]
-	edits = append(edits, protocol.TextEdit{
-		Range: matchBlock.GetEntryOption().ToLSPRange(),
-		NewText: matchTemplate.Format(
-			options,
-			key,
-			formatMatchToString(matchBlock.MatchValue),
-		),
-	})
-
-	it := matchBlock.GetOptions().Iterator()
-	for it.Next() {
-		option := it.Value().(*ast.SSHOption)
-
-		if !(option.Start.Line >= textRange.Start.Line && option.End.Line <= textRange.End.Line) {
-			continue
-		}
-
-		edits = append(edits, formatSSHOption(
-			option,
-			options,
-			matchOptionTemplate,
-		)...)
-	}
-
-	return edits
-}
-
 func formatMatchToString(
 	match *matchparser.Match,
 ) string {
@@ -110,41 +145,6 @@ func formatMatchToString(
 	)
 
 	return strings.Join(entriesAsStrings, " ")
-}
-
-func formatSSHHostBlock(
-	textRange protocol.Range,
-	hostBlock *ast.SSHHostBlock,
-	options protocol.FormattingOptions,
-) []protocol.TextEdit {
-	edits := make([]protocol.TextEdit, 0)
-
-	key := fields.FieldsNameFormattedMap[hostBlock.GetEntryOption().Key.Key]
-	edits = append(edits, protocol.TextEdit{
-		Range: hostBlock.GetEntryOption().ToLSPRange(),
-		NewText: matchTemplate.Format(
-			options,
-			key,
-			formatHostToString(hostBlock.HostValue),
-		),
-	})
-
-	it := hostBlock.GetOptions().Iterator()
-	for it.Next() {
-		option := it.Value().(*ast.SSHOption)
-
-		if !(option.Start.Line >= textRange.Start.Line && option.End.Line <= textRange.End.Line) {
-			continue
-		}
-
-		edits = append(edits, formatSSHOption(
-			option,
-			options,
-			matchOptionTemplate,
-		)...)
-	}
-
-	return edits
 }
 
 func formatHostToString(
