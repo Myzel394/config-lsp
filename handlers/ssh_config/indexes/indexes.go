@@ -40,4 +40,9 @@ type SSHIndexes struct {
 
 	// Map of <block|nil (for global)> to a list of ignored options
 	IgnoredOptions map[ast.SSHBlock]SSHIndexIgnoredUnknowns
+
+	// This is used for code actions.
+	// This stores a list of unknown option, so that we can provide
+	// a code action to add them to a "IgnoreUnknown" option
+	UnknownOptions []ast.AllOptionInfo
 }

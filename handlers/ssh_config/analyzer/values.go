@@ -32,6 +32,7 @@ func analyzeValuesAreValid(
 					Severity: &common.SeverityError,
 				},
 			)
+			ctx.document.Indexes.UnknownOptions = append(ctx.document.Indexes.UnknownOptions, info)
 
 			continue
 		}

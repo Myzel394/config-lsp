@@ -23,6 +23,14 @@ ThisOptionDoesNotExist okay
 	if !(len(ctx.diagnostics) == 1) {
 		t.Errorf("Expected 1 error, got %v", len(ctx.diagnostics))
 	}
+
+	if !(len(ctx.document.Indexes.UnknownOptions) == 1) {
+		t.Errorf("Expected 1 unknown option, got %v", len(ctx.document.Indexes.UnknownOptions))
+	}
+
+	if !(ctx.document.Indexes.UnknownOptions[0].Option.Key.Value.Value == "ThisOptionDoesNotExist") {
+		t.Errorf("Expected 'ThisOptionDoesNotExist', got %v", ctx.document.Indexes.UnknownOptions[0].Option.Key.Value.Value)
+	}
 }
 
 func TestUnknownOptionButIgnoredExample(
@@ -40,7 +48,11 @@ ThisOptionDoesNotExist okay
 	analyzeValuesAreValid(ctx)
 
 	if len(ctx.diagnostics) > 0 {
-		t.Errorf("Expected no errors, but got %v", len(ctx.diagnostics))
+		t.Fatalf("Expected no errors, but got %v", len(ctx.diagnostics))
+	}
+
+	if !(len(ctx.document.Indexes.UnknownOptions) == 0) {
+		t.Errorf("Expected 0 unknown options, got %v", len(ctx.document.Indexes.UnknownOptions))
 	}
 }
 
@@ -60,5 +72,13 @@ IgnoreUnknown ThisOptionDoesNotExist
 
 	if !(len(ctx.diagnostics) == 1) {
 		t.Errorf("Expected 1 error, got %v", len(ctx.diagnostics))
+	}
+
+	if !(len(ctx.document.Indexes.UnknownOptions) == 1) {
+		t.Errorf("Expected 1 unknown option, got %v", len(ctx.document.Indexes.UnknownOptions))
+	}
+
+	if !(ctx.document.Indexes.UnknownOptions[0].Option.Key.Value.Value == "ThisOptionDoesNotExist") {
+		t.Errorf("Expected 'ThisOptionDoesNotExist', got %v", ctx.document.Indexes.UnknownOptions[0].Option.Key.Value.Value)
 	}
 }
