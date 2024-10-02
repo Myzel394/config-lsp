@@ -44,5 +44,6 @@ type SSHIndexes struct {
 	// This is used for code actions.
 	// This stores a list of unknown option, so that we can provide
 	// a code action to add them to a "IgnoreUnknown" option
-	UnknownOptions []ast.AllOptionInfo
+	// This is a map of <line> to <option>
+	UnknownOptions map[uint32]ast.AllOptionInfo
 }

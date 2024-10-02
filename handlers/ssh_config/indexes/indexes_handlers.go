@@ -16,7 +16,7 @@ func NewSSHIndexes() *SSHIndexes {
 		AllOptionsPerName: make(map[fields.NormalizedOptionName](map[ast.SSHBlock]([]*ast.SSHOption)), 0),
 		Includes:          make([]*SSHIndexIncludeLine, 0),
 		IgnoredOptions:    make(map[ast.SSHBlock]SSHIndexIgnoredUnknowns),
-		UnknownOptions:    make([]ast.AllOptionInfo, 0),
+		UnknownOptions:    make(map[uint32]ast.AllOptionInfo, 0),
 	}
 }
 

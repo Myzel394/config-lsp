@@ -3,6 +3,7 @@ package roothandler
 import (
 	aliases "config-lsp/handlers/aliases/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
+	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 
 	"github.com/tliron/glsp"
@@ -30,7 +31,7 @@ func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionPa
 	case LanguageSSHDConfig:
 		return nil, nil
 	case LanguageSSHConfig:
-		return nil, nil
+		return sshconfig.TextDocumentCodeAction(context, params)
 	case LanguageWireguard:
 		return wireguard.TextDocumentCodeAction(context, params)
 	case LanguageAliases:

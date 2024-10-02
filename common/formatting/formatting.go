@@ -7,6 +7,12 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
+var DefaultFormattingOptions = protocol.FormattingOptions{
+	"tabSize":                float64(4),
+	"insertSpaces":           false,
+	"trimTrailingWhitespace": true,
+}
+
 type FormatTemplate string
 
 func (f FormatTemplate) Format(
@@ -84,7 +90,10 @@ func surroundWithQuotes(s string) string {
 
 		innerValue := value[startPosition:endPosition]
 
-		if strings.Contains(innerValue, " ") {
+		if innerValue[0] == '"' && innerValue[len(innerValue)-1] == '"' && (len(innerValue) >= 2 || innerValue[len(innerValue)-2] != '\\') {
+			// Already surrounded
+			value = value[:startPosition-3] + innerValue + value[endPosition+3:]
+		} else if strings.Contains(innerValue, " ") {
 			value = value[:startPosition-3] + "\"" + innerValue + "\"" + value[endPosition+3:]
 		} else {
 			value = value[:startPosition-3] + innerValue + value[endPosition+3:]

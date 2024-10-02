@@ -116,3 +116,22 @@ func TestSurroundWithQuotesButNoSpaceExample(
 		t.Errorf("Expected %q but got %q", expected, result)
 	}
 }
+
+func TestSurroundWithQuotesButAlreadySurrounded(
+	t *testing.T,
+) {
+	template := FormatTemplate("%s /!'%s/!'")
+
+	options := protocol.FormattingOptions{
+		"tabSize":                float64(4),
+		"insertSpaces":           false,
+		"trimTrailingWhitespace": true,
+	}
+
+	result := template.Format(options, "PermitRootLogin", `"Hello World"`)
+	expected := `PermitRootLogin "Hello World"`
+
+	if result != expected {
+		t.Errorf("Expected %q but got %q", expected, result)
+	}
+}

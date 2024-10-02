@@ -3,6 +3,7 @@ package roothandler
 import (
 	aliases "config-lsp/handlers/aliases/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
+	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 
 	"strings"
@@ -24,6 +25,8 @@ func WorkspaceExecuteCommand(context *glsp.Context, params *protocol.ExecuteComm
 		edit, err = hosts.WorkspaceExecuteCommand(context, params)
 	case "aliases":
 		edit, err = aliases.WorkspaceExecuteCommand(context, params)
+	case "sshconfig":
+		edit, err = sshconfig.WorkspaceExecuteCommand(context, params)
 	}
 
 	if err != nil {
