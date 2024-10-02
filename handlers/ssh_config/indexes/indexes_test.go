@@ -3,6 +3,7 @@ package indexes
 import (
 	"config-lsp/handlers/ssh_config/ast"
 	"config-lsp/utils"
+	"fmt"
 	"testing"
 )
 
@@ -115,5 +116,48 @@ UseKeychain yes
 
 	if !(indexes.IgnoredOptions[nil].IgnoredOptions["usekeychain"].Start.Line == 0 && indexes.IgnoredOptions[nil].IgnoredOptions["usekeychain"].Start.Character == 14 && indexes.IgnoredOptions[nil].IgnoredOptions["usekeychain"].End.Character == 25) {
 		t.Errorf("Expected IgnoreOptions to contain 'UseKeychain' on line 0 and from position 14-24, but got: %v", indexes.IgnoredOptions[nil].IgnoredOptions)
+	}
+}
+
+func TestTagsExample(
+	t *testing.T,
+) {
+	input := utils.Dedent(`
+Match tagged good_ip
+	AddressFamily inet
+
+Match tagged myuser
+	User root
+`)
+
+	config := ast.NewSSHConfig()
+
+	errors := config.Parse(input)
+
+	if len(errors) > 0 {
+		t.Fatalf("Expected no errors, but got %v", len(errors))
+	}
+
+	indexes, errors := CreateIndexes(*config)
+
+	if len(errors) > 0 {
+		t.Fatalf("Expected 1 error, but got %v", errors)
+	}
+
+	if !(len(indexes.Tags) == 2) {
+		t.Errorf("Expected 2 tags, but got %v", indexes.Tags)
+	}
+
+	rawFirstMatch, _ := config.Options.Get(uint32(0))
+	firstMatch := rawFirstMatch.(*ast.SSHMatchBlock)
+	println(fmt.Sprintf("%v", indexes.Tags["good_ip"]))
+	if !(indexes.Tags["good_ip"].Start.Line == firstMatch.Start.Line) {
+		t.Errorf("Expected first tag to be 'good_ip', but got %v", indexes.Tags)
+	}
+
+	rawSecondMatch, _ := config.Options.Get(uint32(3))
+	secondMatch := rawSecondMatch.(*ast.SSHMatchBlock)
+	if !(indexes.Tags["myuser"].Start.Line == secondMatch.Start.Line) {
+		t.Errorf("Expected second tag to be 'myuser', but got %v", indexes.Tags)
 	}
 }

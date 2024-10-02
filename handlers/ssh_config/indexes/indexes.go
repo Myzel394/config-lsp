@@ -50,4 +50,6 @@ type SSHIndexes struct {
 	// a code action to add them to a "IgnoreUnknown" option
 	// This is a map of <line> to <option>
 	UnknownOptions map[uint32]ast.AllOptionInfo
+
+	Tags map[string]*ast.SSHMatchBlock
 }

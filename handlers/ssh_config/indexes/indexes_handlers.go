@@ -4,6 +4,7 @@ import (
 	"config-lsp/common"
 	"config-lsp/handlers/ssh_config/ast"
 	"config-lsp/handlers/ssh_config/fields"
+	matchparser "config-lsp/handlers/ssh_config/match-parser"
 	"errors"
 	"fmt"
 	"regexp"
@@ -13,14 +14,16 @@ var whitespacePattern = regexp.MustCompile(`\S+`)
 
 func NewSSHIndexes() *SSHIndexes {
 	return &SSHIndexes{
-		AllOptionsPerName: make(map[fields.NormalizedOptionName](map[ast.SSHBlock]([]*ast.SSHOption)), 0),
+		AllOptionsPerName: make(map[fields.NormalizedOptionName](map[ast.SSHBlock]([]*ast.SSHOption))),
 		Includes:          make([]*SSHIndexIncludeLine, 0),
 		IgnoredOptions:    make(map[ast.SSHBlock]SSHIndexIgnoredUnknowns),
-		UnknownOptions:    make(map[uint32]ast.AllOptionInfo, 0),
+		UnknownOptions:    make(map[uint32]ast.AllOptionInfo),
+		Tags:              make(map[string]*ast.SSHMatchBlock),
 	}
 }
 
-var includeOption = fields.NormalizedOptionName("Include")
+var includeOption = fields.CreateNormalizedName("Include")
+var matchOption = fields.CreateNormalizedName("Match")
 
 func CreateIndexes(config ast.SSHConfig) (*SSHIndexes, []common.LSPError) {
 	errs := make([]common.LSPError, 0)
@@ -85,6 +88,33 @@ func CreateIndexes(config ast.SSHConfig) (*SSHIndexes, []common.LSPError) {
 			Values: paths,
 			Option: includeOption,
 			Block:  block,
+		}
+	}
+
+	// Add tags
+	for rawBlock := range indexes.AllOptionsPerName[matchOption] {
+		block := rawBlock.(*ast.SSHMatchBlock)
+		for _, entry := range block.MatchValue.Entries {
+			if entry.Criteria.Type != matchparser.MatchCriteriaTypeTagged || entry.Value.Value == "" {
+				continue
+			}
+
+			for _, value := range entry.Values.Values {
+				name := value.Value.Value
+
+				if existingBlock, found := indexes.Tags[name]; found {
+					// Tag already exists
+					errs = append(errs, common.LSPError{
+						Range: entry.LocationRange,
+						Err:   fmt.Errorf("Tag %s has already been defined on line %d", name, existingBlock.Start.Line+1),
+					})
+
+					continue
+				}
+
+				// Add tag
+				indexes.Tags[name] = block
+			}
 		}
 	}
 
