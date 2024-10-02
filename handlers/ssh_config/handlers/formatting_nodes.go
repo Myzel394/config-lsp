@@ -109,7 +109,11 @@ func formatSSHOption(
 	var key string
 
 	if option.Key != nil {
-		key = fields.FieldsNameFormattedMap[option.Key.Key]
+		if optionName, found := fields.FieldsNameFormattedMap[option.Key.Key]; found {
+			key = optionName
+		} else {
+			key = option.Key.Value.Raw
+		}
 	} else {
 		key = ""
 	}
