@@ -26,9 +26,13 @@ type SSHIndexIncludeLine struct {
 	Block  ast.SSHBlock
 }
 
+type SSHIndexIgnoredUnknownInfo struct {
+	common.LocationRange
+}
+
 type SSHIndexIgnoredUnknowns struct {
 	OptionValue    *ast.SSHOption
-	IgnoredOptions map[fields.NormalizedOptionName]struct{}
+	IgnoredOptions map[fields.NormalizedOptionName]SSHIndexIgnoredUnknownInfo
 }
 
 type SSHIndexes struct {

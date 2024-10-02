@@ -151,11 +151,26 @@ func addIgnoredOption(
 	block ast.SSHBlock,
 ) {
 	rawIgnored := option.OptionValue.Value.Value
-	ignoredAsSlice := ignoredValuesPattern.FindAllString(rawIgnored, -1)
-	ignored := make(map[fields.NormalizedOptionName]struct{}, 0)
+	ignoredAsSlice := ignoredValuesPattern.FindAllStringIndex(rawIgnored, -1)
+	ignored := make(map[fields.NormalizedOptionName]SSHIndexIgnoredUnknownInfo, 0)
 
-	for _, ig := range ignoredAsSlice {
-		ignored[fields.CreateNormalizedName(ig)] = struct{}{}
+	for _, ignoreInfo := range ignoredAsSlice {
+		start := ignoreInfo[0]
+		end := ignoreInfo[1]
+		name := rawIgnored[start:end]
+
+		ignored[fields.CreateNormalizedName(name)] = SSHIndexIgnoredUnknownInfo{
+			LocationRange: common.LocationRange{
+				Start: common.Location{
+					Line:      option.OptionValue.Start.Line,
+					Character: option.OptionValue.Start.Character + uint32(start),
+				},
+				End: common.Location{
+					Line:      option.OptionValue.End.Line,
+					Character: option.OptionValue.Start.Character + uint32(end),
+				},
+			},
+		}
 	}
 
 	i.IgnoredOptions[block] = SSHIndexIgnoredUnknowns{

@@ -10,6 +10,10 @@ func analyzeBlocks(
 	ctx *analyzerContext,
 ) {
 	for _, block := range ctx.document.GetAllBlocks() {
+		if block == nil {
+			continue
+		}
+
 		if block.GetOptions().Size() == 0 {
 			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 				Range:    block.GetEntryOption().LocationRange.ToLSPRange(),

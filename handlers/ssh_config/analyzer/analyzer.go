@@ -36,6 +36,7 @@ func Analyze(
 	d.Indexes = i
 
 	analyzeValuesAreValid(ctx)
+	analyzeIgnoreUnknownHasNoUnnecessary(ctx)
 	analyzeDependents(ctx)
 	analyzeBlocks(ctx)
 	analyzeMatchBlocks(ctx)

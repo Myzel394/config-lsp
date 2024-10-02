@@ -72,8 +72,10 @@ func (d SSHDocument) GetAllHostBlocks() []*ast.SSHHostBlock {
 
 // GetAllBlocks returns all blocks in the document
 // Note: The blocks are **not** sorted
+// Note: This also returns `nil` (as the global block)
 func (d SSHDocument) GetAllBlocks() []ast.SSHBlock {
 	blocks := make([]ast.SSHBlock, 0)
+	blocks = append(blocks, nil)
 
 	for _, block := range d.GetAllHostBlocks() {
 		blocks = append(blocks, block)

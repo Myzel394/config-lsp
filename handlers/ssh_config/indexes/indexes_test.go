@@ -112,4 +112,8 @@ UseKeychain yes
 	if !(len(indexes.IgnoredOptions[nil].IgnoredOptions) == 1 && utils.KeyExists(indexes.IgnoredOptions[nil].IgnoredOptions, "usekeychain")) {
 		t.Errorf("Expected IgnoreOptions to contain 'UseKeychain', but got: %v", indexes.IgnoredOptions[nil].IgnoredOptions)
 	}
+
+	if !(indexes.IgnoredOptions[nil].IgnoredOptions["usekeychain"].Start.Line == 0 && indexes.IgnoredOptions[nil].IgnoredOptions["usekeychain"].Start.Character == 14 && indexes.IgnoredOptions[nil].IgnoredOptions["usekeychain"].End.Character == 25) {
+		t.Errorf("Expected IgnoreOptions to contain 'UseKeychain' on line 0 and from position 14-24, but got: %v", indexes.IgnoredOptions[nil].IgnoredOptions)
+	}
 }
