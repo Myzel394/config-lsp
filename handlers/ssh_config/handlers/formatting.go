@@ -9,6 +9,7 @@ import (
 
 var hostOption = fields.CreateNormalizedName("Host")
 var matchOption = fields.CreateNormalizedName("Match")
+var tagOption = fields.CreateNormalizedName("Tag")
 
 func FormatDocument(
 	d *sshconfig.SSHDocument,

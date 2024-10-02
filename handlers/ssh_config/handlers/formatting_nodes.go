@@ -49,7 +49,10 @@ func formatOption(
 			template = blockOptionTemplate
 		}
 
-		edits = append(edits, formatSSHOption(option, options, template)...)
+		edits = append(edits, protocol.TextEdit{
+			Range:   option.ToLSPRange(),
+			NewText: formatOptionToString(option, options, template),
+		})
 	}
 
 	return edits
@@ -101,11 +104,11 @@ func formatMatchBlock(
 	return edits
 }
 
-func formatSSHOption(
+func formatOptionToString(
 	option *ast.SSHOption,
 	options protocol.FormattingOptions,
 	template formatting.FormatTemplate,
-) []protocol.TextEdit {
+) string {
 	var key string
 
 	if option.Key != nil {
@@ -126,12 +129,7 @@ func formatSSHOption(
 		value = ""
 	}
 
-	return []protocol.TextEdit{
-		{
-			Range:   option.ToLSPRange(),
-			NewText: template.Format(options, key, value),
-		},
-	}
+	return template.Format(options, key, value)
 }
 
 func formatMatchToString(

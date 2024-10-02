@@ -81,6 +81,13 @@ func GetOptionCompletions(
 			matchBlock.MatchValue,
 		)
 	}
+	if entry.Key.Key == tagOption {
+		return getTagCompletions(
+			d,
+			cursor,
+			entry,
+		)
+	}
 
 	if entry.OptionValue == nil {
 		return option.DeprecatedFetchCompletions("", 0), nil
