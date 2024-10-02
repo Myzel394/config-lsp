@@ -57,6 +57,8 @@ func (d SSHDocument) GetAllMatchBlocks() []*ast.SSHMatchBlock {
 
 var hostOption = fields.CreateNormalizedName("Host")
 
+// GetAllHostBlocks: Returns all Host blocks.
+// Note: This is not sorted
 func (d SSHDocument) GetAllHostBlocks() []*ast.SSHHostBlock {
 	hostBlocks := make([]*ast.SSHHostBlock, 0, 5)
 
