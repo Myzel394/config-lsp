@@ -14,6 +14,7 @@ func analyzeBlocks(
 			continue
 		}
 
+		// Check if block is empty
 		if block.GetOptions().Size() == 0 {
 			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 				Range:    block.GetEntryOption().LocationRange.ToLSPRange(),

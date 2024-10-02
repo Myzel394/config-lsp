@@ -40,6 +40,7 @@ func Analyze(
 	analyzeDependents(ctx)
 	analyzeBlocks(ctx)
 	analyzeMatchBlocks(ctx)
+	analyzeHostBlock(ctx)
 
 	return ctx.diagnostics
 }
