@@ -29,7 +29,7 @@ func checkIsUsingDoubleQuotes(
 	quoteRanges := utils.GetQuoteRanges(value.Raw)
 	singleQuotePosition := strings.Index(value.Raw, "'")
 
-	// Single quoe
+	// Single quote
 	if singleQuotePosition != -1 && !quoteRanges.IsCharInside(singleQuotePosition) {
 		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 			Range:    valueRange.ToLSPRange(),
