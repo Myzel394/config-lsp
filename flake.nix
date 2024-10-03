@@ -33,8 +33,8 @@
             nativeBuildInputs = inputs;
             pname = "github.com/Myzel394/config-lsp";
             version = "v0.0.1";
-            src = ./.;
-            vendorHash = "sha256-PUVmhdbmfy1FaSzLt3SIK0MtWezsjb+PL+Z5YxMMhdw=";
+            src = ./server;
+            vendorHash = "sha256-s+sjOVvqU20+mbEFKg+RCD+dhScqSatk9eseX2IioPI=";
             checkPhase = ''
               go test -v $(pwd)/...
             '';
