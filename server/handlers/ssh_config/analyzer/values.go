@@ -2,9 +2,7 @@ package analyzer
 
 import (
 	"config-lsp/common"
-	docvalues "config-lsp/doc-values"
 	"config-lsp/handlers/ssh_config/fields"
-	"config-lsp/utils"
 	"fmt"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -17,7 +15,7 @@ func analyzeValuesAreValid(
 		option := info.Option
 		block := info.Block
 
-		docOption, found := fields.Options[option.Key.Key]
+		_, found := fields.Options[option.Key.Key]
 
 		if !found {
 			if ctx.document.Indexes.CanOptionBeIgnored(option, block) {
@@ -36,20 +34,5 @@ func analyzeValuesAreValid(
 
 			continue
 		}
-
-		errs := docOption.DeprecatedCheckIsValid(option.OptionValue.Value.Value)
-		ctx.diagnostics = append(
-			ctx.diagnostics,
-			utils.Map(
-				errs,
-				func(err *docvalues.InvalidValue) protocol.Diagnostic {
-					return protocol.Diagnostic{
-						Range:    err.GetRange(option.Start.Line, option.OptionValue.Start.Character),
-						Message:  err.Err.Error(),
-						Severity: &common.SeverityError,
-					}
-				},
-			)...,
-		)
 	}
 }

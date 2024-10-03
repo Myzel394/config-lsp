@@ -42,8 +42,8 @@ User root
 
 	analyzeStructureIsValid(ctx)
 
-	if len(ctx.diagnostics) != 1 {
-		t.Fatalf("Expected 1 error, got %v", ctx.diagnostics)
+	if len(ctx.diagnostics) != 0 {
+		t.Fatalf("Expected no errors, got %v", ctx.diagnostics)
 	}
 }
 
@@ -85,7 +85,7 @@ Match
 
 	analyzeStructureIsValid(ctx)
 
-	if len(ctx.diagnostics) != 2 {
+	if len(ctx.diagnostics) != 1 {
 		t.Fatalf("Expected 1 error, got %v", ctx.diagnostics)
 	}
 }
@@ -108,7 +108,7 @@ Match
 
 	analyzeStructureIsValid(ctx)
 
-	if len(ctx.diagnostics) != 1 {
-		t.Fatalf("Expected 1 error, got %v", ctx.diagnostics)
+	if len(ctx.diagnostics) != 0 {
+		t.Fatalf("Expected no errors, got %v", ctx.diagnostics)
 	}
 }

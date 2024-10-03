@@ -43,12 +43,7 @@ func checkOption(
 	_, found := fields.Options[option.Key.Key]
 
 	if !found {
-		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-			Range:    option.Key.LocationRange.ToLSPRange(),
-			Message:  fmt.Sprintf("Unknown option: %s", option.Key.Key),
-			Severity: &common.SeverityError,
-		})
-
+		// Diagnostics will be handled by `values.go`
 		return
 	}
 
