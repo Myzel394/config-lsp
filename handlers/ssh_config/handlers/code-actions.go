@@ -97,8 +97,6 @@ func (args codeActionAddToUnknownArgs) RunCommand(d *sshconfig.SSHDocument) (*pr
 	}
 
 	rawOptionName := option.Key.Value.Raw
-	println("rawOption:")
-	println(rawOptionName)
 	optionName := addToUnknownOptionTemplate.Format(formatting.DefaultFormattingOptions, rawOptionName)
 
 	// We got everything, let's build the edit!

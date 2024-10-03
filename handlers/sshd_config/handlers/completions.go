@@ -7,7 +7,6 @@ import (
 	"config-lsp/handlers/sshd_config/ast"
 	"config-lsp/handlers/sshd_config/fields"
 	"config-lsp/utils"
-	"fmt"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -17,8 +16,6 @@ func GetRootCompletions(
 	parentMatchBlock *ast.SSHDMatchBlock,
 	suggestValue bool,
 ) ([]protocol.CompletionItem, error) {
-	println("getting root completions and the parnet Match block eta:")
-	println(fmt.Sprintf("%v", parentMatchBlock))
 	kind := protocol.CompletionItemKindField
 
 	availableOptions := make(map[string]docvalues.DocumentationValue, 0)
