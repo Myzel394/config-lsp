@@ -15,7 +15,8 @@
 		"vscode": "^1.74.0"
 	},
 	"activationEvents": [
-		"onLanguage:plaintext"
+		"onLanguage:plaintext",
+		"onLanguage:yaml"
 	],
 	"main": "./out/extension",
 	"scripts": {

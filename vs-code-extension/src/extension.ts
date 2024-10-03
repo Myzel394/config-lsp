@@ -18,7 +18,13 @@ export function activate(context: ExtensionContext) {
 			{
 				scheme: 'file',
 				language: 'plaintext',
-				pattern: "**/sshconfig",
+				pattern: "**/{config,sshconfig,sshd_config,sshdconfig,fstab,hosts,aliases}",
+			},
+			// Some configs seem to be incorrectly detected as yaml
+			{
+				scheme: 'file',
+				language: 'yaml',
+				pattern: "**/{config,sshconfig,sshd_config,sshdconfig,fstab,hosts,aliases}",
 			},
 		]
 	};
