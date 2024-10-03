@@ -20,7 +20,7 @@ func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionPa
 			undetectableError,
 		)
 
-		return nil, undetectableError.Err
+		return nil, nil
 	}
 
 	switch *language {

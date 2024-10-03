@@ -27,9 +27,7 @@
         inputs = [
           pkgs.go_1_22
         ];
-      in {
-        packages = {
-          default = pkgs.buildGoModule {
+        server = pkgs.buildGoModule {
             nativeBuildInputs = inputs;
             pname = "github.com/Myzel394/config-lsp";
             version = "v0.0.1";
@@ -39,6 +37,28 @@
               go test -v $(pwd)/...
             '';
           };
+      in {
+        packages = {
+          default = server;
+          "vs-code-extension" = let
+            name = "config-lsp-vs-code-extension";
+            node-modules = pkgs.mkYarnPackage {
+              src = ./vs-code-extension;
+              name = name;
+              packageJSON = ./vs-code-extension/package.json;
+              yarnLock = ./vs-code-extension/yarn.lock;
+              yarnNix = ./vs-code-extension/yarn.nix;
+
+              buildPhase = ''
+                yarn --offline run compile
+              '';
+              installPhase = ''
+                mv deps/${name}/out $out
+                cp ${server}/bin/config-lsp $out/
+              '';
+              distPhase = "true";
+            };
+          in node-modules;
         };
         devShells.default = pkgs.mkShell {
           buildInputs = inputs ++ (with pkgs; [
@@ -48,6 +68,11 @@
           ]) ++ (if pkgs.stdenv.isLinux then with pkgs; [
             postfix
           ] else []);
+        };
+        devShells."vs-code-extension" = pkgs.mkShell {
+          buildInputs = [
+            pkgs.nodejs
+          ];
         };
       }
     );
