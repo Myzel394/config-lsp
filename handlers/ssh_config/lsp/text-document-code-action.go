@@ -9,7 +9,6 @@ import (
 )
 
 func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionParams) ([]protocol.CodeAction, error) {
-	println("TextDocumentCodeAction sshconfig")
 	d := sshconfig.DocumentParserMap[params.TextDocument.URI]
 	actions := handlers.FetchCodeActions(d, params)
 

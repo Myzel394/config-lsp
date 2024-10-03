@@ -18,12 +18,14 @@ func NewSSHIndexes() *SSHIndexes {
 		Includes:          make([]*SSHIndexIncludeLine, 0),
 		IgnoredOptions:    make(map[ast.SSHBlock]SSHIndexIgnoredUnknowns),
 		UnknownOptions:    make(map[uint32]ast.AllOptionInfo),
-		Tags:              make(map[string]*ast.SSHMatchBlock),
+		Tags:              make(map[string]SSHIndexTagInfo),
+		TagImports:        make(map[string](map[ast.SSHBlock]*ast.SSHOption)),
 	}
 }
 
 var includeOption = fields.CreateNormalizedName("Include")
 var matchOption = fields.CreateNormalizedName("Match")
+var tagOption = fields.CreateNormalizedName("Tag")
 
 func CreateIndexes(config ast.SSHConfig) (*SSHIndexes, []common.LSPError) {
 	errs := make([]common.LSPError, 0)
@@ -106,14 +108,45 @@ func CreateIndexes(config ast.SSHConfig) (*SSHIndexes, []common.LSPError) {
 					// Tag already exists
 					errs = append(errs, common.LSPError{
 						Range: entry.LocationRange,
-						Err:   fmt.Errorf("Tag %s has already been defined on line %d", name, existingBlock.Start.Line+1),
+						Err:   fmt.Errorf("Tag %s has already been defined on line %d", name, existingBlock.Block.Start.Line+1),
 					})
 
 					continue
 				}
 
 				// Add tag
-				indexes.Tags[name] = block
+				indexes.Tags[name] = SSHIndexTagInfo{
+					EntryValue: value,
+					Block:      block,
+				}
+			}
+		}
+	}
+
+	// Add Tag imports
+	for block, options := range indexes.AllOptionsPerName[tagOption] {
+		for _, option := range options {
+			if option.OptionValue == nil || option.OptionValue.Value.Value == "" {
+				continue
+			}
+
+			tagName := option.OptionValue.Value.Value
+
+			if tagImport, found := indexes.TagImports[tagName]; found {
+				if definedOption, found := tagImport[block]; found {
+					errs = append(errs, common.LSPError{
+						Range: option.OptionValue.LocationRange,
+						Err:   fmt.Errorf("Tag %s has already been imported on line %d", tagName, definedOption.Start.Line+1),
+					})
+
+					continue
+				} else {
+					tagImport[block] = option
+				}
+			} else {
+				indexes.TagImports[tagName] = map[ast.SSHBlock]*ast.SSHOption{
+					block: option,
+				}
 			}
 		}
 	}

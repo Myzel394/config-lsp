@@ -3,7 +3,6 @@ package indexes
 import (
 	"config-lsp/handlers/ssh_config/ast"
 	"config-lsp/utils"
-	"fmt"
 	"testing"
 )
 
@@ -128,6 +127,7 @@ Match tagged good_ip
 
 Match tagged myuser
 	User root
+	Tag good_ip
 `)
 
 	config := ast.NewSSHConfig()
@@ -150,14 +150,26 @@ Match tagged myuser
 
 	rawFirstMatch, _ := config.Options.Get(uint32(0))
 	firstMatch := rawFirstMatch.(*ast.SSHMatchBlock)
-	println(fmt.Sprintf("%v", indexes.Tags["good_ip"]))
-	if !(indexes.Tags["good_ip"].Start.Line == firstMatch.Start.Line) {
+	if !(indexes.Tags["good_ip"].Block.Start.Line == firstMatch.Start.Line) {
 		t.Errorf("Expected first tag to be 'good_ip', but got %v", indexes.Tags)
 	}
 
-	rawSecondMatch, _ := config.Options.Get(uint32(3))
-	secondMatch := rawSecondMatch.(*ast.SSHMatchBlock)
-	if !(indexes.Tags["myuser"].Start.Line == secondMatch.Start.Line) {
+	_, secondBlock := config.FindOption(uint32(3))
+	secondMatch := secondBlock.(*ast.SSHMatchBlock)
+	if !(indexes.Tags["myuser"].Block.Start.Line == secondMatch.Start.Line) {
 		t.Errorf("Expected second tag to be 'myuser', but got %v", indexes.Tags)
+	}
+
+	if !(len(indexes.TagImports) == 1) {
+		t.Errorf("Expected 1 tag import, but got %v", indexes.TagImports)
+	}
+
+	if !(len(indexes.TagImports["good_ip"]) == 1) {
+		t.Errorf("Expected 1 tag import for 'good_ip', but got %v", indexes.TagImports["good_ip"])
+	}
+
+	tagOption, _ := config.FindOption(uint32(5))
+	if !(indexes.TagImports["good_ip"][secondBlock].Start.Line == tagOption.Start.Line) {
+		t.Errorf("Expected first tag import to be 'good_ip', but got %v", indexes.TagImports)
 	}
 }

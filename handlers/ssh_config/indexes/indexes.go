@@ -4,6 +4,7 @@ import (
 	"config-lsp/common"
 	"config-lsp/handlers/ssh_config/ast"
 	"config-lsp/handlers/ssh_config/fields"
+	matchparser "config-lsp/handlers/ssh_config/match-parser"
 )
 
 type ValidPath string
@@ -35,6 +36,11 @@ type SSHIndexIgnoredUnknowns struct {
 	IgnoredOptions map[fields.NormalizedOptionName]SSHIndexIgnoredUnknownInfo
 }
 
+type SSHIndexTagInfo struct {
+	EntryValue *matchparser.MatchValue
+	Block      *ast.SSHMatchBlock
+}
+
 type SSHIndexes struct {
 	AllOptionsPerName map[fields.NormalizedOptionName](map[ast.SSHBlock]([]*ast.SSHOption))
 
@@ -51,5 +57,6 @@ type SSHIndexes struct {
 	// This is a map of <line> to <option>
 	UnknownOptions map[uint32]ast.AllOptionInfo
 
-	Tags map[string]*ast.SSHMatchBlock
+	Tags       map[string]SSHIndexTagInfo
+	TagImports map[string](map[ast.SSHBlock]*ast.SSHOption)
 }

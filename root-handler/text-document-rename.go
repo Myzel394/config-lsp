@@ -2,6 +2,8 @@ package roothandler
 
 import (
 	aliases "config-lsp/handlers/aliases/lsp"
+	sshconfig "config-lsp/handlers/ssh_config/lsp"
+
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -25,7 +27,7 @@ func TextDocumentRename(context *glsp.Context, params *protocol.RenameParams) (*
 	case LanguageSSHDConfig:
 		return nil, nil
 	case LanguageSSHConfig:
-		return nil, nil
+		return sshconfig.TextDocumentRename(context, params)
 	case LanguageFstab:
 		return nil, nil
 	case LanguageWireguard:

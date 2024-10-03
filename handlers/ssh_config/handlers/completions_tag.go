@@ -5,6 +5,7 @@ import (
 	"config-lsp/common/formatting"
 	sshconfig "config-lsp/handlers/ssh_config"
 	"config-lsp/handlers/ssh_config/ast"
+	"config-lsp/handlers/ssh_config/indexes"
 	"config-lsp/utils"
 	"fmt"
 
@@ -18,9 +19,9 @@ func getTagCompletions(
 ) ([]protocol.CompletionItem, error) {
 	return utils.MapMapToSlice(
 		d.Indexes.Tags,
-		func(name string, block *ast.SSHMatchBlock) protocol.CompletionItem {
+		func(name string, info indexes.SSHIndexTagInfo) protocol.CompletionItem {
 			kind := protocol.CompletionItemKindModule
-			text := renderMatchBlock(block)
+			text := renderMatchBlock(info.Block)
 			return protocol.CompletionItem{
 				Label: name,
 				Kind:  &kind,

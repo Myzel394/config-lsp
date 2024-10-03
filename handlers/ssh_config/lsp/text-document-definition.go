@@ -18,11 +18,11 @@ func TextDocumentDefinition(context *glsp.Context, params *protocol.DefinitionPa
 	option, _ := d.Config.FindOption(line)
 
 	if option != nil && option.Key.Key == tagOption && option.OptionValue != nil {
-		if block, found := d.Indexes.Tags[option.OptionValue.Value.Value]; found {
+		if info, found := d.Indexes.Tags[option.OptionValue.Value.Value]; found {
 			return []protocol.Location{
 				{
 					URI:   params.TextDocument.URI,
-					Range: block.ToLSPRange(),
+					Range: info.Block.ToLSPRange(),
 				},
 			}, nil
 		}
