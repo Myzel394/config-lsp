@@ -2,7 +2,6 @@ package analyzer
 
 import (
 	"config-lsp/common"
-	docvalues "config-lsp/doc-values"
 	"config-lsp/handlers/ssh_config/ast"
 	"config-lsp/handlers/ssh_config/fields"
 	"config-lsp/utils"
@@ -41,7 +40,7 @@ func checkOption(
 	checkIsUsingDoubleQuotes(ctx, option.Key.Value, option.Key.LocationRange)
 	checkQuotesAreClosed(ctx, option.Key.Value, option.Key.LocationRange)
 
-	docOption, found := fields.Options[option.Key.Key]
+	_, found := fields.Options[option.Key.Key]
 
 	if !found {
 		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
@@ -67,19 +66,6 @@ func checkOption(
 	if option.OptionValue != nil {
 		checkIsUsingDoubleQuotes(ctx, option.OptionValue.Value, option.OptionValue.LocationRange)
 		checkQuotesAreClosed(ctx, option.OptionValue.Value, option.OptionValue.LocationRange)
-
-		invalidValues := docOption.DeprecatedCheckIsValid(option.OptionValue.Value.Value)
-
-		for _, invalidValue := range invalidValues {
-			err := docvalues.LSPErrorFromInvalidValue(option.Start.Line, *invalidValue)
-			err.ShiftCharacter(option.OptionValue.Start.Character)
-
-			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-				Range:    err.Range.ToLSPRange(),
-				Message:  err.Err.Error(),
-				Severity: &common.SeverityError,
-			})
-		}
 	}
 
 	if option.Separator == nil || option.Separator.Value.Value == "" {

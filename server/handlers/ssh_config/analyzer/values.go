@@ -44,7 +44,7 @@ func analyzeValuesAreValid(
 				errs,
 				func(err *docvalues.InvalidValue) protocol.Diagnostic {
 					return protocol.Diagnostic{
-						Range:    option.OptionValue.ToLSPRange(),
+						Range:    err.GetRange(option.Start.Line, option.OptionValue.Start.Character),
 						Message:  err.Err.Error(),
 						Severity: &common.SeverityError,
 					}

@@ -22,7 +22,7 @@ func TextDocumentRename(context *glsp.Context, params *protocol.RenameParams) (*
 
 	option, block := d.Config.FindOption(line)
 
-	if option != nil && option.OptionValue != nil && option.OptionValue.Value.Value != "" {
+	if option != nil && option.OptionValue != nil && option.OptionValue.Value.Value != "" && option.OptionValue.ContainsPosition(index) {
 		newName := nameTemplate.Format(formatting.DefaultFormattingOptions, params.NewName)
 
 		if option.Key.Key == tagOption {

@@ -31,7 +31,7 @@ func (v *InvalidValue) GetRange(line uint32, characterStart uint32) protocol.Ran
 		},
 		End: protocol.Position{
 			Line:      line,
-			Character: characterStart + v.End,
+			Character: characterStart + v.End + 1,
 		},
 	}
 }

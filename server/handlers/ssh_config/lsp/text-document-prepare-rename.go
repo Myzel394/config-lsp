@@ -11,6 +11,7 @@ import (
 
 func TextDocumentPrepareRename(context *glsp.Context, params *protocol.PrepareRenameParams) (any, error) {
 	d := sshconfig.DocumentParserMap[params.TextDocument.URI]
+	index := common.LSPCharacterAsIndexPosition(params.Position.Character)
 	line := params.Position.Line
 
 	option, block := d.Config.FindOption(line)
@@ -20,25 +21,27 @@ func TextDocumentPrepareRename(context *glsp.Context, params *protocol.PrepareRe
 		return nil, nil
 	}
 
-	if option.Key.Key == tagOption && option.OptionValue != nil {
-		return option.OptionValue.ToLSPRange(), nil
-	}
-
-	if option.Key.Key == matchOption {
-		matchBlock := block.(*ast.SSHMatchBlock)
-		entry := matchBlock.MatchValue.GetEntryAtPosition(common.LSPCharacterAsIndexPosition(params.Position.Character))
-
-		if entry == nil {
-			return nil, nil
+	if option.OptionValue != nil && option.OptionValue.Value.Value != "" && option.OptionValue.ContainsPosition(index) {
+		if option.Key.Key == tagOption {
+			return option.OptionValue.ToLSPRange(), nil
 		}
 
-		value := entry.GetValueAtPosition(common.LSPCharacterAsIndexPosition(params.Position.Character))
+		if option.Key.Key == matchOption {
+			matchBlock := block.(*ast.SSHMatchBlock)
+			entry := matchBlock.MatchValue.GetEntryAtPosition(common.LSPCharacterAsIndexPosition(params.Position.Character))
 
-		if value == nil {
-			return nil, nil
+			if entry == nil {
+				return nil, nil
+			}
+
+			value := entry.GetValueAtPosition(common.LSPCharacterAsIndexPosition(params.Position.Character))
+
+			if value == nil {
+				return nil, nil
+			}
+
+			return value.ToLSPRange(), nil
 		}
-
-		return value.ToLSPRange(), nil
 	}
 
 	return nil, nil
