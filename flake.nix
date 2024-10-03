@@ -44,6 +44,7 @@
           buildInputs = inputs ++ (with pkgs; [
             mailutils
             wireguard-tools
+            antlr
           ]) ++ (if pkgs.stdenv.isLinux then with pkgs; [
             postfix
           ] else []);
