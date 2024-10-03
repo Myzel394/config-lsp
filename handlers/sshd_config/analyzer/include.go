@@ -12,31 +12,30 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 var whitespacePattern = regexp.MustCompile(`\S+`)
 
 func analyzeIncludeValues(
-	d *sshdconfig.SSHDDocument,
-) []common.LSPError {
-	errs := make([]common.LSPError, 0)
-
-	for _, include := range d.Indexes.Includes {
+	ctx *analyzerContext,
+) {
+	for _, include := range ctx.document.Indexes.Includes {
 		for _, value := range include.Values {
 			validPaths, err := createIncludePaths(value.Value)
 
 			if err != nil {
-				errs = append(errs, common.LSPError{
-					Range: value.LocationRange,
-					Err:   err,
+				ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+					Range:    value.LocationRange.ToLSPRange(),
+					Message:  err.Error(),
+					Severity: &common.SeverityError,
 				})
 			} else {
 				value.Paths = validPaths
 			}
 		}
 	}
-
-	return errs
 }
 
 func createIncludePaths(

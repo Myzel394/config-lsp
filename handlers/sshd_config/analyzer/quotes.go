@@ -3,57 +3,52 @@ package analyzer
 import (
 	"config-lsp/common"
 	commonparser "config-lsp/common/parser"
-	sshdconfig "config-lsp/handlers/sshd_config"
-	"errors"
+	"config-lsp/utils"
 	"strings"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func analyzeQuotesAreValid(
-	d *sshdconfig.SSHDDocument,
-) []common.LSPError {
-	errs := make([]common.LSPError, 0)
+	ctx *analyzerContext,
+) {
+	for _, option := range ctx.document.Config.GetAllOptions() {
+		checkIsUsingDoubleQuotes(ctx, option.Key.Value, option.Key.LocationRange)
+		checkIsUsingDoubleQuotes(ctx, option.OptionValue.Value, option.OptionValue.LocationRange)
 
-	for _, option := range d.Config.GetAllOptions() {
-		errs = append(errs, checkIsUsingDoubleQuotes(option.Key.Value, option.Key.LocationRange)...)
-		errs = append(errs, checkIsUsingDoubleQuotes(option.OptionValue.Value, option.OptionValue.LocationRange)...)
-
-		errs = append(errs, checkQuotesAreClosed(option.Key.Value, option.Key.LocationRange)...)
-		errs = append(errs, checkQuotesAreClosed(option.OptionValue.Value, option.OptionValue.LocationRange)...)
+		checkQuotesAreClosed(ctx, option.Key.Value, option.Key.LocationRange)
+		checkQuotesAreClosed(ctx, option.OptionValue.Value, option.OptionValue.LocationRange)
 	}
-
-	return errs
 }
 
 func checkIsUsingDoubleQuotes(
+	ctx *analyzerContext,
 	value commonparser.ParsedString,
 	valueRange common.LocationRange,
-) []common.LSPError {
+) {
+	quoteRanges := utils.GetQuoteRanges(value.Raw)
 	singleQuotePosition := strings.Index(value.Raw, "'")
 
-	if singleQuotePosition != -1 {
-		return []common.LSPError{
-			{
-				Range: valueRange,
-				Err:   errors.New("sshd_config does not support single quotes. Use double quotes (\") instead."),
-			},
-		}
+	// Single quote
+	if singleQuotePosition != -1 && !quoteRanges.IsCharInside(singleQuotePosition) {
+		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+			Range:    valueRange.ToLSPRange(),
+			Message:  "sshd_config does not support single quotes. Use double quotes (\") instead.",
+			Severity: &common.SeverityError,
+		})
 	}
-
-	return nil
 }
 
 func checkQuotesAreClosed(
+	ctx *analyzerContext,
 	value commonparser.ParsedString,
 	valueRange common.LocationRange,
-) []common.LSPError {
+) {
 	if strings.Count(value.Raw, "\"")%2 != 0 {
-		return []common.LSPError{
-			{
-				Range: valueRange,
-				Err:   errors.New("There are unclosed quotes here. Make sure all quotes are closed."),
-			},
-		}
+		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+			Range:    valueRange.ToLSPRange(),
+			Message:  "There are unclosed quotes here. Make sure all quotes are closed.",
+			Severity: &common.SeverityError,
+		})
 	}
-
-	return nil
 }

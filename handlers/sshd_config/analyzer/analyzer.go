@@ -8,39 +8,45 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
+type analyzerContext struct {
+	document    *sshdconfig.SSHDDocument
+	diagnostics []protocol.Diagnostic
+}
+
 func Analyze(
 	d *sshdconfig.SSHDDocument,
 ) []protocol.Diagnostic {
-	errors := analyzeStructureIsValid(d)
+	ctx := &analyzerContext{
+		document:    d,
+		diagnostics: make([]protocol.Diagnostic, 0),
+	}
 
-	if len(errors) > 0 {
-		return common.ErrsToDiagnostics(errors)
+	analyzeStructureIsValid(ctx)
+
+	if len(ctx.diagnostics) > 0 {
+		return ctx.diagnostics
 	}
 
 	i, indexErrors := indexes.CreateIndexes(*d.Config)
 
 	d.Indexes = i
 
-	errors = append(errors, indexErrors...)
-
-	if len(errors) > 0 {
-		return common.ErrsToDiagnostics(errors)
+	if len(indexErrors) > 0 {
+		return common.ErrsToDiagnostics(indexErrors)
 	}
 
-	includeErrors := analyzeIncludeValues(d)
+	analyzeIncludeValues(ctx)
 
-	if len(includeErrors) > 0 {
-		errors = append(errors, includeErrors...)
-	} else {
+	if len(ctx.diagnostics) == 0 {
 		for _, include := range d.Indexes.Includes {
 			for _, value := range include.Values {
 				for _, path := range value.Paths {
 					_, err := parseFile(string(path))
 
 					if err != nil {
-						errors = append(errors, common.LSPError{
-							Range: value.LocationRange,
-							Err:   err,
+						ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+							Range:   value.LocationRange.ToLSPRange(),
+							Message: err.Error(),
 						})
 					}
 				}
@@ -48,11 +54,7 @@ func Analyze(
 		}
 	}
 
-	errors = append(errors, analyzeMatchBlocks(d)...)
+	analyzeMatchBlocks(ctx)
 
-	if len(errors) > 0 {
-		return common.ErrsToDiagnostics(errors)
-	}
-
-	return nil
+	return ctx.diagnostics
 }

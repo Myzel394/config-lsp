@@ -3,6 +3,8 @@ package analyzer
 import (
 	testutils_test "config-lsp/handlers/sshd_config/test_utils"
 	"testing"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func TestSimpleInvalidQuotesExample(
@@ -11,11 +13,15 @@ func TestSimpleInvalidQuotesExample(
 	d := testutils_test.DocumentFromInput(t, `
 PermitRootLogin 'yes'
 `)
+	ctx := &analyzerContext{
+		document:    d,
+		diagnostics: make([]protocol.Diagnostic, 0),
+	}
 
-	errors := analyzeQuotesAreValid(d)
+	analyzeQuotesAreValid(ctx)
 
-	if !(len(errors) == 1) {
-		t.Errorf("Expected 1 error, got %v", len(errors))
+	if !(len(ctx.diagnostics) == 1) {
+		t.Errorf("Expected 1 error, got %v", len(ctx.diagnostics))
 	}
 }
 
@@ -25,11 +31,15 @@ func TestSingleQuotesKeyAndOptionExample(
 	d := testutils_test.DocumentFromInput(t, `
 'Port' '22'
 `)
+	ctx := &analyzerContext{
+		document:    d,
+		diagnostics: make([]protocol.Diagnostic, 0),
+	}
 
-	errors := analyzeQuotesAreValid(d)
+	analyzeQuotesAreValid(ctx)
 
-	if !(len(errors) == 2) {
-		t.Errorf("Expected 2 errors, got %v", len(errors))
+	if !(len(ctx.diagnostics) == 2) {
+		t.Errorf("Expected 2 errors, got %v", len(ctx.diagnostics))
 	}
 }
 
@@ -39,11 +49,15 @@ func TestSimpleUnclosedQuoteExample(
 	d := testutils_test.DocumentFromInput(t, `
 PermitRootLogin "yes
 `)
+	ctx := &analyzerContext{
+		document:    d,
+		diagnostics: make([]protocol.Diagnostic, 0),
+	}
 
-	errors := analyzeQuotesAreValid(d)
+	analyzeQuotesAreValid(ctx)
 
-	if !(len(errors) == 1) {
-		t.Errorf("Expected 1 error, got %v", len(errors))
+	if !(len(ctx.diagnostics) == 1) {
+		t.Errorf("Expected 1 error, got %v", len(ctx.diagnostics))
 	}
 }
 
@@ -53,10 +67,14 @@ func TestIncompleteQuotesExample(
 	d := testutils_test.DocumentFromInput(t, `
 "Port 
 `)
+	ctx := &analyzerContext{
+		document:    d,
+		diagnostics: make([]protocol.Diagnostic, 0),
+	}
 
-	errors := analyzeQuotesAreValid(d)
+	analyzeQuotesAreValid(ctx)
 
-	if !(len(errors) == 1) {
-		t.Errorf("Expected 1 error, got %v", len(errors))
+	if !(len(ctx.diagnostics) == 1) {
+		t.Errorf("Expected 1 error, got %v", len(ctx.diagnostics))
 	}
 }

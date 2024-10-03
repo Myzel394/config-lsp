@@ -3,27 +3,26 @@ package analyzer
 import (
 	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
-	sshdconfig "config-lsp/handlers/sshd_config"
 	"config-lsp/handlers/sshd_config/fields"
 	"config-lsp/handlers/sshd_config/match-parser"
 	"config-lsp/utils"
-	"errors"
 	"fmt"
 	"strings"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func analyzeMatchBlocks(
-	d *sshdconfig.SSHDDocument,
-) []common.LSPError {
-	errs := make([]common.LSPError, 0)
-
-	for matchBlock, options := range d.Indexes.AllOptionsPerName["Match"] {
+	ctx *analyzerContext,
+) {
+	for matchBlock, options := range ctx.document.Indexes.AllOptionsPerName["Match"] {
 		option := options[0]
 		// Check if the match block has filled out all fields
 		if matchBlock == nil || matchBlock.MatchValue == nil || len(matchBlock.MatchValue.Entries) == 0 {
-			errs = append(errs, common.LSPError{
-				Range: option.LocationRange,
-				Err:   errors.New("A match expression is required"),
+			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+				Range:    option.ToLSPRange(),
+				Message:  "A match expression is required",
+				Severity: &common.SeverityError,
 			})
 
 			continue
@@ -31,46 +30,48 @@ func analyzeMatchBlocks(
 
 		for _, entry := range matchBlock.MatchValue.Entries {
 			if entry.Values == nil {
-				errs = append(errs, common.LSPError{
-					Range: entry.LocationRange,
-					Err:   errors.New(fmt.Sprintf("A value for %s is required", entry.Criteria.Type)),
+				ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+					Range:    entry.ToLSPRange(),
+					Message:  fmt.Sprintf("A value for %s is required", entry.Criteria.Type),
+					Severity: &common.SeverityError,
 				})
 
 				continue
 			}
 
-			errs = append(errs, analyzeMatchValuesContainsPositiveValue(entry.Values)...)
+			analyzeMatchValuesContainsPositiveValue(ctx, entry.Values)
 
 			for _, value := range entry.Values.Values {
-				errs = append(errs, analyzeMatchValueNegation(value)...)
-				errs = append(errs, analyzeMatchValueIsValid(value, entry.Criteria.Type)...)
+				analyzeMatchValueNegation(ctx, value)
+				analyzeMatchValueIsValid(ctx, value, entry.Criteria.Type)
 			}
 		}
 
 		// Check if match blocks are not empty
 		if matchBlock.Options.Size() == 0 {
-			errs = append(errs, common.LSPError{
-				Range: option.LocationRange,
-				Err:   errors.New("This match block is empty"),
+			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+				Range:    option.ToLSPRange(),
+				Message:  "This match block is empty",
+				Severity: &common.SeverityInformation,
+				Tags: []protocol.DiagnosticTag{
+					protocol.DiagnosticTagUnnecessary,
+				},
 			})
 		}
 	}
-
-	return errs
 }
 
 func analyzeMatchValueNegation(
+	ctx *analyzerContext,
 	value *matchparser.MatchValue,
-) []common.LSPError {
-	errs := make([]common.LSPError, 0)
-
+) {
 	positionsAsList := utils.AllIndexes(value.Value.Raw, "!")
 	positions := utils.SliceToMap(positionsAsList, struct{}{})
 
 	delete(positions, 0)
 
 	for position := range positions {
-		errs = append(errs, common.LSPError{
+		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 			Range: common.LocationRange{
 				Start: common.Location{
 					Line:      value.Start.Line,
@@ -80,19 +81,19 @@ func analyzeMatchValueNegation(
 					Line:      value.End.Line,
 					Character: uint32(position) + value.End.Character,
 				},
-			},
-			Err: errors.New("The negation operator (!) may only occur at the beginning of a value"),
+			}.ToLSPRange(),
+			Message:  "The negation operator (!) may only occur at the beginning of a value",
+			Severity: &common.SeverityError,
 		})
 	}
-
-	return errs
 }
 
 func analyzeMatchValuesContainsPositiveValue(
+	ctx *analyzerContext,
 	values *matchparser.MatchValues,
-) []common.LSPError {
+) {
 	if len(values.Values) == 0 {
-		return nil
+		return
 	}
 
 	containsPositive := false
@@ -105,42 +106,34 @@ func analyzeMatchValuesContainsPositiveValue(
 	}
 
 	if !containsPositive {
-		return []common.LSPError{
-			{
-				Range: values.LocationRange,
-				Err:   errors.New("At least one positive value is required. A negated match will never produce a positive result by itself"),
-			},
-		}
+		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+			Range:    values.LocationRange.ToLSPRange(),
+			Message:  "At least one positive value is required. A negated match will never produce a positive result by itself",
+			Severity: &common.SeverityError,
+		})
 	}
-
-	return nil
 }
 
 func analyzeMatchValueIsValid(
+	ctx *analyzerContext,
 	value *matchparser.MatchValue,
 	criteria matchparser.MatchCriteriaType,
-) []common.LSPError {
-	errs := make([]common.LSPError, 0)
-
+) {
 	if value.Value.Raw == "" {
-		return errs
+		return
 	}
 
 	docOption := fields.MatchValueFieldMap[criteria]
 	invalidValues := docOption.DeprecatedCheckIsValid(value.Value.Raw)
 
-	errs = append(
-		errs,
-		utils.Map(
-			invalidValues,
-			func(invalidValue *docvalues.InvalidValue) common.LSPError {
-				err := docvalues.LSPErrorFromInvalidValue(value.Start.Line, *invalidValue)
-				err.ShiftCharacter(value.Start.Character)
+	for _, invalidValue := range invalidValues {
+		err := docvalues.LSPErrorFromInvalidValue(value.Start.Line, *invalidValue)
+		err.ShiftCharacter(value.Start.Character)
 
-				return err
-			},
-		)...,
-	)
-
-	return errs
+		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+			Range:    err.Range.ToLSPRange(),
+			Message:  err.Err.Error(),
+			Severity: &common.SeverityError,
+		})
+	}
 }
