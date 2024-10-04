@@ -905,7 +905,6 @@ rsa-sha2-512,rsa-sha2-256
     To disable TCP keepalive messages, the value should be set to no. See also ServerAliveInterval for protocol-level keepalives.`,
 		Value: booleanEnumValue,
 	},
-	// TODO: Add
 	"tag": {
 		Documentation: `Specify a configuration tag name that may be later used by a Match directive to select a block of configuration.`,
 		Value:         docvalues.StringValue{},
