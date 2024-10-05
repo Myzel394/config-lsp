@@ -28,3 +28,4 @@ test.lua
 config-lsp
 result
 bin
+debug.log
