@@ -42,6 +42,7 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 			d,
 			option,
 			block,
+			line,
 			cursor,
 		)
 	}

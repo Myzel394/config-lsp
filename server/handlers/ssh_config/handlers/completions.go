@@ -65,6 +65,7 @@ func GetOptionCompletions(
 	d *sshconfig.SSHDocument,
 	entry *ast.SSHOption,
 	block ast.SSHBlock,
+	line uint32,
 	cursor common.CursorPosition,
 ) ([]protocol.CompletionItem, error) {
 	option, found := fields.Options[entry.Key.Key]
@@ -84,6 +85,7 @@ func GetOptionCompletions(
 	if entry.Key.Key == tagOption {
 		return getTagCompletions(
 			d,
+			line,
 			cursor,
 			entry,
 		)
@@ -94,13 +96,13 @@ func GetOptionCompletions(
 	}
 
 	// Hello wo|rld
-	line := entry.OptionValue.Value.Raw
+	lineValue := entry.OptionValue.Value.Raw
 	// NEW: docvalues index
 	return option.DeprecatedFetchCompletions(
-		line,
+		lineValue,
 		common.DeprecatedImprovedCursorToIndex(
 			cursor,
-			line,
+			lineValue,
 			entry.OptionValue.Start.Character,
 		),
 	), nil

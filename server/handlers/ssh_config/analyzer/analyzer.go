@@ -42,6 +42,8 @@ func Analyze(
 	analyzeMatchBlocks(ctx)
 	analyzeHostBlock(ctx)
 	analyzeBlocks(ctx)
+	analyzeTagOptions(ctx)
+	analyzeTagImports(ctx)
 
 	return ctx.diagnostics
 }
