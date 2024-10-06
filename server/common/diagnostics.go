@@ -6,8 +6,8 @@ import (
 )
 
 func ClearDiagnostics(context *glsp.Context, uri protocol.DocumentUri) {
-	context.Notify(
-		"textDocument/publishDiagnostics",
+	go context.Notify(
+		protocol.ServerTextDocumentPublishDiagnostics,
 		protocol.PublishDiagnosticsParams{
 			URI:         uri,
 			Diagnostics: []protocol.Diagnostic{},
@@ -16,8 +16,8 @@ func ClearDiagnostics(context *glsp.Context, uri protocol.DocumentUri) {
 }
 
 func SendDiagnostics(context *glsp.Context, uri protocol.DocumentUri, diagnostics []protocol.Diagnostic) {
-	context.Notify(
-		"textDocument/publishDiagnostics",
+	go context.Notify(
+		protocol.ServerTextDocumentPublishDiagnostics,
 		protocol.PublishDiagnosticsParams{
 			URI:         uri,
 			Diagnostics: diagnostics,

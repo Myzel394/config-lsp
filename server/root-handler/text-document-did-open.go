@@ -54,26 +54,11 @@ func showParseError(
 	uri protocol.DocumentUri,
 	err common.ParseError,
 ) {
-	severity := protocol.DiagnosticSeverityError
-
-	common.SendDiagnostics(
-		context,
-		uri,
-		[]protocol.Diagnostic{
-			{
-				Severity: &severity,
-				Message:  err.Err.Error(),
-				Range: protocol.Range{
-					Start: protocol.Position{
-						Line:      err.Line,
-						Character: 0,
-					},
-					End: protocol.Position{
-						Line:      err.Line,
-						Character: 99999,
-					},
-				},
-			},
+	context.Notify(
+		"window/showMessage",
+		protocol.ShowMessageParams{
+			Type:    protocol.MessageTypeError,
+			Message: err.Err.Error(),
 		},
 	)
 }

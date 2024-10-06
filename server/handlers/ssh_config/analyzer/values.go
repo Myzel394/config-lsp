@@ -1,11 +1,8 @@
 package analyzer
 
 import (
-	"config-lsp/common"
+	"config-lsp/handlers/ssh_config/diagnostics"
 	"config-lsp/handlers/ssh_config/fields"
-	"fmt"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func analyzeValuesAreValid(
@@ -23,12 +20,12 @@ func analyzeValuesAreValid(
 				continue
 			}
 
-			ctx.diagnostics = append(ctx.diagnostics,
-				protocol.Diagnostic{
-					Range:    option.Key.ToLSPRange(),
-					Message:  fmt.Sprintf("Unknown option: %s", option.Key.Value.Value),
-					Severity: &common.SeverityError,
-				},
+			ctx.diagnostics = append(
+				ctx.diagnostics,
+				diagnostics.GenerateUnknownOption(
+					option.Key.ToLSPRange(),
+					option.Key.Value.Value,
+				),
 			)
 			ctx.document.Indexes.UnknownOptions[info.Option.Start.Line] = info
 

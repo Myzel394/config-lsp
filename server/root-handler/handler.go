@@ -44,6 +44,19 @@ func initialize(context *glsp.Context, params *protocol.InitializeParams) (any, 
 	capabilities := lspHandler.CreateServerCapabilities()
 	capabilities.TextDocumentSync = protocol.TextDocumentSyncKindFull
 	capabilities.SignatureHelpProvider = &protocol.SignatureHelpOptions{}
+	capabilities.ExecuteCommandProvider = &protocol.ExecuteCommandOptions{
+		Commands: []string{
+			"aliases.sendTestMail",
+
+			"hosts.inlineAliases",
+
+			"sshconfig.addToUnknown",
+
+			"wireguard.generatePrivateKey",
+			"wireguard.generatePresharedKey",
+			"wireguard.addKeepalive",
+		},
+	}
 
 	if (*params.Capabilities.TextDocument.Rename.PrepareSupport) == true {
 		// Client supports rename preparation

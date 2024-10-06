@@ -98,14 +98,13 @@ func (args codeActionAddToUnknownArgs) RunCommand(d *sshconfig.SSHDocument) (*pr
 
 	rawOptionName := option.Key.Value.Raw
 	optionName := addToUnknownOptionTemplate.Format(formatting.DefaultFormattingOptions, rawOptionName)
+	label := fmt.Sprintf("Add %s to unknown options", option.Key.Key)
 
 	// We got everything, let's build the edit!
 	if ignoreUnknownOption == nil {
 		// Insert a completely new IgnoreUnknown option
-
 		if block == nil {
 			// Global
-			label := fmt.Sprintf("Add %s to unknown options", option.Key.Key)
 			return &protocol.ApplyWorkspaceEditParams{
 				Label: &label,
 				Edit: protocol.WorkspaceEdit{
@@ -129,7 +128,7 @@ func (args codeActionAddToUnknownArgs) RunCommand(d *sshconfig.SSHDocument) (*pr
 				},
 			}, nil
 		} else {
-			label := fmt.Sprintf("Add %s to unknown options", option.Key.Key)
+			// Block
 			return &protocol.ApplyWorkspaceEditParams{
 				Label: &label,
 				Edit: protocol.WorkspaceEdit{
@@ -155,7 +154,6 @@ func (args codeActionAddToUnknownArgs) RunCommand(d *sshconfig.SSHDocument) (*pr
 		}
 	} else {
 		// Append to the existing IgnoreUnknown option
-		label := fmt.Sprintf("Add %s to unknown options", option.Key.Key)
 		return &protocol.ApplyWorkspaceEditParams{
 			Label: &label,
 			Edit: protocol.WorkspaceEdit{

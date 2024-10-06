@@ -1,8 +1,8 @@
-import * as path from "path";
-import { ExtensionContext } from 'vscode';
+import * as path from "path"
+import { ExtensionContext, workspace } from 'vscode';
 
 import {
-    Executable,
+	Executable,
 	LanguageClient,
 	type LanguageClientOptions,
 	type ServerOptions,
@@ -12,7 +12,8 @@ const IS_DEBUG = process.env.VSCODE_DEBUG_MODE === 'true' || process.env.NODE_EN
 let client: LanguageClient;
 
 export function activate(context: ExtensionContext) {
-		console.info("config-lsp activated");
+	console.info("config-lsp activated");
+	const initOptions = workspace.getConfiguration('config-lsp');
 	const clientOptions: LanguageClientOptions = {
 		documentSelector: [
 			{
@@ -26,11 +27,12 @@ export function activate(context: ExtensionContext) {
 				language: 'yaml',
 				pattern: "**/{config,sshconfig,sshd_config,sshdconfig,fstab,hosts,aliases}",
 			},
-		]
+		],
+		initializationOptions: initOptions,
 	};
-	
+
 	const path = getBundledPath();
-		console.info(`Found config-lsp path at ${path}`);
+	console.info(`Found config-lsp path at ${path}`);
 	const run: Executable = {
 		command: getBundledPath(),
 	}

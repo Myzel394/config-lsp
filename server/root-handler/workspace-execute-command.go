@@ -33,9 +33,11 @@ func WorkspaceExecuteCommand(context *glsp.Context, params *protocol.ExecuteComm
 		return nil, err
 	}
 
-	context.Notify(
-		"workspace/applyEdit",
+	// Seems like `context.Call` is blocking, so we move it to a goroutine
+	go context.Call(
+		protocol.ServerWorkspaceApplyEdit,
 		edit,
+		nil,
 	)
 
 	return nil, nil

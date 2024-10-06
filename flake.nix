@@ -28,15 +28,15 @@
           pkgs.go_1_22
         ];
         server = pkgs.buildGoModule {
-            nativeBuildInputs = inputs;
-            pname = "github.com/Myzel394/config-lsp";
-            version = "v0.0.1";
-            src = ./server;
-            vendorHash = "sha256-s+sjOVvqU20+mbEFKg+RCD+dhScqSatk9eseX2IioPI=";
-            checkPhase = ''
-              go test -v $(pwd)/...
-            '';
-          };
+          nativeBuildInputs = inputs;
+          pname = "github.com/Myzel394/config-lsp";
+          version = "v0.0.1";
+          src = ./server;
+          vendorHash = "sha256-s+sjOVvqU20+mbEFKg+RCD+dhScqSatk9eseX2IioPI";
+          checkPhase = ''
+            go test -v $(pwd)/...
+          '';
+        };
       in {
         packages = {
           default = server;
