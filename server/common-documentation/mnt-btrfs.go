@@ -16,16 +16,31 @@ var BtrfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Deprecated
 	docvalues.CreateEnumStringWithDoc(
 		"compress",
 		"Control BTRFS file data compression. Type may be specified as zlib, lzo, zstd or no (for no compression, used for remounting). If no type is specified, zlib is used. If compress-force is specified, then compression will always be attempted, but the data may end up uncompressed if the compression would make them larger.",
-	): docvalues.EnumValue{
-		EnforceValues: true,
-		Values: []docvalues.EnumString{
-			docvalues.CreateEnumString("zlib"),
-			docvalues.CreateEnumString("lzo"),
-			docvalues.CreateEnumString("zstd"),
-			docvalues.CreateEnumStringWithDoc(
-				"no",
-				"No compression, used for remounting.",
-			),
+	): docvalues.OrValue{
+		Values: []docvalues.DeprecatedValue{
+			docvalues.EnumValue{
+				Values: []docvalues.EnumString{
+					 docvalues.CreateEnumStringWithDoc(
+						"no",
+						"No compression, used for remounting.",
+					),
+				},
+			},
+			docvalues.KeyEnumAssignmentValue{
+				Values: map[docvalues.EnumString]docvalues.DeprecatedValue{
+					docvalues.CreateEnumString("zlib"): docvalues.NumberRangeValue(
+						0,
+						9,
+					),
+					docvalues.CreateEnumString("lzo"): docvalues.NumberValue{},
+					docvalues.CreateEnumString("zstd"): docvalues.NumberRangeValue(
+						0,
+						15,
+					),
+				},
+				Separator: ":",
+				ValueIsOptional: true,
+			},
 		},
 	},
 	docvalues.CreateEnumStringWithDoc(

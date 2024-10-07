@@ -66,6 +66,13 @@ func GroupValue(separatorForMultiple string, enforceValues bool) DeprecatedValue
 	}
 }
 
+func NumberRangeValue(min int, max int) DeprecatedValue {
+	return NumberValue{
+		Min: &min,
+		Max: &max,
+	}
+}
+
 func PositiveNumberValue() DeprecatedValue {
 	zero := 0
 	return NumberValue{

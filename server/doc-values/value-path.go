@@ -52,8 +52,7 @@ func (v PathValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 			Err:   PathDoesNotExistError{},
 			Start: 0,
 			End:   uint32(len(value)),
-		},
-		}
+		}}
 	}
 
 	isValid := false

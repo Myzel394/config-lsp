@@ -1,6 +1,7 @@
 package lsp
 
 import (
+	"config-lsp/common"
 	fstabdocumentation "config-lsp/handlers/fstab/documentation"
 	"config-lsp/handlers/fstab/handlers"
 	"config-lsp/handlers/fstab/parser"
@@ -27,7 +28,7 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 		return nil, nil
 	}
 
-	cursor := params.Position.Character
+	cursor := common.CursorToCharacterIndex(params.Position.Character)
 	line := entry.Line
 
 	return handlers.GetCompletion(line, cursor)
