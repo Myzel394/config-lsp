@@ -1,4 +1,4 @@
-package fstabdocumentation
+package fields
 
 import (
 	commondocumentation "config-lsp/common-documentation"

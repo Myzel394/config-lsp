@@ -12,9 +12,10 @@ import (
 )
 
 func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionParams) (any, error) {
-	c := shared.DocumentParserMap[params.TextDocument.URI]
+	d := shared.DocumentParserMap[params.TextDocument.URI]
+	cursor := common.LSPCharacterAsCursorPosition(params.Position.Character)
 
-	rawEntry, found := c.Entries.Get(params.Position.Line)
+	rawEntry, found := d.Config.Entries.Get(params.Position.Line)
 
 	if !found {
 		// Empty line, return spec completions
@@ -25,8 +26,6 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 	}
 
 	entry := rawEntry.(*ast.FstabEntry)
-
-	cursor := common.CursorToCharacterIndex(params.Position.Character)
 
 	return handlers.GetCompletion(entry, cursor)
 }

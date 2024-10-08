@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"config-lsp/common"
 	"config-lsp/doc-values"
 	"config-lsp/handlers/fstab/ast"
 	"config-lsp/handlers/fstab/fields"
@@ -10,7 +11,7 @@ import (
 
 func GetCompletion(
 	entry *ast.FstabEntry,
-	cursor uint32,
+	cursor common.CursorPosition,
 ) ([]protocol.CompletionItem, error) {
 	targetField := entry.GetFieldAtPosition(cursor)
 
@@ -18,21 +19,21 @@ func GetCompletion(
 	case ast.FstabFieldSpec:
 		value, cursor := getFieldSafely(entry.Fields.Spec, cursor)
 
-		return fstabdocumentation.SpecField.DeprecatedFetchCompletions(
+		return fields.SpecField.DeprecatedFetchCompletions(
 			value,
 			cursor,
 		), nil
 	case ast.FstabFieldMountPoint:
 		value, cursor := getFieldSafely(entry.Fields.MountPoint, cursor)
 
-		return fstabdocumentation.MountPointField.DeprecatedFetchCompletions(
+		return fields.MountPointField.DeprecatedFetchCompletions(
 			value,
 			cursor,
 		), nil
 	case ast.FstabFieldFileSystemType:
 		value, cursor := getFieldSafely(entry.Fields.FilesystemType, cursor)
 
-		return fstabdocumentation.FileSystemTypeField.DeprecatedFetchCompletions(
+		return fields.FileSystemTypeField.DeprecatedFetchCompletions(
 			value,
 			cursor,
 		), nil
@@ -41,10 +42,10 @@ func GetCompletion(
 
 		var optionsField docvalues.DeprecatedValue
 
-		if foundField, found := fstabdocumentation.MountOptionsMapField[fileSystemType]; found {
+		if foundField, found := fields.MountOptionsMapField[fileSystemType]; found {
 			optionsField = foundField
 		} else {
-			optionsField = fstabdocumentation.DefaultMountOptionsField
+			optionsField = fields.DefaultMountOptionsField
 		}
 
 		value, cursor := getFieldSafely(entry.Fields.Options, cursor)
@@ -58,14 +59,14 @@ func GetCompletion(
 	case ast.FstabFieldFreq:
 		value, cursor := getFieldSafely(entry.Fields.Freq, cursor)
 
-		return fstabdocumentation.FreqField.DeprecatedFetchCompletions(
+		return fields.FreqField.DeprecatedFetchCompletions(
 			value,
 			cursor,
 		), nil
 	case ast.FstabFieldPass:
 		value, cursor := getFieldSafely(entry.Fields.Pass, cursor)
 
-		return fstabdocumentation.PassField.DeprecatedFetchCompletions(
+		return fields.PassField.DeprecatedFetchCompletions(
 			value,
 			cursor,
 		), nil
@@ -76,7 +77,7 @@ func GetCompletion(
 
 // Safely get value and new cursor position
 // If field is nil, return empty string and 0
-func getFieldSafely(field *ast.FstabField, character uint32) (string, uint32) {
+func getFieldSafely(field *ast.FstabField, cursor common.CursorPosition) (string, uint32) {
 	if field == nil {
 		return "", 0
 	}
@@ -85,5 +86,5 @@ func getFieldSafely(field *ast.FstabField, character uint32) (string, uint32) {
 		return "", 0
 	}
 
-	return field.Value.Raw, character - field.Start.Character
+	return field.Value.Raw, common.CursorToCharacterIndex(uint32(cursor)) - field.Start.Character
 }

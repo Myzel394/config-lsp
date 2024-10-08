@@ -2,6 +2,7 @@ package lsp
 
 import (
 	"config-lsp/common"
+	"config-lsp/handlers/fstab/analyzer"
 	"config-lsp/handlers/fstab/ast"
 	"config-lsp/handlers/fstab/shared"
 	"config-lsp/utils"
@@ -16,13 +17,16 @@ func TextDocumentDidOpen(
 ) error {
 	common.ClearDiagnostics(context, params.TextDocument.URI)
 
-	p := ast.NewFstabConfig()
-	shared.DocumentParserMap[params.TextDocument.URI] = p
+	config := ast.NewFstabConfig()
+	d := &shared.FstabDocument{
+		Config: config,
+	}
+	shared.DocumentParserMap[params.TextDocument.URI] = d
 
 	content := params.TextDocument.Text
 
 	diagnostics := make([]protocol.Diagnostic, 0)
-	errors := p.Parse(content)
+	errors := d.Config.Parse(content)
 
 	if len(errors) > 0 {
 		diagnostics = append(diagnostics, utils.Map(
@@ -32,7 +36,7 @@ func TextDocumentDidOpen(
 			},
 		)...)
 	} else {
-		// diagnostics = append(diagnostics, p.AnalyzeValues()...)
+		diagnostics = append(diagnostics, analyzer.Analyze(d)...)
 	}
 
 	if len(diagnostics) > 0 {

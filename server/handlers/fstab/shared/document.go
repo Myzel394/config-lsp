@@ -6,5 +6,8 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-var DocumentParserMap = map[protocol.DocumentUri]*ast.FstabConfig{}
+type FstabDocument struct {
+	Config *ast.FstabConfig
+}
 
+var DocumentParserMap = map[protocol.DocumentUri]*FstabDocument{}

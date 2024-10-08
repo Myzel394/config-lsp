@@ -43,4 +43,3 @@ type FstabConfig struct {
 	// [uint32]{} - line number to empty struct for comments
 	CommentLines map[uint32]struct{}
 }
-

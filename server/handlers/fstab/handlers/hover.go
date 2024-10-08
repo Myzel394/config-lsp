@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"config-lsp/common"
 	"config-lsp/doc-values"
 	"config-lsp/handlers/fstab/ast"
 	"config-lsp/handlers/fstab/fields"
@@ -11,10 +12,10 @@ import (
 
 func GetHoverInfo(
 	line uint32,
-	cursor uint32,
+	index common.IndexPosition,
 	entry *ast.FstabEntry,
 ) (*protocol.Hover, error) {
-	targetField := entry.GetFieldAtPosition(cursor)
+	targetField := entry.GetFieldAtPosition(index)
 
 	switch targetField {
 	case ast.FstabFieldSpec:
@@ -27,13 +28,13 @@ func GetHoverInfo(
 		fileSystemType := entry.Fields.FilesystemType.Value.Value
 		var optionsField docvalues.DeprecatedValue
 
-		if foundField, found := fstabdocumentation.MountOptionsMapField[fileSystemType]; found {
+		if foundField, found := fields.MountOptionsMapField[fileSystemType]; found {
 			optionsField = foundField
 		} else {
-			optionsField = fstabdocumentation.DefaultMountOptionsField
+			optionsField = fields.DefaultMountOptionsField
 		}
 
-		relativeCursor := cursor - entry.Fields.Options.Start.Character
+		relativeCursor := uint32(index) - entry.Fields.Options.Start.Character
 		fieldInfo := optionsField.DeprecatedFetchHoverInfo(entry.Fields.Options.Value.Value, relativeCursor)
 
 		hover := protocol.Hover{

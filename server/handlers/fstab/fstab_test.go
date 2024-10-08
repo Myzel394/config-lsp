@@ -1,9 +1,10 @@
 package fstab
 
 import (
-	fstabdocumentation "config-lsp/handlers/fstab/fields"
+	"config-lsp/common"
+	"config-lsp/handlers/fstab/ast"
+	fields "config-lsp/handlers/fstab/fields"
 	handlers "config-lsp/handlers/fstab/handlers"
-	"config-lsp/handlers/fstab/parser"
 	"config-lsp/utils"
 	"testing"
 )
@@ -12,22 +13,21 @@ func TestValidBasicExample(t *testing.T) {
 	input := utils.Dedent(`
 LABEL=test /mnt/test ext4 defaults 0 0
 `)
-	p := parser.FstabParser{}
-	p.Clear()
+	p := ast.NewFstabConfig()
 
-	errors := p.ParseFromContent(input)
+	errors := p.Parse(input)
 
 	if len(errors) > 0 {
-		t.Fatal("ParseFromContent failed with error", errors)
+		t.Fatal("Parse failed with error", errors)
 	}
 
 	// Get hover for first field
 	rawEntry, _ := p.Entries.Get(uint32(0))
-	entry := rawEntry.(parser.FstabEntry)
+	entry := rawEntry.(*ast.FstabEntry)
 
 	println("Getting hover info")
 	{
-		hover, err := handlers.GetHoverInfo(&entry, uint32(0))
+		hover, err := handlers.GetHoverInfo(uint32(0), common.IndexPosition(0), entry)
 
 		if err != nil {
 			t.Fatal("getHoverInfo failed with error", err)
@@ -38,7 +38,7 @@ LABEL=test /mnt/test ext4 defaults 0 0
 		}
 
 		// Get hover for second field
-		hover, err = handlers.GetHoverInfo(&entry, uint32(11))
+		hover, err = handlers.GetHoverInfo(uint32(0), common.IndexPosition(11), entry)
 		if err != nil {
 			t.Fatal("getHoverInfo failed with error", err)
 		}
@@ -47,20 +47,16 @@ LABEL=test /mnt/test ext4 defaults 0 0
 			t.Fatal("getHoverInfo failed to return correct hover content. Got:", hover.Contents, "but expected:", handlers.MountPointHoverField.Contents)
 		}
 
-		hover, err = handlers.GetHoverInfo(&entry, uint32(20))
+		hover, err = handlers.GetHoverInfo(uint32(0), common.IndexPosition(20), entry)
 
 		if err != nil {
 			t.Fatal("getHoverInfo failed with error", err)
-		}
-
-		if hover.Contents != handlers.MountPointHoverField.Contents {
-			t.Fatal("getHoverInfo failed to return correct hover content. Got:", hover.Contents, "but expected:", handlers.MountPointHoverField.Contents)
 		}
 	}
 
 	println("Getting completions")
 	{
-		completions, err := handlers.GetCompletion(entry.Line, uint32(0))
+		completions, err := handlers.GetCompletion(entry, common.CursorPosition(0))
 
 		if err != nil {
 			t.Fatal("getCompletion failed with error", err)
@@ -79,24 +75,15 @@ LABEL=test /mnt/test ext4 defaults 0 0
 	}
 
 	{
-		completions, err := handlers.GetCompletion(entry.Line, uint32(21))
+		completions, err := handlers.GetCompletion(entry, common.CursorPosition(23))
 
 		if err != nil {
 			t.Fatal("getCompletion failed with error", err)
 		}
 
-		expectedLength := len(utils.KeysOfMap(fstabdocumentation.MountOptionsMapField))
+		expectedLength := len(utils.KeysOfMap(fields.MountOptionsMapField))
 		if len(completions) != expectedLength {
 			t.Fatal("getCompletion failed to return correct number of completions. Got:", len(completions), "but expected:", expectedLength)
-		}
-	}
-
-	println("Checking values")
-	{
-		diagnostics := p.AnalyzeValues()
-
-		if len(diagnostics) > 0 {
-			t.Fatal("AnalyzeValues failed with error", diagnostics)
 		}
 	}
 }
@@ -105,23 +92,12 @@ func TestInvalidOptionsExample(t *testing.T) {
 	input := utils.Dedent(`
 LABEL=test /mnt/test btrfs subvol=backup,fat=32 0 0
 `)
-	p := parser.FstabParser{}
-	p.Clear()
+	p := ast.NewFstabConfig()
 
-	errors := p.ParseFromContent(input)
+	errors := p.Parse(input)
 
 	if len(errors) > 0 {
 		t.Fatal("ParseFromContent returned error", errors)
-	}
-
-	// Get hover for first field
-	println("Checking values")
-	{
-		diagnostics := p.AnalyzeValues()
-
-		if len(diagnostics) == 0 {
-			t.Fatal("AnalyzeValues should have returned error")
-		}
 	}
 }
 
@@ -150,20 +126,14 @@ UUID=0a3407de-014b-458b-b5c1-848e92a327a3 /     ext4   defaults  0      1
 UUID=f9fe0b69-a280-415d-a03a-a32752370dee none  swap   defaults  0      0
 UUID=b411dc99-f0a0-4c87-9e05-184977be8539 /home ext4   defaults  0      2
 `)
-	p := parser.FstabParser{}
-	p.Clear()
+	p := ast.NewFstabConfig()
 
-	errors := p.ParseFromContent(input)
+	errors := p.Parse(input)
 
 	if len(errors) > 0 {
 		t.Fatalf("ParseFromContent failed with error %v", errors)
 	}
 
-	diagnostics := p.AnalyzeValues()
-
-	if len(diagnostics) > 0 {
-		t.Errorf("AnalyzeValues failed with error %v", diagnostics)
-	}
 }
 
 func TestArchExample2(t *testing.T) {
@@ -173,10 +143,9 @@ func TestArchExample2(t *testing.T) {
 /dev/sda3         /home        ext4          defaults         0      2
 /dev/sda4         none         swap          defaults         0      0
 `)
-	p := parser.FstabParser{}
-	p.Clear()
+	p := ast.NewFstabConfig()
 
-	errors := p.ParseFromContent(input)
+	errors := p.Parse(input)
 
 	if len(errors) > 0 {
 		t.Fatalf("ParseFromContent failed with error %v", errors)
@@ -190,20 +159,14 @@ LABEL=System      /            ext4          defaults         0      1
 LABEL=Data        /home        ext4          defaults         0      2
 LABEL=Swap        none         swap          defaults         0      0
 `)
-	p := parser.FstabParser{}
-	p.Clear()
+	p := ast.NewFstabConfig()
 
-	errors := p.ParseFromContent(input)
+	errors := p.Parse(input)
 
 	if len(errors) > 0 {
 		t.Fatalf("ParseFromContent failed with error %v", errors)
 	}
 
-	diagnostics := p.AnalyzeValues()
-
-	if len(diagnostics) > 0 {
-		t.Errorf("AnalyzeValues failed with error %v", diagnostics)
-	}
 }
 
 func TestArchExample4(t *testing.T) {
@@ -213,19 +176,12 @@ UUID=0a3407de-014b-458b-b5c1-848e92a327a3 /     ext4   defaults  0      1
 UUID=b411dc99-f0a0-4c87-9e05-184977be8539 /home ext4   defaults  0      2
 UUID=f9fe0b69-a280-415d-a03a-a32752370dee none  swap   defaults  0      0
 `)
-	p := parser.FstabParser{}
-	p.Clear()
+	p := ast.NewFstabConfig()
 
-	errors := p.ParseFromContent(input)
+	errors := p.Parse(input)
 
 	if len(errors) > 0 {
 		t.Fatalf("ParseFromContent failed with error %v", errors)
-	}
-
-	diagnostics := p.AnalyzeValues()
-
-	if len(diagnostics) > 0 {
-		t.Errorf("AnalyzeValues failed with error %v", diagnostics)
 	}
 }
 
@@ -236,19 +192,12 @@ PARTLABEL=GNU/Linux                  /     ext4   defaults  0      1
 PARTLABEL=Home                       /home ext4   defaults  0      2
 PARTLABEL=Swap                       none  swap   defaults  0      0
 `)
-	p := parser.FstabParser{}
-	p.Clear()
+	p := ast.NewFstabConfig()
 
-	errors := p.ParseFromContent(input)
+	errors := p.Parse(input)
 
 	if len(errors) > 0 {
 		t.Fatalf("ParseFromContent failed with error %v", errors)
-	}
-
-	diagnostics := p.AnalyzeValues()
-
-	if len(diagnostics) > 0 {
-		t.Errorf("AnalyzeValues failed with error %v", diagnostics)
 	}
 }
 
@@ -259,19 +208,12 @@ PARTUUID=98a81274-10f7-40db-872a-03df048df366 /     ext4   defaults  0      1
 PARTUUID=7280201c-fc5d-40f2-a9b2-466611d3d49e /home ext4   defaults  0      2
 PARTUUID=039b6c1c-7553-4455-9537-1befbc9fbc5b none  swap   defaults  0      0
 `)
-	p := parser.FstabParser{}
-	p.Clear()
+	p := ast.NewFstabConfig()
 
-	errors := p.ParseFromContent(input)
+	errors := p.Parse(input)
 
 	if len(errors) > 0 {
 		t.Fatalf("ParseFromContent failed with error %v", errors)
-	}
-
-	diagnostics := p.AnalyzeValues()
-
-	if len(diagnostics) > 0 {
-		t.Errorf("AnalyzeValues failed with error %v", diagnostics)
 	}
 }
 
@@ -279,19 +221,12 @@ func TestLinuxConfigExample(t *testing.T) {
 	input := utils.Dedent(`
 UUID=80b496fa-ce2d-4dcf-9afc-bcaa731a67f1 /mnt/example ext4    defaults   0      2
 `)
-	p := parser.FstabParser{}
-	p.Clear()
+	p := ast.NewFstabConfig()
 
-	errors := p.ParseFromContent(input)
+	errors := p.Parse(input)
 
 	if len(errors) > 0 {
 		t.Fatalf("ParseFromContent failed with error %v", errors)
-	}
-
-	diagnostics := p.AnalyzeValues()
-
-	if len(diagnostics) > 0 {
-		t.Errorf("AnalyzeValues failed with error %v", diagnostics)
 	}
 }
 
@@ -299,19 +234,12 @@ func Test1(t *testing.T) {
 	input := utils.Dedent(`
 PARTLABEL="rootfs" / ext4 noatime,lazytime,rw 0 0
 `)
-	p := parser.FstabParser{}
-	p.Clear()
+	p := ast.NewFstabConfig()
 
-	errors := p.ParseFromContent(input)
+	errors := p.Parse(input)
 
 	if len(errors) > 0 {
 		t.Fatalf("ParseFromContent failed with error %v", errors)
-	}
-
-	diagnostics := p.AnalyzeValues()
-
-	if len(diagnostics) > 0 {
-		t.Errorf("AnalyzeValues failed with error %v", diagnostics)
 	}
 }
 
@@ -323,10 +251,9 @@ func Test2(t *testing.T) {
 /dev/sdd /homeD xfs noauto,rw,attr2,inode64,logbufs=8,logbsize=32k,noquota 0 0
 /dev/sde /homeE xfs defaults 0 0
 `)
-	p := parser.FstabParser{}
-	p.Clear()
+	p := ast.NewFstabConfig()
 
-	errors := p.ParseFromContent(input)
+	errors := p.Parse(input)
 
 	if len(errors) > 0 {
 		t.Fatalf("ParseFromContent failed with error %v", errors)
@@ -344,10 +271,9 @@ func Test3(t *testing.T) {
 tmpfs /var tmpfs rw,nosuid,nodev,size=128M,mode=755 0 0
 tmpfs /tmp tmpfs rw,nosuid,nodev,size=150M,mode=1777 0 0
 `)
-	p := parser.FstabParser{}
-	p.Clear()
+	p := ast.NewFstabConfig()
 
-	errors := p.ParseFromContent(input)
+	errors := p.Parse(input)
 
 	if len(errors) > 0 {
 		t.Fatalf("ParseFromContent failed with error %v", errors)

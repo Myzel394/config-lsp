@@ -88,21 +88,45 @@ func (c *FstabConfig) parseStatement(
 		fallthrough
 	case 5:
 		freq = parseField(line, input, fields[4])
+
+		if pass == nil && fields[4][1] < len(input) {
+			pass = createPartialField(line, input, fields[4][1], len(input))
+		}
+
 		fallthrough
 	case 4:
 		options = parseField(line, input, fields[3])
+
+		if freq == nil && fields[3][1] < len(input) {
+			freq = createPartialField(line, input, fields[3][1], len(input))
+		}
+
 		fallthrough
 	case 3:
 		filesystemType = parseField(line, input, fields[2])
+
+		if options == nil && fields[2][1] < len(input) {
+			options = createPartialField(line, input, fields[2][1], len(input))
+		}
+
 		fallthrough
 	case 2:
 		mountPoint = parseField(line, input, fields[1])
+
+		if filesystemType == nil && fields[1][1] < len(input) {
+			filesystemType = createPartialField(line, input, fields[1][1], len(input))
+		}
+
 		fallthrough
 	case 1:
 		spec = parseField(line, input, fields[0])
+
+		if mountPoint == nil && fields[0][1] < len(input) {
+			mountPoint = createPartialField(line, input, fields[0][1], len(input))
+		}
 	}
 
-	fstabLine := FstabEntry{
+	fstabLine := &FstabEntry{
 		Fields: FstabFields{
 			LocationRange: common.LocationRange{
 				Start: common.Location{
@@ -154,6 +178,32 @@ func parseField(
 			Replacements: &map[string]string{
 				`\\040`: " ",
 			},
+		}),
+	}
+}
+
+func createPartialField(
+	line uint32,
+	input string,
+	start int,
+	end int,
+) *FstabField {
+	return nil
+	return &FstabField{
+		LocationRange: common.LocationRange{
+			Start: common.Location{
+				Line:      line,
+				Character: uint32(start),
+			},
+			End: common.Location{
+				Line:      line,
+				Character: uint32(end),
+			},
+		},
+		Value: commonparser.ParseRawString(input[end:end], commonparser.ParseFeatures{
+			ParseEscapedCharacters: true,
+			ParseDoubleQuotes:      true,
+			Replacements:           &map[string]string{},
 		}),
 	}
 }

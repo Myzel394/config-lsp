@@ -1,6 +1,7 @@
 package ast
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
 	"testing"
 )
@@ -24,7 +25,7 @@ LABEL=test /mnt/test ext4 defaults 0 0
 	}
 
 	rawFirstEntry, _ := c.Entries.Get(uint32(0))
-	firstEntry := rawFirstEntry.(FstabEntry)
+	firstEntry := rawFirstEntry.(*FstabEntry)
 	if !(firstEntry.Fields.Spec.Value.Value == "LABEL=test" && firstEntry.Fields.MountPoint.Value.Value == "/mnt/test" && firstEntry.Fields.FilesystemType.Value.Value == "ext4" && firstEntry.Fields.Options.Value.Value == "defaults" && firstEntry.Fields.Freq.Value.Value == "0" && firstEntry.Fields.Pass.Value.Value == "0") {
 		t.Fatalf("Expected entry to be LABEL=test /mnt/test ext4 defaults 0 0, got %v", firstEntry)
 	}
@@ -71,5 +72,67 @@ LABEL=test /mnt/test ext4 defaults 0 0
 
 	if !(firstEntry.Fields.Pass.LocationRange.Start.Line == 0 && firstEntry.Fields.Pass.LocationRange.Start.Character == 37) {
 		t.Errorf("Expected pass start to be 0:37, got %v", firstEntry.Fields.Pass.LocationRange.Start)
+	}
+
+	field := firstEntry.GetFieldAtPosition(common.IndexPosition(0))
+	if !(field == FstabFieldSpec) {
+		t.Errorf("Expected field to be spec, got %v", field)
+	}
+
+	field = firstEntry.GetFieldAtPosition(common.IndexPosition(11))
+	if !(field == FstabFieldMountPoint) {
+		t.Errorf("Expected field to be mountpoint, got %v", field)
+	}
+
+	field = firstEntry.GetFieldAtPosition(common.IndexPosition(33))
+	if !(field == FstabFieldOptions) {
+		t.Errorf("Expected field to be spec, got %v", field)
+	}
+
+	field = firstEntry.GetFieldAtPosition(common.IndexPosition(35))
+	if !(field == FstabFieldFreq) {
+		t.Errorf("Expected field to be freq, got %v", field)
+	}
+}
+
+func TestIncompleteExample(
+	t *testing.T,
+) {
+	input := utils.Dedent(`
+LABEL=test /mnt/test ext4 defaults 
+`)
+	c := NewFstabConfig()
+
+	errors := c.Parse(input)
+
+	if len(errors) != 0 {
+		t.Fatalf("Expected no errors, got %v", errors)
+	}
+
+	rawFirstEntry, _ := c.Entries.Get(uint32(0))
+	firstEntry := rawFirstEntry.(*FstabEntry)
+
+	if !(firstEntry.Fields.Spec.Value.Raw == "LABEL=test" && firstEntry.Fields.MountPoint.Value.Raw == "/mnt/test" && firstEntry.Fields.FilesystemType.Value.Raw == "ext4" && firstEntry.Fields.Options.Value.Raw == "defaults") {
+		t.Fatalf("Expected entry to be LABEL=test /mnt/test ext4 defaults, got %v", firstEntry)
+	}
+
+	field := firstEntry.GetFieldAtPosition(common.IndexPosition(0))
+	if !(field == FstabFieldSpec) {
+		t.Errorf("Expected field to be spec, got %v", field)
+	}
+
+	field = firstEntry.GetFieldAtPosition(common.IndexPosition(11))
+	if !(field == FstabFieldMountPoint) {
+		t.Errorf("Expected field to be mountpoint, got %v", field)
+	}
+
+	field = firstEntry.GetFieldAtPosition(common.IndexPosition(33))
+	if !(field == FstabFieldOptions) {
+		t.Errorf("Expected field to be spec, got %v", field)
+	}
+
+	field = firstEntry.GetFieldAtPosition(common.IndexPosition(35))
+	if !(field == FstabFieldFreq) {
+		t.Errorf("Expected field to be freq, got %v", field)
 	}
 }

@@ -1,6 +1,7 @@
 package lsp
 
 import (
+	"config-lsp/common"
 	"config-lsp/handlers/fstab/ast"
 	"config-lsp/handlers/fstab/handlers"
 	"config-lsp/handlers/fstab/shared"
@@ -11,11 +12,11 @@ import (
 
 func TextDocumentHover(context *glsp.Context, params *protocol.HoverParams) (*protocol.Hover, error) {
 	line := params.Position.Line
-	cursor := params.Position.Character
+	index := common.LSPCharacterAsIndexPosition(params.Position.Character)
 
-	p := shared.DocumentParserMap[params.TextDocument.URI]
+	d := shared.DocumentParserMap[params.TextDocument.URI]
 
-	rawEntry, found := p.Entries.Get(params.Position.Line)
+	rawEntry, found := d.Config.Entries.Get(params.Position.Line)
 
 	// Empty line
 	if !found {
@@ -26,7 +27,7 @@ func TextDocumentHover(context *glsp.Context, params *protocol.HoverParams) (*pr
 
 	return handlers.GetHoverInfo(
 		line,
-		cursor,
+		index,
 		entry,
 	)
 }
