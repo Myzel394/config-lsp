@@ -20,7 +20,7 @@ var BtrfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Deprecated
 		Values: []docvalues.DeprecatedValue{
 			docvalues.EnumValue{
 				Values: []docvalues.EnumString{
-					 docvalues.CreateEnumStringWithDoc(
+					docvalues.CreateEnumStringWithDoc(
 						"no",
 						"No compression, used for remounting.",
 					),
@@ -38,7 +38,7 @@ var BtrfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Deprecated
 						15,
 					),
 				},
-				Separator: ":",
+				Separator:       ":",
 				ValueIsOptional: true,
 			},
 		},
