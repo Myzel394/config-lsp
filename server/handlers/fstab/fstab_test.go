@@ -1,7 +1,7 @@
 package fstab
 
 import (
-	fstabdocumentation "config-lsp/handlers/fstab/documentation"
+	fstabdocumentation "config-lsp/handlers/fstab/fields"
 	handlers "config-lsp/handlers/fstab/handlers"
 	"config-lsp/handlers/fstab/parser"
 	"config-lsp/utils"
@@ -158,6 +158,12 @@ UUID=b411dc99-f0a0-4c87-9e05-184977be8539 /home ext4   defaults  0      2
 	if len(errors) > 0 {
 		t.Fatalf("ParseFromContent failed with error %v", errors)
 	}
+
+	diagnostics := p.AnalyzeValues()
+
+	if len(diagnostics) > 0 {
+		t.Errorf("AnalyzeValues failed with error %v", diagnostics)
+	}
 }
 
 func TestArchExample2(t *testing.T) {
@@ -192,6 +198,12 @@ LABEL=Swap        none         swap          defaults         0      0
 	if len(errors) > 0 {
 		t.Fatalf("ParseFromContent failed with error %v", errors)
 	}
+
+	diagnostics := p.AnalyzeValues()
+
+	if len(diagnostics) > 0 {
+		t.Errorf("AnalyzeValues failed with error %v", diagnostics)
+	}
 }
 
 func TestArchExample4(t *testing.T) {
@@ -208,6 +220,12 @@ UUID=f9fe0b69-a280-415d-a03a-a32752370dee none  swap   defaults  0      0
 
 	if len(errors) > 0 {
 		t.Fatalf("ParseFromContent failed with error %v", errors)
+	}
+
+	diagnostics := p.AnalyzeValues()
+
+	if len(diagnostics) > 0 {
+		t.Errorf("AnalyzeValues failed with error %v", diagnostics)
 	}
 }
 
@@ -226,6 +244,12 @@ PARTLABEL=Swap                       none  swap   defaults  0      0
 	if len(errors) > 0 {
 		t.Fatalf("ParseFromContent failed with error %v", errors)
 	}
+
+	diagnostics := p.AnalyzeValues()
+
+	if len(diagnostics) > 0 {
+		t.Errorf("AnalyzeValues failed with error %v", diagnostics)
+	}
 }
 
 func TestArchExample6(t *testing.T) {
@@ -243,5 +267,89 @@ PARTUUID=039b6c1c-7553-4455-9537-1befbc9fbc5b none  swap   defaults  0      0
 	if len(errors) > 0 {
 		t.Fatalf("ParseFromContent failed with error %v", errors)
 	}
+
+	diagnostics := p.AnalyzeValues()
+
+	if len(diagnostics) > 0 {
+		t.Errorf("AnalyzeValues failed with error %v", diagnostics)
+	}
 }
 
+func TestLinuxConfigExample(t *testing.T) {
+	input := utils.Dedent(`
+UUID=80b496fa-ce2d-4dcf-9afc-bcaa731a67f1 /mnt/example ext4    defaults   0      2
+`)
+	p := parser.FstabParser{}
+	p.Clear()
+
+	errors := p.ParseFromContent(input)
+
+	if len(errors) > 0 {
+		t.Fatalf("ParseFromContent failed with error %v", errors)
+	}
+
+	diagnostics := p.AnalyzeValues()
+
+	if len(diagnostics) > 0 {
+		t.Errorf("AnalyzeValues failed with error %v", diagnostics)
+	}
+}
+
+func Test1(t *testing.T) {
+	input := utils.Dedent(`
+PARTLABEL="rootfs" / ext4 noatime,lazytime,rw 0 0
+`)
+	p := parser.FstabParser{}
+	p.Clear()
+
+	errors := p.ParseFromContent(input)
+
+	if len(errors) > 0 {
+		t.Fatalf("ParseFromContent failed with error %v", errors)
+	}
+
+	diagnostics := p.AnalyzeValues()
+
+	if len(diagnostics) > 0 {
+		t.Errorf("AnalyzeValues failed with error %v", diagnostics)
+	}
+}
+
+func Test2(t *testing.T) {
+	input := utils.Dedent(`
+/dev/sda /home1 xfs defaults 1 2
+/dev/sdb /homeB xfs noauto,nobarrier,rw,relatime,attr2,inode64,logbufs=8,logbsize=32k,noquota 0 0
+/dev/sdc /homeC xfs noauto,defaults 0 0
+/dev/sdd /homeD xfs noauto,rw,attr2,inode64,logbufs=8,logbsize=32k,noquota 0 0
+/dev/sde /homeE xfs defaults 0 0
+`)
+	p := parser.FstabParser{}
+	p.Clear()
+
+	errors := p.ParseFromContent(input)
+
+	if len(errors) > 0 {
+		t.Fatalf("ParseFromContent failed with error %v", errors)
+	}
+}
+
+func Test3(t *testing.T) {
+	input := utils.Dedent(`
+/dev/disk/by-label/dsp /dsp auto ro
+/dev/disk/by-partlabel/modem_a /firmware auto ro
+/dev/disk/by-partlabel/persist /persist auto ro,discard,nosuid,nodev,noexec
+/dev/disk/by-partlabel/userdata /data auto discard,noatime,nodiratime,nosuid,nodev,nofail 0 0
+/dev/disk/by-partlabel/cache /cache ext4 relatime,data=ordered,noauto_da_alloc,discard,noexec,nodev,nosuid,x-systemd.makefs 0 0
+/dev/nvme0n1 /data/media auto discard,nosuid,nodev,nofail,x-systemd.device-timeout=5s 0 0
+tmpfs /var tmpfs rw,nosuid,nodev,size=128M,mode=755 0 0
+tmpfs /tmp tmpfs rw,nosuid,nodev,size=150M,mode=1777 0 0
+`)
+	p := parser.FstabParser{}
+	p.Clear()
+
+	errors := p.ParseFromContent(input)
+
+	if len(errors) > 0 {
+		t.Fatalf("ParseFromContent failed with error %v", errors)
+	}
+}

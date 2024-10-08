@@ -19,17 +19,17 @@ func TextDocumentDidChange(
 	p.Clear()
 
 	diagnostics := make([]protocol.Diagnostic, 0)
-	errors := p.ParseFromContent(content)
+	errors := p.Parse(content)
 
 	if len(errors) > 0 {
 		diagnostics = append(diagnostics, utils.Map(
 			errors,
-			func(err common.ParseError) protocol.Diagnostic {
+			func(err common.LSPError) protocol.Diagnostic {
 				return err.ToDiagnostic()
 			},
 		)...)
 	} else {
-		diagnostics = append(diagnostics, p.AnalyzeValues()...)
+		// diagnostics = append(diagnostics, p.AnalyzeValues()...)
 	}
 
 	if len(diagnostics) > 0 {

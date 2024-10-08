@@ -2,25 +2,29 @@ package handlers
 
 import (
 	"config-lsp/doc-values"
-	"config-lsp/handlers/fstab/documentation"
-	"config-lsp/handlers/fstab/parser"
-	"github.com/tliron/glsp/protocol_3_16"
+	"config-lsp/handlers/fstab/ast"
+	"config-lsp/handlers/fstab/fields"
 	"strings"
+
+	"github.com/tliron/glsp/protocol_3_16"
 )
 
-func GetHoverInfo(entry *parser.FstabEntry, cursor uint32) (*protocol.Hover, error) {
-	line := entry.Line
-	targetField := line.GetFieldAtPosition(cursor)
+func GetHoverInfo(
+	line uint32,
+	cursor uint32,
+	entry *ast.FstabEntry,
+) (*protocol.Hover, error) {
+	targetField := entry.GetFieldAtPosition(cursor)
 
 	switch targetField {
-	case parser.FstabFieldSpec:
+	case ast.FstabFieldSpec:
 		return &SpecHoverField, nil
-	case parser.FstabFieldMountPoint:
+	case ast.FstabFieldMountPoint:
 		return &MountPointHoverField, nil
-	case parser.FstabFieldFileSystemType:
+	case ast.FstabFieldFileSystemType:
 		return &FileSystemTypeField, nil
-	case parser.FstabFieldOptions:
-		fileSystemType := line.Fields.FilesystemType.Value
+	case ast.FstabFieldOptions:
+		fileSystemType := entry.Fields.FilesystemType.Value.Value
 		var optionsField docvalues.DeprecatedValue
 
 		if foundField, found := fstabdocumentation.MountOptionsMapField[fileSystemType]; found {
@@ -29,8 +33,8 @@ func GetHoverInfo(entry *parser.FstabEntry, cursor uint32) (*protocol.Hover, err
 			optionsField = fstabdocumentation.DefaultMountOptionsField
 		}
 
-		relativeCursor := cursor - line.Fields.Options.Start
-		fieldInfo := optionsField.DeprecatedFetchHoverInfo(line.Fields.Options.Value, relativeCursor)
+		relativeCursor := cursor - entry.Fields.Options.Start.Character
+		fieldInfo := optionsField.DeprecatedFetchHoverInfo(entry.Fields.Options.Value.Value, relativeCursor)
 
 		hover := protocol.Hover{
 			Contents: protocol.MarkupContent{
@@ -40,9 +44,9 @@ func GetHoverInfo(entry *parser.FstabEntry, cursor uint32) (*protocol.Hover, err
 		}
 
 		return &hover, nil
-	case parser.FstabFieldFreq:
+	case ast.FstabFieldFreq:
 		return &FreqHoverField, nil
-	case parser.FstabFieldPass:
+	case ast.FstabFieldPass:
 		return &PassHoverField, nil
 	}
 

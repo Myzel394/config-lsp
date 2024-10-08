@@ -193,13 +193,13 @@ var defaultOptions = []docvalues.EnumString{
 	),
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.automount",
-        `An automount unit will be created for the file system. See systemd.automount(5) for details.
+		`An automount unit will be created for the file system. See systemd.automount(5) for details.
 
 Added in version 215.`,
 	),
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.makefs",
-        `The file system will be initialized on the device. If the device is not "empty", i.e. it contains any signature, the operation will be skipped. It is hence expected that this option remains set even after the device has been initialized.
+		`The file system will be initialized on the device. If the device is not "empty", i.e. it contains any signature, the operation will be skipped. It is hence expected that this option remains set even after the device has been initialized.
 
 Note that this option can only be used in /etc/fstab, and will be ignored when part of the Options= setting in a unit file.
 
@@ -211,7 +211,7 @@ Added in version 236.`,
 	),
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.growfs",
-        `The file system will be grown to occupy the full block device. If the file system is already at maximum size, no action will be performed. It is hence expected that this option remains set even after the file system has been grown. Only certain file system types are supported, see systemd-makefs@.service(8) for details.
+		`The file system will be grown to occupy the full block device. If the file system is already at maximum size, no action will be performed. It is hence expected that this option remains set even after the file system has been grown. Only certain file system types are supported, see systemd-makefs@.service(8) for details.
 
 Note that this option can only be used in /etc/fstab, and will be ignored when part of the Options= setting in a unit file.
 
@@ -219,7 +219,7 @@ Added in version 236.`,
 	),
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.pcrfs",
-        `Measures file system identity information (mount point, type, label, UUID, partition label, partition UUID) into PCR 15 after the file system has been mounted. This ensures the systemd-pcrfs@.service(8) or systemd-pcrfs-root.service services are pulled in by the mount unit.
+		`Measures file system identity information (mount point, type, label, UUID, partition label, partition UUID) into PCR 15 after the file system has been mounted. This ensures the systemd-pcrfs@.service(8) or systemd-pcrfs-root.service services are pulled in by the mount unit.
 
 Note that this option can only be used in /etc/fstab, and will be ignored when part of the Options= setting in a unit file. It is also implied for the root and /usr/ partitions discovered by systemd-gpt-auto-generator(8).
 
@@ -227,13 +227,13 @@ Added in version 253.`,
 	),
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.rw-only",
-        `If a mount operation fails to mount the file system read-write, it normally tries mounting the file system read-only instead. This option disables that behaviour, and causes the mount to fail immediately instead. This option is translated into the ReadWriteOnly= setting in a unit file.
+		`If a mount operation fails to mount the file system read-write, it normally tries mounting the file system read-only instead. This option disables that behaviour, and causes the mount to fail immediately instead. This option is translated into the ReadWriteOnly= setting in a unit file.
 
 Added in version 246.`,
 	),
 	docvalues.CreateEnumStringWithDoc(
 		"x-initrd.mount",
-        `An additional filesystem to be mounted in the initrd. See initrd-fs.target description in systemd.special(7). This is both an indicator to the initrd to mount this partition early and an indicator to the host to leave the partition mounted until final shutdown. Or in other words, if this flag is set it is assumed the mount shall be active during the entire regular runtime of the system, i.e. established before the initrd transitions into the host all the way until the host transitions to the final shutdown phase.
+		`An additional filesystem to be mounted in the initrd. See initrd-fs.target description in systemd.special(7). This is both an indicator to the initrd to mount this partition early and an indicator to the host to leave the partition mounted until final shutdown. Or in other words, if this flag is set it is assumed the mount shall be active during the entire regular runtime of the system, i.e. established before the initrd transitions into the host all the way until the host transitions to the final shutdown phase.
 
 Added in version 215.`,
 	),
@@ -299,19 +299,19 @@ Added in version 245.`,
 	): docvalues.StringValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.wants-mounts-for",
-        `Configures a RequiresMountsFor= or WantsMountsFor= dependency between the created mount unit and other mount units. The argument must be an absolute path. This option may be specified more than once. See RequiresMountsFor= or WantsMountsFor= in systemd.unit(5) for details.
+		`Configures a RequiresMountsFor= or WantsMountsFor= dependency between the created mount unit and other mount units. The argument must be an absolute path. This option may be specified more than once. See RequiresMountsFor= or WantsMountsFor= in systemd.unit(5) for details.
 
 Added in version 220.`,
 	): docvalues.StringValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.requires-mounts-for",
-        `Configures a RequiresMountsFor= or WantsMountsFor= dependency between the created mount unit and other mount units. The argument must be an absolute path. This option may be specified more than once. See RequiresMountsFor= or WantsMountsFor= in systemd.unit(5) for details.
+		`Configures a RequiresMountsFor= or WantsMountsFor= dependency between the created mount unit and other mount units. The argument must be an absolute path. This option may be specified more than once. See RequiresMountsFor= or WantsMountsFor= in systemd.unit(5) for details.
 
 Added in version 220.`,
 	): docvalues.StringValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.device-bound",
-        `Takes a boolean argument. If true or no argument, a BindsTo= dependency on the backing device is set. If false, the mount unit is not stopped no matter whether the backing device is still present. This is useful when the file system is backed by volume managers. If not set, and the mount comes from unit fragments, i.e. generated from /etc/fstab by systemd-fstab-generator(8) or loaded from a manually configured mount unit, a combination of Requires= and StopPropagatedFrom= dependencies is set on the backing device. If doesn't, only Requires= is used.
+		`Takes a boolean argument. If true or no argument, a BindsTo= dependency on the backing device is set. If false, the mount unit is not stopped no matter whether the backing device is still present. This is useful when the file system is backed by volume managers. If not set, and the mount comes from unit fragments, i.e. generated from /etc/fstab by systemd-fstab-generator(8) or loaded from a manually configured mount unit, a combination of Requires= and StopPropagatedFrom= dependencies is set on the backing device. If doesn't, only Requires= is used.
 
 Added in version 233.`,
 	): docvalues.EnumValue{
@@ -323,13 +323,13 @@ Added in version 233.`,
 	},
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.idle-timeout",
-        `Configures the idle timeout of the automount unit. See TimeoutIdleSec= in systemd.automount(5) for details.
+		`Configures the idle timeout of the automount unit. See TimeoutIdleSec= in systemd.automount(5) for details.
 
 Added in version 220.`,
 	): docvalues.StringValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.device-timeout",
-        `Configure how long systemd should wait for a device to show up before giving up on an entry from /etc/fstab. Specify a time in seconds or explicitly append a unit such as "s", "min", "h", "ms".
+		`Configure how long systemd should wait for a device to show up before giving up on an entry from /etc/fstab. Specify a time in seconds or explicitly append a unit such as "s", "min", "h", "ms".
 
 Note that this option can only be used in /etc/fstab, and will be ignored when part of the Options= setting in a unit file.
 
@@ -337,7 +337,7 @@ Added in version 215.`,
 	): docvalues.StringValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.mount-timeout",
-        `Configure how long systemd should wait for the mount command to finish before giving up on an entry from /etc/fstab. Specify a time in seconds or explicitly append a unit such as "s", "min", "h", "ms".
+		`Configure how long systemd should wait for the mount command to finish before giving up on an entry from /etc/fstab. Specify a time in seconds or explicitly append a unit such as "s", "min", "h", "ms".
 
 Note that this option can only be used in /etc/fstab, and will be ignored when part of the Options= setting in a unit file.
 

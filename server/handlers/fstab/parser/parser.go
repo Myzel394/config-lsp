@@ -3,7 +3,7 @@ package parser
 import (
 	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
-	fstabdocumentation "config-lsp/handlers/fstab/documentation"
+	fstabdocumentation "config-lsp/handlers/fstab/fields"
 	"fmt"
 	"regexp"
 	"strings"
@@ -378,8 +378,6 @@ func (p *FstabParser) AnalyzeValues() []protocol.Diagnostic {
 			if len(newDiagnostics) > 0 {
 				diagnostics = append(diagnostics, newDiagnostics...)
 			}
-		case FstabEntryTypeComment:
-			// Do nothing
 		}
 	}
 
