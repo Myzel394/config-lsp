@@ -132,7 +132,6 @@ func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32)
 	// hello,worl[d]
 	// hello,world[,]
 	// hello[,]world,how,are,you
-
 	relativePosition, found := utils.FindPreviousCharacter(
 		line,
 		v.Separator,

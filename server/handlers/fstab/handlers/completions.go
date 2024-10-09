@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"config-lsp/common"
-	"config-lsp/doc-values"
 	"config-lsp/handlers/fstab/ast"
 	"config-lsp/handlers/fstab/fields"
+	"fmt"
 
 	"github.com/tliron/glsp/protocol_3_16"
 )
@@ -38,22 +38,45 @@ func GetCompletion(
 			cursor,
 		), nil
 	case ast.FstabFieldOptions:
+		line, cursor := getFieldSafely(entry.Fields.Options, cursor)
 		fileSystemType := entry.Fields.FilesystemType.Value.Value
+		completions := make([]protocol.CompletionItem, 0, 50)
 
-		var optionsField docvalues.DeprecatedValue
+		for _, completion := range fields.DefaultMountOptionsField.DeprecatedFetchCompletions(line, cursor) {
+			var documentation string
 
-		if foundField, found := fields.MountOptionsMapField[fileSystemType]; found {
-			optionsField = foundField
-		} else {
-			optionsField = fields.DefaultMountOptionsField
+			switch completion.Documentation.(type) {
+			case string:
+				documentation = completion.Documentation.(string)
+			case *string:
+				documentation = *completion.Documentation.(*string)
+			}
+
+			completion.Documentation = protocol.MarkupContent{
+				Kind:  protocol.MarkupKindMarkdown,
+				Value: documentation + "\n\n" + "From: _Default Mount Options_",
+			}
+			completions = append(completions, completion)
 		}
 
-		value, cursor := getFieldSafely(entry.Fields.Options, cursor)
+		if optionsField, found := fields.MountOptionsMapField[fileSystemType]; found {
+			for _, completion := range optionsField.DeprecatedFetchCompletions(line, cursor) {
+				var documentation string
 
-		completions := optionsField.DeprecatedFetchCompletions(
-			value,
-			cursor,
-		)
+				switch completion.Documentation.(type) {
+				case string:
+					documentation = completion.Documentation.(string)
+				case *string:
+					documentation = *completion.Documentation.(*string)
+				}
+
+				completion.Documentation = protocol.MarkupContent{
+					Kind:  protocol.MarkupKindMarkdown,
+					Value: documentation + "\n\n" + fmt.Sprintf("From: _%s_", fileSystemType),
+				}
+				completions = append(completions, completion)
+			}
+		}
 
 		return completions, nil
 	case ast.FstabFieldFreq:
