@@ -17,28 +17,116 @@ import (
 // 	return entry.(*FstabEntry)
 // }
 
+// LABEL=test  ext4 defaults 0 0
 func (e FstabEntry) GetFieldAtPosition(position common.Position) FstabFieldName {
-	if e.Fields.Spec == nil || (e.Fields.Spec.ContainsPosition(position)) {
+	// No fields defined, empty line
+	if e.Fields.Spec == nil && e.Fields.MountPoint == nil && e.Fields.FilesystemType == nil && e.Fields.Options == nil && e.Fields.Freq == nil && e.Fields.Pass == nil {
 		return FstabFieldSpec
 	}
 
-	if e.Fields.MountPoint == nil || (e.Fields.MountPoint.ContainsPosition(position)) {
+	// First, try if out of the existing fields the user wants to edit one of them
+
+	if e.Fields.Spec != nil && e.Fields.Spec.ContainsPosition(position) {
+		return FstabFieldSpec
+	}
+	if e.Fields.MountPoint != nil && e.Fields.MountPoint.ContainsPosition(position) {
+		return FstabFieldMountPoint
+	}
+	if e.Fields.FilesystemType != nil && e.Fields.FilesystemType.ContainsPosition(position) {
+		return FstabFieldFileSystemType
+	}
+	if e.Fields.Options != nil && e.Fields.Options.ContainsPosition(position) {
+		return FstabFieldOptions
+	}
+	if e.Fields.Freq != nil && e.Fields.Freq.ContainsPosition(position) {
+		return FstabFieldFreq
+	}
+	if e.Fields.Pass != nil && e.Fields.Pass.ContainsPosition(position) {
+		return FstabFieldPass
+	}
+
+	// Okay let's try to fetch the field by assuming the user is typing from left to right normally
+
+	if e.Fields.Spec != nil && e.Fields.Spec.IsPositionAfterEnd(position) && (e.Fields.MountPoint == nil || e.Fields.MountPoint.IsPositionBeforeEnd(position)) {
 		return FstabFieldMountPoint
 	}
 
-	if e.Fields.FilesystemType == nil || (e.Fields.FilesystemType.ContainsPosition(position)) {
+	if e.Fields.MountPoint != nil && e.Fields.MountPoint.IsPositionAfterEnd(position) && (e.Fields.FilesystemType == nil || e.Fields.FilesystemType.IsPositionBeforeEnd(position)) {
 		return FstabFieldFileSystemType
 	}
 
-	if e.Fields.Options == nil || (e.Fields.Options.ContainsPosition(position)) {
+	if e.Fields.FilesystemType != nil && e.Fields.FilesystemType.IsPositionAfterEnd(position) && (e.Fields.Options == nil || e.Fields.Options.IsPositionBeforeEnd(position)) {
 		return FstabFieldOptions
 	}
 
-	if e.Fields.Freq == nil || (e.Fields.Freq.ContainsPosition(position)) {
+	if e.Fields.Options != nil && e.Fields.Options.IsPositionAfterEnd(position) && (e.Fields.Freq == nil || e.Fields.Freq.IsPositionBeforeEnd(position)) {
+		return FstabFieldFreq
+	}
+
+	if e.Fields.Freq != nil && e.Fields.Freq.IsPositionAfterEnd(position) && (e.Fields.Pass == nil || e.Fields.Pass.IsPositionBeforeEnd(position)) {
+		return FstabFieldPass
+	}
+
+	// Okay shit no idea, let's just give whatever is missing
+
+	if e.Fields.Spec == nil {
+		return FstabFieldSpec
+	}
+
+	if e.Fields.MountPoint == nil {
+		return FstabFieldMountPoint
+	}
+
+	if e.Fields.FilesystemType == nil {
+		return FstabFieldFileSystemType
+	}
+
+	if e.Fields.Options == nil {
+		return FstabFieldOptions
+	}
+
+	if e.Fields.Freq == nil {
 		return FstabFieldFreq
 	}
 
 	return FstabFieldPass
+}
+
+// LABEL=test /mnt/test btrfs subvol=backup,fat=32 [0] [0]
+func (e FstabEntry) getCursorIndex() uint8 {
+	definedAmount := e.getDefinedFieldsAmount()
+
+	switch definedAmount {
+	case 5:
+
+	}
+
+	return 0
+}
+
+func (e FstabEntry) getDefinedFieldsAmount() uint8 {
+	var definedAmount uint8 = 0
+
+	if e.Fields.Spec != nil {
+		definedAmount++
+	}
+	if e.Fields.MountPoint != nil {
+		definedAmount++
+	}
+	if e.Fields.FilesystemType != nil {
+		definedAmount++
+	}
+	if e.Fields.Options != nil {
+		definedAmount++
+	}
+	if e.Fields.Freq != nil {
+		definedAmount++
+	}
+	if e.Fields.Pass != nil {
+		definedAmount++
+	}
+
+	return definedAmount
 }
 
 // Create a mount options field for the entry

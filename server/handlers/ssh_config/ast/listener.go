@@ -26,6 +26,13 @@ func createListenerContext() *sshListenerContext {
 	return context
 }
 
+type sshParserListener struct {
+	*parser.BaseConfigListener
+	Config     *SSHConfig
+	Errors     []common.LSPError
+	sshContext *sshListenerContext
+}
+
 func createListener(
 	config *SSHConfig,
 	context *sshListenerContext,
@@ -35,13 +42,6 @@ func createListener(
 		Errors:     make([]common.LSPError, 0),
 		sshContext: context,
 	}
-}
-
-type sshParserListener struct {
-	*parser.BaseConfigListener
-	Config     *SSHConfig
-	Errors     []common.LSPError
-	sshContext *sshListenerContext
 }
 
 func (s *sshParserListener) EnterEntry(ctx *parser.EntryContext) {

@@ -42,7 +42,6 @@ func GetCompletion(
 		fileSystemType := entry.Fields.FilesystemType.Value.Value
 		completions := make([]protocol.CompletionItem, 0, 50)
 
-		println("fetching field options now", line, cursor)
 		for _, completion := range fields.DefaultMountOptionsField.DeprecatedFetchCompletions(line, cursor) {
 			var documentation string
 
@@ -105,6 +104,10 @@ func getFieldSafely(field *ast.FstabField, cursor common.CursorPosition) (string
 	}
 
 	if field.Value.Value == "" {
+		return "", 0
+	}
+
+	if uint32(cursor) < field.Start.Character {
 		return "", 0
 	}
 

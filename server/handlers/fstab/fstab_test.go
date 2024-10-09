@@ -101,6 +101,36 @@ LABEL=test /mnt/test btrfs subvol=backup,fat=32 0 0
 	}
 }
 
+func TestIncompleteExample(t *testing.T) {
+	input := utils.Dedent(`
+LABEL=test /mnt/test  defaults 0 0
+`)
+	p := ast.NewFstabConfig()
+
+	errors := p.Parse(input)
+
+	if len(errors) > 0 {
+		t.Fatal("ParseFromContent returned error", errors)
+	}
+
+	rawFirstEntry, _ := p.Entries.Get(uint32(0))
+	firstEntry := rawFirstEntry.(*ast.FstabEntry)
+	name := firstEntry.GetFieldAtPosition(common.CursorPosition(0))
+	if !(name == ast.FstabFieldSpec) {
+		t.Errorf("GetFieldAtPosition failed to return correct field name. Got: %v but expected: %v", name, ast.FstabFieldSpec)
+	}
+
+	name = firstEntry.GetFieldAtPosition(common.CursorPosition(9))
+	if !(name == ast.FstabFieldSpec) {
+		t.Errorf("GetFieldAtPosition failed to return correct field name. Got: %v but expected: %v", name, ast.FstabFieldSpec)
+	}
+
+	name = firstEntry.GetFieldAtPosition(common.CursorPosition(21))
+	if !(name == ast.FstabFieldFileSystemType) {
+		t.Errorf("GetFieldAtPosition failed to return correct field name. Got: %v but expected: %v", name, ast.FstabFieldFileSystemType)
+	}
+}
+
 // func TestExample1(t *testing.T) {
 // 	input := utils.Dedent(`
 // /dev/disk/by-uuid/19ae4e13-1d6d-4833-965b-a20197aebf27 /mnt/RetroGames auto nosuid,nodev,nofail,x-gvfs-show 0 0

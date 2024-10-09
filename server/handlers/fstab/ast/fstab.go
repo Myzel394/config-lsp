@@ -33,7 +33,7 @@ type FstabFields struct {
 }
 
 type FstabEntry struct {
-	Fields FstabFields
+	Fields *FstabFields
 }
 
 type FstabConfig struct {

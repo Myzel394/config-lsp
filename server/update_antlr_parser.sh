@@ -5,6 +5,9 @@ ROOT=$(git rev-parse --show-toplevel)/server
 # aliases
 cd $ROOT/handlers/aliases && antlr4 -Dlanguage=Go -o ast/parser Aliases.g4
 
+# fstab
+cd $ROOT/hanlders/fstab && antlr4 -Dlanguage=Go -o ast/parser Fstab.g4
+
 # sshd_config
 cd $ROOT/handlers/sshd_config && antlr4 -Dlanguage=Go -o ast/parser Config.g4
 cd $ROOT/handlers/sshd_config/match-parser && antlr4 -Dlanguage=Go -o parser Match.g4

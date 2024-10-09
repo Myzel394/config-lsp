@@ -3,9 +3,11 @@ package ast
 import (
 	"config-lsp/common"
 	commonparser "config-lsp/common/parser"
+	"config-lsp/handlers/fstab/ast/parser"
 	"config-lsp/utils"
 	"regexp"
 
+	"github.com/antlr4-go/antlr/v4"
 	"github.com/emirpasic/gods/maps/treemap"
 
 	gods "github.com/emirpasic/gods/utils"
@@ -25,14 +27,15 @@ func (c *FstabConfig) Clear() {
 
 var commentPattern = regexp.MustCompile(`^\s*#`)
 var emptyPattern = regexp.MustCompile(`^\s*$`)
-var whitespacePattern = regexp.MustCompile(`\S+`)
 
 func (c *FstabConfig) Parse(input string) []common.LSPError {
 	errors := make([]common.LSPError, 0)
 	lines := utils.SplitIntoLines(input)
+	context := createListenerContext()
 
 	for rawLineNumber, line := range lines {
 		lineNumber := uint32(rawLineNumber)
+		context.line = lineNumber
 
 		if emptyPattern.MatchString(line) {
 			continue
@@ -45,88 +48,120 @@ func (c *FstabConfig) Parse(input string) []common.LSPError {
 
 		errors = append(
 			errors,
-			c.parseStatement(lineNumber, line)...,
+			c.parseStatement(context, line)...,
 		)
 	}
 
 	return errors
 }
 
+// TODO: Handle leading comments
 func (c *FstabConfig) parseStatement(
-	line uint32,
+	context *fstabListenerContext,
 	input string,
 ) []common.LSPError {
-	fields := whitespacePattern.FindAllStringIndex(input, -1)
+	stream := antlr.NewInputStream(input)
 
-	if len(fields) == 0 {
-		return []common.LSPError{
-			{
-				Range: common.LocationRange{
-					Start: common.Location{
-						Line:      line,
-						Character: 0,
-					},
-					End: common.Location{
-						Line:      line,
-						Character: 0,
-					},
-				},
-			},
-		}
-	}
+	lexerErrorListener := createErrorListener(context.line)
+	lexer := parser.NewFstabLexer(stream)
+	lexer.RemoveErrorListeners()
+	lexer.AddErrorListener(&lexerErrorListener)
 
-	var spec *FstabField
-	var mountPoint *FstabField
-	var filesystemType *FstabField
-	var options *FstabField
-	var freq *FstabField
-	var pass *FstabField
+	tokenStream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 
-	switch len(fields) {
-	case 6:
-		pass = parseField(line, input, fields[5])
-		fallthrough
-	case 5:
-		freq = parseField(line, input, fields[4])
-		fallthrough
-	case 4:
-		options = parseField(line, input, fields[3])
-		fallthrough
-	case 3:
-		filesystemType = parseField(line, input, fields[2])
-		fallthrough
-	case 2:
-		mountPoint = parseField(line, input, fields[1])
-		fallthrough
-	case 1:
-		spec = parseField(line, input, fields[0])
-	}
+	parserErrorListener := createErrorListener(context.line)
+	antlrParser := parser.NewFstabParser(tokenStream)
+	antlrParser.RemoveErrorListeners()
+	antlrParser.AddErrorListener(&parserErrorListener)
 
-	fstabLine := &FstabEntry{
-		Fields: FstabFields{
-			LocationRange: common.LocationRange{
-				Start: common.Location{
-					Line:      line,
-					Character: 0,
-				},
-				End: common.Location{
-					Line:      line,
-					Character: uint32(len(input)),
-				},
-			},
-			Spec:           spec,
-			MountPoint:     mountPoint,
-			FilesystemType: filesystemType,
-			Options:        options,
-			Freq:           freq,
-			Pass:           pass,
-		},
-	}
+	listener := createListener(c, context)
+	antlr.ParseTreeWalkerDefault.Walk(
+		&listener,
+		antlrParser.Entry(),
+	)
 
-	c.Entries.Put(line, fstabLine)
+	errors := lexerErrorListener.Errors
+	errors = append(errors, parserErrorListener.Errors...)
+	errors = append(errors, listener.Errors...)
 
-	return nil
+	return errors
 }
+
+// func (c *FstabConfig) parseStatement(
+// 	line uint32,
+// 	input string,
+// ) []common.LSPError {
+// 	fields := whitespacePattern.FindAllStringIndex(input, -1)
+//
+// 	if len(fields) == 0 {
+// 		return []common.LSPError{
+// 			{
+// 				Range: common.LocationRange{
+// 					Start: common.Location{
+// 						Line:      line,
+// 						Character: 0,
+// 					},
+// 					End: common.Location{
+// 						Line:      line,
+// 						Character: 0,
+// 					},
+// 				},
+// 			},
+// 		}
+// 	}
+//
+// 	var spec *FstabField
+// 	var mountPoint *FstabField
+// 	var filesystemType *FstabField
+// 	var options *FstabField
+// 	var freq *FstabField
+// 	var pass *FstabField
+//
+// 	switch len(fields) {
+// 	case 6:
+// 		pass = parseField(line, input, fields[5])
+// 		fallthrough
+// 	case 5:
+// 		freq = parseField(line, input, fields[4])
+// 		fallthrough
+// 	case 4:
+// 		options = parseField(line, input, fields[3])
+// 		fallthrough
+// 	case 3:
+// 		filesystemType = parseField(line, input, fields[2])
+// 		fallthrough
+// 	case 2:
+// 		mountPoint = parseField(line, input, fields[1])
+// 		fallthrough
+// 	case 1:
+// 		spec = parseField(line, input, fields[0])
+// 	}
+//
+// 	fstabLine := &FstabEntry{
+// 		Fields: FstabFields{
+// 			LocationRange: common.LocationRange{
+// 				Start: common.Location{
+// 					Line:      line,
+// 					Character: 0,
+// 				},
+// 				End: common.Location{
+// 					Line:      line,
+// 					Character: uint32(len(input)),
+// 				},
+// 			},
+// 			Spec:           spec,
+// 			MountPoint:     mountPoint,
+// 			FilesystemType: filesystemType,
+// 			Options:        options,
+// 			Freq:           freq,
+// 			Pass:           pass,
+// 		},
+// 	}
+//
+// 	c.Entries.Put(line, fstabLine)
+//
+// 	return nil
+// }
 
 func parseField(
 	line uint32,

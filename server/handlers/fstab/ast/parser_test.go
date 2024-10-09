@@ -11,6 +11,7 @@ func TestExample1(
 ) {
 	input := utils.Dedent(`
 LABEL=test /mnt/test ext4 defaults 0 0
+LABEL=example /mnt/example fat32 defaults 0 2
 `)
 	c := NewFstabConfig()
 
@@ -20,8 +21,8 @@ LABEL=test /mnt/test ext4 defaults 0 0
 		t.Fatalf("Expected no errors, got %v", errors)
 	}
 
-	if c.Entries.Size() != 1 {
-		t.Fatalf("Expected 1 entry, got %d", c.Entries.Size())
+	if c.Entries.Size() != 2 {
+		t.Fatalf("Expected 2 entry, got %d", c.Entries.Size())
 	}
 
 	rawFirstEntry, _ := c.Entries.Get(uint32(0))
@@ -92,6 +93,12 @@ LABEL=test /mnt/test ext4 defaults 0 0
 	field = firstEntry.GetFieldAtPosition(common.IndexPosition(35))
 	if !(field == FstabFieldFreq) {
 		t.Errorf("Expected field to be freq, got %v", field)
+	}
+
+	rawSecondEntry, _ := c.Entries.Get(uint32(1))
+	secondEntry := rawSecondEntry.(*FstabEntry)
+	if !(secondEntry.Fields.Start.Line == 1) {
+		t.Errorf("Expected start line to be 1, got %d", secondEntry.Fields.Start.Line)
 	}
 }
 
