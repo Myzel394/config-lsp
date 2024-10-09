@@ -16,11 +16,16 @@ func analyzeValuesAreValid(
 
 	for it.Next() {
 		entry := it.Value().(*ast.FstabEntry)
+		mountOptions := entry.FetchMountOptionsField(true)
 
 		checkField(ctx, entry.Fields.Spec, fields.SpecField)
 		checkField(ctx, entry.Fields.MountPoint, fields.MountPointField)
 		checkField(ctx, entry.Fields.FilesystemType, fields.FileSystemTypeField)
-		checkField(ctx, entry.Fields.Options, entry.GetMountOptionsField())
+
+		if mountOptions != nil {
+			checkField(ctx, entry.Fields.Options, mountOptions)
+		}
+
 		checkField(ctx, entry.Fields.Freq, fields.FreqField)
 		checkField(ctx, entry.Fields.Pass, fields.PassField)
 	}
@@ -34,8 +39,7 @@ func checkField(
 	invalidValues := docOption.DeprecatedCheckIsValid(field.Value.Value)
 
 	for _, invalidValue := range invalidValues {
-		err := docvalues.LSPErrorFromInvalidValue(field.Start.Line, *invalidValue)
-		err.ShiftCharacter(field.Start.Character)
+		err := docvalues.LSPErrorFromInvalidValue(field.Start.Line, *invalidValue).ShiftCharacter(field.Start.Character)
 
 		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 			Range:    err.Range.ToLSPRange(),

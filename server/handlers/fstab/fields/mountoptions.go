@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var mountOptionsExtractor = func(value string) string {
+var MountOptionsExtractor = func(value string) string {
 	separatorIndex := strings.Index(value, "=")
 
 	if separatorIndex == -1 {
@@ -17,7 +17,7 @@ var mountOptionsExtractor = func(value string) string {
 }
 
 // From https://www.man7.org/linux/man-pages/man8/mount.8.html
-var defaultOptions = []docvalues.EnumString{
+var DefaultOptions = []docvalues.EnumString{
 	// Default options
 	docvalues.CreateEnumStringWithDoc(
 		"async",
@@ -228,7 +228,7 @@ type assignOption struct {
 	Handler       func(context docvalues.KeyValueAssignmentContext) docvalues.DeprecatedValue
 }
 
-var defaultAssignOptions = map[docvalues.EnumString]docvalues.DeprecatedValue{
+var DefaultAssignOptions = map[docvalues.EnumString]docvalues.DeprecatedValue{
 	docvalues.CreateEnumStringWithDoc(
 		"context",
 		"The context= option is useful when mounting filesystems that do not support extended attributes, such as a floppy or hard disk formatted with VFAT, or systems that are not normally running under SELinux, such as an ext3 or ext4 formatted disk from a non-SELinux workstation. You can also use context= on filesystems you do not trust, such as a floppy. It also helps in compatibility with xattr-supporting filesystems on earlier 2.4.<x> kernel versions. Even where xattrs are supported, you can save time not having to label every file by assigning the entire disk one security context. A commonly used option for removable media is context=\"system_u:object_r:removable_t\".",
@@ -347,7 +347,7 @@ func createMountOptionField(
 
 	return docvalues.ArrayValue{
 		Separator:           ",",
-		DuplicatesExtractor: &mountOptionsExtractor,
+		DuplicatesExtractor: &MountOptionsExtractor,
 		SubValue: docvalues.OrValue{
 			Values: []docvalues.DeprecatedValue{
 				docvalues.KeyEnumAssignmentValue{
@@ -364,103 +364,114 @@ func createMountOptionField(
 	}
 }
 
-var DefaultMountOptionsField = createMountOptionField(defaultOptions, defaultAssignOptions)
+type optionField struct {
+	Assignable map[docvalues.EnumString]docvalues.DeprecatedValue
+	Enums      []docvalues.EnumString
+}
 
-var MountOptionsMapField = map[string]docvalues.DeprecatedValue{
-	"adfs": createMountOptionField(
-		commondocumentation.AdfsDocumentationEnums,
-		commondocumentation.AdfsDocumentationAssignable,
-	),
-	"affs": createMountOptionField(
-		commondocumentation.AffsDocumentationEnums,
-		commondocumentation.AffsDocumentationAssignable,
-	),
-	"btrfs": createMountOptionField(
-		commondocumentation.BtrfsDocumentationEnums,
-		commondocumentation.BtrfsDocumentationAssignable,
-	),
-	"debugfs": createMountOptionField(
-		commondocumentation.DebugfsDocumentationEnums,
-		commondocumentation.DebugfsDocumentationAssignable,
-	),
-	"ext2": createMountOptionField(
-		commondocumentation.Ext2DocumentationEnums,
-		commondocumentation.Ext2DocumentationAssignable,
-	),
-	"ext3": createMountOptionField(
-		append(commondocumentation.Ext2DocumentationEnums, commondocumentation.Ext3DocumentationEnums...),
-		docvalues.MergeKeyEnumAssignmentMaps(commondocumentation.Ext2DocumentationAssignable, commondocumentation.Ext3DocumentationAssignable),
-	),
-	"ext4": createMountOptionField(
-		append(append(commondocumentation.Ext2DocumentationEnums, commondocumentation.Ext3DocumentationEnums...), commondocumentation.Ext4DocumentationEnums...),
-		docvalues.MergeKeyEnumAssignmentMaps(commondocumentation.Ext2DocumentationAssignable, docvalues.MergeKeyEnumAssignmentMaps(commondocumentation.Ext3DocumentationAssignable, commondocumentation.Ext4DocumentationAssignable)),
-	),
-	"devpts": createMountOptionField(
-		commondocumentation.DevptsDocumentationEnums,
-		commondocumentation.DevptsDocumentationAssignable,
-	),
-	"fat": createMountOptionField(
-		commondocumentation.FatDocumentationEnums,
-		commondocumentation.FatDocumentationAssignable,
-	),
-	"hfs": createMountOptionField(
-		commondocumentation.HfsDocumentationEnums,
-		commondocumentation.HfsDocumentationAssignable,
-	),
-	"hpfs": createMountOptionField(
-		commondocumentation.HpfsDocumentationEnums,
-		commondocumentation.HpfsDocumentationAssignable,
-	),
-	"iso9660": createMountOptionField(
-		commondocumentation.Iso9660DocumentationEnums,
-		commondocumentation.Iso9660DocumentationAssignable,
-	),
-	"jfs": createMountOptionField(
-		commondocumentation.JfsDocumentationEnums,
-		commondocumentation.JfsDocumentationAssignable,
-	),
-	"msdos": createMountOptionField(
-		commondocumentation.MsdosDocumentationEnums,
-		commondocumentation.MsdosDocumentationAssignable,
-	),
-	"ncpfs": createMountOptionField(
-		commondocumentation.NcpfsDocumentationEnums,
-		commondocumentation.NcpfsDocumentationAssignable,
-	),
-	"ntfs": createMountOptionField(
-		commondocumentation.NtfsDocumentationEnums,
-		commondocumentation.NtfsDocumentationAssignable,
-	),
-	"overlay": createMountOptionField(
-		commondocumentation.OverlayDocumentationEnums,
-		commondocumentation.OverlayDocumentationAssignable,
-	),
-	"reiserfs": createMountOptionField(
-		commondocumentation.ReiserfsDocumentationEnums,
-		commondocumentation.ReiserfsDocumentationAssignable,
-	),
-	"usbfs": createMountOptionField(
-		commondocumentation.UsbfsDocumentationEnums,
-		commondocumentation.UsbfsDocumentationAssignable,
-	),
-	"ubifs": createMountOptionField(
-		commondocumentation.UbifsDocumentationEnums,
-		commondocumentation.UbifsDocumentationAssignable,
-	),
-	"udf": createMountOptionField(
-		commondocumentation.UdfDocumentationEnums,
-		commondocumentation.UdfDocumentationAssignable,
-	),
-	"ufs": createMountOptionField(
-		commondocumentation.UfsDocumentationEnums,
-		commondocumentation.UfsDocumentationAssignable,
-	),
-	"umsdos": createMountOptionField(
-		commondocumentation.UmsdosDocumentationEnums,
-		commondocumentation.UmsdosDocumentationAssignable,
-	),
-	"vfat": createMountOptionField(
-		commondocumentation.VfatDocumentationEnums,
-		commondocumentation.VfatDocumentationAssignable,
-	),
+var DefaultMountOptionsField = createMountOptionField(DefaultOptions, DefaultAssignOptions)
+
+var MountOptionsMapField = map[string]optionField{
+	"adfs": {
+		Enums:      commondocumentation.AdfsDocumentationEnums,
+		Assignable: commondocumentation.AdfsDocumentationAssignable,
+	},
+	"affs": {
+		Enums:      commondocumentation.AffsDocumentationEnums,
+		Assignable: commondocumentation.AffsDocumentationAssignable,
+	},
+	"btrfs": {
+		Enums:      commondocumentation.BtrfsDocumentationEnums,
+		Assignable: commondocumentation.BtrfsDocumentationAssignable,
+	},
+	"debugfs": {
+		Enums:      commondocumentation.DebugfsDocumentationEnums,
+		Assignable: commondocumentation.DebugfsDocumentationAssignable,
+	},
+	"ext2": {
+		Enums:      commondocumentation.Ext2DocumentationEnums,
+		Assignable: commondocumentation.Ext2DocumentationAssignable,
+	},
+	"ext3": {
+		Enums:      append(commondocumentation.Ext2DocumentationEnums, commondocumentation.Ext3DocumentationEnums...),
+		Assignable: docvalues.MergeKeyEnumAssignmentMaps(commondocumentation.Ext2DocumentationAssignable, commondocumentation.Ext3DocumentationAssignable),
+	},
+	"ext4": {
+		Enums: append(
+			append(
+				commondocumentation.Ext2DocumentationEnums,
+				commondocumentation.Ext3DocumentationEnums...,
+			),
+			commondocumentation.Ext4DocumentationEnums...,
+		),
+		Assignable: docvalues.MergeKeyEnumAssignmentMaps(commondocumentation.Ext2DocumentationAssignable, docvalues.MergeKeyEnumAssignmentMaps(commondocumentation.Ext3DocumentationAssignable, commondocumentation.Ext4DocumentationAssignable)),
+	},
+	"devpts": {
+		Enums:      commondocumentation.DevptsDocumentationEnums,
+		Assignable: commondocumentation.DevptsDocumentationAssignable,
+	},
+	"fat": {
+		Enums:      commondocumentation.FatDocumentationEnums,
+		Assignable: commondocumentation.FatDocumentationAssignable,
+	},
+	"hfs": {
+		Enums:      commondocumentation.HfsDocumentationEnums,
+		Assignable: commondocumentation.HfsDocumentationAssignable,
+	},
+	"hpfs": {
+		Enums:      commondocumentation.HpfsDocumentationEnums,
+		Assignable: commondocumentation.HpfsDocumentationAssignable,
+	},
+	"iso9660": {
+		Enums:      commondocumentation.Iso9660DocumentationEnums,
+		Assignable: commondocumentation.Iso9660DocumentationAssignable,
+	},
+	"jfs": {
+		Enums:      commondocumentation.JfsDocumentationEnums,
+		Assignable: commondocumentation.JfsDocumentationAssignable,
+	},
+	"msdos": {
+		Enums:      commondocumentation.MsdosDocumentationEnums,
+		Assignable: commondocumentation.MsdosDocumentationAssignable,
+	},
+	"ncpfs": {
+		Enums:      commondocumentation.NcpfsDocumentationEnums,
+		Assignable: commondocumentation.NcpfsDocumentationAssignable,
+	},
+	"ntfs": {
+		Enums:      commondocumentation.NtfsDocumentationEnums,
+		Assignable: commondocumentation.NtfsDocumentationAssignable,
+	},
+	"overlay": {
+		Enums:      commondocumentation.OverlayDocumentationEnums,
+		Assignable: commondocumentation.OverlayDocumentationAssignable,
+	},
+	"reiserfs": {
+		Enums:      commondocumentation.ReiserfsDocumentationEnums,
+		Assignable: commondocumentation.ReiserfsDocumentationAssignable,
+	},
+	"usbfs": {
+		Enums:      commondocumentation.UsbfsDocumentationEnums,
+		Assignable: commondocumentation.UsbfsDocumentationAssignable,
+	},
+	"ubifs": {
+		Enums:      commondocumentation.UbifsDocumentationEnums,
+		Assignable: commondocumentation.UbifsDocumentationAssignable,
+	},
+	"udf": {
+		Enums:      commondocumentation.UdfDocumentationEnums,
+		Assignable: commondocumentation.UdfDocumentationAssignable,
+	},
+	"ufs": {
+		Enums:      commondocumentation.UfsDocumentationEnums,
+		Assignable: commondocumentation.UfsDocumentationAssignable,
+	},
+	"umsdos": {
+		Enums:      commondocumentation.UmsdosDocumentationEnums,
+		Assignable: commondocumentation.UmsdosDocumentationAssignable,
+	},
+	"vfat": {
+		Enums:      commondocumentation.VfatDocumentationEnums,
+		Assignable: commondocumentation.VfatDocumentationAssignable,
+	},
 }

@@ -42,6 +42,7 @@ func GetCompletion(
 		fileSystemType := entry.Fields.FilesystemType.Value.Value
 		completions := make([]protocol.CompletionItem, 0, 50)
 
+		println("fetching field options now", line, cursor)
 		for _, completion := range fields.DefaultMountOptionsField.DeprecatedFetchCompletions(line, cursor) {
 			var documentation string
 
@@ -59,23 +60,21 @@ func GetCompletion(
 			completions = append(completions, completion)
 		}
 
-		if optionsField, found := fields.MountOptionsMapField[fileSystemType]; found {
-			for _, completion := range optionsField.DeprecatedFetchCompletions(line, cursor) {
-				var documentation string
+		for _, completion := range entry.FetchMountOptionsField(false).DeprecatedFetchCompletions(line, cursor) {
+			var documentation string
 
-				switch completion.Documentation.(type) {
-				case string:
-					documentation = completion.Documentation.(string)
-				case *string:
-					documentation = *completion.Documentation.(*string)
-				}
-
-				completion.Documentation = protocol.MarkupContent{
-					Kind:  protocol.MarkupKindMarkdown,
-					Value: documentation + "\n\n" + fmt.Sprintf("From: _%s_", fileSystemType),
-				}
-				completions = append(completions, completion)
+			switch completion.Documentation.(type) {
+			case string:
+				documentation = completion.Documentation.(string)
+			case *string:
+				documentation = *completion.Documentation.(*string)
 			}
+
+			completion.Documentation = protocol.MarkupContent{
+				Kind:  protocol.MarkupKindMarkdown,
+				Value: documentation + "\n\n" + fmt.Sprintf("From: _%s_", fileSystemType),
+			}
+			completions = append(completions, completion)
 		}
 
 		return completions, nil
@@ -109,5 +108,5 @@ func getFieldSafely(field *ast.FstabField, cursor common.CursorPosition) (string
 		return "", 0
 	}
 
-	return field.Value.Raw, common.CursorToCharacterIndex(uint32(cursor)) - field.Start.Character
+	return field.Value.Raw, common.CursorToCharacterIndex(uint32(cursor) - field.Start.Character)
 }

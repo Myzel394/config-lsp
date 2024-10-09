@@ -2,9 +2,7 @@ package handlers
 
 import (
 	"config-lsp/common"
-	"config-lsp/doc-values"
 	"config-lsp/handlers/fstab/ast"
-	"config-lsp/handlers/fstab/fields"
 	"strings"
 
 	"github.com/tliron/glsp/protocol_3_16"
@@ -25,13 +23,10 @@ func GetHoverInfo(
 	case ast.FstabFieldFileSystemType:
 		return &FileSystemTypeField, nil
 	case ast.FstabFieldOptions:
-		fileSystemType := entry.Fields.FilesystemType.Value.Value
-		var optionsField docvalues.DeprecatedValue
+		optionsField := entry.FetchMountOptionsField(true)
 
-		if foundField, found := fields.MountOptionsMapField[fileSystemType]; found {
-			optionsField = foundField
-		} else {
-			optionsField = fields.DefaultMountOptionsField
+		if optionsField == nil {
+			return nil, nil
 		}
 
 		relativeCursor := uint32(index) - entry.Fields.Options.Start.Character

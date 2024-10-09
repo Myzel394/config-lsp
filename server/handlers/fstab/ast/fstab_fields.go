@@ -4,6 +4,7 @@ import (
 	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
 	"config-lsp/handlers/fstab/fields"
+	"config-lsp/utils"
 )
 
 // func (c FstabConfig) GetEntry(line uint32) *FstabEntry {
@@ -40,16 +41,44 @@ func (e FstabEntry) GetFieldAtPosition(position common.Position) FstabFieldName 
 	return FstabFieldPass
 }
 
-func (e FstabEntry) GetMountOptionsField() docvalues.DeprecatedValue {
-	fileSystemType := e.Fields.FilesystemType.Value.Value
-
-	var optionsField docvalues.DeprecatedValue
-
-	if foundField, found := fields.MountOptionsMapField[fileSystemType]; found {
-		optionsField = foundField
-	} else {
-		optionsField = fields.DefaultMountOptionsField
+// Create a mount options field for the entry
+func (e FstabEntry) FetchMountOptionsField(includeDefaults bool) docvalues.DeprecatedValue {
+	if e.Fields.FilesystemType == nil {
+		return nil
 	}
 
-	return optionsField
+	option, found := fields.MountOptionsMapField[e.Fields.FilesystemType.Value.Value]
+
+	if !found {
+		return nil
+	}
+
+	var enums []docvalues.EnumString
+	var assignable map[docvalues.EnumString]docvalues.DeprecatedValue
+
+	if includeDefaults {
+		enums = append(option.Enums, fields.DefaultOptions...)
+		assignable = utils.MergeMaps(option.Assignable, fields.DefaultAssignOptions)
+	} else {
+		enums = option.Enums
+		assignable = option.Assignable
+	}
+
+	return &docvalues.ArrayValue{
+		Separator:           ",",
+		DuplicatesExtractor: &fields.MountOptionsExtractor,
+		SubValue: docvalues.OrValue{
+			Values: []docvalues.DeprecatedValue{
+				docvalues.KeyEnumAssignmentValue{
+					Values:          assignable,
+					ValueIsOptional: false,
+					Separator:       "=",
+				},
+				docvalues.EnumValue{
+					EnforceValues: true,
+					Values:        enums,
+				},
+			},
+		},
+	}
 }
