@@ -16,18 +16,26 @@ func analyzeValuesAreValid(
 
 	for it.Next() {
 		entry := it.Value().(*ast.FstabEntry)
-		mountOptions := entry.FetchMountOptionsField(true)
 
 		checkField(ctx, entry.Fields.Spec, fields.SpecField)
 		checkField(ctx, entry.Fields.MountPoint, fields.MountPointField)
 		checkField(ctx, entry.Fields.FilesystemType, fields.FileSystemTypeField)
 
-		if mountOptions != nil {
-			checkField(ctx, entry.Fields.Options, mountOptions)
+		if entry.Fields.Options != nil {
+			mountOptions := entry.FetchMountOptionsField(true)
+
+			if mountOptions != nil {
+				checkField(ctx, entry.Fields.Options, mountOptions)
+			}
 		}
 
-		checkField(ctx, entry.Fields.Freq, fields.FreqField)
-		checkField(ctx, entry.Fields.Pass, fields.PassField)
+		if entry.Fields.Freq != nil {
+			checkField(ctx, entry.Fields.Freq, fields.FreqField)
+		}
+
+		if entry.Fields.Pass != nil {
+			checkField(ctx, entry.Fields.Pass, fields.PassField)
+		}
 	}
 }
 

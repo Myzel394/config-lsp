@@ -83,46 +83,8 @@ func analyzeFieldAreFilled(
 						Character: entry.Fields.FilesystemType.End.Character,
 					},
 				},
-				Message:  "The options field is missing",
-				Severity: &common.SeverityError,
-			})
-
-			continue
-		}
-
-		if entry.Fields.Freq == nil || entry.Fields.Freq.Value.Value == "" {
-			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-				Range: protocol.Range{
-					Start: protocol.Position{
-						Line:      entry.Fields.Start.Line,
-						Character: entry.Fields.Options.End.Character,
-					},
-					End: protocol.Position{
-						Line:      entry.Fields.Start.Line,
-						Character: entry.Fields.Options.End.Character,
-					},
-				},
-				Message:  "The freq field is missing",
-				Severity: &common.SeverityError,
-			})
-
-			continue
-		}
-
-		if entry.Fields.Pass == nil || entry.Fields.Pass.Value.Value == "" {
-			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-				Range: protocol.Range{
-					Start: protocol.Position{
-						Line:      entry.Fields.Start.Line,
-						Character: entry.Fields.Freq.End.Character,
-					},
-					End: protocol.Position{
-						Line:      entry.Fields.Start.Line,
-						Character: entry.Fields.Freq.End.Character,
-					},
-				},
-				Message:  "The pass field is missing",
-				Severity: &common.SeverityError,
+				Message:  `The options field is empty. The usual convention is to use at least "defaults" keyword there.`,
+				Severity: &common.SeverityWarning,
 			})
 
 			continue
