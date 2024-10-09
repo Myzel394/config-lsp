@@ -6,6 +6,7 @@ import (
 	"config-lsp/handlers/fstab/ast/parser"
 	"config-lsp/utils"
 	"regexp"
+	"strings"
 
 	"github.com/antlr4-go/antlr/v4"
 	"github.com/emirpasic/gods/maps/treemap"
@@ -27,13 +28,15 @@ func (c *FstabConfig) Clear() {
 
 var commentPattern = regexp.MustCompile(`^\s*#`)
 var emptyPattern = regexp.MustCompile(`^\s*$`)
+var leadingCommentPattern = regexp.MustCompile(`^(.+?)#`)
 
 func (c *FstabConfig) Parse(input string) []common.LSPError {
 	errors := make([]common.LSPError, 0)
 	lines := utils.SplitIntoLines(input)
 	context := createListenerContext()
 
-	for rawLineNumber, line := range lines {
+	for rawLineNumber, rawLine := range lines {
+		line := rawLine
 		lineNumber := uint32(rawLineNumber)
 		context.line = lineNumber
 
@@ -46,6 +49,11 @@ func (c *FstabConfig) Parse(input string) []common.LSPError {
 			continue
 		}
 
+		if strings.Contains(line, "#") {
+			matches := leadingCommentPattern.FindStringSubmatch(line)
+			line = matches[1]
+		}
+
 		errors = append(
 			errors,
 			c.parseStatement(context, line)...,
@@ -55,7 +63,6 @@ func (c *FstabConfig) Parse(input string) []common.LSPError {
 	return errors
 }
 
-// TODO: Handle leading comments
 func (c *FstabConfig) parseStatement(
 	context *fstabListenerContext,
 	input string,

@@ -166,6 +166,24 @@ UUID=b411dc99-f0a0-4c87-9e05-184977be8539 /home ext4   defaults  0      2
 
 }
 
+func TestArchExample1WithComments(t *testing.T) {
+	input := utils.Dedent(`
+# Hello there!
+UUID=0a3407de-014b-458b-b5c1-848e92a327a3 /     ext4   defaults  0      1
+# How are you?
+UUID=f9fe0b69-a280-415d-a03a-a32752370dee none  swap   defaults  0      0 # And I am trailing!
+UUID=b411dc99-f0a0-4c87-9e05-184977be8539 /home ext4   defaults  0      2         # I am tailing         too!         
+`)
+	p := ast.NewFstabConfig()
+
+	errors := p.Parse(input)
+
+	if len(errors) > 0 {
+		t.Fatalf("ParseFromContent failed with error %v", errors)
+	}
+
+}
+
 func TestArchExample2(t *testing.T) {
 	input := utils.Dedent(`
 /dev/sda1         /boot        vfat          defaults         0      2
