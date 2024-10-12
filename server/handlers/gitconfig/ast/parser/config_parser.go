@@ -33,38 +33,50 @@ var ConfigParserStaticData struct {
 func configParserInit() {
 	staticData := &ConfigParserStaticData
 	staticData.LiteralNames = []string{
-		"", "'='", "'#'",
+		"", "'='", "'#'", "';'",
 	}
 	staticData.SymbolicNames = []string{
-		"", "EQUAL", "HASH", "WHITESPACE", "STRING", "QUOTED_STRING",
+		"", "EQUAL", "HASH", "SEMICOLON", "WHITESPACE", "STRING", "QUOTED_STRING",
 	}
 	staticData.RuleNames = []string{
 		"lineStatement", "entry", "leadingComment", "key", "separator", "value",
-		"string",
+		"string", "commentSymbol",
 	}
 	staticData.PredictionContextCache = antlr.NewPredictionContextCache()
 	staticData.serializedATN = []int32{
-		4, 1, 5, 53, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7, 4,
-		2, 5, 7, 5, 2, 6, 7, 6, 1, 0, 1, 0, 1, 0, 1, 1, 3, 1, 19, 8, 1, 1, 1, 3,
-		1, 22, 8, 1, 1, 1, 3, 1, 25, 8, 1, 1, 1, 3, 1, 28, 8, 1, 1, 1, 3, 1, 31,
-		8, 1, 1, 2, 1, 2, 3, 2, 35, 8, 2, 1, 2, 1, 2, 3, 2, 39, 8, 2, 4, 2, 41,
-		8, 2, 11, 2, 12, 2, 42, 1, 3, 1, 3, 1, 4, 1, 4, 1, 5, 1, 5, 1, 6, 1, 6,
-		1, 6, 0, 0, 7, 0, 2, 4, 6, 8, 10, 12, 0, 1, 1, 0, 4, 5, 53, 0, 14, 1, 0,
-		0, 0, 2, 18, 1, 0, 0, 0, 4, 32, 1, 0, 0, 0, 6, 44, 1, 0, 0, 0, 8, 46, 1,
-		0, 0, 0, 10, 48, 1, 0, 0, 0, 12, 50, 1, 0, 0, 0, 14, 15, 3, 2, 1, 0, 15,
-		16, 5, 0, 0, 1, 16, 1, 1, 0, 0, 0, 17, 19, 5, 3, 0, 0, 18, 17, 1, 0, 0,
-		0, 18, 19, 1, 0, 0, 0, 19, 21, 1, 0, 0, 0, 20, 22, 3, 6, 3, 0, 21, 20,
-		1, 0, 0, 0, 21, 22, 1, 0, 0, 0, 22, 24, 1, 0, 0, 0, 23, 25, 3, 8, 4, 0,
-		24, 23, 1, 0, 0, 0, 24, 25, 1, 0, 0, 0, 25, 27, 1, 0, 0, 0, 26, 28, 3,
-		10, 5, 0, 27, 26, 1, 0, 0, 0, 27, 28, 1, 0, 0, 0, 28, 30, 1, 0, 0, 0, 29,
-		31, 3, 4, 2, 0, 30, 29, 1, 0, 0, 0, 30, 31, 1, 0, 0, 0, 31, 3, 1, 0, 0,
-		0, 32, 34, 5, 2, 0, 0, 33, 35, 5, 3, 0, 0, 34, 33, 1, 0, 0, 0, 34, 35,
-		1, 0, 0, 0, 35, 40, 1, 0, 0, 0, 36, 38, 3, 12, 6, 0, 37, 39, 5, 3, 0, 0,
-		38, 37, 1, 0, 0, 0, 38, 39, 1, 0, 0, 0, 39, 41, 1, 0, 0, 0, 40, 36, 1,
-		0, 0, 0, 41, 42, 1, 0, 0, 0, 42, 40, 1, 0, 0, 0, 42, 43, 1, 0, 0, 0, 43,
-		5, 1, 0, 0, 0, 44, 45, 3, 12, 6, 0, 45, 7, 1, 0, 0, 0, 46, 47, 5, 1, 0,
-		0, 47, 9, 1, 0, 0, 0, 48, 49, 3, 12, 6, 0, 49, 11, 1, 0, 0, 0, 50, 51,
-		7, 0, 0, 0, 51, 13, 1, 0, 0, 0, 8, 18, 21, 24, 27, 30, 34, 38, 42,
+		4, 1, 6, 78, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7, 4,
+		2, 5, 7, 5, 2, 6, 7, 6, 2, 7, 7, 7, 1, 0, 3, 0, 18, 8, 0, 1, 0, 1, 0, 3,
+		0, 22, 8, 0, 1, 0, 3, 0, 25, 8, 0, 1, 0, 1, 0, 1, 1, 3, 1, 30, 8, 1, 1,
+		1, 3, 1, 33, 8, 1, 1, 1, 3, 1, 36, 8, 1, 1, 1, 3, 1, 39, 8, 1, 1, 1, 3,
+		1, 42, 8, 1, 1, 2, 1, 2, 3, 2, 46, 8, 2, 1, 2, 1, 2, 3, 2, 50, 8, 2, 4,
+		2, 52, 8, 2, 11, 2, 12, 2, 53, 1, 3, 1, 3, 1, 4, 1, 4, 1, 5, 1, 5, 1, 6,
+		1, 6, 3, 6, 64, 8, 6, 1, 6, 1, 6, 5, 6, 68, 8, 6, 10, 6, 12, 6, 71, 9,
+		6, 1, 6, 3, 6, 74, 8, 6, 1, 7, 1, 7, 1, 7, 0, 0, 8, 0, 2, 4, 6, 8, 10,
+		12, 14, 0, 1, 1, 0, 2, 3, 83, 0, 17, 1, 0, 0, 0, 2, 29, 1, 0, 0, 0, 4,
+		43, 1, 0, 0, 0, 6, 55, 1, 0, 0, 0, 8, 57, 1, 0, 0, 0, 10, 59, 1, 0, 0,
+		0, 12, 73, 1, 0, 0, 0, 14, 75, 1, 0, 0, 0, 16, 18, 5, 4, 0, 0, 17, 16,
+		1, 0, 0, 0, 17, 18, 1, 0, 0, 0, 18, 19, 1, 0, 0, 0, 19, 21, 3, 2, 1, 0,
+		20, 22, 5, 4, 0, 0, 21, 20, 1, 0, 0, 0, 21, 22, 1, 0, 0, 0, 22, 24, 1,
+		0, 0, 0, 23, 25, 3, 4, 2, 0, 24, 23, 1, 0, 0, 0, 24, 25, 1, 0, 0, 0, 25,
+		26, 1, 0, 0, 0, 26, 27, 5, 0, 0, 1, 27, 1, 1, 0, 0, 0, 28, 30, 3, 6, 3,
+		0, 29, 28, 1, 0, 0, 0, 29, 30, 1, 0, 0, 0, 30, 32, 1, 0, 0, 0, 31, 33,
+		5, 4, 0, 0, 32, 31, 1, 0, 0, 0, 32, 33, 1, 0, 0, 0, 33, 35, 1, 0, 0, 0,
+		34, 36, 3, 8, 4, 0, 35, 34, 1, 0, 0, 0, 35, 36, 1, 0, 0, 0, 36, 38, 1,
+		0, 0, 0, 37, 39, 5, 4, 0, 0, 38, 37, 1, 0, 0, 0, 38, 39, 1, 0, 0, 0, 39,
+		41, 1, 0, 0, 0, 40, 42, 3, 10, 5, 0, 41, 40, 1, 0, 0, 0, 41, 42, 1, 0,
+		0, 0, 42, 3, 1, 0, 0, 0, 43, 45, 3, 14, 7, 0, 44, 46, 5, 4, 0, 0, 45, 44,
+		1, 0, 0, 0, 45, 46, 1, 0, 0, 0, 46, 51, 1, 0, 0, 0, 47, 49, 3, 12, 6, 0,
+		48, 50, 5, 4, 0, 0, 49, 48, 1, 0, 0, 0, 49, 50, 1, 0, 0, 0, 50, 52, 1,
+		0, 0, 0, 51, 47, 1, 0, 0, 0, 52, 53, 1, 0, 0, 0, 53, 51, 1, 0, 0, 0, 53,
+		54, 1, 0, 0, 0, 54, 5, 1, 0, 0, 0, 55, 56, 3, 12, 6, 0, 56, 7, 1, 0, 0,
+		0, 57, 58, 5, 1, 0, 0, 58, 9, 1, 0, 0, 0, 59, 60, 3, 12, 6, 0, 60, 11,
+		1, 0, 0, 0, 61, 74, 5, 6, 0, 0, 62, 64, 5, 4, 0, 0, 63, 62, 1, 0, 0, 0,
+		63, 64, 1, 0, 0, 0, 64, 69, 1, 0, 0, 0, 65, 66, 5, 5, 0, 0, 66, 68, 5,
+		4, 0, 0, 67, 65, 1, 0, 0, 0, 68, 71, 1, 0, 0, 0, 69, 67, 1, 0, 0, 0, 69,
+		70, 1, 0, 0, 0, 70, 72, 1, 0, 0, 0, 71, 69, 1, 0, 0, 0, 72, 74, 5, 5, 0,
+		0, 73, 61, 1, 0, 0, 0, 73, 63, 1, 0, 0, 0, 74, 13, 1, 0, 0, 0, 75, 76,
+		7, 0, 0, 0, 76, 15, 1, 0, 0, 0, 14, 17, 21, 24, 29, 32, 35, 38, 41, 45,
+		49, 53, 63, 69, 73,
 	}
 	deserializer := antlr.NewATNDeserializer(nil)
 	staticData.atn = deserializer.Deserialize(staticData.serializedATN)
@@ -105,9 +117,10 @@ const (
 	ConfigParserEOF           = antlr.TokenEOF
 	ConfigParserEQUAL         = 1
 	ConfigParserHASH          = 2
-	ConfigParserWHITESPACE    = 3
-	ConfigParserSTRING        = 4
-	ConfigParserQUOTED_STRING = 5
+	ConfigParserSEMICOLON     = 3
+	ConfigParserWHITESPACE    = 4
+	ConfigParserSTRING        = 5
+	ConfigParserQUOTED_STRING = 6
 )
 
 // ConfigParser rules.
@@ -119,6 +132,7 @@ const (
 	ConfigParserRULE_separator      = 4
 	ConfigParserRULE_value          = 5
 	ConfigParserRULE_string         = 6
+	ConfigParserRULE_commentSymbol  = 7
 )
 
 // ILineStatementContext is an interface to support dynamic dispatch.
@@ -131,6 +145,9 @@ type ILineStatementContext interface {
 	// Getter signatures
 	Entry() IEntryContext
 	EOF() antlr.TerminalNode
+	AllWHITESPACE() []antlr.TerminalNode
+	WHITESPACE(i int) antlr.TerminalNode
+	LeadingComment() ILeadingCommentContext
 
 	// IsLineStatementContext differentiates from other interfaces.
 	IsLineStatementContext()
@@ -188,6 +205,30 @@ func (s *LineStatementContext) EOF() antlr.TerminalNode {
 	return s.GetToken(ConfigParserEOF, 0)
 }
 
+func (s *LineStatementContext) AllWHITESPACE() []antlr.TerminalNode {
+	return s.GetTokens(ConfigParserWHITESPACE)
+}
+
+func (s *LineStatementContext) WHITESPACE(i int) antlr.TerminalNode {
+	return s.GetToken(ConfigParserWHITESPACE, i)
+}
+
+func (s *LineStatementContext) LeadingComment() ILeadingCommentContext {
+	var t antlr.RuleContext
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(ILeadingCommentContext); ok {
+			t = ctx.(antlr.RuleContext)
+			break
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(ILeadingCommentContext)
+}
+
 func (s *LineStatementContext) GetRuleContext() antlr.RuleContext {
 	return s
 }
@@ -211,13 +252,63 @@ func (s *LineStatementContext) ExitRule(listener antlr.ParseTreeListener) {
 func (p *ConfigParser) LineStatement() (localctx ILineStatementContext) {
 	localctx = NewLineStatementContext(p, p.GetParserRuleContext(), p.GetState())
 	p.EnterRule(localctx, 0, ConfigParserRULE_lineStatement)
+	var _la int
+
 	p.EnterOuterAlt(localctx, 1)
-	{
-		p.SetState(14)
-		p.Entry()
+	p.SetState(17)
+	p.GetErrorHandler().Sync(p)
+
+	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 0, p.GetParserRuleContext()) == 1 {
+		{
+			p.SetState(16)
+			p.Match(ConfigParserWHITESPACE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
+		}
+
+	} else if p.HasError() { // JIM
+		goto errorExit
 	}
 	{
-		p.SetState(15)
+		p.SetState(19)
+		p.Entry()
+	}
+	p.SetState(21)
+	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
+	_la = p.GetTokenStream().LA(1)
+
+	if _la == ConfigParserWHITESPACE {
+		{
+			p.SetState(20)
+			p.Match(ConfigParserWHITESPACE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
+		}
+
+	}
+	p.SetState(24)
+	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
+	_la = p.GetTokenStream().LA(1)
+
+	if _la == ConfigParserHASH || _la == ConfigParserSEMICOLON {
+		{
+			p.SetState(23)
+			p.LeadingComment()
+		}
+
+	}
+	{
+		p.SetState(26)
 		p.Match(ConfigParserEOF)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -246,11 +337,11 @@ type IEntryContext interface {
 	GetParser() antlr.Parser
 
 	// Getter signatures
-	WHITESPACE() antlr.TerminalNode
 	Key() IKeyContext
+	AllWHITESPACE() []antlr.TerminalNode
+	WHITESPACE(i int) antlr.TerminalNode
 	Separator() ISeparatorContext
 	Value() IValueContext
-	LeadingComment() ILeadingCommentContext
 
 	// IsEntryContext differentiates from other interfaces.
 	IsEntryContext()
@@ -288,10 +379,6 @@ func NewEntryContext(parser antlr.Parser, parent antlr.ParserRuleContext, invoki
 
 func (s *EntryContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *EntryContext) WHITESPACE() antlr.TerminalNode {
-	return s.GetToken(ConfigParserWHITESPACE, 0)
-}
-
 func (s *EntryContext) Key() IKeyContext {
 	var t antlr.RuleContext
 	for _, ctx := range s.GetChildren() {
@@ -306,6 +393,14 @@ func (s *EntryContext) Key() IKeyContext {
 	}
 
 	return t.(IKeyContext)
+}
+
+func (s *EntryContext) AllWHITESPACE() []antlr.TerminalNode {
+	return s.GetTokens(ConfigParserWHITESPACE)
+}
+
+func (s *EntryContext) WHITESPACE(i int) antlr.TerminalNode {
+	return s.GetToken(ConfigParserWHITESPACE, i)
 }
 
 func (s *EntryContext) Separator() ISeparatorContext {
@@ -340,22 +435,6 @@ func (s *EntryContext) Value() IValueContext {
 	return t.(IValueContext)
 }
 
-func (s *EntryContext) LeadingComment() ILeadingCommentContext {
-	var t antlr.RuleContext
-	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(ILeadingCommentContext); ok {
-			t = ctx.(antlr.RuleContext)
-			break
-		}
-	}
-
-	if t == nil {
-		return nil
-	}
-
-	return t.(ILeadingCommentContext)
-}
-
 func (s *EntryContext) GetRuleContext() antlr.RuleContext {
 	return s
 }
@@ -382,16 +461,24 @@ func (p *ConfigParser) Entry() (localctx IEntryContext) {
 	var _la int
 
 	p.EnterOuterAlt(localctx, 1)
-	p.SetState(18)
+	p.SetState(29)
 	p.GetErrorHandler().Sync(p)
-	if p.HasError() {
+
+	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 3, p.GetParserRuleContext()) == 1 {
+		{
+			p.SetState(28)
+			p.Key()
+		}
+
+	} else if p.HasError() { // JIM
 		goto errorExit
 	}
-	_la = p.GetTokenStream().LA(1)
+	p.SetState(32)
+	p.GetErrorHandler().Sync(p)
 
-	if _la == ConfigParserWHITESPACE {
+	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 4, p.GetParserRuleContext()) == 1 {
 		{
-			p.SetState(17)
+			p.SetState(31)
 			p.Match(ConfigParserWHITESPACE)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -399,20 +486,10 @@ func (p *ConfigParser) Entry() (localctx IEntryContext) {
 			}
 		}
 
-	}
-	p.SetState(21)
-	p.GetErrorHandler().Sync(p)
-
-	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 1, p.GetParserRuleContext()) == 1 {
-		{
-			p.SetState(20)
-			p.Key()
-		}
-
 	} else if p.HasError() { // JIM
 		goto errorExit
 	}
-	p.SetState(24)
+	p.SetState(35)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
@@ -421,38 +498,38 @@ func (p *ConfigParser) Entry() (localctx IEntryContext) {
 
 	if _la == ConfigParserEQUAL {
 		{
-			p.SetState(23)
+			p.SetState(34)
 			p.Separator()
 		}
 
 	}
-	p.SetState(27)
+	p.SetState(38)
 	p.GetErrorHandler().Sync(p)
-	if p.HasError() {
+
+	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 6, p.GetParserRuleContext()) == 1 {
+		{
+			p.SetState(37)
+			p.Match(ConfigParserWHITESPACE)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
+		}
+
+	} else if p.HasError() { // JIM
 		goto errorExit
 	}
-	_la = p.GetTokenStream().LA(1)
+	p.SetState(41)
+	p.GetErrorHandler().Sync(p)
 
-	if _la == ConfigParserSTRING || _la == ConfigParserQUOTED_STRING {
+	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 7, p.GetParserRuleContext()) == 1 {
 		{
-			p.SetState(26)
+			p.SetState(40)
 			p.Value()
 		}
 
-	}
-	p.SetState(30)
-	p.GetErrorHandler().Sync(p)
-	if p.HasError() {
+	} else if p.HasError() { // JIM
 		goto errorExit
-	}
-	_la = p.GetTokenStream().LA(1)
-
-	if _la == ConfigParserHASH {
-		{
-			p.SetState(29)
-			p.LeadingComment()
-		}
-
 	}
 
 errorExit:
@@ -476,7 +553,7 @@ type ILeadingCommentContext interface {
 	GetParser() antlr.Parser
 
 	// Getter signatures
-	HASH() antlr.TerminalNode
+	CommentSymbol() ICommentSymbolContext
 	AllWHITESPACE() []antlr.TerminalNode
 	WHITESPACE(i int) antlr.TerminalNode
 	AllString_() []IStringContext
@@ -518,8 +595,20 @@ func NewLeadingCommentContext(parser antlr.Parser, parent antlr.ParserRuleContex
 
 func (s *LeadingCommentContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *LeadingCommentContext) HASH() antlr.TerminalNode {
-	return s.GetToken(ConfigParserHASH, 0)
+func (s *LeadingCommentContext) CommentSymbol() ICommentSymbolContext {
+	var t antlr.RuleContext
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(ICommentSymbolContext); ok {
+			t = ctx.(antlr.RuleContext)
+			break
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(ICommentSymbolContext)
 }
 
 func (s *LeadingCommentContext) AllWHITESPACE() []antlr.TerminalNode {
@@ -598,23 +687,15 @@ func (p *ConfigParser) LeadingComment() (localctx ILeadingCommentContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(32)
-		p.Match(ConfigParserHASH)
-		if p.HasError() {
-			// Recognition error - abort rule
-			goto errorExit
-		}
+		p.SetState(43)
+		p.CommentSymbol()
 	}
-	p.SetState(34)
+	p.SetState(45)
 	p.GetErrorHandler().Sync(p)
-	if p.HasError() {
-		goto errorExit
-	}
-	_la = p.GetTokenStream().LA(1)
 
-	if _la == ConfigParserWHITESPACE {
+	if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 8, p.GetParserRuleContext()) == 1 {
 		{
-			p.SetState(33)
+			p.SetState(44)
 			p.Match(ConfigParserWHITESPACE)
 			if p.HasError() {
 				// Recognition error - abort rule
@@ -622,29 +703,27 @@ func (p *ConfigParser) LeadingComment() (localctx ILeadingCommentContext) {
 			}
 		}
 
+	} else if p.HasError() { // JIM
+		goto errorExit
 	}
-	p.SetState(40)
+	p.SetState(51)
 	p.GetErrorHandler().Sync(p)
 	if p.HasError() {
 		goto errorExit
 	}
 	_la = p.GetTokenStream().LA(1)
 
-	for ok := true; ok; ok = _la == ConfigParserSTRING || _la == ConfigParserQUOTED_STRING {
+	for ok := true; ok; ok = ((int64(_la) & ^0x3f) == 0 && ((int64(1)<<_la)&112) != 0) {
 		{
-			p.SetState(36)
+			p.SetState(47)
 			p.String_()
 		}
-		p.SetState(38)
+		p.SetState(49)
 		p.GetErrorHandler().Sync(p)
-		if p.HasError() {
-			goto errorExit
-		}
-		_la = p.GetTokenStream().LA(1)
 
-		if _la == ConfigParserWHITESPACE {
+		if p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 9, p.GetParserRuleContext()) == 1 {
 			{
-				p.SetState(37)
+				p.SetState(48)
 				p.Match(ConfigParserWHITESPACE)
 				if p.HasError() {
 					// Recognition error - abort rule
@@ -652,9 +731,11 @@ func (p *ConfigParser) LeadingComment() (localctx ILeadingCommentContext) {
 				}
 			}
 
+		} else if p.HasError() { // JIM
+			goto errorExit
 		}
 
-		p.SetState(42)
+		p.SetState(53)
 		p.GetErrorHandler().Sync(p)
 		if p.HasError() {
 			goto errorExit
@@ -762,7 +843,7 @@ func (p *ConfigParser) Key() (localctx IKeyContext) {
 	p.EnterRule(localctx, 6, ConfigParserRULE_key)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(44)
+		p.SetState(55)
 		p.String_()
 	}
 
@@ -854,7 +935,7 @@ func (p *ConfigParser) Separator() (localctx ISeparatorContext) {
 	p.EnterRule(localctx, 8, ConfigParserRULE_separator)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(46)
+		p.SetState(57)
 		p.Match(ConfigParserEQUAL)
 		if p.HasError() {
 			// Recognition error - abort rule
@@ -962,7 +1043,7 @@ func (p *ConfigParser) Value() (localctx IValueContext) {
 	p.EnterRule(localctx, 10, ConfigParserRULE_value)
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(48)
+		p.SetState(59)
 		p.String_()
 	}
 
@@ -988,7 +1069,10 @@ type IStringContext interface {
 
 	// Getter signatures
 	QUOTED_STRING() antlr.TerminalNode
-	STRING() antlr.TerminalNode
+	AllSTRING() []antlr.TerminalNode
+	STRING(i int) antlr.TerminalNode
+	AllWHITESPACE() []antlr.TerminalNode
+	WHITESPACE(i int) antlr.TerminalNode
 
 	// IsStringContext differentiates from other interfaces.
 	IsStringContext()
@@ -1030,8 +1114,20 @@ func (s *StringContext) QUOTED_STRING() antlr.TerminalNode {
 	return s.GetToken(ConfigParserQUOTED_STRING, 0)
 }
 
-func (s *StringContext) STRING() antlr.TerminalNode {
-	return s.GetToken(ConfigParserSTRING, 0)
+func (s *StringContext) AllSTRING() []antlr.TerminalNode {
+	return s.GetTokens(ConfigParserSTRING)
+}
+
+func (s *StringContext) STRING(i int) antlr.TerminalNode {
+	return s.GetToken(ConfigParserSTRING, i)
+}
+
+func (s *StringContext) AllWHITESPACE() []antlr.TerminalNode {
+	return s.GetTokens(ConfigParserWHITESPACE)
+}
+
+func (s *StringContext) WHITESPACE(i int) antlr.TerminalNode {
+	return s.GetToken(ConfigParserWHITESPACE, i)
 }
 
 func (s *StringContext) GetRuleContext() antlr.RuleContext {
@@ -1059,12 +1155,197 @@ func (p *ConfigParser) String_() (localctx IStringContext) {
 	p.EnterRule(localctx, 12, ConfigParserRULE_string)
 	var _la int
 
+	var _alt int
+
 	p.EnterOuterAlt(localctx, 1)
-	{
-		p.SetState(50)
+	p.SetState(73)
+	p.GetErrorHandler().Sync(p)
+	if p.HasError() {
+		goto errorExit
+	}
+
+	switch p.GetTokenStream().LA(1) {
+	case ConfigParserQUOTED_STRING:
+		{
+			p.SetState(61)
+			p.Match(ConfigParserQUOTED_STRING)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
+		}
+
+	case ConfigParserWHITESPACE, ConfigParserSTRING:
+		p.SetState(63)
+		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
 		_la = p.GetTokenStream().LA(1)
 
-		if !(_la == ConfigParserSTRING || _la == ConfigParserQUOTED_STRING) {
+		if _la == ConfigParserWHITESPACE {
+			{
+				p.SetState(62)
+				p.Match(ConfigParserWHITESPACE)
+				if p.HasError() {
+					// Recognition error - abort rule
+					goto errorExit
+				}
+			}
+
+		}
+		p.SetState(69)
+		p.GetErrorHandler().Sync(p)
+		if p.HasError() {
+			goto errorExit
+		}
+		_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 12, p.GetParserRuleContext())
+		if p.HasError() {
+			goto errorExit
+		}
+		for _alt != 2 && _alt != antlr.ATNInvalidAltNumber {
+			if _alt == 1 {
+				{
+					p.SetState(65)
+					p.Match(ConfigParserSTRING)
+					if p.HasError() {
+						// Recognition error - abort rule
+						goto errorExit
+					}
+				}
+				{
+					p.SetState(66)
+					p.Match(ConfigParserWHITESPACE)
+					if p.HasError() {
+						// Recognition error - abort rule
+						goto errorExit
+					}
+				}
+
+			}
+			p.SetState(71)
+			p.GetErrorHandler().Sync(p)
+			if p.HasError() {
+				goto errorExit
+			}
+			_alt = p.GetInterpreter().AdaptivePredict(p.BaseParser, p.GetTokenStream(), 12, p.GetParserRuleContext())
+			if p.HasError() {
+				goto errorExit
+			}
+		}
+		{
+			p.SetState(72)
+			p.Match(ConfigParserSTRING)
+			if p.HasError() {
+				// Recognition error - abort rule
+				goto errorExit
+			}
+		}
+
+	default:
+		p.SetError(antlr.NewNoViableAltException(p, nil, nil, nil, nil, nil))
+		goto errorExit
+	}
+
+errorExit:
+	if p.HasError() {
+		v := p.GetError()
+		localctx.SetException(v)
+		p.GetErrorHandler().ReportError(p, v)
+		p.GetErrorHandler().Recover(p, v)
+		p.SetError(nil)
+	}
+	p.ExitRule()
+	return localctx
+	goto errorExit // Trick to prevent compiler error if the label is not used
+}
+
+// ICommentSymbolContext is an interface to support dynamic dispatch.
+type ICommentSymbolContext interface {
+	antlr.ParserRuleContext
+
+	// GetParser returns the parser.
+	GetParser() antlr.Parser
+
+	// Getter signatures
+	HASH() antlr.TerminalNode
+	SEMICOLON() antlr.TerminalNode
+
+	// IsCommentSymbolContext differentiates from other interfaces.
+	IsCommentSymbolContext()
+}
+
+type CommentSymbolContext struct {
+	antlr.BaseParserRuleContext
+	parser antlr.Parser
+}
+
+func NewEmptyCommentSymbolContext() *CommentSymbolContext {
+	var p = new(CommentSymbolContext)
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = ConfigParserRULE_commentSymbol
+	return p
+}
+
+func InitEmptyCommentSymbolContext(p *CommentSymbolContext) {
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, nil, -1)
+	p.RuleIndex = ConfigParserRULE_commentSymbol
+}
+
+func (*CommentSymbolContext) IsCommentSymbolContext() {}
+
+func NewCommentSymbolContext(parser antlr.Parser, parent antlr.ParserRuleContext, invokingState int) *CommentSymbolContext {
+	var p = new(CommentSymbolContext)
+
+	antlr.InitBaseParserRuleContext(&p.BaseParserRuleContext, parent, invokingState)
+
+	p.parser = parser
+	p.RuleIndex = ConfigParserRULE_commentSymbol
+
+	return p
+}
+
+func (s *CommentSymbolContext) GetParser() antlr.Parser { return s.parser }
+
+func (s *CommentSymbolContext) HASH() antlr.TerminalNode {
+	return s.GetToken(ConfigParserHASH, 0)
+}
+
+func (s *CommentSymbolContext) SEMICOLON() antlr.TerminalNode {
+	return s.GetToken(ConfigParserSEMICOLON, 0)
+}
+
+func (s *CommentSymbolContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *CommentSymbolContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
+	return antlr.TreesStringTree(s, ruleNames, recog)
+}
+
+func (s *CommentSymbolContext) EnterRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(ConfigListener); ok {
+		listenerT.EnterCommentSymbol(s)
+	}
+}
+
+func (s *CommentSymbolContext) ExitRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(ConfigListener); ok {
+		listenerT.ExitCommentSymbol(s)
+	}
+}
+
+func (p *ConfigParser) CommentSymbol() (localctx ICommentSymbolContext) {
+	localctx = NewCommentSymbolContext(p, p.GetParserRuleContext(), p.GetState())
+	p.EnterRule(localctx, 14, ConfigParserRULE_commentSymbol)
+	var _la int
+
+	p.EnterOuterAlt(localctx, 1)
+	{
+		p.SetState(75)
+		_la = p.GetTokenStream().LA(1)
+
+		if !(_la == ConfigParserHASH || _la == ConfigParserSEMICOLON) {
 			p.GetErrorHandler().RecoverInline(p)
 		} else {
 			p.GetErrorHandler().ReportMatch(p)

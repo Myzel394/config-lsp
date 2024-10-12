@@ -29,6 +29,9 @@ type ConfigListener interface {
 	// EnterString is called when entering the string production.
 	EnterString(c *StringContext)
 
+	// EnterCommentSymbol is called when entering the commentSymbol production.
+	EnterCommentSymbol(c *CommentSymbolContext)
+
 	// ExitLineStatement is called when exiting the lineStatement production.
 	ExitLineStatement(c *LineStatementContext)
 
@@ -49,4 +52,7 @@ type ConfigListener interface {
 
 	// ExitString is called when exiting the string production.
 	ExitString(c *StringContext)
+
+	// ExitCommentSymbol is called when exiting the commentSymbol production.
+	ExitCommentSymbol(c *CommentSymbolContext)
 }

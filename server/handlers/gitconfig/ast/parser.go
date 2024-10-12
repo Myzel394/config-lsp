@@ -2,11 +2,15 @@ package ast
 
 import (
 	"config-lsp/common"
-	"config-lsp/utils"
+	"config-lsp/handlers/gitconfig/ast/parser"
+	"errors"
 	"regexp"
 	"strings"
 
 	"github.com/antlr4-go/antlr/v4"
+	"github.com/emirpasic/gods/maps/treemap"
+
+	gods "github.com/emirpasic/gods/utils"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
@@ -17,17 +21,20 @@ func NewGitConfig() *GitConfig {
 	return config
 }
 
-var commentPattern = regexp.MustCompile(`^\s*#`)
+var commentPattern = regexp.MustCompile(`^\s*[#;]`)
 var emptyLinePattern = regexp.MustCompile(`^\s*$`)
 var headerPattern = regexp.MustCompile(`^\s*\[`)
 
 func (c *GitConfig) Parse(input string) []common.LSPError {
-	errors := make([]common.LSPError, 0)
-	lines := utils.SplitIntoLines(input)
+	errs := make([]common.LSPError, 0)
+	lines := common.SplitIntoVirtualLines(input)
 	context := createListenerContext()
 
-	for rawLineNumber, line := range lines {
-		lineNumber := uint32(rawLineNumber)
+	for _, virtualLine := range lines {
+		lineNumber := uint32(virtualLine.Parts[0].Start.Line)
+		line := virtualLine.GetText()
+		context.line = lineNumber
+		context.virtualLine = virtualLine
 
 		if emptyLinePattern.MatchString(line) {
 			continue
@@ -40,15 +47,41 @@ func (c *GitConfig) Parse(input string) []common.LSPError {
 
 		if headerPattern.MatchString(line) {
 			c.parseHeader(context, line)
+
+			continue
 		}
 
-		errors = append(
-			errors,
+		if context.currentSection == nil {
+			if !context.isWaitingForNextSection {
+				context.isWaitingForNextSection = true
+
+				errs = append(errs, common.LSPError{
+					Range: common.LocationRange{
+						Start: common.Location{
+							Line:      lineNumber,
+							Character: 0,
+						},
+						End: common.Location{
+							Line:      lineNumber,
+							Character: uint32(len(line)),
+						},
+					},
+					Err: errors.New(`This section is missing a header (e.g. "[section]")`),
+				})
+			}
+
+			continue
+		}
+
+		context.isWaitingForNextSection = false
+
+		errs = append(
+			errs,
 			c.parseStatement(context, line)...,
 		)
 	}
 
-	return errors
+	return errs
 }
 
 func (c *GitConfig) parseHeader(
@@ -112,6 +145,26 @@ func (c *GitConfig) parseHeader(
 		}
 	}
 
+	location := common.LocationRange{
+		Start: common.Location{
+			Line:      context.line,
+			Character: uint32(leftBracketIndex),
+		},
+		End: common.Location{
+			Line:      context.line,
+			Character: uint32(rightBracketIndex + 1),
+		},
+	}
+	context.currentSection = &GitSection{
+		LocationRange: location,
+		Title: &GitSectionHeader{
+			LocationRange: location,
+			Title:         input[leftBracketIndex+1 : rightBracketIndex],
+		},
+		Entries: treemap.NewWith(gods.UInt32Comparator),
+	}
+	c.Sections = append(c.Sections, context.currentSection)
+
 	return nil
 }
 
@@ -145,4 +198,3 @@ func (c *GitConfig) parseStatement(
 
 	return errors
 }
-

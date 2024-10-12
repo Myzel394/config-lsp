@@ -1,15 +1,15 @@
 grammar Config;
 
 lineStatement
-    : entry EOF
+    : WHITESPACE? entry WHITESPACE? leadingComment? EOF
     ;
 
 entry
-    : WHITESPACE? key? separator? value? leadingComment?
+    : key? WHITESPACE? separator? WHITESPACE? value?
     ;
 
 leadingComment
-    : HASH WHITESPACE? (string WHITESPACE?)+
+    : commentSymbol WHITESPACE? (string WHITESPACE?)+
     ;
 
 key
@@ -25,7 +25,11 @@ value
     ;
 
 string
-    : (QUOTED_STRING | STRING)
+    : (QUOTED_STRING | (WHITESPACE? (STRING WHITESPACE)* STRING))
+    ;
+
+commentSymbol
+    : HASH | SEMICOLON
     ;
 
 ///////////////////////////////////////////////
@@ -38,12 +42,16 @@ HASH
     : '#'
     ;
 
+SEMICOLON
+    : ';'
+    ;
+
 WHITESPACE
     : [ \t]+
     ;
 
 STRING
-    : ~('#' | '\r' | '\n' | '"' | ' ' | '\t')+
+    : ~('\r' | '\n' | '"' | ' ' | '\t')+
     ;
 
 QUOTED_STRING

@@ -62,3 +62,9 @@ func (s *BaseConfigListener) EnterString(ctx *StringContext) {}
 
 // ExitString is called when production string is exited.
 func (s *BaseConfigListener) ExitString(ctx *StringContext) {}
+
+// EnterCommentSymbol is called when production commentSymbol is entered.
+func (s *BaseConfigListener) EnterCommentSymbol(ctx *CommentSymbolContext) {}
+
+// ExitCommentSymbol is called when production commentSymbol is exited.
+func (s *BaseConfigListener) ExitCommentSymbol(ctx *CommentSymbolContext) {}

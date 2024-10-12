@@ -7,21 +7,23 @@ import (
 )
 
 type gitconfigListenerContext struct {
-	line                uint32
-	currentSection        *GitSection
-	currentEntry *GitEntry
+	line                    uint32
+	currentSection          *GitSection
+	currentEntry            *GitEntry
+	isWaitingForNextSection bool
+	virtualLine             common.VirtualLine
 }
 
 func createListenerContext() *gitconfigListenerContext {
-	context := new(gitconfigListenerContext)
-
-	return context
+	return &gitconfigListenerContext{
+		isWaitingForNextSection: false,
+	}
 }
 
 type gitconfigParserListener struct {
 	*parser.BaseConfigListener
-	Config     *GitConfig
-	Errors     []common.LSPError
+	Config           *GitConfig
+	Errors           []common.LSPError
 	gitconfigContext *gitconfigListenerContext
 }
 
@@ -30,8 +32,8 @@ func createListener(
 	context *gitconfigListenerContext,
 ) gitconfigParserListener {
 	return gitconfigParserListener{
-		Config:     config,
-		Errors:     make([]common.LSPError, 0),
+		Config:           config,
+		Errors:           make([]common.LSPError, 0),
 		gitconfigContext: context,
 	}
 }
@@ -51,6 +53,10 @@ func (s *gitconfigParserListener) EnterEntry(ctx *parser.EntryContext) {
 }
 
 func (s *gitconfigParserListener) ExitEntry(ctx *parser.EntryContext) {
+	if s.gitconfigContext.currentEntry.Value != nil {
+		s.gitconfigContext.currentEntry.End = s.gitconfigContext.currentEntry.Value.Raw.End
+	}
+
 	s.gitconfigContext.currentEntry = nil
 }
 
@@ -63,7 +69,7 @@ func (s *gitconfigParserListener) EnterKey(ctx *parser.KeyContext) {
 
 	s.gitconfigContext.currentEntry.Key = &GitKey{
 		LocationRange: location,
-		Value: value,
+		Value:         value,
 	}
 }
 
@@ -76,7 +82,7 @@ func (s *gitconfigParserListener) EnterSeparator(ctx *parser.SeparatorContext) {
 
 	s.gitconfigContext.currentEntry.Separator = &GitSeparator{
 		LocationRange: location,
-		Value: value,
+		Value:         value,
 	}
 }
 
@@ -84,12 +90,18 @@ func (s *gitconfigParserListener) EnterValue(ctx *parser.ValueContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.gitconfigContext.line)
 
-	text := ctx.GetText()
-	value := commonparser.ParseRawString(text, commonparser.FullFeatures)
-
+	virtualLine := s.gitconfigContext.virtualLine.GetSubset(location.Start.Character, location.End.Character).AsTrimmed()
+	value := commonparser.ParseRawString(
+		virtualLine.GetText(),
+		commonparser.ParseFeatures{
+			ParseDoubleQuotes:      true,
+			TrimWhitespace:         false,
+			ParseEscapedCharacters: false,
+			Replacements:           &map[string]string{},
+		},
+	).Value
 	s.gitconfigContext.currentEntry.Value = &GitValue{
-		LocationRange: location,
+		Raw:   virtualLine,
 		Value: value,
 	}
 }
-

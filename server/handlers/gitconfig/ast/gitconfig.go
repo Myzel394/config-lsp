@@ -17,31 +17,35 @@ type GitSeparator struct {
 	Value parser.ParsedString
 }
 
-type GitValue struct {
+type GitValuePart struct {
 	common.LocationRange
 	Value parser.ParsedString
 }
 
+type GitValue struct {
+	Raw   common.VirtualLine
+	Value string
+}
+
 type GitEntry struct {
 	common.LocationRange
-	Key   *GitKey
+	Key       *GitKey
 	Separator *GitSeparator
-	Value *GitValue
+	Value     *GitValue
 }
 
 type GitSectionHeader struct {
 	common.LocationRange
-	Title *parser.ParsedString
+	Title string
 }
 
 type GitSection struct {
 	common.LocationRange
 	Entries *treemap.Map
-	Title *GitSectionHeader
+	Title   *GitSectionHeader
 }
 
 type GitConfig struct {
-	Sections []*GitSection
+	Sections     []*GitSection
 	CommentLines map[uint32]struct{}
 }
-
