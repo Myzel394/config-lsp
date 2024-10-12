@@ -133,50 +133,50 @@ how are you
 	}
 }
 
-func TestSplitIntoVirtualLinesIndentedExample(
-	t *testing.T,
-) {
-	// 4 spaces
-	input := utils.Dedent(`
-    Hello
-`)
-	expected := []VirtualLine{
-		{
-			LocationRange: LocationRange{
-				Start: Location{
-					Line:      0,
-					Character: 4,
-				},
-				End: Location{
-					Line:      0,
-					Character: 9,
-				},
-			},
-			Parts: []VirtualLinePart{
-				{
-					LocationRange: LocationRange{
-						Start: Location{
-							Line:      0,
-							Character: 4,
-						},
-						End: Location{
-							Line:      0,
-							Character: 9,
-						},
-					},
-					Text: "Hello",
-				},
-			},
-		},
-	}
-
-	actual := SplitIntoVirtualLines(input)
-
-	for index, line := range actual {
-		actual[index] = line.AsTrimmed()
-	}
-
-	if !cmp.Equal(expected, actual) {
-		t.Fatalf("Expected %v, got %v", expected, actual)
-	}
-}
+// func TestSplitIntoVirtualLinesIndentedExample(
+// 	t *testing.T,
+// ) {
+// 	// 4 spaces
+// 	input := utils.Dedent(`
+//     Hello
+// `)
+// 	expected := []VirtualLine{
+// 		{
+// 			LocationRange: LocationRange{
+// 				Start: Location{
+// 					Line:      0,
+// 					Character: 4,
+// 				},
+// 				End: Location{
+// 					Line:      0,
+// 					Character: 9,
+// 				},
+// 			},
+// 			Parts: []VirtualLinePart{
+// 				{
+// 					LocationRange: LocationRange{
+// 						Start: Location{
+// 							Line:      0,
+// 							Character: 4,
+// 						},
+// 						End: Location{
+// 							Line:      0,
+// 							Character: 9,
+// 						},
+// 					},
+// 					Text: "Hello",
+// 				},
+// 			},
+// 		},
+// 	}
+//
+// 	actual := SplitIntoVirtualLines(input)
+//
+// 	for index, line := range actual {
+// 		actual[index] = line.AsTrimmed()
+// 	}
+//
+// 	if !cmp.Equal(expected, actual) {
+// 		t.Fatalf("Expected %v, got %v", expected, actual)
+// 	}
+// }

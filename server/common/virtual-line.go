@@ -49,7 +49,8 @@ func (l VirtualLine) GetSubset(start uint32, end uint32) VirtualLine {
 			if end <= partEnd {
 				rangeEnd = end - partStart
 			} else {
-				rangeEnd = partEnd
+				// End of the part
+				rangeEnd = partEnd - partStart
 			}
 
 			parts = append(parts, VirtualLinePart{
@@ -100,27 +101,27 @@ func (l VirtualLine) ConvertRangeToTextRange(start uint32, end uint32) []Locatio
 	return ranges
 }
 
-func (l VirtualLine) AsTrimmed() VirtualLine {
-	if len(l.Parts) == 0 {
-		// There's nothing that could be trimmed, so we can also just
-		// return the original line, as it's identical
-		return l
-	}
-
-	parts := make([]VirtualLinePart, len(l.Parts))
-
-	for index, part := range l.Parts {
-		parts[index] = part.AsTrimmed()
-	}
-
-	return VirtualLine{
-		LocationRange: LocationRange{
-			Start: parts[0].Start,
-			End:   parts[len(parts)-1].End,
-		},
-		Parts: parts,
-	}
-}
+// func (l VirtualLine) AsTrimmed() VirtualLine {
+// 	if len(l.Parts) == 0 {
+// 		// There's nothing that could be trimmed, so we can also just
+// 		// return the original line, as it's identical
+// 		return l
+// 	}
+//
+// 	parts := make([]VirtualLinePart, len(l.Parts))
+//
+// 	for index, part := range l.Parts {
+// 		parts[index] = part.AsTrimmed()
+// 	}
+//
+// 	return VirtualLine{
+// 		LocationRange: LocationRange{
+// 			Start: parts[0].Start,
+// 			End:   parts[len(parts)-1].End,
+// 		},
+// 		Parts: parts,
+// 	}
+// }
 
 type VirtualLinePart struct {
 	// This is the true location of the text
@@ -129,34 +130,39 @@ type VirtualLinePart struct {
 	Text string
 }
 
-func (p VirtualLinePart) AsTrimmed() VirtualLinePart {
-	firstNonWhitespace := utils.FindFirstNonMatch(p.Text, UnicodeWhitespace, 0)
-
-	if firstNonWhitespace == -1 {
-		// Empty line
-		return p
-	}
-
-	lastNonWhitespace := utils.FindLastNonMatch(p.Text, UnicodeWhitespace, len(p.Text)-1)
-
-	if lastNonWhitespace == -1 {
-		lastNonWhitespace = len(p.Text) - 1
-	}
-
-	return VirtualLinePart{
-		LocationRange: LocationRange{
-			Start: Location{
-				Line:      p.Start.Line,
-				Character: p.Start.Character + uint32(firstNonWhitespace),
-			},
-			End: Location{
-				Line:      p.Start.Line,
-				Character: p.Start.Character + uint32(lastNonWhitespace) + 1,
-			},
-		},
-		Text: p.Text[firstNonWhitespace : lastNonWhitespace+1],
-	}
-}
+// func (p VirtualLinePart) AsTrimmed() VirtualLinePart {
+// 	firstNonWhitespace := utils.FindFirstNonMatch(p.Text, UnicodeWhitespace, 0)
+//
+// 	if firstNonWhitespace == -1 {
+// 		// Empty line
+// 		return p
+// 	}
+//
+// 	var text string
+// 	lastNonWhitespace := utils.FindLastNonMatch(p.Text, UnicodeWhitespace, len(p.Text)-1)
+//
+// 	// Allow one space at the end
+// 	if lastNonWhitespace == -1 {
+// 		lastNonWhitespace = len(p.Text) - 1
+// 		text = p.Text[firstNonWhitespace:]
+// 	} else {
+// 		text = p.Text[firstNonWhitespace : lastNonWhitespace+1]
+// 	}
+//
+// 	return VirtualLinePart{
+// 		LocationRange: LocationRange{
+// 			Start: Location{
+// 				Line:      p.Start.Line,
+// 				Character: p.Start.Character + uint32(firstNonWhitespace),
+// 			},
+// 			End: Location{
+// 				Line:      p.Start.Line,
+// 				Character: p.Start.Character + uint32(lastNonWhitespace) + 1,
+// 			},
+// 		},
+// 		Text: text,
+// 	}
+// }
 
 func SplitIntoVirtualLines(input string) []VirtualLine {
 	stringLines := utils.SplitIntoVirtualLines(input)

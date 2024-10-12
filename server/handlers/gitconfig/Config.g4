@@ -25,7 +25,7 @@ value
     ;
 
 string
-    : (QUOTED_STRING | (WHITESPACE? (STRING WHITESPACE)* STRING))
+    : (WHITESPACE? ((STRING | QUOTED_STRING) WHITESPACE)* (STRING | QUOTED_STRING))
     ;
 
 commentSymbol

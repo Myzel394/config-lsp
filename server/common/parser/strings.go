@@ -67,15 +67,21 @@ func TrimWhitespace(
 		)
 	}
 
-	value := raw
+	value := strings.TrimSpace(raw)
 	currentIndex := 0
 
 	for {
 		nextStart, found := findNextDoubleQuote(value, currentIndex)
 
 		if found {
-			part := value[:nextStart]
-			value = strings.TrimSpace(part) + value[nextStart:]
+			part := trimPattern.ReplaceAllString(
+				value[:nextStart],
+				" ",
+			)
+
+			value = modifyString(value, 0, nextStart, part)
+		} else {
+			break
 		}
 
 		nextEnd, found := findNextDoubleQuote(value, nextStart+1)
@@ -91,7 +97,7 @@ func TrimWhitespace(
 	if currentIndex < len(value) {
 		part := value[currentIndex:]
 
-		value = value[:currentIndex] + strings.TrimSpace(part)
+		value = modifyString(value, currentIndex, len(value), part)
 	}
 
 	return value

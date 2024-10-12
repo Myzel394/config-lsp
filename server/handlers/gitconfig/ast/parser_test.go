@@ -136,3 +136,39 @@ bare = false
 		t.Fatalf("Expected 1 error, got %d", len(errors))
 	}
 }
+
+func TestLeadingLine(t *testing.T) {
+	input := utils.Dedent(`
+[core]
+	command = git \
+		commit \
+		-m "Hello World"
+`)
+
+	config := NewGitConfig()
+	errors := config.Parse(input)
+
+	if len(errors) > 0 {
+		t.Fatalf("Expected no errors, got %v", errors)
+	}
+
+	if len(config.Sections) != 1 {
+		t.Fatalf("Expected 1 section, got %d", len(config.Sections))
+	}
+
+	section := config.Sections[0]
+
+	if !(section.Title.Title == "core") {
+		t.Errorf("Expected core, got %s", section.Title.Title)
+	}
+
+	rawFirstOption, _ := section.Entries.Get(uint32(1))
+	firstOption := rawFirstOption.(*GitEntry)
+	if !(firstOption.Key.Value.Value == "command" && firstOption.Value.Value == "git commit -m Hello World") {
+		t.Errorf("Expected command, got %s", firstOption.Key.Value.Value)
+	}
+
+	if !(firstOption.Value.Raw.Parts[0].Text == "git " && firstOption.Value.Raw.Parts[1].Text == "\t\tcommit " && firstOption.Value.Raw.Parts[2].Text == "\t\t-m \"Hello World\"") {
+		t.Errorf("Expected command, got %s", firstOption.Value.Raw.Parts)
+	}
+}

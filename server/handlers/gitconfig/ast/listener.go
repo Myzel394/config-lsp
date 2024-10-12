@@ -90,12 +90,12 @@ func (s *gitconfigParserListener) EnterValue(ctx *parser.ValueContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
 	location.ChangeBothLines(s.gitconfigContext.line)
 
-	virtualLine := s.gitconfigContext.virtualLine.GetSubset(location.Start.Character, location.End.Character).AsTrimmed()
+	virtualLine := s.gitconfigContext.virtualLine.GetSubset(location.Start.Character, location.End.Character)
 	value := commonparser.ParseRawString(
 		virtualLine.GetText(),
 		commonparser.ParseFeatures{
 			ParseDoubleQuotes:      true,
-			TrimWhitespace:         false,
+			TrimWhitespace:         true,
 			ParseEscapedCharacters: false,
 			Replacements:           &map[string]string{},
 		},
