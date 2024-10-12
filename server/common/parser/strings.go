@@ -1,16 +1,21 @@
 package parser
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+)
 
 type ParseFeatures struct {
 	ParseDoubleQuotes      bool
 	ParseEscapedCharacters bool
+	TrimWhitespace         bool
 	Replacements           *map[string]string
 }
 
 var FullFeatures = ParseFeatures{
 	ParseDoubleQuotes:      true,
 	ParseEscapedCharacters: true,
+	TrimWhitespace:         false,
 	Replacements:           &map[string]string{},
 }
 
@@ -29,6 +34,10 @@ func ParseRawString(
 		value = ParseReplacements(value, *features.Replacements)
 	}
 
+	if features.TrimWhitespace {
+		value = TrimWhitespace(value, features.ParseDoubleQuotes)
+	}
+
 	// Parse double quotes
 	if features.ParseDoubleQuotes {
 		value = ParseDoubleQuotes(value)
@@ -43,6 +52,49 @@ func ParseRawString(
 		Raw:   raw,
 		Value: value,
 	}
+}
+
+var trimPattern = regexp.MustCompile(`\s+`)
+
+func TrimWhitespace(
+	raw string,
+	respectDoubleQuotes bool,
+) string {
+	if !respectDoubleQuotes {
+		return trimPattern.ReplaceAllString(
+			strings.TrimSpace(raw),
+			" ",
+		)
+	}
+
+	value := raw
+	currentIndex := 0
+
+	for {
+		nextStart, found := findNextDoubleQuote(value, currentIndex)
+
+		if found {
+			part := value[:nextStart]
+			value = strings.TrimSpace(part) + value[nextStart:]
+		}
+
+		nextEnd, found := findNextDoubleQuote(value, nextStart+1)
+
+		if !found {
+			break
+		}
+
+		currentIndex = nextEnd + 1
+	}
+
+	// last part
+	if currentIndex < len(value) {
+		part := value[currentIndex:]
+
+		value = value[:currentIndex] + strings.TrimSpace(part)
+	}
+
+	return value
 }
 
 func ParseDoubleQuotes(
