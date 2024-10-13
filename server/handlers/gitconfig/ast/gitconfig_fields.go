@@ -1,6 +1,11 @@
 package ast
 
-import "slices"
+import (
+	"fmt"
+	"regexp"
+	"slices"
+	"strings"
+)
 
 func (c *GitConfig) Clear() {
 	c.Sections = []*GitSection{}
@@ -65,4 +70,34 @@ func (s *GitSection) FindOption(line uint32) *GitEntry {
 	}
 
 	return s.Entries[index]
+}
+
+var nonWhitespacePattern = regexp.MustCompile(`\S+`)
+var deprecatedSectionPattern = regexp.MustCompile(`.+?\..+`)
+
+func (t GitSectionTitle) NormalizedTitle() string {
+	entries := nonWhitespacePattern.FindAllString(string(t), -1)
+
+	if entries == nil {
+		return string(t)
+	}
+
+	if len(entries) == 1 {
+		title := entries[0]
+
+		dotEntries := strings.Split(title, ".")
+
+		if len(dotEntries) == 2 {
+			// Deprecated title format
+			return fmt.Sprintf(`%s "%s"`, strings.ToLower(dotEntries[0]), strings.ToLower(dotEntries[1]))
+		}
+
+		return strings.ToLower(title)
+	}
+
+	if len(entries) == 2 {
+		return fmt.Sprintf(`%s "%s"`, strings.ToLower(entries[0]), entries[1])
+	}
+
+	return string(t)
 }

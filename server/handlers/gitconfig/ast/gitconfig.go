@@ -32,9 +32,11 @@ type GitEntry struct {
 	Value     *GitValue
 }
 
+type GitSectionTitle string
+
 type GitSectionHeader struct {
 	common.LocationRange
-	Title string
+	Title GitSectionTitle
 }
 
 type GitSection struct {

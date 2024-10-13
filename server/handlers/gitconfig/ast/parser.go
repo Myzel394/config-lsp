@@ -157,7 +157,7 @@ func (c *GitConfig) parseHeader(
 		LocationRange: location,
 		Title: &GitSectionHeader{
 			LocationRange: location,
-			Title:         input[leftBracketIndex+1 : rightBracketIndex],
+			Title:         GitSectionTitle(input[leftBracketIndex+1 : rightBracketIndex]),
 		},
 		Entries: make([]*GitEntry, 0),
 	}
