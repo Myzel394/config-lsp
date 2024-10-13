@@ -46,10 +46,11 @@ func (s *gitconfigParserListener) EnterEntry(ctx *parser.EntryContext) {
 		LocationRange: location,
 	}
 
-	s.gitconfigContext.currentSection.Entries.Put(
-		location.Start.Line,
+	s.gitconfigContext.currentSection.Entries = append(
+		s.gitconfigContext.currentSection.Entries,
 		s.gitconfigContext.currentEntry,
 	)
+	s.gitconfigContext.currentSection.End = location.End
 }
 
 func (s *gitconfigParserListener) ExitEntry(ctx *parser.EntryContext) {

@@ -3,8 +3,6 @@ package ast
 import (
 	"config-lsp/common"
 	"config-lsp/common/parser"
-
-	"github.com/emirpasic/gods/maps/treemap"
 )
 
 type GitKey struct {
@@ -41,7 +39,10 @@ type GitSectionHeader struct {
 
 type GitSection struct {
 	common.LocationRange
-	Entries *treemap.Map
+
+	// This is a simple list because gitconfig supports multiline entries,
+	// and thus fetching by line number is not feasible
+	Entries []*GitEntry
 	Title   *GitSectionHeader
 }
 

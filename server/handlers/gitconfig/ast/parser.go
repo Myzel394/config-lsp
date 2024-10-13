@@ -8,9 +8,7 @@ import (
 	"strings"
 
 	"github.com/antlr4-go/antlr/v4"
-	"github.com/emirpasic/gods/maps/treemap"
 
-	gods "github.com/emirpasic/gods/utils"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
@@ -161,7 +159,7 @@ func (c *GitConfig) parseHeader(
 			LocationRange: location,
 			Title:         input[leftBracketIndex+1 : rightBracketIndex],
 		},
-		Entries: treemap.NewWith(gods.UInt32Comparator),
+		Entries: make([]*GitEntry, 0),
 	}
 	c.Sections = append(c.Sections, context.currentSection)
 

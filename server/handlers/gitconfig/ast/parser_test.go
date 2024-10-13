@@ -26,22 +26,31 @@ func TestValidOneSectionExample(t *testing.T) {
 
 	section := config.Sections[0]
 
-	rawFirstOption, _ := section.Entries.Get(uint32(1))
-	firstOption := rawFirstOption.(*GitEntry)
+	firstOption := section.Entries[0]
 	if !(firstOption.Key.Value.Value == "repositoryformatversion" && firstOption.Value.Value == "0") {
 		t.Errorf("Expected repositoryformatversion, got %s", firstOption.Key.Value.Value)
 	}
 
-	rawSecondOption, _ := section.Entries.Get(uint32(2))
-	secondOption := rawSecondOption.(*GitEntry)
+	secondOption := section.Entries[1]
 	if !(secondOption.Key.Value.Value == "filemode" && secondOption.Value.Value == "true") {
 		t.Errorf("Expected filemode, got %s", secondOption.Key.Value.Value)
 	}
 
-	rawThirdOption, _ := section.Entries.Get(uint32(3))
-	thirdOption := rawThirdOption.(*GitEntry)
+	thirdOption := section.Entries[2]
 	if !(thirdOption.Key.Value.Value == "bare" && thirdOption.Value.Value == "false") {
 		t.Errorf("Expected bare, got %s", thirdOption.Key.Value.Value)
+	}
+
+	foundSection, foundEntry := config.FindOption(1)
+
+	if !(foundSection == section && foundEntry == firstOption) {
+		t.Errorf("Expected first option, got %s", foundEntry.Key.Value.Value)
+	}
+
+	foundSection, foundEntry = config.FindOption(0)
+
+	if !(foundSection == section && foundEntry == nil) {
+		t.Errorf("Expected nil, got %s", foundEntry)
 	}
 }
 
@@ -81,19 +90,13 @@ func TestComplexExample(t *testing.T) {
 		t.Errorf("Expected core, got %s", section.Title.Title)
 	}
 
-	if !(section.Entries.Size() == 3) {
-		t.Errorf("Expected 3 entries, got %d", section.Entries.Size())
+	if !(len(section.Entries) == 3) {
+		t.Errorf("Expected 3 entries, got %d", len(section.Entries))
 	}
 
-	rawFirstOption, _ := section.Entries.Get(uint32(1))
-	firstOption := rawFirstOption.(*GitEntry)
+	firstOption := section.Entries[0]
 	if !(firstOption.Key.Value.Value == "repositoryformatversion" && firstOption.Value.Value == "0" && firstOption.Start.Line == 1 && firstOption.End.Line == 1 && firstOption.Start.Character == 4 && firstOption.End.Character == 31) {
 		t.Errorf("Expected 0, got %s", firstOption)
-	}
-
-	_, found := section.Entries.Get(uint32(3))
-	if found {
-		t.Errorf("Expected no entry at line 3")
 	}
 
 	section = config.Sections[1]
@@ -102,8 +105,8 @@ func TestComplexExample(t *testing.T) {
 		t.Errorf("Expected remote \"origin\", got %s", section.Title.Title)
 	}
 
-	if !(section.Entries.Size() == 2) {
-		t.Errorf("Expected 2 entries, got %d", section.Entries.Size())
+	if !(len(section.Entries) == 2) {
+		t.Errorf("Expected 2 entries, got %d", len(section.Entries))
 	}
 
 	section = config.Sections[2]
@@ -112,8 +115,7 @@ func TestComplexExample(t *testing.T) {
 		t.Errorf("Expected alias, got %s", section.Title.Title)
 	}
 
-	rawSecondOption, _ := section.Entries.Get(uint32(13))
-	secondOption := rawSecondOption.(*GitEntry)
+	secondOption := section.Entries[0]
 	if !(secondOption.Key.Value.Value == "ours" && secondOption.Value.Value == "!f() { git checkout --ours $@ && git add $@; }; f" && secondOption.Start.Character == 1 && secondOption.End.Character == 59) {
 		t.Errorf("Expected ours, got %s", secondOption.Key.Value.Value)
 	}
@@ -162,8 +164,7 @@ func TestLeadingLine(t *testing.T) {
 		t.Errorf("Expected core, got %s", section.Title.Title)
 	}
 
-	rawFirstOption, _ := section.Entries.Get(uint32(1))
-	firstOption := rawFirstOption.(*GitEntry)
+	firstOption := section.Entries[0]
 	if !(firstOption.Key.Value.Value == "command" && firstOption.Value.Value == "git commit -m Hello World") {
 		t.Errorf("Expected command, got %s", firstOption.Key.Value.Value)
 	}
