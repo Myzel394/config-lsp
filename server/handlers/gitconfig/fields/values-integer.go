@@ -68,17 +68,17 @@ func (v IntegerValue) DeprecatedFetchCompletions(line string, cursor uint32) []p
 			protocol.CompletionItem{
 				Label:         line + "k",
 				Kind:          &kind,
-				Documentation: fmt.Sprintf("scale %d by x1024", line),
+				Documentation: fmt.Sprintf("scale %s by x1024", line),
 			},
 			protocol.CompletionItem{
 				Label:         line + "m",
 				Kind:          &kind,
-				Documentation: fmt.Sprintf("scale %d by x1024x1024", line),
+				Documentation: fmt.Sprintf("scale %s by x1024x1024", line),
 			},
 			protocol.CompletionItem{
 				Label:         line + "g",
 				Kind:          &kind,
-				Documentation: fmt.Sprintf("scale %d by x1024x1024x1024", line),
+				Documentation: fmt.Sprintf("scale %s by x1024x1024x1024", line),
 			},
 		)
 	}

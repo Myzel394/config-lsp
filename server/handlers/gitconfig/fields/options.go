@@ -1,6 +1,9 @@
 package fields
 
-import docvalues "config-lsp/doc-values"
+import (
+	commondocumentation "config-lsp/common-documentation"
+	docvalues "config-lsp/doc-values"
+)
 
 var minusOne = -1
 var four = 4
@@ -220,7 +223,7 @@ completely verbatim using the -z option. The default value
 is true.`,
 			Value: docvalues.StringValue{},
 		},
-		// TODO: Add latger
+		// TODO: Show ignored if core.autocrlf
 		"eol": docvalues.DocumentationValue{
 			Documentation: `Sets the line ending type to use in the working directory for
 files that are marked as text (either by having the text
@@ -231,7 +234,23 @@ native line ending.  The default value is native.  See
 gitattributes[5] for more information on end-of-line
 conversion. Note that this value is ignored if core.autocrlf
 is set to true or input.`,
-			Value: docvalues.StringValue{},
+			Value: docvalues.EnumValue{
+				Values: []docvalues.EnumString{
+					docvalues.CreateEnumStringWithDoc(
+						"lf",
+						"This setting forces Git to normalize line endings to LF on checkin and prevents conversion to CRLF when the file is checked out.",
+					),
+					docvalues.CreateEnumStringWithDoc(
+						"crlf",
+						"This setting forces Git to normalize line endings for this file on checkin and convert them to CRLF when the file is checked out.",
+					),
+
+					docvalues.CreateEnumStringWithDoc(
+						"native",
+						"This uses the platform's native line ending.",
+					),
+				},
+			},
 		},
 		"safecrlf": docvalues.DocumentationValue{
 			Documentation: `If true, makes Git check if converting CRLF is reversible when
@@ -305,13 +324,12 @@ This variable can be set to input,
 in which case no output conversion is performed.`,
 			Value: BooleanField,
 		},
-		// TODO: Add later
 		"checkroundtripencoding": docvalues.DocumentationValue{
-			Documentation: `A comma and/or whitespace separated list of encodings that Git
-performs UTF-8 round trip checks on if they are used in an
-working-tree-encoding attribute (see gitattributes[5]).
-The default value is SHIFT-JIS.`,
-			Value: docvalues.StringValue{},
+			Documentation: "A comma and/or whitespace separated list of encodings that Git performs UTF-8 round trip checks on if they are used in an working-tree-encoding attribute (see gitattributes[5]). The default value is SHIFT-JIS.",
+			Value: docvalues.EnumValue{
+				Values:        commondocumentation.AvailableCharsets,
+				EnforceValues: true,
+			},
 		},
 		"symlinks": docvalues.DocumentationValue{
 			Documentation: `If false, symbolic links are checked out as small plain files that
