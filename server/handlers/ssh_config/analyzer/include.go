@@ -26,7 +26,7 @@ func analyzeIncludeValues(
 ) {
 	for _, include := range ctx.document.Indexes.Includes {
 		for _, value := range include.Values {
-			if isImpossibleToVerify(value.Value) {
+			if !canBeAnalyzed(value.Value) {
 				continue
 			}
 
@@ -47,20 +47,20 @@ func analyzeIncludeValues(
 
 // We can't evaluate environmental variables or tokens as we don't know the actual
 // values
-func isImpossibleToVerify(
+func canBeAnalyzed(
 	path string,
 ) bool {
 	if environmtalVariablePattern.MatchString(path) {
-		return true
+		return false
 	}
 
-	for _, token := range fields.AvailableTokens {
+	for token := range fields.AvailableTokens {
 		if strings.Contains(path, token) {
-			return true
+			return false
 		}
 	}
 
-	return false
+	return true
 }
 
 func createIncludePaths(
