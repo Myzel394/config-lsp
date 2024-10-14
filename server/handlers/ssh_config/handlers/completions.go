@@ -15,7 +15,7 @@ func GetRootCompletions(
 	d *sshconfig.SSHDocument,
 	parentBlock ast.SSHBlock,
 	suggestValue bool,
-) ([]protocol.CompletionItem, error) {
+) []protocol.CompletionItem {
 	kind := protocol.CompletionItemKindField
 
 	availableOptions := make(map[fields.NormalizedOptionName]docvalues.DocumentationValue, 0)
@@ -58,7 +58,7 @@ func GetRootCompletions(
 
 			return *completion
 		},
-	), nil
+	)
 }
 
 func GetOptionCompletions(
@@ -67,11 +67,11 @@ func GetOptionCompletions(
 	block ast.SSHBlock,
 	line uint32,
 	cursor common.CursorPosition,
-) ([]protocol.CompletionItem, error) {
+) []protocol.CompletionItem {
 	option, found := fields.Options[entry.Key.Key]
 
 	if !found {
-		return nil, nil
+		return nil
 	}
 
 	if entry.Key.Key == matchOption {
@@ -92,18 +92,48 @@ func GetOptionCompletions(
 	}
 
 	if entry.OptionValue == nil {
-		return option.DeprecatedFetchCompletions("", 0), nil
+		return option.DeprecatedFetchCompletions("", 0)
 	}
+
+	// token completions
+	completions := getTokenCompletions(entry, cursor)
 
 	// Hello wo|rld
 	lineValue := entry.OptionValue.Value.Raw
 	// NEW: docvalues index
-	return option.DeprecatedFetchCompletions(
+	completions = append(completions, option.DeprecatedFetchCompletions(
 		lineValue,
 		common.DeprecatedImprovedCursorToIndex(
 			cursor,
 			lineValue,
 			entry.OptionValue.Start.Character,
 		),
-	), nil
+	)...)
+
+	return completions
+}
+
+func getTokenCompletions(
+	entry *ast.SSHOption,
+	cursor common.CursorPosition,
+) []protocol.CompletionItem {
+	completions := make([]protocol.CompletionItem, 0)
+	index := common.CursorToCharacterIndex(uint32(cursor))
+
+	if entry.Value.Raw[index] == '%' {
+		if tokens, found := fields.OptionsTokensMap[entry.Key.Key]; found {
+			for _, token := range tokens {
+				description := fields.AvailableTokens[token]
+				kind := protocol.CompletionItemKindConstant
+
+				completions = append(completions, protocol.CompletionItem{
+					Label:         token,
+					Kind:          &kind,
+					Documentation: description,
+				})
+			}
+		}
+	}
+
+	return completions
 }

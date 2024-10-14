@@ -15,7 +15,7 @@ func getTagCompletions(
 	line uint32,
 	cursor common.CursorPosition,
 	entry *ast.SSHOption,
-) ([]protocol.CompletionItem, error) {
+) []protocol.CompletionItem {
 	completions := make([]protocol.CompletionItem, 0)
 
 	for name, info := range d.Indexes.Tags {
@@ -35,7 +35,7 @@ func getTagCompletions(
 		})
 	}
 
-	return completions, nil
+	return completions
 }
 
 func renderMatchBlock(

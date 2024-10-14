@@ -28,7 +28,7 @@ func analyzeTokens(
 			tokens = []string{}
 		}
 
-		disallowedTokens := utils.Without(fields.AvailableTokens, tokens)
+		disallowedTokens := utils.Without(utils.KeysOfMap(fields.AvailableTokens), tokens)
 
 		for _, token := range disallowedTokens {
 			if strings.Contains(text, token) {

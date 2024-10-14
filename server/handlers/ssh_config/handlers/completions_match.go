@@ -14,12 +14,12 @@ func getMatchCompletions(
 	d *sshconfig.SSHDocument,
 	cursor common.CursorPosition,
 	match *matchparser.Match,
-) ([]protocol.CompletionItem, error) {
+) []protocol.CompletionItem {
 	if match == nil || len(match.Entries) == 0 {
 		completions := getMatchCriteriaCompletions()
 		completions = append(completions, getMatchAllKeywordCompletion())
 
-		return completions, nil
+		return completions
 	}
 
 	entry := match.GetEntryAtPosition(cursor)
@@ -39,10 +39,10 @@ func getMatchCompletions(
 			completions = append(completions, getMatchAllKeywordCompletion())
 		}
 
-		return completions, nil
+		return completions
 	}
 
-	return getMatchValueCompletions(entry, cursor), nil
+	return getMatchValueCompletions(entry, cursor)
 }
 
 func getMatchCriteriaCompletions() []protocol.CompletionItem {

@@ -34,7 +34,7 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 			block,
 			// Empty line, or currently typing a new key
 			option == nil || isEmptyPattern.Match([]byte(option.Value.Raw[cursor:])),
-		)
+		), nil
 	}
 
 	if option.Separator != nil && option.OptionValue.IsPositionAfterStart(cursor) {
@@ -44,7 +44,7 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 			block,
 			line,
 			cursor,
-		)
+		), nil
 	}
 
 	return nil, nil
