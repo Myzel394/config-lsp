@@ -54,6 +54,32 @@ func TestStringsMultipleQuotesFullFeatures(
 	}
 }
 
+func TestTrimWhitespaceNoQuotes(
+	t *testing.T,
+) {
+	input := "  hello    world  "
+	expected := "hello world"
+
+	actual := TrimWhitespace(input, false)
+
+	if expected != actual {
+		t.Errorf("Expected %v, got %v", expected, actual)
+	}
+}
+
+func TestTrimWhitespaceQuotes(
+	t *testing.T,
+) {
+	input := `  "hello    world"  `
+	expected := `"hello    world"`
+
+	actual := TrimWhitespace(input, true)
+
+	if expected != actual {
+		t.Errorf("Expected %v, got %v", expected, actual)
+	}
+}
+
 func TestStringsSimpleEscapedFullFeatures(
 	t *testing.T,
 ) {

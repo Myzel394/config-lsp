@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
 	"config-lsp/handlers/wireguard/fields"
 	"config-lsp/handlers/wireguard/parser"
 	"config-lsp/utils"
-	protocol "github.com/tliron/glsp/protocol_3_16"
 	"maps"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func getHeaderCompletion(name string, documentation string) protocol.CompletionItem {
@@ -154,7 +156,7 @@ func GetCompletionsForSectionPropertyLine(
 		}
 	}
 
-	relativeCursor := character - property.Value.Location.Start
+	relativeCursor := common.CursorToCharacterIndex(character - property.Value.Location.Start)
 
 	return option.DeprecatedFetchCompletions(property.Value.Value, relativeCursor), nil
 }
