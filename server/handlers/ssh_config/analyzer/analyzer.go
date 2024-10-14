@@ -35,6 +35,25 @@ func Analyze(
 
 	d.Indexes = i
 
+	analyzeIncludeValues(ctx)
+
+	if len(ctx.diagnostics) == 0 {
+		for _, include := range d.Indexes.Includes {
+			for _, value := range include.Values {
+				for _, path := range value.Paths {
+					_, err := parseFile(string(path))
+
+					if err != nil {
+						ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+							Range:   value.LocationRange.ToLSPRange(),
+							Message: err.Error(),
+						})
+					}
+				}
+			}
+		}
+	}
+
 	analyzeValuesAreValid(ctx)
 	analyzeIgnoreUnknownHasNoUnnecessary(ctx)
 	analyzeDependents(ctx)

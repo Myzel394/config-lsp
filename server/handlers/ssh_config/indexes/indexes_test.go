@@ -173,3 +173,48 @@ Match tagged myuser
 		t.Errorf("Expected first tag import to be 'good_ip', but got %v", indexes.TagImports)
 	}
 }
+
+func TestIncludeExample(
+	t *testing.T,
+) {
+	input := utils.Dedent(`
+PermitRootLogin yes
+Include /etc/ssh/sshd_config.d/*.conf hello_world
+`)
+	config := ast.NewSSHConfig()
+	errors := config.Parse(input)
+
+	if len(errors) > 0 {
+		t.Fatalf("Expected no errors, but got %v", len(errors))
+	}
+
+	indexes, errors := CreateIndexes(*config)
+
+	if len(errors) > 0 {
+		t.Fatalf("Expected no errors, but got %v", len(errors))
+	}
+
+	if !(len(indexes.Includes) == 1) {
+		t.Fatalf("Expected 1 include, but got %v", len(indexes.Includes))
+	}
+
+	if !(len(indexes.Includes[1].Values) == 2) {
+		t.Fatalf("Expected 2 include path, but got %v", len(indexes.Includes[1].Values))
+	}
+
+	if !(indexes.Includes[1].Values[0].Value == "/etc/ssh/sshd_config.d/*.conf" &&
+		indexes.Includes[1].Values[0].Start.Line == 1 &&
+		indexes.Includes[1].Values[0].End.Line == 1 &&
+		indexes.Includes[1].Values[0].Start.Character == 8 &&
+		indexes.Includes[1].Values[0].End.Character == 37) {
+		t.Errorf("Expected '/etc/ssh/sshd_config.d/*.conf' on line 1, but got %v on line %v", indexes.Includes[1].Values[0].Value, indexes.Includes[1].Values[0].Start.Line)
+	}
+
+	if !(indexes.Includes[1].Values[1].Value == "hello_world" &&
+		indexes.Includes[1].Values[1].Start.Line == 1 &&
+		indexes.Includes[1].Values[1].End.Line == 1 &&
+		indexes.Includes[1].Values[1].Start.Character == 38 &&
+		indexes.Includes[1].Values[1].End.Character == 49) {
+		t.Errorf("Expected 'hello_world' on line 1, but got %v on line %v", indexes.Includes[1].Values[1].Value, indexes.Includes[1].Values[1].Start.Line)
+	}
+}

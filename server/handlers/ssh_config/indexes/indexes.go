@@ -44,7 +44,7 @@ type SSHIndexTagInfo struct {
 type SSHIndexes struct {
 	AllOptionsPerName map[fields.NormalizedOptionName](map[ast.SSHBlock]([]*ast.SSHOption))
 
-	Includes []*SSHIndexIncludeLine
+	Includes map[uint32]*SSHIndexIncludeLine
 
 	BlockRanges map[uint32]ast.SSHBlock
 
@@ -57,6 +57,8 @@ type SSHIndexes struct {
 	// This is a map of <line> to <option>
 	UnknownOptions map[uint32]ast.AllOptionInfo
 
-	Tags       map[string]SSHIndexTagInfo
+	// Map of available tags
+	Tags map[string]SSHIndexTagInfo
+	// Map of <Tag name> to <option per block>
 	TagImports map[string](map[ast.SSHBlock]*ast.SSHOption)
 }

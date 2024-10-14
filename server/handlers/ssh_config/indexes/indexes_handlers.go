@@ -15,7 +15,7 @@ var whitespacePattern = regexp.MustCompile(`\S+`)
 func NewSSHIndexes() *SSHIndexes {
 	return &SSHIndexes{
 		AllOptionsPerName: make(map[fields.NormalizedOptionName](map[ast.SSHBlock]([]*ast.SSHOption))),
-		Includes:          make([]*SSHIndexIncludeLine, 0),
+		Includes:          make(map[uint32]*SSHIndexIncludeLine),
 		IgnoredOptions:    make(map[ast.SSHBlock]SSHIndexIgnoredUnknowns),
 		UnknownOptions:    make(map[uint32]ast.AllOptionInfo),
 		Tags:              make(map[string]SSHIndexTagInfo),
