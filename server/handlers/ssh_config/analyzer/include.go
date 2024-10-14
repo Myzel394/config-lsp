@@ -12,17 +12,44 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 var whitespacePattern = regexp.MustCompile(`\S+`)
+var environmtalVariablePattern = regexp.MustCompile(`\${.+?}`)
+var availableTokens = []string{
+	"%%",
+	"%C",
+	"%d",
+	"%f",
+	"%H",
+	"%h",
+	"%l",
+	"%i",
+	"%j",
+	"%K",
+	"%k",
+	"%L",
+	"%l",
+	"%n",
+	"%p",
+	"%r",
+	"%T",
+	"%t",
+	"%u",
+}
 
 func analyzeIncludeValues(
 	ctx *analyzerContext,
 ) {
 	for _, include := range ctx.document.Indexes.Includes {
 		for _, value := range include.Values {
+			if isImpossibleToVerify(value.Value) {
+				continue
+			}
+
 			validPaths, err := createIncludePaths(value.Value)
 
 			if err != nil {
@@ -38,6 +65,24 @@ func analyzeIncludeValues(
 	}
 }
 
+// We can't evaluate environmental variables or tokens as we don't know the actual
+// values
+func isImpossibleToVerify(
+	path string,
+) bool {
+	if environmtalVariablePattern.MatchString(path) {
+		return true
+	}
+
+	for _, token := range availableTokens {
+		if strings.Contains(path, token) {
+			return true
+		}
+	}
+
+	return false
+}
+
 func createIncludePaths(
 	suggestedPath string,
 ) ([]indexes.ValidPath, error) {
@@ -45,6 +90,14 @@ func createIncludePaths(
 
 	if path.IsAbs(suggestedPath) {
 		absolutePath = suggestedPath
+	} else if strings.HasPrefix(suggestedPath, "~") {
+		homeFolder, err := os.UserHomeDir()
+
+		if err != nil {
+			return nil, errors.New(fmt.Sprintf("Could not find home folder (error: %s)", err))
+		}
+
+		absolutePath = path.Join(homeFolder, suggestedPath[1:])
 	} else {
 		homeFolder, err := os.UserHomeDir()
 
