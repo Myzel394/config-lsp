@@ -1,4 +1,4 @@
-package fstabdocumentation
+package fields
 
 import (
 	commondocumentation "config-lsp/common-documentation"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var mountOptionsExtractor = func(value string) string {
+var MountOptionsExtractor = func(value string) string {
 	separatorIndex := strings.Index(value, "=")
 
 	if separatorIndex == -1 {
@@ -17,7 +17,7 @@ var mountOptionsExtractor = func(value string) string {
 }
 
 // From https://www.man7.org/linux/man-pages/man8/mount.8.html
-var defaultOptions = []docvalues.EnumString{
+var DefaultOptions = []docvalues.EnumString{
 	// Default options
 	docvalues.CreateEnumStringWithDoc(
 		"async",
@@ -38,22 +38,6 @@ var defaultOptions = []docvalues.EnumString{
 	docvalues.CreateEnumStringWithDoc(
 		"noauto",
 		"Can only be mounted explicitly (i.e., the -a option will not cause the filesystem to be mounted).",
-	),
-	docvalues.CreateEnumStringWithDoc(
-		"context",
-		"The context= option is useful when mounting filesystems that do not support extended attributes, such as a floppy or hard disk formatted with VFAT, or systems that are not normally running under SELinux, such as an ext3 or ext4 formatted disk from a non-SELinux workstation. You can also use context= on filesystems you do not trust, such as a floppy. It also helps in compatibility with xattr-supporting filesystems on earlier 2.4.<x> kernel versions. Even where xattrs are supported, you can save time not having to label every file by assigning the entire disk one security context.",
-	),
-	docvalues.CreateEnumStringWithDoc(
-		"fscontext",
-		"The fscontext= option works for all filesystems, regardless of their xattr support. The fscontext option sets the overarching filesystem label to a specific security context. This filesystem label is separate from the individual labels on the files. It represents the entire filesystem for certain kinds of permission checks, such as during mount or file creation. Individual file labels are still obtained from the xattrs on the files themselves. The context option actually sets the aggregate context that fscontext provides, in addition to supplying the same label for individual files.",
-	),
-	docvalues.CreateEnumStringWithDoc(
-		"defcontext",
-		"You can set the default security context for unlabeled files using defcontext= option. This overrides the value set for unlabeled files in the policy and requires a filesystem that supports xattr labeling.",
-	),
-	docvalues.CreateEnumStringWithDoc(
-		"rootcontext",
-		"The rootcontext= option allows you to explicitly label the root inode of a FS being mounted before that FS or inode becomes visible to userspace. This was found to be useful for things like stateless Linux. The special value @target can be used to assign the current context of the target mountpoint location.",
 	),
 	docvalues.CreateEnumStringWithDoc(
 		"defaults",
@@ -193,13 +177,13 @@ var defaultOptions = []docvalues.EnumString{
 	),
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.automount",
-        `An automount unit will be created for the file system. See systemd.automount(5) for details.
+		`An automount unit will be created for the file system. See systemd.automount(5) for details.
 
 Added in version 215.`,
 	),
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.makefs",
-        `The file system will be initialized on the device. If the device is not "empty", i.e. it contains any signature, the operation will be skipped. It is hence expected that this option remains set even after the device has been initialized.
+		`The file system will be initialized on the device. If the device is not "empty", i.e. it contains any signature, the operation will be skipped. It is hence expected that this option remains set even after the device has been initialized.
 
 Note that this option can only be used in /etc/fstab, and will be ignored when part of the Options= setting in a unit file.
 
@@ -211,7 +195,7 @@ Added in version 236.`,
 	),
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.growfs",
-        `The file system will be grown to occupy the full block device. If the file system is already at maximum size, no action will be performed. It is hence expected that this option remains set even after the file system has been grown. Only certain file system types are supported, see systemd-makefs@.service(8) for details.
+		`The file system will be grown to occupy the full block device. If the file system is already at maximum size, no action will be performed. It is hence expected that this option remains set even after the file system has been grown. Only certain file system types are supported, see systemd-makefs@.service(8) for details.
 
 Note that this option can only be used in /etc/fstab, and will be ignored when part of the Options= setting in a unit file.
 
@@ -219,7 +203,7 @@ Added in version 236.`,
 	),
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.pcrfs",
-        `Measures file system identity information (mount point, type, label, UUID, partition label, partition UUID) into PCR 15 after the file system has been mounted. This ensures the systemd-pcrfs@.service(8) or systemd-pcrfs-root.service services are pulled in by the mount unit.
+		`Measures file system identity information (mount point, type, label, UUID, partition label, partition UUID) into PCR 15 after the file system has been mounted. This ensures the systemd-pcrfs@.service(8) or systemd-pcrfs-root.service services are pulled in by the mount unit.
 
 Note that this option can only be used in /etc/fstab, and will be ignored when part of the Options= setting in a unit file. It is also implied for the root and /usr/ partitions discovered by systemd-gpt-auto-generator(8).
 
@@ -227,13 +211,13 @@ Added in version 253.`,
 	),
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.rw-only",
-        `If a mount operation fails to mount the file system read-write, it normally tries mounting the file system read-only instead. This option disables that behaviour, and causes the mount to fail immediately instead. This option is translated into the ReadWriteOnly= setting in a unit file.
+		`If a mount operation fails to mount the file system read-write, it normally tries mounting the file system read-only instead. This option disables that behaviour, and causes the mount to fail immediately instead. This option is translated into the ReadWriteOnly= setting in a unit file.
 
 Added in version 246.`,
 	),
 	docvalues.CreateEnumStringWithDoc(
 		"x-initrd.mount",
-        `An additional filesystem to be mounted in the initrd. See initrd-fs.target description in systemd.special(7). This is both an indicator to the initrd to mount this partition early and an indicator to the host to leave the partition mounted until final shutdown. Or in other words, if this flag is set it is assumed the mount shall be active during the entire regular runtime of the system, i.e. established before the initrd transitions into the host all the way until the host transitions to the final shutdown phase.
+		`An additional filesystem to be mounted in the initrd. See initrd-fs.target description in systemd.special(7). This is both an indicator to the initrd to mount this partition early and an indicator to the host to leave the partition mounted until final shutdown. Or in other words, if this flag is set it is assumed the mount shall be active during the entire regular runtime of the system, i.e. established before the initrd transitions into the host all the way until the host transitions to the final shutdown phase.
 
 Added in version 215.`,
 	),
@@ -244,7 +228,7 @@ type assignOption struct {
 	Handler       func(context docvalues.KeyValueAssignmentContext) docvalues.DeprecatedValue
 }
 
-var defaultAssignOptions = map[docvalues.EnumString]docvalues.DeprecatedValue{
+var DefaultAssignOptions = map[docvalues.EnumString]docvalues.DeprecatedValue{
 	docvalues.CreateEnumStringWithDoc(
 		"context",
 		"The context= option is useful when mounting filesystems that do not support extended attributes, such as a floppy or hard disk formatted with VFAT, or systems that are not normally running under SELinux, such as an ext3 or ext4 formatted disk from a non-SELinux workstation. You can also use context= on filesystems you do not trust, such as a floppy. It also helps in compatibility with xattr-supporting filesystems on earlier 2.4.<x> kernel versions. Even where xattrs are supported, you can save time not having to label every file by assigning the entire disk one security context. A commonly used option for removable media is context=\"system_u:object_r:removable_t\".",
@@ -299,19 +283,19 @@ Added in version 245.`,
 	): docvalues.StringValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.wants-mounts-for",
-        `Configures a RequiresMountsFor= or WantsMountsFor= dependency between the created mount unit and other mount units. The argument must be an absolute path. This option may be specified more than once. See RequiresMountsFor= or WantsMountsFor= in systemd.unit(5) for details.
+		`Configures a RequiresMountsFor= or WantsMountsFor= dependency between the created mount unit and other mount units. The argument must be an absolute path. This option may be specified more than once. See RequiresMountsFor= or WantsMountsFor= in systemd.unit(5) for details.
 
 Added in version 220.`,
 	): docvalues.StringValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.requires-mounts-for",
-        `Configures a RequiresMountsFor= or WantsMountsFor= dependency between the created mount unit and other mount units. The argument must be an absolute path. This option may be specified more than once. See RequiresMountsFor= or WantsMountsFor= in systemd.unit(5) for details.
+		`Configures a RequiresMountsFor= or WantsMountsFor= dependency between the created mount unit and other mount units. The argument must be an absolute path. This option may be specified more than once. See RequiresMountsFor= or WantsMountsFor= in systemd.unit(5) for details.
 
 Added in version 220.`,
 	): docvalues.StringValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.device-bound",
-        `Takes a boolean argument. If true or no argument, a BindsTo= dependency on the backing device is set. If false, the mount unit is not stopped no matter whether the backing device is still present. This is useful when the file system is backed by volume managers. If not set, and the mount comes from unit fragments, i.e. generated from /etc/fstab by systemd-fstab-generator(8) or loaded from a manually configured mount unit, a combination of Requires= and StopPropagatedFrom= dependencies is set on the backing device. If doesn't, only Requires= is used.
+		`Takes a boolean argument. If true or no argument, a BindsTo= dependency on the backing device is set. If false, the mount unit is not stopped no matter whether the backing device is still present. This is useful when the file system is backed by volume managers. If not set, and the mount comes from unit fragments, i.e. generated from /etc/fstab by systemd-fstab-generator(8) or loaded from a manually configured mount unit, a combination of Requires= and StopPropagatedFrom= dependencies is set on the backing device. If doesn't, only Requires= is used.
 
 Added in version 233.`,
 	): docvalues.EnumValue{
@@ -323,13 +307,13 @@ Added in version 233.`,
 	},
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.idle-timeout",
-        `Configures the idle timeout of the automount unit. See TimeoutIdleSec= in systemd.automount(5) for details.
+		`Configures the idle timeout of the automount unit. See TimeoutIdleSec= in systemd.automount(5) for details.
 
 Added in version 220.`,
 	): docvalues.StringValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.device-timeout",
-        `Configure how long systemd should wait for a device to show up before giving up on an entry from /etc/fstab. Specify a time in seconds or explicitly append a unit such as "s", "min", "h", "ms".
+		`Configure how long systemd should wait for a device to show up before giving up on an entry from /etc/fstab. Specify a time in seconds or explicitly append a unit such as "s", "min", "h", "ms".
 
 Note that this option can only be used in /etc/fstab, and will be ignored when part of the Options= setting in a unit file.
 
@@ -337,7 +321,7 @@ Added in version 215.`,
 	): docvalues.StringValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"x-systemd.mount-timeout",
-        `Configure how long systemd should wait for the mount command to finish before giving up on an entry from /etc/fstab. Specify a time in seconds or explicitly append a unit such as "s", "min", "h", "ms".
+		`Configure how long systemd should wait for the mount command to finish before giving up on an entry from /etc/fstab. Specify a time in seconds or explicitly append a unit such as "s", "min", "h", "ms".
 
 Note that this option can only be used in /etc/fstab, and will be ignored when part of the Options= setting in a unit file.
 
@@ -345,130 +329,149 @@ See TimeoutSec= below for details.
 
 Added in version 233.`,
 	): docvalues.StringValue{},
+	docvalues.CreateEnumStringWithDoc(
+		"fscontext",
+		"The fscontext= option works for all filesystems, regardless of their xattr support. The fscontext option sets the overarching filesystem label to a specific security context. This filesystem label is separate from the individual labels on the files. It represents the entire filesystem for certain kinds of permission checks, such as during mount or file creation. Individual file labels are still obtained from the xattrs on the files themselves. The context option actually sets the aggregate context that fscontext provides, in addition to supplying the same label for individual files.",
+	): docvalues.StringValue{},
+	docvalues.CreateEnumStringWithDoc(
+		"defcontext",
+		"You can set the default security context for unlabeled files using defcontext= option. This overrides the value set for unlabeled files in the policy and requires a filesystem that supports xattr labeling.",
+	): docvalues.StringValue{},
 }
 
 func createMountOptionField(
 	options []docvalues.EnumString,
 	assignOption map[docvalues.EnumString]docvalues.DeprecatedValue,
 ) docvalues.DeprecatedValue {
-	dynamicOptions := docvalues.MergeKeyEnumAssignmentMaps(defaultAssignOptions, assignOption)
+	// dynamicOptions := docvalues.MergeKeyEnumAssignmentMaps(defaultAssignOptions, assignOption)
 
 	return docvalues.ArrayValue{
 		Separator:           ",",
-		DuplicatesExtractor: &mountOptionsExtractor,
+		DuplicatesExtractor: &MountOptionsExtractor,
 		SubValue: docvalues.OrValue{
 			Values: []docvalues.DeprecatedValue{
 				docvalues.KeyEnumAssignmentValue{
-					Values:          dynamicOptions,
+					Values:          assignOption,
 					ValueIsOptional: false,
 					Separator:       "=",
 				},
 				docvalues.EnumValue{
 					EnforceValues: true,
-					Values:        append(defaultOptions, options...),
+					Values:        options,
 				},
 			},
 		},
 	}
 }
 
-var DefaultMountOptionsField = createMountOptionField([]docvalues.EnumString{}, map[docvalues.EnumString]docvalues.DeprecatedValue{})
+type optionField struct {
+	Assignable map[docvalues.EnumString]docvalues.DeprecatedValue
+	Enums      []docvalues.EnumString
+}
 
-var MountOptionsMapField = map[string]docvalues.DeprecatedValue{
-	"adfs": createMountOptionField(
-		commondocumentation.AdfsDocumentationEnums,
-		commondocumentation.AdfsDocumentationAssignable,
-	),
-	"affs": createMountOptionField(
-		commondocumentation.AffsDocumentationEnums,
-		commondocumentation.AffsDocumentationAssignable,
-	),
-	"btrfs": createMountOptionField(
-		commondocumentation.BtrfsDocumentationEnums,
-		commondocumentation.BtrfsDocumentationAssignable,
-	),
-	"debugfs": createMountOptionField(
-		commondocumentation.DebugfsDocumentationEnums,
-		commondocumentation.DebugfsDocumentationAssignable,
-	),
-	"ext2": createMountOptionField(
-		commondocumentation.Ext2DocumentationEnums,
-		commondocumentation.Ext2DocumentationAssignable,
-	),
-	"ext3": createMountOptionField(
-		append(commondocumentation.Ext2DocumentationEnums, commondocumentation.Ext3DocumentationEnums...),
-		docvalues.MergeKeyEnumAssignmentMaps(commondocumentation.Ext2DocumentationAssignable, commondocumentation.Ext3DocumentationAssignable),
-	),
-	"ext4": createMountOptionField(
-		append(append(commondocumentation.Ext2DocumentationEnums, commondocumentation.Ext3DocumentationEnums...), commondocumentation.Ext4DocumentationEnums...),
-		docvalues.MergeKeyEnumAssignmentMaps(commondocumentation.Ext2DocumentationAssignable, docvalues.MergeKeyEnumAssignmentMaps(commondocumentation.Ext3DocumentationAssignable, commondocumentation.Ext4DocumentationAssignable)),
-	),
-	"devpts": createMountOptionField(
-		commondocumentation.DevptsDocumentationEnums,
-		commondocumentation.DevptsDocumentationAssignable,
-	),
-	"fat": createMountOptionField(
-		commondocumentation.FatDocumentationEnums,
-		commondocumentation.FatDocumentationAssignable,
-	),
-	"hfs": createMountOptionField(
-		commondocumentation.HfsDocumentationEnums,
-		commondocumentation.HfsDocumentationAssignable,
-	),
-	"hpfs": createMountOptionField(
-		commondocumentation.HpfsDocumentationEnums,
-		commondocumentation.HpfsDocumentationAssignable,
-	),
-	"iso9660": createMountOptionField(
-		commondocumentation.Iso9660DocumentationEnums,
-		commondocumentation.Iso9660DocumentationAssignable,
-	),
-	"jfs": createMountOptionField(
-		commondocumentation.JfsDocumentationEnums,
-		commondocumentation.JfsDocumentationAssignable,
-	),
-	"msdos": createMountOptionField(
-		commondocumentation.MsdosDocumentationEnums,
-		commondocumentation.MsdosDocumentationAssignable,
-	),
-	"ncpfs": createMountOptionField(
-		commondocumentation.NcpfsDocumentationEnums,
-		commondocumentation.NcpfsDocumentationAssignable,
-	),
-	"ntfs": createMountOptionField(
-		commondocumentation.NtfsDocumentationEnums,
-		commondocumentation.NtfsDocumentationAssignable,
-	),
-	"overlay": createMountOptionField(
-		commondocumentation.OverlayDocumentationEnums,
-		commondocumentation.OverlayDocumentationAssignable,
-	),
-	"reiserfs": createMountOptionField(
-		commondocumentation.ReiserfsDocumentationEnums,
-		commondocumentation.ReiserfsDocumentationAssignable,
-	),
-	"usbfs": createMountOptionField(
-		commondocumentation.UsbfsDocumentationEnums,
-		commondocumentation.UsbfsDocumentationAssignable,
-	),
-	"ubifs": createMountOptionField(
-		commondocumentation.UbifsDocumentationEnums,
-		commondocumentation.UbifsDocumentationAssignable,
-	),
-	"udf": createMountOptionField(
-		commondocumentation.UdfDocumentationEnums,
-		commondocumentation.UdfDocumentationAssignable,
-	),
-	"ufs": createMountOptionField(
-		commondocumentation.UfsDocumentationEnums,
-		commondocumentation.UfsDocumentationAssignable,
-	),
-	"umsdos": createMountOptionField(
-		commondocumentation.UmsdosDocumentationEnums,
-		commondocumentation.UmsdosDocumentationAssignable,
-	),
-	"vfat": createMountOptionField(
-		commondocumentation.VfatDocumentationEnums,
-		commondocumentation.VfatDocumentationAssignable,
-	),
+var DefaultMountOptionsField = createMountOptionField(DefaultOptions, DefaultAssignOptions)
+
+var MountOptionsMapField = map[string]optionField{
+	"adfs": {
+		Enums:      commondocumentation.AdfsDocumentationEnums,
+		Assignable: commondocumentation.AdfsDocumentationAssignable,
+	},
+	"affs": {
+		Enums:      commondocumentation.AffsDocumentationEnums,
+		Assignable: commondocumentation.AffsDocumentationAssignable,
+	},
+	"btrfs": {
+		Enums:      commondocumentation.BtrfsDocumentationEnums,
+		Assignable: commondocumentation.BtrfsDocumentationAssignable,
+	},
+	"debugfs": {
+		Enums:      commondocumentation.DebugfsDocumentationEnums,
+		Assignable: commondocumentation.DebugfsDocumentationAssignable,
+	},
+	"ext2": {
+		Enums:      commondocumentation.Ext2DocumentationEnums,
+		Assignable: commondocumentation.Ext2DocumentationAssignable,
+	},
+	"ext3": {
+		Enums:      append(commondocumentation.Ext2DocumentationEnums, commondocumentation.Ext3DocumentationEnums...),
+		Assignable: docvalues.MergeKeyEnumAssignmentMaps(commondocumentation.Ext2DocumentationAssignable, commondocumentation.Ext3DocumentationAssignable),
+	},
+	"ext4": {
+		Enums: append(
+			append(
+				commondocumentation.Ext2DocumentationEnums,
+				commondocumentation.Ext3DocumentationEnums...,
+			),
+			commondocumentation.Ext4DocumentationEnums...,
+		),
+		Assignable: docvalues.MergeKeyEnumAssignmentMaps(commondocumentation.Ext2DocumentationAssignable, docvalues.MergeKeyEnumAssignmentMaps(commondocumentation.Ext3DocumentationAssignable, commondocumentation.Ext4DocumentationAssignable)),
+	},
+	"devpts": {
+		Enums:      commondocumentation.DevptsDocumentationEnums,
+		Assignable: commondocumentation.DevptsDocumentationAssignable,
+	},
+	"fat": {
+		Enums:      commondocumentation.FatDocumentationEnums,
+		Assignable: commondocumentation.FatDocumentationAssignable,
+	},
+	"hfs": {
+		Enums:      commondocumentation.HfsDocumentationEnums,
+		Assignable: commondocumentation.HfsDocumentationAssignable,
+	},
+	"hpfs": {
+		Enums:      commondocumentation.HpfsDocumentationEnums,
+		Assignable: commondocumentation.HpfsDocumentationAssignable,
+	},
+	"iso9660": {
+		Enums:      commondocumentation.Iso9660DocumentationEnums,
+		Assignable: commondocumentation.Iso9660DocumentationAssignable,
+	},
+	"jfs": {
+		Enums:      commondocumentation.JfsDocumentationEnums,
+		Assignable: commondocumentation.JfsDocumentationAssignable,
+	},
+	"msdos": {
+		Enums:      commondocumentation.MsdosDocumentationEnums,
+		Assignable: commondocumentation.MsdosDocumentationAssignable,
+	},
+	"ncpfs": {
+		Enums:      commondocumentation.NcpfsDocumentationEnums,
+		Assignable: commondocumentation.NcpfsDocumentationAssignable,
+	},
+	"ntfs": {
+		Enums:      commondocumentation.NtfsDocumentationEnums,
+		Assignable: commondocumentation.NtfsDocumentationAssignable,
+	},
+	"overlay": {
+		Enums:      commondocumentation.OverlayDocumentationEnums,
+		Assignable: commondocumentation.OverlayDocumentationAssignable,
+	},
+	"reiserfs": {
+		Enums:      commondocumentation.ReiserfsDocumentationEnums,
+		Assignable: commondocumentation.ReiserfsDocumentationAssignable,
+	},
+	"usbfs": {
+		Enums:      commondocumentation.UsbfsDocumentationEnums,
+		Assignable: commondocumentation.UsbfsDocumentationAssignable,
+	},
+	"ubifs": {
+		Enums:      commondocumentation.UbifsDocumentationEnums,
+		Assignable: commondocumentation.UbifsDocumentationAssignable,
+	},
+	"udf": {
+		Enums:      commondocumentation.UdfDocumentationEnums,
+		Assignable: commondocumentation.UdfDocumentationAssignable,
+	},
+	"ufs": {
+		Enums:      commondocumentation.UfsDocumentationEnums,
+		Assignable: commondocumentation.UfsDocumentationAssignable,
+	},
+	"umsdos": {
+		Enums:      commondocumentation.UmsdosDocumentationEnums,
+		Assignable: commondocumentation.UmsdosDocumentationAssignable,
+	},
+	"vfat": {
+		Enums:      commondocumentation.VfatDocumentationEnums,
+		Assignable: commondocumentation.VfatDocumentationAssignable,
+	},
 }

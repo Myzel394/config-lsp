@@ -170,13 +170,14 @@ func (v KeyEnumAssignmentValue) DeprecatedFetchCompletions(line string, cursor u
 		return v.FetchEnumCompletions()
 	}
 
-	relativePosition, found := utils.FindPreviousCharacter(
+	foundPosition, found := utils.FindPreviousCharacter(
 		line,
 		v.Separator,
 		int(cursor),
 	)
 
 	if found {
+		relativePosition := max(1, foundPosition) - 1
 		selectedKey := line[:uint32(relativePosition)]
 		line = line[uint32(relativePosition+len(v.Separator)):]
 		cursor -= uint32(relativePosition)

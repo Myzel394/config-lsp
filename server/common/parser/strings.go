@@ -1,13 +1,17 @@
 package parser
 
+import "strings"
+
 type ParseFeatures struct {
 	ParseDoubleQuotes      bool
 	ParseEscapedCharacters bool
+	Replacements           *map[string]string
 }
 
 var FullFeatures = ParseFeatures{
 	ParseDoubleQuotes:      true,
 	ParseEscapedCharacters: true,
+	Replacements:           &map[string]string{},
 }
 
 type ParsedString struct {
@@ -20,6 +24,10 @@ func ParseRawString(
 	features ParseFeatures,
 ) ParsedString {
 	value := raw
+
+	if len(*features.Replacements) > 0 {
+		value = ParseReplacements(value, *features.Replacements)
+	}
 
 	// Parse double quotes
 	if features.ParseDoubleQuotes {
@@ -80,6 +88,19 @@ func ParseEscapedCharacters(
 		} else {
 			break
 		}
+	}
+
+	return value
+}
+
+func ParseReplacements(
+	raw string,
+	replacements map[string]string,
+) string {
+	value := raw
+
+	for key, replacement := range replacements {
+		value = strings.ReplaceAll(value, key, replacement)
 	}
 
 	return value

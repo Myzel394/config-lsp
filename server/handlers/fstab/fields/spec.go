@@ -1,4 +1,4 @@
-package fstabdocumentation
+package fields
 
 import (
 	docvalues "config-lsp/doc-values"
@@ -15,7 +15,7 @@ var LabelField = docvalues.RegexValue{
 var SpecField = docvalues.OrValue{
 	Values: []docvalues.DeprecatedValue{
 		docvalues.PathValue{
-			RequiredType: docvalues.PathTypeFile & docvalues.PathTypeExistenceOptional,
+			RequiredType: docvalues.PathTypeExistenceOptional,
 		},
 		docvalues.KeyEnumAssignmentValue{
 			Separator:       "=",

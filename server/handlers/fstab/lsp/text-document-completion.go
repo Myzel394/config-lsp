@@ -2,9 +2,9 @@ package lsp
 
 import (
 	"config-lsp/common"
-	fstabdocumentation "config-lsp/handlers/fstab/documentation"
+	"config-lsp/handlers/fstab/ast"
+	fstabdocumentation "config-lsp/handlers/fstab/fields"
 	"config-lsp/handlers/fstab/handlers"
-	"config-lsp/handlers/fstab/parser"
 	"config-lsp/handlers/fstab/shared"
 
 	"github.com/tliron/glsp"
@@ -12,9 +12,10 @@ import (
 )
 
 func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionParams) (any, error) {
-	p := shared.DocumentParserMap[params.TextDocument.URI]
+	d := shared.DocumentParserMap[params.TextDocument.URI]
+	cursor := common.LSPCharacterAsCursorPosition(params.Position.Character)
 
-	entry, found := p.GetEntry(params.Position.Line)
+	rawEntry, found := d.Config.Entries.Get(params.Position.Line)
 
 	if !found {
 		// Empty line, return spec completions
@@ -24,12 +25,7 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 		), nil
 	}
 
-	if entry.Type == parser.FstabEntryTypeComment {
-		return nil, nil
-	}
+	entry := rawEntry.(*ast.FstabEntry)
 
-	cursor := common.CursorToCharacterIndex(params.Position.Character)
-	line := entry.Line
-
-	return handlers.GetCompletion(line, cursor)
+	return handlers.GetCompletion(entry, cursor)
 }

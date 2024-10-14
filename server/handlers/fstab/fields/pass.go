@@ -1,4 +1,4 @@
-package fstabdocumentation
+package fields
 
 import docvalues "config-lsp/doc-values"
 

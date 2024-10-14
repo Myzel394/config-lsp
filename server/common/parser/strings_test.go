@@ -165,3 +165,25 @@ func TestStringsIncompleteQuotes3FullFeatures(
 		t.Errorf("Expected %v, got %v", expected, actual)
 	}
 }
+
+func TestStringsReplacements(
+	t *testing.T,
+) {
+	input := `Hello\\040World`
+	expected := ParsedString{
+		Raw:   input,
+		Value: `Hello World`,
+	}
+
+	actual := ParseRawString(input, ParseFeatures{
+		ParseDoubleQuotes:      true,
+		ParseEscapedCharacters: true,
+		Replacements: &map[string]string{
+			`\\040`: " ",
+		},
+	})
+
+	if !(cmp.Equal(expected, actual)) {
+		t.Errorf("Expected %v, got %v", expected, actual)
+	}
+}
