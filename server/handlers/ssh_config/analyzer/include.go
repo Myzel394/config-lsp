@@ -4,6 +4,7 @@ import (
 	"config-lsp/common"
 	sshconfig "config-lsp/handlers/ssh_config"
 	"config-lsp/handlers/ssh_config/ast"
+	"config-lsp/handlers/ssh_config/fields"
 	"config-lsp/handlers/ssh_config/indexes"
 	"config-lsp/utils"
 	"errors"
@@ -19,27 +20,6 @@ import (
 
 var whitespacePattern = regexp.MustCompile(`\S+`)
 var environmtalVariablePattern = regexp.MustCompile(`\${.+?}`)
-var availableTokens = []string{
-	"%%",
-	"%C",
-	"%d",
-	"%f",
-	"%H",
-	"%h",
-	"%l",
-	"%i",
-	"%j",
-	"%K",
-	"%k",
-	"%L",
-	"%l",
-	"%n",
-	"%p",
-	"%r",
-	"%T",
-	"%t",
-	"%u",
-}
 
 func analyzeIncludeValues(
 	ctx *analyzerContext,
@@ -74,7 +54,7 @@ func isImpossibleToVerify(
 		return true
 	}
 
-	for _, token := range availableTokens {
+	for _, token := range fields.AvailableTokens {
 		if strings.Contains(path, token) {
 			return true
 		}
