@@ -18,7 +18,7 @@ func GetRootCompletions(
 ) ([]protocol.CompletionItem, error) {
 	kind := protocol.CompletionItemKindField
 
-	availableOptions := make(map[string]docvalues.DocumentationValue, 0)
+	availableOptions := make(map[fields.NormalizedOptionName]docvalues.DocumentationValue, 0)
 
 	for key, option := range fields.Options {
 		var exists = false
@@ -43,7 +43,8 @@ func GetRootCompletions(
 
 	return utils.MapMapToSlice(
 		availableOptions,
-		func(name string, doc docvalues.DocumentationValue) protocol.CompletionItem {
+		func(normalizedName fields.NormalizedOptionName, doc docvalues.DocumentationValue) protocol.CompletionItem {
+			name := fields.FieldsNameFormattedMap[normalizedName]
 			completion := &protocol.CompletionItem{
 				Label:         name,
 				Kind:          &kind,
@@ -69,7 +70,8 @@ func GetOptionCompletions(
 	matchBlock *ast.SSHDMatchBlock,
 	cursor common.CursorPosition,
 ) ([]protocol.CompletionItem, error) {
-	option, found := fields.Options[entry.Key.Key]
+	key := fields.CreateNormalizedName(entry.Key.Key)
+	option, found := fields.Options[key]
 
 	if !found {
 		return nil, nil

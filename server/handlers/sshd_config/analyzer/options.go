@@ -40,7 +40,8 @@ func checkOption(
 	checkIsUsingDoubleQuotes(ctx, option.Key.Value, option.Key.LocationRange)
 	checkQuotesAreClosed(ctx, option.Key.Value, option.Key.LocationRange)
 
-	docOption, found := fields.Options[option.Key.Key]
+	key := fields.CreateNormalizedName(option.Key.Key)
+	docOption, found := fields.Options[key]
 
 	if !found {
 		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
@@ -52,7 +53,7 @@ func checkOption(
 		return
 	}
 
-	if _, found := fields.MatchAllowedOptions[option.Key.Key]; !found && isInMatchBlock {
+	if _, found := fields.MatchAllowedOptions[key]; !found && isInMatchBlock {
 		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 			Range:    option.Key.ToLSPRange(),
 			Message:  fmt.Sprintf("Option '%s' is not allowed inside Match blocks", option.Key.Key),

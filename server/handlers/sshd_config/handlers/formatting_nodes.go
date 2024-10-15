@@ -3,6 +3,7 @@ package handlers
 import (
 	"config-lsp/common/formatting"
 	"config-lsp/handlers/sshd_config/ast"
+	"config-lsp/handlers/sshd_config/fields"
 	"config-lsp/handlers/sshd_config/match-parser"
 	"config-lsp/utils"
 	"fmt"
@@ -30,6 +31,11 @@ func formatSSHDOption(
 
 	if option.Key != nil {
 		key = option.Key.Key
+		normalizedKey := fields.CreateNormalizedName(key)
+
+		if formattedName, found := fields.FieldsNameFormattedMap[normalizedKey]; found {
+			key = formattedName
+		}
 	} else {
 		key = ""
 	}

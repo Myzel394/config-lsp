@@ -1,11 +1,11 @@
 package fields
 
-var AllowedDuplicateOptions = map[string]struct{}{
-	"AllowGroups":   {},
-	"AllowUsers":    {},
-	"DenyGroups":    {},
-	"DenyUsers":     {},
-	"ListenAddress": {},
-	"Match":         {},
-	"Port":          {},
+var AllowedDuplicateOptions = map[NormalizedOptionName]struct{}{
+	"allowgroups":   {},
+	"allowusers":    {},
+	"denygroups":    {},
+	"denyusers":     {},
+	"listenaddress": {},
+	"match":         {},
+	"port":          {},
 }

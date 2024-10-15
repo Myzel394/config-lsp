@@ -17,22 +17,24 @@ func GetHoverInfoForOption(
 	index common.IndexPosition,
 ) (*protocol.Hover, error) {
 	var docValue *docvalues.DocumentationValue
+	key := fields.CreateNormalizedName(option.Key.Key)
 
 	// Either root level or in the line of a match block
 	if matchBlock == nil || matchBlock.Start.Line == line {
-		val := fields.Options[option.Key.Key]
+		val := fields.Options[key]
 		docValue = &val
 	} else {
-		if _, found := fields.MatchAllowedOptions[option.Key.Key]; found {
-			val := fields.Options[option.Key.Key]
+		if _, found := fields.MatchAllowedOptions[key]; found {
+			val := fields.Options[key]
 			docValue = &val
 		}
 	}
 
 	if option.Key.ContainsPosition(index) {
 		if docValue != nil {
+			name := fields.FieldsNameFormattedMap[key]
 			contents := []string{
-				"## " + option.Key.Key,
+				"## " + name,
 				"",
 			}
 			contents = append(contents, docValue.Documentation)

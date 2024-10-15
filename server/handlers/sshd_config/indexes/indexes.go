@@ -3,6 +3,7 @@ package indexes
 import (
 	"config-lsp/common"
 	"config-lsp/handlers/sshd_config/ast"
+	"config-lsp/handlers/sshd_config/fields"
 )
 
 type ValidPath string
@@ -33,7 +34,7 @@ type SSHDIndexIncludeLine struct {
 
 type SSHDIndexes struct {
 	// This is a map of `Option name` to a list of options with that name
-	AllOptionsPerName map[string](map[*ast.SSHDMatchBlock]([]*ast.SSHDOption))
+	AllOptionsPerName map[fields.NormalizedOptionName](map[*ast.SSHDMatchBlock]([]*ast.SSHDOption))
 
 	Includes map[uint32]*SSHDIndexIncludeLine
 }
