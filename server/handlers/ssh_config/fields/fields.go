@@ -98,6 +98,7 @@ var Options = map[NormalizedOptionName]docvalues.DocumentationValue{
 		Value: docvalues.ArrayValue{
 			Separator:           ",",
 			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+			RespectQuotes:       true,
 			SubValue:            docvalues.StringValue{},
 		},
 	},
@@ -127,6 +128,7 @@ rsa-sha2-512,rsa-sha2-256
 			SubValue: docvalues.ArrayValue{
 				Separator:           ",",
 				DuplicatesExtractor: &docvalues.DuplicatesAllowedExtractor,
+				RespectQuotes:       true,
 				// TODO: Add
 				SubValue: docvalues.StringValue{},
 			},
@@ -170,6 +172,7 @@ The default is not to expire channels of any type for inactivity.`,
 		Value: docvalues.ArrayValue{
 			Separator:           " ",
 			DuplicatesExtractor: &channelTimeoutExtractor,
+			RespectQuotes:       true,
 			SubValue: docvalues.KeyValueAssignmentValue{
 				ValueIsOptional: false,
 				Separator:       "=",
@@ -361,6 +364,7 @@ aes128-gcm@openssh.com,aes256-gcm@openssh.com
 		Value: docvalues.ArrayValue{
 			Separator:           " ",
 			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+			RespectQuotes:       true,
 			SubValue: docvalues.PathValue{
 				RequiredType: docvalues.PathTypeFile,
 			},
@@ -479,6 +483,7 @@ rsa-sha2-512,rsa-sha2-256
 		Value: docvalues.ArrayValue{
 			Separator:           " ",
 			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+			RespectQuotes:       true,
 			SubValue:            docvalues.StringValue{},
 		},
 	},
@@ -493,7 +498,9 @@ rsa-sha2-512,rsa-sha2-256
 					},
 				},
 				docvalues.ArrayValue{
-					Separator: " ",
+					Separator:           " ",
+					DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+					RespectQuotes:       true,
 					SubValue: docvalues.EnumValue{
 						EnforceValues: true,
 						Values: []docvalues.EnumString{
@@ -539,6 +546,7 @@ rsa-sha2-512,rsa-sha2-256
 		Value: docvalues.ArrayValue{
 			Separator:           ",",
 			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+			RespectQuotes:       true,
 			SubValue: docvalues.EnumValue{
 				EnforceValues: true,
 				Values: []docvalues.EnumString{
@@ -951,7 +959,9 @@ rsa-sha2-512,rsa-sha2-256
       ~/.ssh/known_hosts,
       ~/.ssh/known_hosts2.`,
 		Value: docvalues.ArrayValue{
-			Separator: " ",
+			Separator:           " ",
+			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+			RespectQuotes:       true,
 			SubValue: docvalues.PathValue{
 				RequiredType: docvalues.PathTypeFile,
 			},

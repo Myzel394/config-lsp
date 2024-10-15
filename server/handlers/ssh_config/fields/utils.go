@@ -31,6 +31,7 @@ func prefixPlusMinusCaret(values []docvalues.EnumString) docvalues.PrefixWithMea
 		SubValue: docvalues.ArrayValue{
 			Separator:           ",",
 			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+			RespectQuotes:       true,
 			SubValue: docvalues.EnumValue{
 				Values: values,
 			},

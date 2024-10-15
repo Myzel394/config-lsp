@@ -83,6 +83,9 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 					},
 				},
 				docvalues.ArrayValue{
+					Separator:           ",",
+					DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+					RespectQuotes:       true,
 					SubValue: docvalues.EnumValue{
 						EnforceValues: true,
 						Values: []docvalues.EnumString{
@@ -127,6 +130,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			SubValue:            docvalues.StringValue{},
 			Separator:           " ",
 			DuplicatesExtractor: &docvalues.DuplicatesAllowedExtractor,
+			RespectQuotes:       true,
 		},
 	},
 	"AuthorizedPrincipalsCommand": {
@@ -171,6 +175,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			SubValue: docvalues.ArrayValue{
 				Separator:           ",",
 				DuplicatesExtractor: &docvalues.DuplicatesAllowedExtractor,
+				RespectQuotes:       true,
 				// TODO: Add
 				SubValue: docvalues.StringValue{},
 			},
@@ -195,6 +200,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 		Value: docvalues.ArrayValue{
 			Separator:           " ",
 			DuplicatesExtractor: &channelTimeoutExtractor,
+			RespectQuotes:       true,
 			SubValue: docvalues.KeyValueAssignmentValue{
 				ValueIsOptional: false,
 				Separator:       "=",
@@ -392,6 +398,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 		Value: docvalues.ArrayValue{
 			Separator:           " ",
 			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+			RespectQuotes:       true,
 			SubValue:            docvalues.StringValue{},
 		},
 		// TODO: Add extra check
@@ -408,7 +415,9 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 					},
 				},
 				docvalues.ArrayValue{
-					Separator: " ",
+					Separator:           " ",
+					DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+					RespectQuotes:       true,
 					SubValue: docvalues.EnumValue{
 						EnforceValues: true,
 						Values: []docvalues.EnumString{
@@ -603,6 +612,7 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 		Value: docvalues.ArrayValue{
 			Separator:           " ",
 			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+			RespectQuotes:       true,
 			SubValue: docvalues.KeyValueAssignmentValue{
 				ValueIsOptional: true,
 				Key: docvalues.IPAddressValue{
@@ -637,6 +647,7 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 		Value: docvalues.ArrayValue{
 			Separator:           " ",
 			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+			RespectQuotes:       true,
 			SubValue: docvalues.KeyValueAssignmentValue{
 				ValueIsOptional: true,
 				Key: docvalues.OrValue{
@@ -722,6 +733,7 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 				docvalues.ArrayValue{
 					SubValue:            docvalues.StringValue{},
 					Separator:           ",",
+					RespectQuotes:       true,
 					DuplicatesExtractor: &docvalues.DuplicatesAllowedExtractor,
 				},
 			},
@@ -793,7 +805,9 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
  The verify-required option requires a FIDO key signature attest that the user was verified, e.g. via a PIN.
  Neither the touch-required or verify-required options have any effect for other, non-FIDO, public key types.`,
 		Value: docvalues.ArrayValue{
-			Separator: ",",
+			Separator:           ",",
+			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+			RespectQuotes:       true,
 			SubValue: docvalues.EnumValue{
 				EnforceValues: true,
 				Values: []docvalues.EnumString{
@@ -854,6 +868,7 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 		Value: docvalues.ArrayValue{
 			Separator:           " ",
 			DuplicatesExtractor: &setEnvExtractor,
+			RespectQuotes:       true,
 			SubValue: docvalues.KeyValueAssignmentValue{
 				ValueIsOptional: false,
 				Separator:       "=",
