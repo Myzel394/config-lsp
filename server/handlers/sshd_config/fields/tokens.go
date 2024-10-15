@@ -65,6 +65,7 @@ var OptionsTokensMap = map[NormalizedOptionName][]string{
 		"%U",
 		"%u",
 	},
+	// Routing domain is missing in the fields as it's not documented
 	"routingdomain": {
 		"%D",
 	},
