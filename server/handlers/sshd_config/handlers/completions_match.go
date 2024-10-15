@@ -12,21 +12,21 @@ func getMatchCompletions(
 	d *sshdconfig.SSHDDocument,
 	cursor common.CursorPosition,
 	match *matchparser.Match,
-) ([]protocol.CompletionItem, error) {
+) []protocol.CompletionItem {
 	if match == nil || len(match.Entries) == 0 {
 		completions := getMatchCriteriaCompletions()
 		completions = append(completions, getMatchAllKeywordCompletion())
 
-		return completions, nil
+		return completions
 	}
 
 	entry := match.GetEntryAtPosition(cursor)
 
 	if entry == nil || entry.Criteria.ContainsPosition(cursor) {
-		return getMatchCriteriaCompletions(), nil
+		return getMatchCriteriaCompletions()
 	}
 
-	return getMatchValueCompletions(entry, cursor), nil
+	return getMatchValueCompletions(entry, cursor)
 }
 
 func getMatchCriteriaCompletions() []protocol.CompletionItem {

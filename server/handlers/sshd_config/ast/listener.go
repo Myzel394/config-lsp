@@ -4,6 +4,7 @@ import (
 	"config-lsp/common"
 	commonparser "config-lsp/common/parser"
 	"config-lsp/handlers/sshd_config/ast/parser"
+	"config-lsp/handlers/sshd_config/fields"
 	"config-lsp/handlers/sshd_config/match-parser"
 	"strings"
 
@@ -76,7 +77,7 @@ func (s *sshdParserListener) EnterKey(ctx *parser.KeyContext) {
 	s.sshdContext.currentOption.Key = &SSHDKey{
 		LocationRange: location,
 		Value:         value,
-		Key:           key,
+		Key:           fields.CreateNormalizedName(key),
 	}
 }
 

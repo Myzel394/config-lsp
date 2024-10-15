@@ -40,7 +40,7 @@ func checkOption(
 	checkIsUsingDoubleQuotes(ctx, option.Key.Value, option.Key.LocationRange)
 	checkQuotesAreClosed(ctx, option.Key.Value, option.Key.LocationRange)
 
-	key := fields.CreateNormalizedName(option.Key.Key)
+	key := option.Key.Key
 	docOption, found := fields.Options[key]
 
 	if !found {

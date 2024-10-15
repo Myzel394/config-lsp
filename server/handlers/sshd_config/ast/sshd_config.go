@@ -3,14 +3,16 @@ package ast
 import (
 	"config-lsp/common"
 	commonparser "config-lsp/common/parser"
+	"config-lsp/handlers/sshd_config/fields"
 	"config-lsp/handlers/sshd_config/match-parser"
+
 	"github.com/emirpasic/gods/maps/treemap"
 )
 
 type SSHDKey struct {
 	common.LocationRange
 	Value commonparser.ParsedString
-	Key   string
+	Key   fields.NormalizedOptionName
 }
 
 type SSHDValue struct {

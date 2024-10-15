@@ -30,11 +30,10 @@ func formatSSHDOption(
 	var key string
 
 	if option.Key != nil {
-		key = option.Key.Key
-		normalizedKey := fields.CreateNormalizedName(key)
-
-		if formattedName, found := fields.FieldsNameFormattedMap[normalizedKey]; found {
+		if formattedName, found := fields.FieldsNameFormattedMap[option.Key.Key]; found {
 			key = formattedName
+		} else {
+			key = string(option.Key.Key)
 		}
 	} else {
 		key = ""

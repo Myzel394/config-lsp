@@ -17,7 +17,7 @@ func GetHoverInfoForOption(
 	index common.IndexPosition,
 ) (*protocol.Hover, error) {
 	var docValue *docvalues.DocumentationValue
-	key := fields.CreateNormalizedName(option.Key.Key)
+	key := option.Key.Key
 
 	// Either root level or in the line of a match block
 	if matchBlock == nil || matchBlock.Start.Line == line {

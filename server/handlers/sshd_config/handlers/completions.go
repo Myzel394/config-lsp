@@ -69,12 +69,12 @@ func GetOptionCompletions(
 	entry *ast.SSHDOption,
 	matchBlock *ast.SSHDMatchBlock,
 	cursor common.CursorPosition,
-) ([]protocol.CompletionItem, error) {
-	key := fields.CreateNormalizedName(entry.Key.Key)
+) []protocol.CompletionItem {
+	key := entry.Key.Key
 	option, found := fields.Options[key]
 
 	if !found {
-		return nil, nil
+		return nil
 	}
 
 	if entry.Key.Key == "Match" {
@@ -86,18 +86,48 @@ func GetOptionCompletions(
 	}
 
 	if entry.OptionValue == nil {
-		return option.DeprecatedFetchCompletions("", 0), nil
+		return option.DeprecatedFetchCompletions("", 0)
 	}
+
+	// token completions
+	completions := getTokenCompletions(entry, cursor)
 
 	// Hello wo|rld
 	line := entry.OptionValue.Value.Raw
 	// NEW: docvalues index
-	return option.DeprecatedFetchCompletions(
+	completions = append(completions, option.DeprecatedFetchCompletions(
 		line,
 		common.DeprecatedImprovedCursorToIndex(
 			cursor,
 			line,
 			entry.OptionValue.Start.Character,
 		),
-	), nil
+	)...)
+
+	return completions
+}
+
+func getTokenCompletions(
+	entry *ast.SSHDOption,
+	cursor common.CursorPosition,
+) []protocol.CompletionItem {
+	completions := make([]protocol.CompletionItem, 0)
+	index := common.CursorToCharacterIndex(uint32(cursor))
+
+	if entry.Value.Raw[index] == '%' {
+		if tokens, found := fields.OptionsTokensMap[entry.Key.Key]; found {
+			for _, token := range tokens {
+				description := fields.AvailableTokens[token]
+				kind := protocol.CompletionItemKindConstant
+
+				completions = append(completions, protocol.CompletionItem{
+					Label:         token,
+					Kind:          &kind,
+					Documentation: description,
+				})
+			}
+		}
+	}
+
+	return completions
 }

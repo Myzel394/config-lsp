@@ -89,7 +89,7 @@ func addOption(
 	matchBlock *ast.SSHDMatchBlock,
 ) []common.LSPError {
 	var errs []common.LSPError
-	key := fields.CreateNormalizedName(option.Key.Key)
+	key := option.Key.Key
 
 	if optionsMap, found := i.AllOptionsPerName[key]; found {
 		if options, found := optionsMap[matchBlock]; found {
