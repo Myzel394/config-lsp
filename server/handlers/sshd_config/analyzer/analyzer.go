@@ -55,6 +55,7 @@ func Analyze(
 	}
 
 	analyzeMatchBlocks(ctx)
+	analyzeTokens(ctx)
 
 	return ctx.diagnostics
 }
