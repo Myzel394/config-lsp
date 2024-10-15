@@ -31,7 +31,7 @@ var OptionsTokensMap = map[NormalizedOptionName][]string{
 		"%U",
 		"%u",
 	},
-	"authorizedkeysfile":          {
+	"authorizedkeysfile": {
 		"%%",
 		"%h",
 		"%U",
@@ -53,19 +53,19 @@ var OptionsTokensMap = map[NormalizedOptionName][]string{
 		"%U",
 		"%u",
 	},
-	"authorizedprincipalsfile":    {
+	"authorizedprincipalsfile": {
 		"%%",
 		"%h",
 		"%U",
 		"%u",
 	},
-	"chrootdirectory":             {
+	"chrootdirectory": {
 		"%%",
 		"%h",
 		"%U",
 		"%u",
 	},
-	"routingdomain":               {
+	"routingdomain": {
 		"%D",
 	},
 }
