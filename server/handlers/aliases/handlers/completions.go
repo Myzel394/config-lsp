@@ -66,14 +66,14 @@ func GetCompletionsForEntry(
 		return completions, nil
 	}
 
-	switch (*value).(type) {
+	switch value.(type) {
 	case ast.AliasValueUser:
 		return getUserCompletions(
 			i,
 			excludedUsers,
 		), nil
 	case ast.AliasValueError:
-		errorValue := (*value).(ast.AliasValueError)
+		errorValue := value.(ast.AliasValueError)
 
 		isAtErrorCode := errorValue.Code == nil &&
 			errorValue.Location.IsPositionAfterStart(cursor) &&

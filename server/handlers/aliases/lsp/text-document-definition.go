@@ -32,7 +32,7 @@ func TextDocumentDefinition(context *glsp.Context, params *protocol.DefinitionPa
 
 		return handlers.GetDefinitionLocationForValue(
 			*d.Indexes,
-			*rawValue,
+			rawValue,
 			params.TextDocument.URI,
 		), nil
 	}
