@@ -74,6 +74,7 @@ var valueToLanguageMap = map[string]SupportedLanguage{
 	"etc/hosts":         LanguageHosts,
 
 	"aliases":     LanguageAliases,
+	"mailaliases": LanguageAliases,
 	"etc/aliases": LanguageAliases,
 }
 
@@ -116,6 +117,7 @@ func DetectLanguage(
 
 	switch uri {
 	case "file:///etc/ssh/sshd_config":
+		fallthrough
 	case "file:///etc/ssh/ssh_config":
 		return LanguageSSHDConfig, nil
 	case "file:///etc/fstab":
@@ -123,6 +125,9 @@ func DetectLanguage(
 	case "file:///etc/hosts":
 		return LanguageHosts, nil
 	case "file:///etc/aliases":
+		fallthrough
+	// Darwin
+	case "file:///private/etc/aliases":
 		return LanguageAliases, nil
 	}
 

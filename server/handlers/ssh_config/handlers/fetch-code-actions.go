@@ -14,6 +14,10 @@ func FetchCodeActions(
 ) []protocol.CodeAction {
 	line := params.Range.Start.Line
 
+	if d.Indexes == nil {
+		return nil
+	}
+
 	if unknownOption, found := d.Indexes.UnknownOptions[line]; found {
 		var blockLine *uint32
 

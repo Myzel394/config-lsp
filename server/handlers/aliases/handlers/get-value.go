@@ -9,7 +9,7 @@ import (
 func GetValueAtPosition(
 	position common.Position,
 	entry *ast.AliasEntry,
-) *ast.AliasValueInterface {
+) ast.AliasValueInterface {
 	if entry.Values == nil || len(entry.Values.Values) == 0 {
 		return nil
 	}
@@ -36,5 +36,5 @@ func GetValueAtPosition(
 		return nil
 	}
 
-	return &entry.Values.Values[index]
+	return entry.Values.Values[index]
 }

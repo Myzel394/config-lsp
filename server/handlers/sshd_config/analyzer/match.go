@@ -12,10 +12,12 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
+var matchOption = fields.CreateNormalizedName("Match")
+
 func analyzeMatchBlocks(
 	ctx *analyzerContext,
 ) {
-	for matchBlock, options := range ctx.document.Indexes.AllOptionsPerName["Match"] {
+	for matchBlock, options := range ctx.document.Indexes.AllOptionsPerName[matchOption] {
 		option := options[0]
 		// Check if the match block has filled out all fields
 		if matchBlock == nil || matchBlock.MatchValue == nil || len(matchBlock.MatchValue.Entries) == 0 {

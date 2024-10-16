@@ -34,9 +34,9 @@ func TextDocumentPrepareRename(context *glsp.Context, params *protocol.PrepareRe
 			return nil, nil
 		}
 
-		switch (*rawValue).(type) {
+		switch rawValue.(type) {
 		case ast.AliasValueUser:
-			userValue := (*rawValue).(ast.AliasValueUser)
+			userValue := rawValue.(ast.AliasValueUser)
 
 			return userValue.Location.ToLSPRange(), nil
 		}
