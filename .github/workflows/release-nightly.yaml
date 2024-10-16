@@ -1,0 +1,43 @@
+name: Build nightly release
+
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-nightly:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: cachix/install-nix-action@v27
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check Flake
+        run: nix flake check
+
+      - name: Build release
+        run: nix build
+
+      - name: Upload config-lsp
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          files: result/bin/config-lsp
+
+      - name: Build VS code extension
+        run: ./vs-code-extension/build-extension.sh
+
+      - name: Upload VS Code extension
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          files: vs-code-extension/out/
+
