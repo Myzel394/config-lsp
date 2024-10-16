@@ -47,7 +47,7 @@ jobs:
         run: ./vs-code-extension/build-extension.sh
 
       - name: Zip folder
-        run: cd vs-code-extension/out/ && zip -r vs-code-extension.zip .
+        run: cd vs-code-extension/out/ && zip -r vs-code-extension.zip . && cd ../..
 
       - name: Upload config-lsp
         uses: softprops/action-gh-release@v1
