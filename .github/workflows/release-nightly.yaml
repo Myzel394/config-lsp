@@ -54,9 +54,8 @@ jobs:
         run: ./vs-code-extension/build-extension.sh
 
       - name: Upload VS Code extension
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        uses: actions/upload-artifact@v4
         with:
+          name: vs-code-extension
           path: ./vs-code-extension/out/
 
