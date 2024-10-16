@@ -28,8 +28,8 @@ func GetRootSignatureHelp(
 					},
 					{
 						Label: []uint32{
-							uint32(len("<alias>:")),
-							uint32(len("<alias>:") + len("<value1>")),
+							uint32(len("<alias>: ")),
+							uint32(len("<alias>: ") + len("<value1>")),
 						},
 						Documentation: "A value to associate with the alias",
 					},
