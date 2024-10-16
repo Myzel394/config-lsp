@@ -11,6 +11,8 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
+var matchOption = fields.CreateNormalizedName("Match")
+
 func GetRootCompletions(
 	d *sshdconfig.SSHDDocument,
 	parentMatchBlock *ast.SSHDMatchBlock,
@@ -77,7 +79,7 @@ func GetOptionCompletions(
 		return nil
 	}
 
-	if entry.Key.Key == "Match" {
+	if entry.Key.Key == matchOption {
 		return getMatchCompletions(
 			d,
 			cursor,
