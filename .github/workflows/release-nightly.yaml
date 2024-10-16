@@ -5,7 +5,7 @@ on:
     types: [ published ]
 
 jobs:
-  build-nightly:
+  build-release:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,7 +15,7 @@ jobs:
       - name: Check git version matches flake version
         shell: bash
         run: |
-          if ! [ $(${{ github.ref }} | cut -d'v' -f 2) = $(grep '# CI:CD-VERSION$' flake.nix | cut -d'"' -f 2) ];
+          if ! [ $(echo '${{ github.ref }}' | cut -d'v' -f 2) = $(grep '# CI:CD-VERSION$' flake.nix | cut -d'"' -f 2) ];
           then
             echo "Version mismatch between Git and flake"
             exit 1
