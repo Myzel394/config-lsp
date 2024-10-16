@@ -43,19 +43,18 @@ jobs:
       - name: Build release
         run: nix build
 
+      - name: Build VS code extension
+        run: ./vs-code-extension/build-extension.sh
+
+      - name: Zip folder
+        run: cd vs-code-extension/out/ && zip -r vs-code-extension.zip .
+
       - name: Upload config-lsp
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
-          files: result/bin/config-lsp
-
-      - name: Build VS code extension
-        run: ./vs-code-extension/build-extension.sh
-
-      - name: Upload VS Code extension
-        uses: actions/upload-artifact@v4
-        with:
-          name: vs-code-extension
-          path: ./vs-code-extension/out/
+          files: |
+            result/bin/config-lsp
+            vs-code-extension/out/vs-code-extension.zip
 
