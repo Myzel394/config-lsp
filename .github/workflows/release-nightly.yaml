@@ -58,5 +58,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
-          files: vs-code-extension/out/
+          files: ./vs-code-extension/out/
 
