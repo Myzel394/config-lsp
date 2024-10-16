@@ -15,7 +15,7 @@ jobs:
       - name: Check version in code matches flake version
         shell: bash
         run: |
-          if ! [ $(grep '// CI:CD-VERSION$' server/root-handler/handler.go | cut -d'"' -f 2) = $(nix eval --file flake.nix inputs.version | cut -d '"' -f 2) ];
+          if ! [ $(grep '// CI:CD-VERSION$' server/root-handler/handler.go | cut -d'"' -f 2) = $(grep '# CI:CD-VERSION$' flake.nix | cut -d'"' -f 2) ];
           then
             echo "Version mismatch"
             exit 1

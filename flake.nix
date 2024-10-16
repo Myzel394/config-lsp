@@ -9,12 +9,12 @@
       inputs.utils.follows = "utils";
     };
     utils.url = "github:numtide/flake-utils";
-    version = "0.1.0";
   };
 
-  outputs = { self, nixpkgs, utils, gomod2nix, version }: 
+  outputs = { self, nixpkgs, utils, gomod2nix }: 
     utils.lib.eachDefaultSystem (system:
       let
+        version = "0.1.0"; # CI:CD-VERSION
         pkgs = import nixpkgs {
           inherit system;
           overlays = [
