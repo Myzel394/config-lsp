@@ -9,7 +9,9 @@ import (
 
 const lsName = "config-lsp"
 
-var version string = "0.0.1"
+// The comment below at the end of the line is required for the CI:CD to work.
+// Do not remove it
+var version = "0.1.0" // CI:CD-VERSION
 
 var lspHandler protocol.Handler
 

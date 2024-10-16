@@ -9,9 +9,10 @@
       inputs.utils.follows = "utils";
     };
     utils.url = "github:numtide/flake-utils";
+    version = "0.1.0";
   };
 
-  outputs = { self, nixpkgs, utils, gomod2nix }: 
+  outputs = { self, nixpkgs, utils, gomod2nix, version }: 
     utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
@@ -30,7 +31,7 @@
         server = pkgs.buildGoModule {
           nativeBuildInputs = inputs;
           pname = "github.com/Myzel394/config-lsp";
-          version = "v0.0.1";
+          version = version;
           src = ./server;
           vendorHash = "sha256-s+sjOVvqU20+mbEFKg+RCD+dhScqSatk9eseX2IioPI";
           checkPhase = ''
