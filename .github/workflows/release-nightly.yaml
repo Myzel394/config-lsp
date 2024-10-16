@@ -43,14 +43,12 @@ jobs:
       - name: Build release
         run: nix build
 
-      - name: Move binary to tmp
-        run: mv result/bin/config-lsp ~/config-lsp
-
       - name: Build VS code extension
         run: ./vs-code-extension/build-extension.sh
 
       - name: Zip folder
-        run: cd vs-code-extension/out/ && zip -r ~/vs-code-extension.zip .
+        shell: bash
+        run: cd vs-code-extension/out/ && zip -r vs-code-extension.zip . && cd ../..
 
       - name: Upload config-lsp
         uses: softprops/action-gh-release@v1
@@ -58,6 +56,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           files: |
-            ~/config-lsp
-            ~/vs-code-extension.zip
+            ./result/bin/config-lsp
+            ./vs-code-extension/out/vs-code-extension.zip
 
