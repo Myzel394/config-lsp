@@ -11,6 +11,8 @@ import (
 
 var whitespacePattern = regexp.MustCompile(`\S+`)
 
+var includeOption = fields.CreateNormalizedName("Include")
+
 func CreateIndexes(config ast.SSHDConfig) (*SSHDIndexes, []common.LSPError) {
 	errs := make([]common.LSPError, 0)
 	indexes := &SSHDIndexes{
@@ -42,7 +44,7 @@ func CreateIndexes(config ast.SSHDConfig) (*SSHDIndexes, []common.LSPError) {
 	}
 
 	// Add Includes
-	for matchBlock, options := range indexes.AllOptionsPerName["Include"] {
+	for matchBlock, options := range indexes.AllOptionsPerName[includeOption] {
 		includeOption := options[0]
 		rawValue := includeOption.OptionValue.Value.Value
 		pathIndexes := whitespacePattern.FindAllStringIndex(rawValue, -1)

@@ -34,7 +34,7 @@ Match Address 192.168.0.1/24
 	}
 
 	firstMatchBlock := config.FindMatchBlock(uint32(6))
-	opts := indexes.AllOptionsPerName["PermitRootLogin"]
+	opts := indexes.AllOptionsPerName["permitrootlogin"]
 	if !(len(opts) == 2 &&
 		len(opts[nil]) == 1 &&
 		opts[nil][0].Value.Value == "PermitRootLogin yes" &&
@@ -42,7 +42,7 @@ Match Address 192.168.0.1/24
 		len(opts[firstMatchBlock]) == 1 &&
 		opts[firstMatchBlock][0].Value.Value == "\tPermitRootLogin no" &&
 		opts[firstMatchBlock][0].Start.Line == 6 &&
-		opts[firstMatchBlock][0].Key.Key == "PermitRootLogin") {
+		opts[firstMatchBlock][0].Key.Key == "permitrootlogin") {
 		t.Errorf("Expected 3 PermitRootLogin options, but got %v", opts)
 	}
 }
