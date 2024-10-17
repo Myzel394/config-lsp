@@ -8,11 +8,6 @@
 
 version: 2
 
-before:
-  hooks:
-    # You may remove this if you don't use go modules.
-    - go mod tidy
-
 project_name: config-lsp
 builds:
   - env:
