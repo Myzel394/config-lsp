@@ -9,7 +9,7 @@ A language server for configuration files. The goal is to make editing config fi
 | aliases     | ✅           | ✅            | ✅       | ✅             | ✅            | ✅        | ✅               |
 | fstab       | ✅           | ✅            | ✅       | ❓             | ❓            | ❓        | 🟡               |
 | hosts       | ✅           | ✅            | ✅       | ✅             | ❓            | ❓        | 🟡               |
-| ssh_config  | ✅           | ✅            | ✅       | ✅             | ✅            | ❓        | ✅               |
+| ssh_config  | ✅           | ✅            | ✅       | ✅             | ✅            | ✅        | ✅               |
 | sshd_config | ✅           | ✅            | ✅       | ❓             | ✅            | ❓        | ✅               |
 | wireguard   | ✅           | ✅            | ✅       | ✅             | ❓            | ❓        | 🟡               |
 
