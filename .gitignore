@@ -29,3 +29,5 @@ config-lsp
 result
 bin
 debug.log
+
+dist/

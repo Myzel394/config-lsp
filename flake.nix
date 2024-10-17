@@ -12,7 +12,16 @@
   };
 
   outputs = { self, nixpkgs, utils, gomod2nix }: 
-    utils.lib.eachDefaultSystem (system:
+    utils.lib.eachSystem [
+      "x86_64-linux"
+      "aarch64-linux"
+
+      "x86_64-darwin"
+      "aarch64-darwin"
+
+      "x86_64-windows"
+      "aarch64-windows"
+    ] (system: 
       let
         version = "0.1.0"; # CI:CD-VERSION
         pkgs = import nixpkgs {

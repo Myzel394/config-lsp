@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Check git version matches flake version
         shell: bash
@@ -40,25 +42,17 @@ jobs:
       - name: Check Flake
         run: nix flake check
 
-      - name: Build release
-        run: nix build
-
-      - name: Copy config-lsp
-        run: cp result/bin/config-lsp .
-
-      - name: Build VS code extension
-        run: ./vs-code-extension/build-extension.sh
-
-      - name: Zip folder
-        shell: bash
-        run: cd vs-code-extension/out/ && zip -r vs-code-extension.zip . && cd ../..
-
-      - name: Upload config-lsp
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Set up Go
+        uses: actions/setup-go@v5
         with:
-          files: |
-            ./config-lsp
-            ./vs-code-extension/out/vs-code-extension.zip
+          go-version: stable
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_CONFIGLSP_TOKEN }}
 
