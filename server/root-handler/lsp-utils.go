@@ -120,14 +120,20 @@ func DetectLanguage(
 		fallthrough
 	case "file:///etc/ssh/ssh_config":
 		return LanguageSSHDConfig, nil
+
 	case "file:///etc/fstab":
 		return LanguageFstab, nil
+
+	// Darwin
+	case "file:///private/etc/hosts":
+		fallthrough
 	case "file:///etc/hosts":
 		return LanguageHosts, nil
-	case "file:///etc/aliases":
-		fallthrough
+
 	// Darwin
 	case "file:///private/etc/aliases":
+		fallthrough
+	case "file:///etc/aliases":
 		return LanguageAliases, nil
 	}
 
