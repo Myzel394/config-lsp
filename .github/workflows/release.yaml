@@ -35,6 +35,15 @@ jobs:
             exit 1
           fi
 
+      - name: Check vs code package.json version matches flake version
+        shell: bash
+        run: |
+          if ! [ $(grep '"version": "' vs-code-extension/package.json | cut -d'"' -f 4) = $(grep '# CI:CD-VERSION$' flake.nix | cut -d'"' -f 2) ];
+          then
+            echo "Version mismatch between vs code package.json and flake"
+            exit 1
+          fi
+
       - uses: cachix/install-nix-action@v27
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
