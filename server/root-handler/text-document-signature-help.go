@@ -2,6 +2,7 @@ package roothandler
 
 import (
 	aliases "config-lsp/handlers/aliases/lsp"
+	fstab "config-lsp/handlers/fstab/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
@@ -31,7 +32,7 @@ func TextDocumentSignatureHelp(context *glsp.Context, params *protocol.Signature
 	case LanguageSSHConfig:
 		return sshconfig.TextDocumentSignatureHelp(context, params)
 	case LanguageFstab:
-		return nil, nil
+		return fstab.TextDocumentSignatureHelp(context, params)
 	case LanguageWireguard:
 		return nil, nil
 	case LanguageAliases:
