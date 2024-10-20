@@ -68,6 +68,36 @@
       in {
         packages = {
           default = server;
+          "vs-code-extension-bare" = let
+            name = "config-lsp";
+            node-modules = pkgs.mkYarnPackage {
+              src = ./vs-code-extension;
+              name = name;
+              packageJSON = ./vs-code-extension/package.json;
+              yarnLock = ./vs-code-extension/yarn.lock;
+              yarnNix = ./vs-code-extension/yarn.nix;
+
+              buildPhase = ''
+                yarn --offline run compile:prod
+              '';
+              installPhase = ''
+                mkdir -p extension
+
+                # No idea why this is being created
+                rm deps/${name}/config-lsp
+
+                cp -rL deps/${name}/. extension
+
+                mkdir -p $out
+                cp -r extension/. $out
+              '';
+              distPhase = "true";
+
+              buildInputs = [
+                pkgs.vsce
+              ];
+            };
+          in node-modules;
           "vs-code-extension" = let
             name = "config-lsp";
             node-modules = pkgs.mkYarnPackage {
