@@ -11,7 +11,7 @@ const lsName = "config-lsp"
 
 // The comment below at the end of the line is required for the CI:CD to work.
 // Do not remove it
-var version = "0.1.0" // CI:CD-VERSION
+var version = "0.1.1" // CI:CD-VERSION
 
 var lspHandler protocol.Handler
 
