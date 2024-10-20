@@ -37,7 +37,7 @@
         inputs = [
           pkgs.go_1_22
         ];
-        server = pkgs.buildGoModule {
+        serverUncompressed = pkgs.buildGoModule {
           nativeBuildInputs = inputs;
           pname = "github.com/Myzel394/config-lsp";
           version = version;
@@ -48,11 +48,24 @@
             go test -v $(pwd)/...
           '';
         };
+        server = pkgs.stdenv.mkDerivation {
+          name = "config-lsp-${version}";
+          src = serverUncompressed;
+          buildInputs = [
+            pkgs.upx
+          ];
+          buildPhase = ''
+            mkdir -p $out/bin
+            cp $src/bin/config-lsp $out/bin/
+            chmod +rw $out/bin/config-lsp
+            upx --ultra-brute $out/bin/config-lsp
+          '';
+        };
       in {
         packages = {
           default = server;
           "vs-code-extension" = let
-            name = "config-lsp-vs-code-extension";
+            name = "config-lsp";
             node-modules = pkgs.mkYarnPackage {
               src = ./vs-code-extension;
               name = name;
@@ -64,10 +77,23 @@
                 yarn --offline run compile
               '';
               installPhase = ''
-                mv deps/${name}/out $out
-                cp ${server}/bin/config-lsp $out/
+                mkdir -p extension
+
+                # No idea why this is being created
+                rm deps/${name}/config-lsp
+
+                cp -rL deps/${name}/. extension
+                cp ${server}/bin/config-lsp extension/out/config-lsp
+
+                cd extension && ${pkgs.vsce}/bin/vsce package
+                mkdir -p $out
+                cp *.vsix $out
               '';
               distPhase = "true";
+
+              buildInputs = [
+                pkgs.vsce
+              ];
             };
           in node-modules;
         };
@@ -83,6 +109,8 @@
         devShells."vs-code-extension" = pkgs.mkShell {
           buildInputs = [
             pkgs.nodejs
+            pkgs.vsce
+            pkgs.yarn2nix
           ];
         };
       }
