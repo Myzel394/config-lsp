@@ -83,9 +83,14 @@ var filenameToLanguageMap = map[string]SupportedLanguage{
 	"sshd_config": LanguageSSHDConfig,
 	"sshdconfig":  LanguageSSHDConfig,
 	"sshd":        LanguageSSHDConfig,
+	"sshd_conf":   LanguageSSHDConfig,
+	"sshdconf":    LanguageSSHDConfig,
 
 	"ssh_config": LanguageSSHConfig,
 	"sshconfig":  LanguageSSHConfig,
+	"ssh":        LanguageSSHConfig,
+	"ssh_conf":   LanguageSSHConfig,
+	"sshconf":    LanguageSSHConfig,
 
 	"fstab": LanguageFstab,
 
@@ -93,15 +98,10 @@ var filenameToLanguageMap = map[string]SupportedLanguage{
 
 	"aliases":     LanguageAliases,
 	"mailaliases": LanguageAliases,
-
-	"wg":       LanguageWireguard,
-	"wg.conf":  LanguageWireguard,
-	"wg0.conf": LanguageWireguard,
-	"wg0":      LanguageWireguard,
 }
 
 var typeOverwriteRegex = regexp.MustCompile(`#\?\s*lsp\.language\s*=\s*(\w+)\s*`)
-var wireguardPattern = regexp.MustCompile(`/wg\d+\.conf$`)
+var wireguardPattern = regexp.MustCompile(`wg(\d+)?(\.conf)?$`)
 
 var undetectableError = common.ParseError{
 	Line: 0,
