@@ -108,9 +108,9 @@ jobs:
       - name: Rename extension
         run: cp result/*.vsix $(basename result/*.vsix)-${{ matrix.target }}.vsix
 
-      - uses: actions/upload-artifact@v4
+      - uses: softprops/action-gh-release@v2
         with:
-          path: result/*.vsix
+          files: *.vsix
 
       - name: Target to vs code target
         id: vscode_target
