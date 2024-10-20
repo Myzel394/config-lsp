@@ -136,5 +136,5 @@ jobs:
           echo "VSCE_PAT=${{ secrets.VSCE_PAT }}" >> .env
 
       - name: Upload extension to VS Code Marketplace
-        run: nix develop .#"vs-code-extension" --command bash -c "source .env && vsce publish --packagePath *.vsix"
+        run: nix develop .#"vs-code-extension" --command bash -c "source .env && vsce publish --packagePath *.vsix -p ${{ secrets.VSCE_TOKEN }}"
 
