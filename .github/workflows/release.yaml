@@ -110,7 +110,7 @@ jobs:
 
       - uses: softprops/action-gh-release@v2
         with:
-          files: *.vsix
+          files: '*.vsix'
 
       - name: Target to vs code target
         id: vscode_target
