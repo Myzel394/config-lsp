@@ -4,6 +4,7 @@ import (
 	"config-lsp/common"
 	"config-lsp/utils"
 	"fmt"
+	"path"
 	"regexp"
 	"strings"
 
@@ -78,6 +79,27 @@ var valueToLanguageMap = map[string]SupportedLanguage{
 	"etc/aliases": LanguageAliases,
 }
 
+var filenameToLanguageMap = map[string]SupportedLanguage{
+	"sshd_config": LanguageSSHDConfig,
+	"sshdconfig":  LanguageSSHDConfig,
+	"sshd":        LanguageSSHDConfig,
+
+	"ssh_config": LanguageSSHConfig,
+	"sshconfig":  LanguageSSHConfig,
+
+	"fstab": LanguageFstab,
+
+	"hosts": LanguageHosts,
+
+	"aliases":     LanguageAliases,
+	"mailaliases": LanguageAliases,
+
+	"wg":       LanguageWireguard,
+	"wg.conf":  LanguageWireguard,
+	"wg0.conf": LanguageWireguard,
+	"wg0":      LanguageWireguard,
+}
+
 var typeOverwriteRegex = regexp.MustCompile(`#\?\s*lsp\.language\s*=\s*(\w+)\s*`)
 var wireguardPattern = regexp.MustCompile(`/wg\d+\.conf$`)
 
@@ -135,6 +157,12 @@ func DetectLanguage(
 		fallthrough
 	case "file:///etc/aliases":
 		return LanguageAliases, nil
+	}
+
+	filename := path.Base(string(uri))
+
+	if language, found := filenameToLanguageMap[filename]; found {
+		return language, nil
 	}
 
 	if strings.HasPrefix(uri, "file:///etc/wireguard/") || wireguardPattern.MatchString(uri) {
