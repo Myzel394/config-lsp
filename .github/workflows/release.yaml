@@ -118,7 +118,7 @@ jobs:
 
       - name: Shrink binary
         if: ${{ matrix.goos == 'linux' }}
-        run: nix develop .#"shrink" --command bash -c "upx dist/out/config-lsp"
+        run: nix develop .#"vs-code-extension" --command bash -c "upx dist/out/config-lsp"
 
       - name: Package extension
         run: nix develop .#"vs-code-extension" --command bash -c "cd dist && vsce package --target ${{ matrix.vscode_target }}"
@@ -130,8 +130,11 @@ jobs:
         with:
           files: '*.vsix'
 
+      - name: Set .env
+        run: |
+          touch .env
+          echo "VSCE_PAT=${{ secrets.VSCE_TOKEN }}" >> .env
+
       - name: Upload extension to VS Code Marketplace
-        run: nix develop .#"vs-code-extension" --command bash -c "vsce publish --packagePath *.vsix"
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
+        run: nix develop .#"vs-code-extension" --command bash -c "source .env && vsce publish --packagePath *.vsix"
 
