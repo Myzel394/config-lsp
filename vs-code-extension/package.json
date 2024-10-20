@@ -2,14 +2,51 @@
 	"name": "config-lsp",
 	"description": "Language Features (completions, diagnostics, etc.) for your config files: gitconfig, fstab, aliases, hosts, wireguard, ssh_config, sshd_config, and more to come!",
 	"author": "Myzel394",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Myzel394/config-lsp"
 	},
 	"publisher": "myzel394",
-	"categories": [],
-	"keywords": [],
+	"categories": [
+		"Programming Languages",
+		"Formatters"
+	],
+	"preview": true,
+	"sponsor": {
+		"url": "https://github.com/Myzel394/contact-me"
+	},
+	"icon": "icon.png",
+	"galleryBanner": {
+		"color": "#C8ACA3",
+		"theme": "dark"
+	},
+	"files": [
+		"out",
+		"package.json",
+		"LICENSE.md",
+		"icon.png"
+	],
+	"keywords": [
+		"config",
+		"lsp",
+		"language",
+		"configuration",
+		"help",
+		"autocomplete",
+		"completions",
+		"diagnostics",
+		"hints",
+		"format",
+
+		"ssh",
+		"ssh_config",
+		"sshd_config",
+		"wireguard",
+		"fstab",
+		"hosts",
+		"aliases"
+	],
 	"engines": {
 		"vscode": "^1.74.0"
 	},
@@ -17,22 +54,24 @@
 		"onLanguage:plaintext",
 		"onLanguage:yaml"
 	],
-	"main": "./out/extension",
+	"main": "./out/extension.js",
 	"scripts": {
-		"compile": "tsc -b",
+		"compile": "node esbuild.js",
+		"compile:prod": "node esbuild.js --production",
 		"watch": "tsc -b -w",
 		"lint": "eslint ./src --ext .ts,.tsx"
 	},
 	"dependencies": {
-		"vscode-languageclient": "^9.0.1"
+		"vscode-languageclient": "^9.0.1",
+		"esbuild": "^0.24.0"
 	},
 	"devDependencies": {
 		"@types/mocha": "^5.2.7",
 		"@types/node": "^22.7.4",
+		"@types/vscode": "^1.74.0",
 		"@typescript-eslint/eslint-plugin": "^7.14.0",
 		"@typescript-eslint/parser": "^7.14.0",
 		"eslint": "^9.11.1",
-		"typescript": "^5.5.2",
-		"@types/vscode": "^1.74.0"
+		"typescript": "^5.5.2"
 	}
 }

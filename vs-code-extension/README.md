@@ -1,27 +1,21 @@
-# LSP Example for Embedded Language using Language Service
+# config-lsp for VS Code
 
-Heavily documented sample code for https://code.visualstudio.com/api/language-extensions/embedded-languages#language-services
+`config-lsp` provides language support for various config files.
+Currently it supports completions, diagnostics, hints, formatting, hover information,
+and definition requests.
 
-## Functionality
+Install this extension and load your config files in VS Code to get started.
 
-This extension contributes a new language, `html1`. The new language is for illustration purpose and has basic syntax highlighting.
+If `config-lsp` is unable to detect the language of your config file, you can manually
+specify it by adding a line in the form of:
 
-This Language Server works for `html1` file. HTML1 is like HTML file but has file extension `.html1`. You can create a `test.html1` file to play with below functionalities:
+```plaintext
+#?lsp.language=<language>
 
-- Completions for HTML tags
-- Completions for CSS in `<style>` tag
-- Diagnostics for CSS
+# For example
 
-## Running the Sample
+#?lsp.language=sshconfig
+#?lsp.language=fstab
+#?lsp.language=aliases
+```
 
-- Run `npm install` in this folder. This installs all necessary npm modules in both the client and server folder
-- Open VS Code on this folder.
-- Press Ctrl+Shift+B to compile the client and server.
-- Switch to the Debug viewlet.
-- Select `Launch Client` from the drop down.
-- Run the launch config.
-- If you want to debug the server as well use the launch configuration `Attach to Server`
-- In the [Extension Development Host] instance of VSCode, open a HTML document
-  - Type `<d|` to try HTML completion
-  - Type `<style>.foo { c| }</style>` to try CSS completion
-  - Have `<style>.foo { }</style>` to see CSS Diagnostics
