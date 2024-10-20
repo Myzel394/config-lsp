@@ -8,7 +8,7 @@ on:
     types: [ published ]
 
 jobs:
-  build-release:
+  build-server:
     runs-on: ubuntu-latest
 
     steps:
@@ -44,13 +44,6 @@ jobs:
             exit 1
           fi
 
-      - uses: cachix/install-nix-action@v27
-        with:
-          github_access_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check Flake
-        run: nix flake check
-
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
@@ -64,4 +57,80 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GH_CONFIGLSP_TOKEN }}
+
+  build-extension:
+    name: Build extension for ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    needs:
+      # Wait for server to build so that we know the checks have passed
+      - build-server
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - target: x86_64-apple-darwin
+          os: macos-latest
+          cross: false
+        - target: aarch64-apple-darwin
+          os: macos-latest
+          cross: false
+
+        - target: x86_64-unknown-linux-gnu
+          os: ubuntu-latest
+          cross: false
+        - target: aarch64-unknown-linux-gnu
+          os: ubuntu-latest
+          cross: false
+
+        - target: x86_64-pc-windows-msvc
+          os: windows-latest
+          cross: false
+        - target: aarch64-pc-windows-msvc
+          os: windows-latest
+          cross: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: cachix/install-nix-action@v27
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check Flake
+        run: nix flake check
+
+      - name: Build extension 
+        run: nix build .#"vs-code-extension"
+
+      - name: Rename extension
+        run: mv result/*.vsix result/$(basename result/*.vsix)-${{ matrix.target }}.vsix
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: result/*.vsix
+
+      - name: Target to vs code target
+        id: vscode_target
+        run: |
+          if [ "${{ matrix.target }}" = "x86_64-apple-darwin" ]; then
+            echo "target=darwin-x64" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.target }}" = "aarch64-apple-darwin" ]; then
+            echo "target=darwin-arm64" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.target }}" = "x86_64-unknown-linux-gnu" ]; then
+            echo "target=linux-x64" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.target }}" = "aarch64-unknown-linux-gnu" ]; then
+            echo "target=linux-arm64" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.target }}" = "x86_64-pc-windows-msvc" ]; then
+            echo "target=win32-x64" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.target }}" = "aarch64-pc-windows-msvc" ]; then
+            echo "target=win32-arm64" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload extension to VS Code Marketplace
+        run: nix develop .#"vs-code-extension" --command bash -c "cd result && vsce publish --target ${{ steps.vscode_target.outputs.target }} --packagePath *.vsix"
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
 
