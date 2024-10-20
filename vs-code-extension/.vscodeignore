@@ -17,4 +17,5 @@ flake.nix
 build-extension.sh
 yarn.nix
 .idea
+esbuild.js
 
