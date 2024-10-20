@@ -82,12 +82,12 @@ jobs:
           os: ubuntu-latest
           cross: false
 
-        - target: x86_64-pc-windows-msvc
-          os: windows-latest
-          cross: false
-        - target: aarch64-pc-windows-msvc
-          os: windows-latest
-          cross: false
+        # - target: x86_64-pc-windows-msvc
+        #   os: windows-latest
+        #   cross: false
+        # - target: aarch64-pc-windows-msvc
+        #   os: windows-latest
+        #   cross: false
 
     steps:
       - name: Checkout
@@ -106,7 +106,7 @@ jobs:
         run: nix build .#"vs-code-extension"
 
       - name: Rename extension
-        run: mv result/*.vsix result/$(basename result/*.vsix)-${{ matrix.target }}.vsix
+        run: cp result/*.vsix $(basename result/*.vsix)-${{ matrix.target }}.vsix
 
       - uses: actions/upload-artifact@v4
         with:
@@ -123,14 +123,10 @@ jobs:
             echo "target=linux-x64" >> $GITHUB_OUTPUT
           elif [ "${{ matrix.target }}" = "aarch64-unknown-linux-gnu" ]; then
             echo "target=linux-arm64" >> $GITHUB_OUTPUT
-          elif [ "${{ matrix.target }}" = "x86_64-pc-windows-msvc" ]; then
-            echo "target=win32-x64" >> $GITHUB_OUTPUT
-          elif [ "${{ matrix.target }}" = "aarch64-pc-windows-msvc" ]; then
-            echo "target=win32-arm64" >> $GITHUB_OUTPUT
           fi
 
       - name: Upload extension to VS Code Marketplace
-        run: nix develop .#"vs-code-extension" --command bash -c "cd result && vsce publish --target ${{ steps.vscode_target.outputs.target }} --packagePath *.vsix"
+        run: nix develop .#"vs-code-extension" --command bash -c "vsce publish --target ${{ steps.vscode_target.outputs.target }} --packagePath *.vsix"
         env:
           VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
 
