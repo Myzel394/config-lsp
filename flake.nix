@@ -58,7 +58,11 @@
             mkdir -p $out/bin
             cp $src/bin/config-lsp $out/bin/
             chmod +rw $out/bin/config-lsp
-            upx --ultra-brute $out/bin/config-lsp
+
+            # upx is currently not supported for darwin
+            if [ "${system}" != "x86_64-darwin" ] && [ "${system}" != "aarch64-darwin" ]; then
+              upx --ultra-brute $out/bin/config-lsp
+            fi
           '';
         };
       in {
@@ -74,7 +78,7 @@
               yarnNix = ./vs-code-extension/yarn.nix;
 
               buildPhase = ''
-                yarn --offline run compile
+                yarn --offline run compile:prod
               '';
               installPhase = ''
                 mkdir -p extension

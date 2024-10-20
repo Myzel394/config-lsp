@@ -21,6 +21,12 @@
 		"color": "#C8ACA3",
 		"theme": "dark"
 	},
+	"files": [
+		"out",
+		"package.json",
+		"LICENSE.md",
+		"icon.png"
+	],
 	"keywords": [
 		"config",
 		"lsp",
