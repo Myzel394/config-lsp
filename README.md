@@ -59,9 +59,12 @@ lspconfig.config_lsp.setup {}
 
 ### VS Code installation
 
-The VS Code extension is currently in development. An official extension will be released soon.
+The VS Code extension is currently in preview.
+You can find it here:
 
-However, at the moment you can also compile the extension yourself and run it in development mode.
+[`config-lsp` on the Visual Studio Code Marketplace](https://marketplace.visualstudio.com/items?itemName=myzel394.config-lsp)
+
+You can also compile the extension yourself and run it in development mode.
 
 **Do not create an extension and publish it yourself. Contribute to the official extension instead.**
 
