@@ -1,4 +1,4 @@
-package roothandler
+package utils
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-func fetchAddLanguageActions(uri protocol.DocumentUri) ([]protocol.CodeAction, error) {
+func FetchAddLanguageActions(uri protocol.DocumentUri) ([]protocol.CodeAction, error) {
 	actions := make([]protocol.CodeAction, 0, len(AllSupportedLanguages))
 
 	kind := protocol.CodeActionKindQuickFix

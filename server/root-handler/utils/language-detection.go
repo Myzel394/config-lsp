@@ -1,4 +1,4 @@
-package roothandler
+package utils
 
 import (
 	"config-lsp/common"
@@ -29,15 +29,6 @@ var AllSupportedLanguages = []string{
 	string(LanguageWireguard),
 	string(LanguageHosts),
 	string(LanguageAliases),
-}
-
-type FatalFileNotReadableError struct {
-	FileURI protocol.DocumentUri
-	Err     error
-}
-
-func (e FatalFileNotReadableError) Error() string {
-	return fmt.Sprintf("Fatal error! config-lsp was unable to read the file (%s); error: %s", e.FileURI, e.Err.Error())
 }
 
 type UnsupportedLanguageError struct {

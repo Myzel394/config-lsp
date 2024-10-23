@@ -1,38 +1,34 @@
-package roothandler
+package lsp
 
 import (
 	aliases "config-lsp/handlers/aliases/lsp"
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
+	"config-lsp/root-handler/shared"
+	"config-lsp/root-handler/utils"
 
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func TextDocumentRename(context *glsp.Context, params *protocol.RenameParams) (*protocol.WorkspaceEdit, error) {
-	language := rootHandler.GetLanguageForDocument(params.TextDocument.URI)
+	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
 
 	if language == nil {
-		showParseError(
-			context,
-			params.TextDocument.URI,
-			undetectableError,
-		)
-
-		return nil, undetectableError.Err
+		return nil, utils.LanguageUndetectableError{}
 	}
 
 	switch *language {
-	case LanguageHosts:
+	case utils.LanguageHosts:
 		return nil, nil
-	case LanguageSSHDConfig:
+	case utils.LanguageSSHDConfig:
 		return nil, nil
-	case LanguageSSHConfig:
+	case utils.LanguageSSHConfig:
 		return sshconfig.TextDocumentRename(context, params)
-	case LanguageFstab:
+	case utils.LanguageFstab:
 		return nil, nil
-	case LanguageWireguard:
+	case utils.LanguageWireguard:
 		return nil, nil
-	case LanguageAliases:
+	case utils.LanguageAliases:
 		return aliases.TextDocumentRename(context, params)
 	}
 

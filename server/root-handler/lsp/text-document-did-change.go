@@ -1,4 +1,4 @@
-package roothandler
+package lsp
 
 import (
 	aliases "config-lsp/handlers/aliases/lsp"
@@ -7,13 +7,15 @@ import (
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
+	"config-lsp/root-handler/shared"
+	"config-lsp/root-handler/utils"
 
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeTextDocumentParams) error {
-	language := rootHandler.GetLanguageForDocument(params.TextDocument.URI)
+	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
 
 	if language == nil {
 		content := params.ContentChanges[0].(protocol.TextDocumentContentChangeEventWhole).Text
@@ -40,33 +42,33 @@ func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeText
 		}
 
 		switch *language {
-		case LanguageFstab:
+		case utils.LanguageFstab:
 			return fstab.TextDocumentDidOpen(context, params)
-		case LanguageSSHDConfig:
+		case utils.LanguageSSHDConfig:
 			return sshdconfig.TextDocumentDidOpen(context, params)
-		case LanguageSSHConfig:
+		case utils.LanguageSSHConfig:
 			return sshconfig.TextDocumentDidOpen(context, params)
-		case LanguageWireguard:
+		case utils.LanguageWireguard:
 			return wireguard.TextDocumentDidOpen(context, params)
-		case LanguageHosts:
+		case utils.LanguageHosts:
 			return hosts.TextDocumentDidOpen(context, params)
-		case LanguageAliases:
+		case utils.LanguageAliases:
 			return aliases.TextDocumentDidOpen(context, params)
 		}
 	}
 
 	switch *language {
-	case LanguageFstab:
+	case utils.LanguageFstab:
 		return fstab.TextDocumentDidChange(context, params)
-	case LanguageSSHDConfig:
+	case utils.LanguageSSHDConfig:
 		return sshdconfig.TextDocumentDidChange(context, params)
-	case LanguageSSHConfig:
+	case utils.LanguageSSHConfig:
 		return sshconfig.TextDocumentDidChange(context, params)
-	case LanguageWireguard:
+	case utils.LanguageWireguard:
 		return wireguard.TextDocumentDidChange(context, params)
-	case LanguageHosts:
+	case utils.LanguageHosts:
 		return hosts.TextDocumentDidChange(context, params)
-	case LanguageAliases:
+	case utils.LanguageAliases:
 		return aliases.TextDocumentDidChange(context, params)
 	}
 

@@ -1,4 +1,4 @@
-package roothandler
+package lsp
 
 import (
 	aliases "config-lsp/handlers/aliases/lsp"

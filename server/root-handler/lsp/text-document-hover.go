@@ -1,4 +1,4 @@
-package roothandler
+package lsp
 
 import (
 	aliases "config-lsp/handlers/aliases/lsp"
@@ -7,36 +7,32 @@ import (
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
+	"config-lsp/root-handler/shared"
+	"config-lsp/root-handler/utils"
 
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func TextDocumentHover(context *glsp.Context, params *protocol.HoverParams) (*protocol.Hover, error) {
-	language := rootHandler.GetLanguageForDocument(params.TextDocument.URI)
+	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
 
 	if language == nil {
-		showParseError(
-			context,
-			params.TextDocument.URI,
-			undetectableError,
-		)
-
-		return nil, undetectableError.Err
+		return nil, nil
 	}
 
 	switch *language {
-	case LanguageHosts:
+	case utils.LanguageHosts:
 		return hosts.TextDocumentHover(context, params)
-	case LanguageSSHDConfig:
+	case utils.LanguageSSHDConfig:
 		return sshdconfig.TextDocumentHover(context, params)
-	case LanguageSSHConfig:
+	case utils.LanguageSSHConfig:
 		return sshconfig.TextDocumentHover(context, params)
-	case LanguageFstab:
+	case utils.LanguageFstab:
 		return fstab.TextDocumentHover(context, params)
-	case LanguageWireguard:
+	case utils.LanguageWireguard:
 		return wireguard.TextDocumentHover(context, params)
-	case LanguageAliases:
+	case utils.LanguageAliases:
 		return aliases.TextDocumentHover(context, params)
 	}
 
