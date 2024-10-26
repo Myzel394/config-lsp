@@ -11,10 +11,6 @@ import (
 
 const lsName = "config-lsp"
 
-// The comment below at the end of the line is required for the CI:CD to work.
-// Do not remove it
-var version = "0.1.1" // CI:CD-VERSION
-
 var lspHandler protocol.Handler
 
 // The root handler which handles all the LSP requests and then forwards them to the appropriate handler
@@ -75,7 +71,7 @@ func initialize(context *glsp.Context, params *protocol.InitializeParams) (any, 
 		Capabilities: capabilities,
 		ServerInfo: &protocol.InitializeResultServerInfo{
 			Name:    lsName,
-			Version: &version,
+			Version: &Version,
 		},
 	}, nil
 }

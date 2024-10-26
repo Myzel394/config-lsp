@@ -2,6 +2,8 @@ package main
 
 import (
 	roothandler "config-lsp/root-handler"
+	"fmt"
+	"os"
 
 	"github.com/tliron/commonlog"
 
@@ -11,6 +13,13 @@ import (
 )
 
 func main() {
+	if len(os.Args) > 1 && (os.Args[1] == "--version" || os.Args[1] == "version") {
+		fmt.Println(roothandler.Version)
+
+		os.Exit(0)
+		return
+	}
+
 	// This increases logging verbosity (optional)
 	commonlog.Configure(1, nil)
 
