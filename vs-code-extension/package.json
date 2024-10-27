@@ -2,7 +2,7 @@
 	"name": "config-lsp",
 	"description": "Language Features (completions, diagnostics, etc.) for your config files: gitconfig, fstab, aliases, hosts, wireguard, ssh_config, sshd_config, and more to come!",
 	"author": "Myzel394",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Myzel394/config-lsp"
@@ -13,6 +13,62 @@
 		"Formatters"
 	],
 	"preview": true,
+	"contributes": {
+		"languages": [
+			{
+				"id": "sshconfig",
+				"extensions": ["sshconfig", "ssh_config"],
+				"aliases": ["SSH Config", "sshconfig"],
+				"filenames": ["sshconfig", "ssh_config"],
+				"filenamePatterns": ["~/.ssh/config", "**/sshconfig", "**/ssh_config"]
+			},
+			{
+				"id": "sshdconfig",
+				"extensions": ["sshdconfig", "sshd_config"],
+				"aliases": ["SSH Daemon Config", "sshdconfig"],
+				"filenames": ["sshdconfig", "sshd_config"],
+				"filenamePatterns": ["/etc/ssh/sshd_config", "**/sshdconfig", "**/sshd_config"]
+			},
+			{
+				"id": "aliases",
+				"extensions": ["aliases", "mailaliases"],
+				"aliases": ["Mail Aliases", "aliases", "mailaliases"],
+				"filenames": ["aliases", "mailaliases"],
+				"filenamePatterns": ["/etc/aliases", "**/aliases", "**/mailaliases"]
+			},
+			{
+				"id": "fstab",
+				"extensions": ["fstab"],
+				"aliases": ["fstab"],
+				"filenames": ["fstab"],
+				"filenamePatterns": ["/etc/fstab", "**/fstab", "**/etc/fstab"]
+			},
+			{
+				"id": "hosts",
+				"extensions": ["hosts"],
+				"aliases": ["hosts"],
+				"filenames": ["hosts"],
+				"filenamePatterns": ["/etc/hosts", "**/hosts", "**/etc/hosts"]
+			},
+			{
+				"id": "wireguard",
+				"extensions": ["wireguard", "wg"],
+				"aliases": ["WireGuard", "wireguard", "wg"],
+				"filenames": ["wireguard", "wg0.conf", "wg1.conf", "wg0", "wg1"],
+				"filenamePatterns": ["/etc/wireguard/*.conf", "**/wireguard", "**/wireguard.conf"]
+			}
+		]
+	},
+	"activationEvents": [
+		"onLanguage:plaintext",
+		"onLanguage:yaml",
+		"onLanguage:sshconfig",
+		"onLanguage:sshdconfig",
+		"onLanguage:aliases",
+		"onLanguage:fstab",
+		"onLanguage:hosts",
+		"onLanguage:wireguard"
+	],
 	"sponsor": {
 		"url": "https://github.com/Myzel394/contact-me"
 	},
@@ -50,16 +106,12 @@
 	"engines": {
 		"vscode": "^1.74.0"
 	},
-	"activationEvents": [
-		"onLanguage:plaintext",
-		"onLanguage:yaml"
-	],
 	"main": "./out/extension.js",
 	"scripts": {
 		"compile": "node esbuild.js",
 		"compile:prod": "node esbuild.js --production",
 		"watch": "tsc -b -w",
-		"lint": "eslint ./src --ext .ts,.tsx"
+		"lint": "eslint ./src"
 	},
 	"dependencies": {
 		"vscode-languageclient": "^9.0.1",

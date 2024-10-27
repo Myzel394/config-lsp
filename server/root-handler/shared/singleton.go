@@ -1,10 +1,12 @@
-package roothandler
+package shared
 
 import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-var rootHandler RootHandler
+var Handler RootHandler
+
+var OpenedFiles = make(map[protocol.DocumentUri]struct{})
 
 type RootHandler struct {
 	languageMap map[protocol.DocumentUri]SupportedLanguage

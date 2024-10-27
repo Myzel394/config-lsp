@@ -1,4 +1,4 @@
-package roothandler
+package lsp
 
 import (
 	aliases "config-lsp/handlers/aliases/lsp"
@@ -7,36 +7,30 @@ import (
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
-
+	"config-lsp/root-handler/shared"
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionParams) (any, error) {
-	language := rootHandler.GetLanguageForDocument(params.TextDocument.URI)
+	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
 
 	if language == nil {
-		showParseError(
-			context,
-			params.TextDocument.URI,
-			undetectableError,
-		)
-
-		return nil, undetectableError.Err
+		return nil, nil
 	}
 
 	switch *language {
-	case LanguageFstab:
+	case shared.LanguageFstab:
 		return fstab.TextDocumentCompletion(context, params)
-	case LanguageSSHDConfig:
+	case shared.LanguageSSHDConfig:
 		return sshdconfig.TextDocumentCompletion(context, params)
-	case LanguageSSHConfig:
+	case shared.LanguageSSHConfig:
 		return sshconfig.TextDocumentCompletion(context, params)
-	case LanguageWireguard:
+	case shared.LanguageWireguard:
 		return wireguard.TextDocumentCompletion(context, params)
-	case LanguageHosts:
+	case shared.LanguageHosts:
 		return hosts.TextDocumentCompletion(context, params)
-	case LanguageAliases:
+	case shared.LanguageAliases:
 		return aliases.TextDocumentCompletion(context, params)
 	}
 
