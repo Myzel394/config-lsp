@@ -8,8 +8,6 @@ import (
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 	"config-lsp/root-handler/shared"
-	"config-lsp/root-handler/utils"
-
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -22,20 +20,21 @@ func TextDocumentDidClose(context *glsp.Context, params *protocol.DidCloseTextDo
 	}
 
 	delete(shared.OpenedFiles, params.TextDocument.URI)
+	delete(shared.LanguagesOverwrites, params.TextDocument.URI)
 	shared.Handler.RemoveDocument(params.TextDocument.URI)
 
 	switch *language {
-	case utils.LanguageSSHDConfig:
+	case shared.LanguageSSHDConfig:
 		return sshdconfig.TextDocumentDidClose(context, params)
-	case utils.LanguageSSHConfig:
+	case shared.LanguageSSHConfig:
 		return sshconfig.TextDocumentDidClose(context, params)
-	case utils.LanguageFstab:
+	case shared.LanguageFstab:
 		return fstab.TextDocumentDidClose(context, params)
-	case utils.LanguageWireguard:
+	case shared.LanguageWireguard:
 		return wireguard.TextDocumentDidClose(context, params)
-	case utils.LanguageHosts:
+	case shared.LanguageHosts:
 		return hosts.TextDocumentDidClose(context, params)
-	case utils.LanguageAliases:
+	case shared.LanguageAliases:
 		return aliases.TextDocumentDidClose(context, params)
 	default:
 	}

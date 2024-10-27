@@ -8,8 +8,6 @@ import (
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 	"config-lsp/root-handler/shared"
-	"config-lsp/root-handler/utils"
-
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -17,19 +15,19 @@ import (
 func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeTextDocumentParams) error {
 	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
 
-	if language == nil {
-		content := params.ContentChanges[0].(protocol.TextDocumentContentChangeEventWhole).Text
-		newLanguage, err := initFile(
-			context,
-			content,
-			params.TextDocument.URI,
-			"",
-		)
+	content := params.ContentChanges[0].(protocol.TextDocumentContentChangeEventWhole).Text
+	newLanguage, err := initFile(
+		context,
+		content,
+		params.TextDocument.URI,
+		"",
+	)
 
-		if err != nil {
-			return err
-		}
+	if err != nil {
+		return err
+	}
 
+	if newLanguage != language {
 		language = newLanguage
 
 		params := &protocol.DidOpenTextDocumentParams{
@@ -42,33 +40,33 @@ func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeText
 		}
 
 		switch *language {
-		case utils.LanguageFstab:
+		case shared.LanguageFstab:
 			return fstab.TextDocumentDidOpen(context, params)
-		case utils.LanguageSSHDConfig:
+		case shared.LanguageSSHDConfig:
 			return sshdconfig.TextDocumentDidOpen(context, params)
-		case utils.LanguageSSHConfig:
+		case shared.LanguageSSHConfig:
 			return sshconfig.TextDocumentDidOpen(context, params)
-		case utils.LanguageWireguard:
+		case shared.LanguageWireguard:
 			return wireguard.TextDocumentDidOpen(context, params)
-		case utils.LanguageHosts:
+		case shared.LanguageHosts:
 			return hosts.TextDocumentDidOpen(context, params)
-		case utils.LanguageAliases:
+		case shared.LanguageAliases:
 			return aliases.TextDocumentDidOpen(context, params)
 		}
 	}
 
 	switch *language {
-	case utils.LanguageFstab:
+	case shared.LanguageFstab:
 		return fstab.TextDocumentDidChange(context, params)
-	case utils.LanguageSSHDConfig:
+	case shared.LanguageSSHDConfig:
 		return sshdconfig.TextDocumentDidChange(context, params)
-	case utils.LanguageSSHConfig:
+	case shared.LanguageSSHConfig:
 		return sshconfig.TextDocumentDidChange(context, params)
-	case utils.LanguageWireguard:
+	case shared.LanguageWireguard:
 		return wireguard.TextDocumentDidChange(context, params)
-	case utils.LanguageHosts:
+	case shared.LanguageHosts:
 		return hosts.TextDocumentDidChange(context, params)
-	case utils.LanguageAliases:
+	case shared.LanguageAliases:
 		return aliases.TextDocumentDidChange(context, params)
 	}
 

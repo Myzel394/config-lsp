@@ -34,17 +34,17 @@ func TextDocumentDidOpen(context *glsp.Context, params *protocol.DidOpenTextDocu
 	}
 
 	switch *language {
-	case utils.LanguageFstab:
+	case shared.LanguageFstab:
 		return fstab.TextDocumentDidOpen(context, params)
-	case utils.LanguageSSHDConfig:
+	case shared.LanguageSSHDConfig:
 		return sshdconfig.TextDocumentDidOpen(context, params)
-	case utils.LanguageSSHConfig:
+	case shared.LanguageSSHConfig:
 		return sshconfig.TextDocumentDidOpen(context, params)
-	case utils.LanguageWireguard:
+	case shared.LanguageWireguard:
 		return wireguard.TextDocumentDidOpen(context, params)
-	case utils.LanguageHosts:
+	case shared.LanguageHosts:
 		return hosts.TextDocumentDidOpen(context, params)
-	case utils.LanguageAliases:
+	case shared.LanguageAliases:
 		return aliases.TextDocumentDidOpen(context, params)
 	}
 
@@ -56,13 +56,15 @@ func initFile(
 	content string,
 	uri protocol.DocumentUri,
 	advertisedLanguage string,
-) (*utils.SupportedLanguage, error) {
+) (*shared.SupportedLanguage, error) {
 	language, err := utils.DetectLanguage(content, advertisedLanguage, uri)
 
 	if err != nil {
 		utils.NotifyLanguageUndetectable(context, uri)
 
 		return nil, utils.LanguageUndetectableError{}
+	} else {
+		utils.NotifyDetectedLanguage(context, uri, language)
 	}
 
 	shared.OpenedFiles[uri] = struct{}{}

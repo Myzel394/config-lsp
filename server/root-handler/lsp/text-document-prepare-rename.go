@@ -19,17 +19,17 @@ func TextDocumentPrepareRename(context *glsp.Context, params *protocol.PrepareRe
 	}
 
 	switch *language {
-	case utils.LanguageHosts:
+	case shared.LanguageHosts:
 		return nil, nil
-	case utils.LanguageSSHDConfig:
+	case shared.LanguageSSHDConfig:
 		return nil, nil
-	case utils.LanguageSSHConfig:
+	case shared.LanguageSSHConfig:
 		return sshconfig.TextDocumentPrepareRename(context, params)
-	case utils.LanguageFstab:
+	case shared.LanguageFstab:
 		return nil, nil
-	case utils.LanguageWireguard:
+	case shared.LanguageWireguard:
 		return nil, nil
-	case utils.LanguageAliases:
+	case shared.LanguageAliases:
 		return aliases.TextDocumentPrepareRename(context, params)
 	}
 

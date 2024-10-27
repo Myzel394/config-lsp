@@ -21,17 +21,17 @@ func TextDocumentRangeFormattingFunc(
 	}
 
 	switch *language {
-	case utils.LanguageHosts:
+	case shared.LanguageHosts:
 		return nil, nil
-	case utils.LanguageSSHDConfig:
+	case shared.LanguageSSHDConfig:
 		return sshdconfig.TextDocumentRangeFormatting(context, params)
-	case utils.LanguageSSHConfig:
+	case shared.LanguageSSHConfig:
 		return sshconfig.TextDocumentRangeFormatting(context, params)
-	case utils.LanguageFstab:
+	case shared.LanguageFstab:
 		return nil, nil
-	case utils.LanguageWireguard:
+	case shared.LanguageWireguard:
 		return nil, nil
-	case utils.LanguageAliases:
+	case shared.LanguageAliases:
 		return nil, nil
 	}
 

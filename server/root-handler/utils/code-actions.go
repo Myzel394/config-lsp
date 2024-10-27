@@ -1,18 +1,19 @@
 package utils
 
 import (
+	"config-lsp/root-handler/shared"
 	"fmt"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func FetchAddLanguageActions(uri protocol.DocumentUri) ([]protocol.CodeAction, error) {
-	actions := make([]protocol.CodeAction, 0, len(AllSupportedLanguages))
+	actions := make([]protocol.CodeAction, 0, len(shared.AllSupportedLanguages))
 
 	kind := protocol.CodeActionKindQuickFix
 	isPreferred := true
 
-	for _, language := range AllSupportedLanguages {
+	for _, language := range shared.AllSupportedLanguages {
 		actions = append(actions, protocol.CodeAction{
 			Title:       fmt.Sprintf("Use %s for this file", language),
 			Kind:        &kind,

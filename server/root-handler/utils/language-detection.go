@@ -2,6 +2,7 @@ package utils
 
 import (
 	"config-lsp/common"
+	"config-lsp/root-handler/shared"
 	"config-lsp/utils"
 	"fmt"
 	"path"
@@ -11,32 +12,12 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-type SupportedLanguage string
-
-const (
-	LanguageSSHConfig  SupportedLanguage = "ssh_config"
-	LanguageSSHDConfig SupportedLanguage = "sshd_config"
-	LanguageFstab      SupportedLanguage = "fstab"
-	LanguageWireguard  SupportedLanguage = "languagewireguard"
-	LanguageHosts      SupportedLanguage = "hosts"
-	LanguageAliases    SupportedLanguage = "aliases"
-)
-
-var AllSupportedLanguages = []string{
-	string(LanguageSSHConfig),
-	string(LanguageSSHDConfig),
-	string(LanguageFstab),
-	string(LanguageWireguard),
-	string(LanguageHosts),
-	string(LanguageAliases),
-}
-
 type UnsupportedLanguageError struct {
 	SuggestedLanguage string
 }
 
 func (e UnsupportedLanguageError) Error() string {
-	return fmt.Sprintf("Language '%s' is not supported. Choose one of: %s", e.SuggestedLanguage, strings.Join(AllSupportedLanguages, ", "))
+	return fmt.Sprintf("Language '%s' is not supported. Choose one of: %s", e.SuggestedLanguage, strings.Join(shared.AllSupportedLanguages, ", "))
 }
 
 type LanguageUndetectableError struct{}
@@ -45,50 +26,50 @@ func (e LanguageUndetectableError) Error() string {
 	return "Please add: '#?lsp.language=<language>' to the top of the file. config-lsp was unable to detect the appropriate language for this file."
 }
 
-var valueToLanguageMap = map[string]SupportedLanguage{
-	"sshd_config": LanguageSSHDConfig,
-	"sshdconfig":  LanguageSSHDConfig,
+var valueToLanguageMap = map[string]shared.SupportedLanguage{
+	"sshd_config": shared.LanguageSSHDConfig,
+	"sshdconfig":  shared.LanguageSSHDConfig,
 
-	"ssh_config": LanguageSSHConfig,
-	"sshconfig":  LanguageSSHConfig,
+	"ssh_config": shared.LanguageSSHConfig,
+	"sshconfig":  shared.LanguageSSHConfig,
 
-	".ssh/config":   LanguageSSHConfig,
-	"~/.ssh/config": LanguageSSHConfig,
+	".ssh/config":   shared.LanguageSSHConfig,
+	"~/.ssh/config": shared.LanguageSSHConfig,
 
-	"fstab":     LanguageFstab,
-	"etc/fstab": LanguageFstab,
+	"fstab":     shared.LanguageFstab,
+	"etc/fstab": shared.LanguageFstab,
 
-	"wireguard":         LanguageWireguard,
-	"wg":                LanguageWireguard,
-	"languagewireguard": LanguageWireguard,
-	"host":              LanguageHosts,
-	"hosts":             LanguageHosts,
-	"etc/hosts":         LanguageHosts,
+	"wireguard":         shared.LanguageWireguard,
+	"wg":                shared.LanguageWireguard,
+	"languagewireguard": shared.LanguageWireguard,
+	"host":              shared.LanguageHosts,
+	"hosts":             shared.LanguageHosts,
+	"etc/hosts":         shared.LanguageHosts,
 
-	"aliases":     LanguageAliases,
-	"mailaliases": LanguageAliases,
-	"etc/aliases": LanguageAliases,
+	"aliases":     shared.LanguageAliases,
+	"mailaliases": shared.LanguageAliases,
+	"etc/aliases": shared.LanguageAliases,
 }
 
-var filenameToLanguageMap = map[string]SupportedLanguage{
-	"sshd_config": LanguageSSHDConfig,
-	"sshdconfig":  LanguageSSHDConfig,
-	"sshd":        LanguageSSHDConfig,
-	"sshd_conf":   LanguageSSHDConfig,
-	"sshdconf":    LanguageSSHDConfig,
+var filenameToLanguageMap = map[string]shared.SupportedLanguage{
+	"sshd_config": shared.LanguageSSHDConfig,
+	"sshdconfig":  shared.LanguageSSHDConfig,
+	"sshd":        shared.LanguageSSHDConfig,
+	"sshd_conf":   shared.LanguageSSHDConfig,
+	"sshdconf":    shared.LanguageSSHDConfig,
 
-	"ssh_config": LanguageSSHConfig,
-	"sshconfig":  LanguageSSHConfig,
-	"ssh":        LanguageSSHConfig,
-	"ssh_conf":   LanguageSSHConfig,
-	"sshconf":    LanguageSSHConfig,
+	"ssh_config": shared.LanguageSSHConfig,
+	"sshconfig":  shared.LanguageSSHConfig,
+	"ssh":        shared.LanguageSSHConfig,
+	"ssh_conf":   shared.LanguageSSHConfig,
+	"sshconf":    shared.LanguageSSHConfig,
 
-	"fstab": LanguageFstab,
+	"fstab": shared.LanguageFstab,
 
-	"hosts": LanguageHosts,
+	"hosts": shared.LanguageHosts,
 
-	"aliases":     LanguageAliases,
-	"mailaliases": LanguageAliases,
+	"aliases":     shared.LanguageAliases,
+	"mailaliases": shared.LanguageAliases,
 }
 
 var typeOverwriteRegex = regexp.MustCompile(`#\?\s*lsp\.language\s*=\s*(\w+)\s*`)
@@ -103,18 +84,27 @@ func DetectLanguage(
 	content string,
 	advertisedLanguage string,
 	uri protocol.DocumentUri,
-) (SupportedLanguage, error) {
-	if match := typeOverwriteRegex.FindStringSubmatch(content); match != nil {
-		suggestedLanguage := strings.ToLower(match[1])
+) (shared.SupportedLanguage, error) {
+	if match := typeOverwriteRegex.FindStringSubmatchIndex(content); match != nil {
+		text := content[match[0]:match[1]]
+		language := content[match[2]:match[3]]
+		suggestedLanguage := strings.ToLower(language)
 
 		foundLanguage, ok := valueToLanguageMap[suggestedLanguage]
 
+		contentUntilMatch := content[:match[0]]
+
 		if ok {
+			line := uint32(utils.CountCharacterOccurrences(contentUntilMatch, '\n'))
+			shared.LanguagesOverwrites[uri] = shared.LanguageOverwrite{
+				Language:  foundLanguage,
+				Raw:       text,
+				Line:      line,
+				Character: uint32(match[0]),
+			}
+
 			return foundLanguage, nil
 		}
-
-		matchIndex := strings.Index(content, match[0])
-		contentUntilMatch := content[:matchIndex]
 
 		return "", common.ParseError{
 			Line: uint32(utils.CountCharacterOccurrences(contentUntilMatch, '\n')),
@@ -132,22 +122,22 @@ func DetectLanguage(
 	case "file:///etc/ssh/sshd_config":
 		fallthrough
 	case "file:///etc/ssh/ssh_config":
-		return LanguageSSHDConfig, nil
+		return shared.LanguageSSHDConfig, nil
 
 	case "file:///etc/fstab":
-		return LanguageFstab, nil
+		return shared.LanguageFstab, nil
 
 	// Darwin
 	case "file:///private/etc/hosts":
 		fallthrough
 	case "file:///etc/hosts":
-		return LanguageHosts, nil
+		return shared.LanguageHosts, nil
 
 	// Darwin
 	case "file:///private/etc/aliases":
 		fallthrough
 	case "file:///etc/aliases":
-		return LanguageAliases, nil
+		return shared.LanguageAliases, nil
 	}
 
 	filename := path.Base(string(uri))
@@ -157,11 +147,11 @@ func DetectLanguage(
 	}
 
 	if strings.HasPrefix(uri, "file:///etc/wireguard/") || wireguardPattern.MatchString(uri) {
-		return LanguageWireguard, nil
+		return shared.LanguageWireguard, nil
 	}
 
 	if strings.HasSuffix(uri, ".ssh/config") {
-		return LanguageSSHConfig, nil
+		return shared.LanguageSSHConfig, nil
 	}
 
 	return "", undetectableError

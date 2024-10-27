@@ -1,25 +1,26 @@
 package utils
 
 import (
+	"config-lsp/root-handler/shared"
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 type lspNotification struct {
-	uri string
+	Uri string
 }
 
 type lspDetectedLanguage struct {
 	lspNotification
 
-	language string
+	Language string
 }
 
 func NotifyLanguageUndetectable(context *glsp.Context, uri protocol.DocumentUri) {
 	go context.Notify(
 		"$/config-lsp/languageUndetectable",
 		lspNotification{
-			uri: string(uri),
+			Uri: string(uri),
 		},
 	)
 
@@ -32,14 +33,14 @@ func NotifyLanguageUndetectable(context *glsp.Context, uri protocol.DocumentUri)
 	)
 }
 
-func NotifyDetectedLanguage(context *glsp.Context, uri protocol.DocumentUri, language SupportedLanguage) {
+func NotifyDetectedLanguage(context *glsp.Context, uri protocol.DocumentUri, language shared.SupportedLanguage) {
 	go context.Notify(
 		"$/config-lsp/detectedLanguage",
 		lspDetectedLanguage{
 			lspNotification: lspNotification{
-				uri: string(uri),
+				Uri: string(uri),
 			},
-			language: string(language),
+			Language: string(language),
 		},
 	)
 }

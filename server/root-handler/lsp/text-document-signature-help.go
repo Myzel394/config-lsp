@@ -5,8 +5,6 @@ import (
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 	"config-lsp/root-handler/shared"
-	"config-lsp/root-handler/utils"
-
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -19,17 +17,17 @@ func TextDocumentSignatureHelp(context *glsp.Context, params *protocol.Signature
 	}
 
 	switch *language {
-	case utils.LanguageHosts:
+	case shared.LanguageHosts:
 		return nil, nil
-	case utils.LanguageSSHDConfig:
+	case shared.LanguageSSHDConfig:
 		return sshdconfig.TextDocumentSignatureHelp(context, params)
-	case utils.LanguageSSHConfig:
+	case shared.LanguageSSHConfig:
 		return sshconfig.TextDocumentSignatureHelp(context, params)
-	case utils.LanguageFstab:
+	case shared.LanguageFstab:
 		return nil, nil
-	case utils.LanguageWireguard:
+	case shared.LanguageWireguard:
 		return nil, nil
-	case utils.LanguageAliases:
+	case shared.LanguageAliases:
 		return aliases.TextDocumentSignatureHelp(context, params)
 	}
 

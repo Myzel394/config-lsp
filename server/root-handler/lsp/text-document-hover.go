@@ -8,8 +8,6 @@ import (
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 	"config-lsp/root-handler/shared"
-	"config-lsp/root-handler/utils"
-
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -22,17 +20,17 @@ func TextDocumentHover(context *glsp.Context, params *protocol.HoverParams) (*pr
 	}
 
 	switch *language {
-	case utils.LanguageHosts:
+	case shared.LanguageHosts:
 		return hosts.TextDocumentHover(context, params)
-	case utils.LanguageSSHDConfig:
+	case shared.LanguageSSHDConfig:
 		return sshdconfig.TextDocumentHover(context, params)
-	case utils.LanguageSSHConfig:
+	case shared.LanguageSSHConfig:
 		return sshconfig.TextDocumentHover(context, params)
-	case utils.LanguageFstab:
+	case shared.LanguageFstab:
 		return fstab.TextDocumentHover(context, params)
-	case utils.LanguageWireguard:
+	case shared.LanguageWireguard:
 		return wireguard.TextDocumentHover(context, params)
-	case utils.LanguageAliases:
+	case shared.LanguageAliases:
 		return aliases.TextDocumentHover(context, params)
 	}
 

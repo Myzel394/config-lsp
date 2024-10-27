@@ -8,8 +8,6 @@ import (
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 	"config-lsp/root-handler/shared"
-	"config-lsp/root-handler/utils"
-
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -22,17 +20,17 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 	}
 
 	switch *language {
-	case utils.LanguageFstab:
+	case shared.LanguageFstab:
 		return fstab.TextDocumentCompletion(context, params)
-	case utils.LanguageSSHDConfig:
+	case shared.LanguageSSHDConfig:
 		return sshdconfig.TextDocumentCompletion(context, params)
-	case utils.LanguageSSHConfig:
+	case shared.LanguageSSHConfig:
 		return sshconfig.TextDocumentCompletion(context, params)
-	case utils.LanguageWireguard:
+	case shared.LanguageWireguard:
 		return wireguard.TextDocumentCompletion(context, params)
-	case utils.LanguageHosts:
+	case shared.LanguageHosts:
 		return hosts.TextDocumentCompletion(context, params)
-	case utils.LanguageAliases:
+	case shared.LanguageAliases:
 		return aliases.TextDocumentCompletion(context, params)
 	}
 

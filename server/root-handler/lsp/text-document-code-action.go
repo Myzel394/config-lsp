@@ -20,17 +20,17 @@ func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionPa
 	}
 
 	switch *language {
-	case utils.LanguageFstab:
+	case shared.LanguageFstab:
 		return nil, nil
-	case utils.LanguageHosts:
+	case shared.LanguageHosts:
 		return hosts.TextDocumentCodeAction(context, params)
-	case utils.LanguageSSHDConfig:
+	case shared.LanguageSSHDConfig:
 		return nil, nil
-	case utils.LanguageSSHConfig:
+	case shared.LanguageSSHConfig:
 		return sshconfig.TextDocumentCodeAction(context, params)
-	case utils.LanguageWireguard:
+	case shared.LanguageWireguard:
 		return wireguard.TextDocumentCodeAction(context, params)
-	case utils.LanguageAliases:
+	case shared.LanguageAliases:
 		return aliases.TextDocumentCodeAction(context, params)
 	}
 
