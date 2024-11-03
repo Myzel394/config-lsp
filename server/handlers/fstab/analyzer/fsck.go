@@ -3,6 +3,7 @@ package analyzer
 import (
 	"config-lsp/common"
 	"config-lsp/handlers/fstab/ast"
+	"config-lsp/handlers/fstab/fields"
 	"fmt"
 	"strings"
 
@@ -20,7 +21,7 @@ func analyzeFSCKField(ctx *analyzerContext) {
 		if entry.Fields != nil && entry.Fields.Fsck != nil && entry.Fields.Fsck.Value.Value == "1" {
 			fileSystem := strings.ToLower(entry.Fields.FilesystemType.Value.Value)
 
-			if fileSystem == "btrfs" || fileSystem == "xfs" {
+			if _, found := fields.FsckOneDisabledFilesystems[fileSystem]; found {
 				// From https://wiki.archlinux.org/title/Fstab
 
 				ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{

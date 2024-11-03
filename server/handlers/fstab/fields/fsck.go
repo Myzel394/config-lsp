@@ -19,3 +19,22 @@ var FsckField = docvalues.EnumValue{
 		),
 	},
 }
+
+var FsckFieldWhenDisabledFilesystems = docvalues.EnumValue{
+	EnforceValues: false,
+	Values: []docvalues.EnumString{
+		docvalues.CreateEnumStringWithDoc(
+			"0",
+			"Defaults to zero (don’t check the filesystem) if not present.",
+		),
+		docvalues.CreateEnumStringWithDoc(
+			"2",
+			"Other filesystems [than the root filesystem] should have a fs_passno of 2.",
+		),
+	},
+}
+
+var FsckOneDisabledFilesystems = map[string]struct{}{
+	"btrfs": {},
+	"xfs":   {},
+}
