@@ -470,6 +470,10 @@ var MountOptionsMapField = map[string]optionField{
 		Enums:      commondocumentation.UmsdosDocumentationEnums,
 		Assignable: commondocumentation.UmsdosDocumentationAssignable,
 	},
+	"vboxsf": {
+		Enums:      commondocumentation.VboxsfDocumentationEnums,
+		Assignable: commondocumentation.VboxsfDocumentationAssignable,
+	},
 	"vfat": {
 		Enums:      commondocumentation.VfatDocumentationEnums,
 		Assignable: commondocumentation.VfatDocumentationAssignable,

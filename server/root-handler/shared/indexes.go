@@ -8,7 +8,7 @@ type LanguageOverwrite struct {
 	Language SupportedLanguage
 
 	// The start of the overwrite
-	Raw string
+	Raw       string
 	Line      uint32
 	Character uint32
 }
