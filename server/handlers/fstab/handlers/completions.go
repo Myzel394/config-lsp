@@ -84,10 +84,10 @@ func GetCompletion(
 			value,
 			cursor,
 		), nil
-	case ast.FstabFieldPass:
-		value, cursor := getFieldSafely(entry.Fields.Pass, cursor)
+	case ast.FstabFieldFsck:
+		value, cursor := getFieldSafely(entry.Fields.Fsck, cursor)
 
-		return fields.PassField.DeprecatedFetchCompletions(
+		return fields.FsckField.DeprecatedFetchCompletions(
 			value,
 			cursor,
 		), nil

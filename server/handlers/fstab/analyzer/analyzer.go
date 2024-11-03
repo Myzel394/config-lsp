@@ -30,7 +30,7 @@ func Analyze(
 		return ctx.diagnostics
 	}
 
-	analyzePassFields(ctx)
+	analyzeFSCKField(ctx)
 
 	return ctx.diagnostics
 }

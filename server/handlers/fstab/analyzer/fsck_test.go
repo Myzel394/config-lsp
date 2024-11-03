@@ -18,7 +18,7 @@ UUID=12345678-1234-1234-1234-123456789012 /home ext4 defaults 0 2
 		document: document,
 	}
 
-	analyzePassFields(ctx)
+	analyzeFSCKField(ctx)
 
 	if len(ctx.diagnostics) != 1 {
 		t.Errorf("Expected 1 error, got %v", len(ctx.diagnostics))
@@ -36,7 +36,7 @@ UUID=12345678-1234-1234-1234-123456789012 /boot btrfs defaults 0 1
 		document: document,
 	}
 
-	analyzePassFields(ctx)
+	analyzeFSCKField(ctx)
 
 	if len(ctx.diagnostics) != 1 {
 		t.Errorf("Expected 1 error, got %v", len(ctx.diagnostics))

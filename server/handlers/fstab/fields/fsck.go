@@ -2,7 +2,7 @@ package fields
 
 import docvalues "config-lsp/doc-values"
 
-var PassField = docvalues.EnumValue{
+var FsckField = docvalues.EnumValue{
 	EnforceValues: false,
 	Values: []docvalues.EnumString{
 		docvalues.CreateEnumStringWithDoc(

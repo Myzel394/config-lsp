@@ -128,7 +128,7 @@ func (s *fstabParserListener) EnterPass(ctx *parser.PassContext) {
 	text := ctx.GetText()
 	value := commonparser.ParseRawString(text, commonparser.FullFeatures)
 
-	s.fstabContext.currentEntry.Fields.Pass = &FstabField{
+	s.fstabContext.currentEntry.Fields.Fsck = &FstabField{
 		LocationRange: location,
 		Value:         value,
 	}

@@ -42,7 +42,7 @@ func GetHoverInfo(
 		return &hover, nil
 	case ast.FstabFieldFreq:
 		return &FreqHoverField, nil
-	case ast.FstabFieldPass:
+	case ast.FstabFieldFsck:
 		return &PassHoverField, nil
 	}
 

@@ -27,7 +27,7 @@ LABEL=example /mnt/example fat32 defaults 0 2
 
 	rawFirstEntry, _ := c.Entries.Get(uint32(0))
 	firstEntry := rawFirstEntry.(*FstabEntry)
-	if !(firstEntry.Fields.Spec.Value.Value == "LABEL=test" && firstEntry.Fields.MountPoint.Value.Value == "/mnt/test" && firstEntry.Fields.FilesystemType.Value.Value == "ext4" && firstEntry.Fields.Options.Value.Value == "defaults" && firstEntry.Fields.Freq.Value.Value == "0" && firstEntry.Fields.Pass.Value.Value == "0") {
+	if !(firstEntry.Fields.Spec.Value.Value == "LABEL=test" && firstEntry.Fields.MountPoint.Value.Value == "/mnt/test" && firstEntry.Fields.FilesystemType.Value.Value == "ext4" && firstEntry.Fields.Options.Value.Value == "defaults" && firstEntry.Fields.Freq.Value.Value == "0" && firstEntry.Fields.Fsck.Value.Value == "0") {
 		t.Fatalf("Expected entry to be LABEL=test /mnt/test ext4 defaults 0 0, got %v", firstEntry)
 	}
 
@@ -71,8 +71,8 @@ LABEL=example /mnt/example fat32 defaults 0 2
 		t.Errorf("Expected freq end to be 0:36, got %v", firstEntry.Fields.Freq.LocationRange.End)
 	}
 
-	if !(firstEntry.Fields.Pass.LocationRange.Start.Line == 0 && firstEntry.Fields.Pass.LocationRange.Start.Character == 37) {
-		t.Errorf("Expected pass start to be 0:37, got %v", firstEntry.Fields.Pass.LocationRange.Start)
+	if !(firstEntry.Fields.Fsck.LocationRange.Start.Line == 0 && firstEntry.Fields.Fsck.LocationRange.Start.Character == 37) {
+		t.Errorf("Expected pass start to be 0:37, got %v", firstEntry.Fields.Fsck.LocationRange.Start)
 	}
 
 	field := firstEntry.GetFieldAtPosition(common.IndexPosition(0))
