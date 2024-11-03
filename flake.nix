@@ -23,7 +23,7 @@
       "aarch64-windows"
     ] (system: 
       let
-        version = "0.1.0"; # CI:CD-VERSION
+        version = "0.1.2"; # CI:CD-VERSION
         pkgs = import nixpkgs {
           inherit system;
           overlays = [
@@ -37,21 +37,39 @@
         inputs = [
           pkgs.go_1_22
         ];
-        server = pkgs.buildGoModule {
+        serverUncompressed = pkgs.buildGoModule {
           nativeBuildInputs = inputs;
           pname = "github.com/Myzel394/config-lsp";
           version = version;
           src = ./server;
-          vendorHash = "sha256-s+sjOVvqU20+mbEFKg+RCD+dhScqSatk9eseX2IioPI";
+          vendorHash = "sha256-eO1eY+2XuOCd/dKwgFtu05+bnn/Cv8ZbUIwRjCwJF+U=";
+          ldflags = [ "-s" "-w" ];
           checkPhase = ''
             go test -v $(pwd)/...
+          '';
+        };
+        server = pkgs.stdenv.mkDerivation {
+          name = "config-lsp-${version}";
+          src = serverUncompressed;
+          buildInputs = [
+            pkgs.upx
+          ];
+          buildPhase = ''
+            mkdir -p $out/bin
+            cp $src/bin/config-lsp $out/bin/
+            chmod +rw $out/bin/config-lsp
+
+            # upx is currently not supported for darwin
+            if [ "${system}" != "x86_64-darwin" ] && [ "${system}" != "aarch64-darwin" ]; then
+              upx --ultra-brute $out/bin/config-lsp
+            fi
           '';
         };
       in {
         packages = {
           default = server;
-          "vs-code-extension" = let
-            name = "config-lsp-vs-code-extension";
+          "vs-code-extension-bare" = let
+            name = "config-lsp";
             node-modules = pkgs.mkYarnPackage {
               src = ./vs-code-extension;
               name = name;
@@ -60,13 +78,56 @@
               yarnNix = ./vs-code-extension/yarn.nix;
 
               buildPhase = ''
-                yarn --offline run compile
+                yarn --offline run compile:prod
               '';
               installPhase = ''
-                mv deps/${name}/out $out
-                cp ${server}/bin/config-lsp $out/
+                mkdir -p extension
+
+                # No idea why this is being created
+                rm deps/${name}/config-lsp
+
+                cp -rL deps/${name}/. extension
+
+                mkdir -p $out
+                cp -r extension/. $out
               '';
               distPhase = "true";
+
+              buildInputs = [
+                pkgs.vsce
+              ];
+            };
+          in node-modules;
+          "vs-code-extension" = let
+            name = "config-lsp";
+            node-modules = pkgs.mkYarnPackage {
+              src = ./vs-code-extension;
+              name = name;
+              packageJSON = ./vs-code-extension/package.json;
+              yarnLock = ./vs-code-extension/yarn.lock;
+              yarnNix = ./vs-code-extension/yarn.nix;
+
+              buildPhase = ''
+                yarn --offline run compile:prod
+              '';
+              installPhase = ''
+                mkdir -p extension
+
+                # No idea why this is being created
+                rm deps/${name}/config-lsp
+
+                cp -rL deps/${name}/. extension
+                cp ${server}/bin/config-lsp extension/out/config-lsp
+
+                cd extension && ${pkgs.vsce}/bin/vsce package
+                mkdir -p $out
+                cp *.vsix $out
+              '';
+              distPhase = "true";
+
+              buildInputs = [
+                pkgs.vsce
+              ];
             };
           in node-modules;
         };
@@ -82,6 +143,8 @@
         devShells."vs-code-extension" = pkgs.mkShell {
           buildInputs = [
             pkgs.nodejs
+            pkgs.vsce
+            pkgs.yarn2nix
           ];
         };
       }

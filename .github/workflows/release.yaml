@@ -1,0 +1,135 @@
+name: build and release
+
+permissions:
+  contents: write
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  build-server:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check git version matches flake version
+        shell: bash
+        run: |
+          if ! [ $(echo '${{ github.ref }}' | cut -d'v' -f 2) = $(grep '# CI:CD-VERSION$' flake.nix | cut -d'"' -f 2) ];
+          then
+            echo "Version mismatch between Git and flake"
+            exit 1
+          fi
+
+      - name: Check version in code matches flake version
+        shell: bash
+        run: |
+          if ! [ $(grep '// CI:CD-VERSION$' server/root-handler/common.go | cut -d'"' -f 2) = $(grep '# CI:CD-VERSION$' flake.nix | cut -d'"' -f 2) ];
+          then
+            echo "Version mismatch between code and flake"
+            exit 1
+          fi
+
+      - name: Check vs code package.json version matches flake version
+        shell: bash
+        run: |
+          if ! [ $(grep '"version": "' vs-code-extension/package.json | cut -d'"' -f 4) = $(grep '# CI:CD-VERSION$' flake.nix | cut -d'"' -f 2) ];
+          then
+            echo "Version mismatch between vs code package.json and flake"
+            exit 1
+          fi
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_CONFIGLSP_TOKEN }}
+
+  build-extension:
+    name: Build extension for ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    needs:
+      # Wait for server to build so that we know the checks have passed
+      - build-server
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+            vscode_target: linux-x64
+          - goos: linux
+            goarch: arm64
+            vscode_target: linux-arm64
+
+          - goos: darwin
+            goarch: amd64
+            vscode_target: darwin-x64
+          - goos: darwin
+            goarch: arm64
+            vscode_target: darwin-arm64
+
+          - goos: windows
+            goarch: amd64
+            vscode_target: win32-x64
+          - goos: windows
+            goarch: arm64
+            vscode_target: win32-arm64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: cachix/install-nix-action@v27
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Create bare extension
+        run: nix build .#"vs-code-extension-bare"
+
+      - name: Build extension 
+        run: cd server && GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -a -gcflags=all="-l -B" -ldflags="-s -w" -o config-lsp
+
+      - name: Prepare folder
+        run: cp -rL result dist && chmod -R 777 dist
+
+      - name: Move binary to extension
+        run: mv server/config-lsp dist/out/
+
+      - name: Shrink binary
+        if: ${{ matrix.goos == 'linux' }}
+        run: nix develop .#"vs-code-extension" --command bash -c "upx dist/out/config-lsp"
+
+      - name: Package extension
+        run: nix develop .#"vs-code-extension" --command bash -c "cd dist && vsce package --target ${{ matrix.vscode_target }}"
+
+      - name: Move vsix to root
+        run: mv dist/*.vsix .
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: '*.vsix'
+
+      - name: Upload extension to VS Code Marketplace
+        run: nix develop .#"vs-code-extension" --command bash -c "vsce publish --packagePath *.vsix -p ${{ secrets.VSCE_PAT }}"
+

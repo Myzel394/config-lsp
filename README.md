@@ -8,7 +8,7 @@ A language server for configuration files. The goal is to make editing config fi
 |-------------|-------------|--------------|---------|---------------|--------------|----------|------------------|
 | aliases     | ✅           | ✅            | ✅       | ✅             | ✅            | ✅        | ✅               |
 | fstab       | ✅           | ✅            | ✅       | ❓             | ❓            | ❓        | 🟡               |
-| hosts       | ✅           | ✅            | ✅       | ✅             | ❓            | ❓        | 🟡               |
+| hosts       | ✅           | ✅            | ✅       | ✅             | ❓            | ❓        | ✅               |
 | ssh_config  | ✅           | ✅            | ✅       | ✅             | ✅            | ✅        | ✅               |
 | sshd_config | ✅           | ✅            | ✅       | ❓             | ✅            | ❓        | ✅               |
 | wireguard   | ✅           | ✅            | ✅       | ✅             | ❓            | ❓        | 🟡               |
@@ -28,11 +28,52 @@ You are welcome to request any config file, as far as it's fairly well known.
 
 ## Installation
 
+### VS Code Extension
+
+[Install the extension from the marketplace](https://marketplace.visualstudio.com/items?itemName=myzel394.config-lsp)
+
+Alternatively, you can also manually install the extension:
+
+1. Download the latest extension version from the [release page](https://github.com/Myzel394/config-lsp/releases) - You can find the extension under the "assets" section. The filename ends with `.vsix`
+2. Open VS Code
+3. Open the extensions sidebar
+4. In the top bar, click on the three dots and select "Install from VSIX..."
+5. Select the just downloaded `.vsix` file
+6. You may need to restart VS Code
+7. Enjoy!
+
+### Manual installation
+
+To use `config-lsp` in any other editor, you'll need to install it manually.
+Don't worry, it's easy!
+
+#### Installing the latest Binary
+
+##### Brew
+
+```sh
+brew install myzel394/formulae/config-lsp
+```
+
+##### Manual Binary
+
 Download the latest binary from the [releases page](https://github.com/Myzel394/config-lsp/releases) and put it in your PATH.
 
-Follow the instructions for your editor below.
+##### Compiling
 
-### Neovim installation
+You can either compile the binary using go:
+
+```sh
+go build -o config-lsp
+```
+
+or build it using Nix:
+
+```sh
+nix flake build
+```
+
+#### Neovim installation
 
 Using [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) you can add `config-lsp` by adding the following to your `lsp.lua` (filename might differ):
 
@@ -56,14 +97,6 @@ end
 
 lspconfig.config_lsp.setup {}
 `````
-
-### VS Code installation
-
-The VS Code extension is currently in development. An official extension will be released soon.
-
-However, at the moment you can also compile the extension yourself and run it in development mode.
-
-**Do not create an extension and publish it yourself. Contribute to the official extension instead.**
 
 ## Supporting config-lsp
 

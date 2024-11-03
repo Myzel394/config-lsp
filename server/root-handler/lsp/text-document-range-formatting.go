@@ -1,8 +1,10 @@
-package roothandler
+package lsp
 
 import (
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
+	"config-lsp/root-handler/shared"
+	"config-lsp/root-handler/utils"
 
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -12,30 +14,24 @@ func TextDocumentRangeFormattingFunc(
 	context *glsp.Context,
 	params *protocol.DocumentRangeFormattingParams,
 ) ([]protocol.TextEdit, error) {
-	language := rootHandler.GetLanguageForDocument(params.TextDocument.URI)
+	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
 
 	if language == nil {
-		showParseError(
-			context,
-			params.TextDocument.URI,
-			undetectableError,
-		)
-
-		return nil, undetectableError.Err
+		return nil, utils.LanguageUndetectableError{}
 	}
 
 	switch *language {
-	case LanguageHosts:
+	case shared.LanguageHosts:
 		return nil, nil
-	case LanguageSSHDConfig:
+	case shared.LanguageSSHDConfig:
 		return sshdconfig.TextDocumentRangeFormatting(context, params)
-	case LanguageSSHConfig:
+	case shared.LanguageSSHConfig:
 		return sshconfig.TextDocumentRangeFormatting(context, params)
-	case LanguageFstab:
+	case shared.LanguageFstab:
 		return nil, nil
-	case LanguageWireguard:
+	case shared.LanguageWireguard:
 		return nil, nil
-	case LanguageAliases:
+	case shared.LanguageAliases:
 		return nil, nil
 	}
 
