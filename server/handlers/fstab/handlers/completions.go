@@ -4,7 +4,9 @@ import (
 	"config-lsp/common"
 	"config-lsp/handlers/fstab/ast"
 	"config-lsp/handlers/fstab/fields"
+	"config-lsp/utils"
 	"fmt"
+	"strings"
 
 	"github.com/tliron/glsp/protocol_3_16"
 )
@@ -84,13 +86,21 @@ func GetCompletion(
 			value,
 			cursor,
 		), nil
-	case ast.FstabFieldPass:
-		value, cursor := getFieldSafely(entry.Fields.Pass, cursor)
+	case ast.FstabFieldFsck:
+		value, cursor := getFieldSafely(entry.Fields.Fsck, cursor)
 
-		return fields.PassField.DeprecatedFetchCompletions(
-			value,
-			cursor,
-		), nil
+		if entry.Fields.FilesystemType != nil &&
+			utils.KeyExists(fields.FsckOneDisabledFilesystems, strings.ToLower(entry.Fields.FilesystemType.Value.Value)) {
+			return fields.FsckFieldWhenDisabledFilesystems.DeprecatedFetchCompletions(
+				value,
+				cursor,
+			), nil
+		} else {
+			return fields.FsckField.DeprecatedFetchCompletions(
+				value,
+				cursor,
+			), nil
+		}
 	}
 
 	return nil, nil

@@ -14,7 +14,7 @@ const (
 	FstabFieldFileSystemType FstabFieldName = "filesystemtype"
 	FstabFieldOptions        FstabFieldName = "options"
 	FstabFieldFreq           FstabFieldName = "freq"
-	FstabFieldPass           FstabFieldName = "pass"
+	FstabFieldFsck           FstabFieldName = "fsck"
 )
 
 type FstabField struct {
@@ -29,7 +29,7 @@ type FstabFields struct {
 	FilesystemType *FstabField
 	Options        *FstabField
 	Freq           *FstabField
-	Pass           *FstabField
+	Fsck           *FstabField
 }
 
 type FstabEntry struct {

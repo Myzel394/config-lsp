@@ -161,7 +161,7 @@ func (c *FstabConfig) parseStatement(
 // 			FilesystemType: filesystemType,
 // 			Options:        options,
 // 			Freq:           freq,
-// 			Pass:           pass,
+// 			Fsck:           pass,
 // 		},
 // 	}
 //
