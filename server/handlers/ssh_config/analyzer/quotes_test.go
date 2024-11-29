@@ -101,7 +101,8 @@ func TestValidDependentOptionsExample(
 	d := testutils_test.DocumentFromInput(t, `
 Port 1234
 CanonicalizeHostname yes
-CanonicalDomains example.com
+CanonicalDomains "example.com"
+Test "hello world 'test' "
 `)
 	ctx := &analyzerContext{
 		document:    d,

@@ -81,3 +81,15 @@ func TestInvertedQuotesFullyQuoted(
 		t.Fatalf("Unexpected inverted quote ranges: %v", inverted)
 	}
 }
+
+func TestInvertedQuotesFirstThenRemaining(
+	t *testing.T,
+) {
+	text := `"hello world" i am here`
+	quoteRanges := GetQuoteRanges(text)
+	inverted := quoteRanges.GetInvertedRanges(len(text))
+
+	if !(len(inverted) == 1 && inverted[0][0] == 13 && inverted[0][1] == 23) {
+		t.Fatalf("Unexpected inverted quote ranges: %v", inverted)
+	}
+}

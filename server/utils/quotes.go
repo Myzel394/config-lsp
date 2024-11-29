@@ -55,20 +55,18 @@ func (q quoteRanges) GetInvertedRanges(textLength int) [][2]int {
 		inverted = append(inverted, [2]int{0, firstRange[0]})
 	}
 
-	if len(q) == 1 {
-		return inverted
-	}
+	if len(q) > 1 {
+		for index, currentRange := range q[:len(q)-1] {
+			nextRange := q[index+1]
 
-	for index, currentRange := range q[:len(q)-1] {
-		nextRange := q[index+1]
-
-		inverted = append(inverted, [2]int{currentRange[1] + 1, nextRange[0]})
+			inverted = append(inverted, [2]int{currentRange[1] + 1, nextRange[0]})
+		}
 	}
 
 	lastRange := q[len(q)-1]
 
 	if lastRange[1] != (textLength - 1) {
-		inverted = append(inverted, [2]int{lastRange[1], textLength - 1})
+		inverted = append(inverted, [2]int{lastRange[1] + 1, textLength})
 	}
 
 	return inverted

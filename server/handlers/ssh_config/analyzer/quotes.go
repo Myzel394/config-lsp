@@ -27,15 +27,18 @@ func checkIsUsingDoubleQuotes(
 	valueRange common.LocationRange,
 ) {
 	quoteRanges := utils.GetQuoteRanges(value.Raw)
-	singleQuotePosition := strings.Index(value.Raw, "'")
+	invertedRanges := quoteRanges.GetInvertedRanges(len(value.Raw))
 
-	// Single quote
-	if singleQuotePosition != -1 && !quoteRanges.IsIndexInsideQuotes(singleQuotePosition) {
-		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-			Range:    valueRange.ToLSPRange(),
-			Message:  "ssh_config does not support single quotes. Use double quotes (\") instead.",
-			Severity: &common.SeverityError,
-		})
+	for _, rang := range invertedRanges {
+		text := value.Raw[rang[0]:rang[1]]
+
+		if strings.Contains(text, "'") {
+			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+				Range:    valueRange.ToLSPRange(),
+				Message:  "ssh_config does not support single quotes. Use double quotes (\") instead.",
+				Severity: &common.SeverityError,
+			})
+		}
 	}
 }
 
