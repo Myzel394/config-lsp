@@ -33,8 +33,8 @@ func analyzeValuesAreValid(
 			checkField(ctx, entry.Fields.Freq, fields.FreqField)
 		}
 
-		if entry.Fields.Pass != nil {
-			checkField(ctx, entry.Fields.Pass, fields.PassField)
+		if entry.Fields.Fsck != nil {
+			checkField(ctx, entry.Fields.Fsck, fields.FsckField)
 		}
 	}
 }

@@ -43,7 +43,7 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 			entry,
 			matchBlock,
 			cursor,
-		)
+		), nil
 	}
 
 	return nil, nil

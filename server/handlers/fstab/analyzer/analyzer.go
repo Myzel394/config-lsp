@@ -14,17 +14,23 @@ type analyzerContext struct {
 func Analyze(
 	document *shared.FstabDocument,
 ) []protocol.Diagnostic {
-	ctx := analyzerContext{
+	ctx := &analyzerContext{
 		document: document,
 	}
 
-	analyzeFieldAreFilled(&ctx)
+	analyzeFieldAreFilled(ctx)
 
 	if len(ctx.diagnostics) > 0 {
 		return ctx.diagnostics
 	}
 
-	analyzeValuesAreValid(&ctx)
+	analyzeValuesAreValid(ctx)
+
+	if len(ctx.diagnostics) > 0 {
+		return ctx.diagnostics
+	}
+
+	analyzeFSCKField(ctx)
 
 	return ctx.diagnostics
 }

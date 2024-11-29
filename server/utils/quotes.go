@@ -1,6 +1,9 @@
 package utils
 
-import "slices"
+import (
+	"cmp"
+	"slices"
+)
 
 type quoteRange [2]int
 
@@ -10,24 +13,24 @@ func (q quoteRange) IsCharInside(index int) bool {
 
 type quoteRanges []quoteRange
 
-func (q quoteRanges) IsCharInside(index int) bool {
-	_, found := slices.BinarySearchFunc(
+func (q quoteRanges) IsIndexInsideQuotes(index int) bool {
+	return q.GetQuoteForIndex(index) != nil
+}
+
+func (q quoteRanges) GetQuoteForIndex(index int) *quoteRange {
+	index, found := slices.BinarySearchFunc(
 		q,
 		index,
 		func(current quoteRange, target int) int {
-			if target < current[0] {
-				return -1
-			}
-
-			if target > current[1] {
-				return 1
-			}
-
-			return 0
+			return cmp.Compare(target, current[0])
 		},
 	)
 
-	return found
+	if !found {
+		return nil
+	}
+
+	return &q[index]
 }
 
 func GetQuoteRanges(s string) quoteRanges {

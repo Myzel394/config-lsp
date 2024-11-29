@@ -14,7 +14,7 @@ func TextDocumentSignatureHelp(context *glsp.Context, params *protocol.Signature
 	document := aliases.DocumentParserMap[params.TextDocument.URI]
 
 	line := params.Position.Line
-	cursor := common.LSPCharacterAsCursorPosition(common.CursorToCharacterIndex(params.Position.Character))
+	cursor := common.LSPCharacterAsCursorPosition(params.Position.Character)
 
 	if _, found := document.Parser.CommentLines[line]; found {
 		// Comment
@@ -36,17 +36,15 @@ func TextDocumentSignatureHelp(context *glsp.Context, params *protocol.Signature
 	if entry.Values != nil && entry.Values.Location.ContainsPosition(cursor) {
 		value := handlers.GetValueAtPosition(cursor, entry)
 
-		if value == nil {
+		if value == nil || value.GetAliasValue().Value == "" {
 			// For some reason, this does not really work,
 			// When we return all, and then a user value is entered
 			// and the `GetValueSignatureHelp` is called, still the old
 			// signatures with all signature are shown
-			// return handlers.GetAllValuesSignatureHelp(), nil
-
-			return nil, nil
+			return handlers.GetAllValuesSignatureHelp(), nil
 		}
 
-		return handlers.GetValueSignatureHelp(cursor, *value), nil
+		return handlers.GetValueSignatureHelp(cursor, value), nil
 	}
 
 	return nil, nil

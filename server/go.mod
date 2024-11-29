@@ -5,17 +5,18 @@ go 1.22.5
 require (
 	github.com/antlr4-go/antlr/v4 v4.13.1
 	github.com/emirpasic/gods v1.18.1
+	github.com/google/go-cmp v0.6.0
+	github.com/k0kubun/pp v3.0.1+incompatible
 	github.com/tliron/commonlog v0.2.17
 	github.com/tliron/glsp v0.2.2
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56
-	github.com/google/go-cmp v0.6.0
 )
 
 require (
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/iancoleman/strcase v0.3.0 // indirect
-	github.com/k0kubun/pp v3.0.1+incompatible // indirect
+	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

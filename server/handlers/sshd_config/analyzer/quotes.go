@@ -30,7 +30,7 @@ func checkIsUsingDoubleQuotes(
 	singleQuotePosition := strings.Index(value.Raw, "'")
 
 	// Single quote
-	if singleQuotePosition != -1 && !quoteRanges.IsCharInside(singleQuotePosition) {
+	if singleQuotePosition != -1 && !quoteRanges.IsIndexInsideQuotes(singleQuotePosition) {
 		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 			Range:    valueRange.ToLSPRange(),
 			Message:  "sshd_config does not support single quotes. Use double quotes (\") instead.",

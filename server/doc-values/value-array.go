@@ -3,6 +3,7 @@ package docvalues
 import (
 	"config-lsp/utils"
 	"fmt"
+	"regexp"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -42,6 +43,9 @@ type ArrayValue struct {
 	// This is used to extract the value from the user input,
 	// because you may want to preprocess the value before checking for duplicates
 	DuplicatesExtractor *(func(string) string)
+
+	// If true, array ArrayValue ignores the `Separator` if it's within quotes
+	RespectQuotes bool
 }
 
 func (v ArrayValue) GetTypeDescription() []string {
@@ -53,9 +57,18 @@ func (v ArrayValue) GetTypeDescription() []string {
 	)
 }
 
+// TODO: Add support for quotes
 func (v ArrayValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	errors := []*InvalidValue{}
-	values := strings.Split(value, v.Separator)
+	var values []string
+
+	if v.RespectQuotes {
+		splitPattern := *regexp.MustCompile(fmt.Sprintf(`".+?"|[^%s]+`, v.Separator))
+
+		values = splitPattern.FindAllString(value, -1)
+	} else {
+		values = strings.Split(value, v.Separator)
+	}
 
 	if *v.DuplicatesExtractor != nil {
 		valuesOccurrences := utils.SliceToMap(
@@ -122,8 +135,26 @@ func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32)
 	MIN := uint32(0)
 	MAX := uint32(len(line) - 1)
 
+	var cursorSearchStart = cursor
+	var cursorSearchEnd = cursor
+
 	var start uint32
 	var end uint32
+
+	// Hello,world,how,are,you
+	// Hello,"world,how",are,you
+	if v.RespectQuotes {
+		quotes := utils.GetQuoteRanges(line)
+
+		if len(quotes) > 0 {
+			quote := quotes.GetQuoteForIndex(int(cursor))
+
+			if quote != nil {
+				cursorSearchStart = uint32(quote[0])
+				cursorSearchEnd = uint32(quote[1])
+			}
+		}
+	}
 
 	// hello,w[o]rld,and,more
 	// [h]ello,world
@@ -135,7 +166,7 @@ func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32)
 	relativePosition, found := utils.FindPreviousCharacter(
 		line,
 		v.Separator,
-		int(cursor),
+		int(cursorSearchStart),
 	)
 
 	if found {
@@ -151,7 +182,7 @@ func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32)
 	relativePosition, found = utils.FindNextCharacter(
 		line,
 		v.Separator,
-		int(start),
+		int(cursorSearchEnd),
 	)
 
 	if found {

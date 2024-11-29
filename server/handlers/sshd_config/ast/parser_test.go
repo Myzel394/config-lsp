@@ -234,7 +234,7 @@ Match Address 192.168.0.2
 	}
 
 	firstOption, firstMatchBlock := p.FindOption(uint32(3))
-	if !(firstOption.Key.Key == "PasswordAuthentication" && firstOption.OptionValue.Value.Value == "yes") {
+	if !(firstOption.Key.Key == "passwordauthentication" && firstOption.OptionValue.Value.Value == "yes") {
 		t.Errorf("Expected first option to be 'PasswordAuthentication yes' and first match block to be 'Match Address 192.168.0.1', but got: %v, %v", firstOption, firstMatchBlock)
 	}
 

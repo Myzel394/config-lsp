@@ -1,39 +1,129 @@
 {
-	"name": "config-lsp-vs-code-extension",
-	"description": "A language server example using language services to support embedded languages",
-	"author": "Microsoft Corporation",
-	"license": "MIT",
-	"version": "1.0.0",
+	"name": "config-lsp",
+	"description": "Language Features (completions, diagnostics, etc.) for your config files: gitconfig, fstab, aliases, hosts, wireguard, ssh_config, sshd_config, and more to come!",
+	"author": "Myzel394",
+	"version": "0.1.2",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Microsoft/vscode-extension-samples"
+		"url": "https://github.com/Myzel394/config-lsp"
 	},
-	"publisher": "vscode-samples",
-	"categories": [],
-	"keywords": [],
-	"engines": {
-		"vscode": "^1.74.0"
+	"publisher": "myzel394",
+	"categories": [
+		"Programming Languages",
+		"Formatters"
+	],
+	"preview": true,
+	"contributes": {
+		"languages": [
+			{
+				"id": "sshconfig",
+				"extensions": ["sshconfig", "ssh_config"],
+				"aliases": ["SSH Config", "sshconfig"],
+				"filenames": ["sshconfig", "ssh_config"],
+				"filenamePatterns": ["~/.ssh/config", "**/sshconfig", "**/ssh_config"]
+			},
+			{
+				"id": "sshdconfig",
+				"extensions": ["sshdconfig", "sshd_config"],
+				"aliases": ["SSH Daemon Config", "sshdconfig"],
+				"filenames": ["sshdconfig", "sshd_config"],
+				"filenamePatterns": ["/etc/ssh/sshd_config", "**/sshdconfig", "**/sshd_config"]
+			},
+			{
+				"id": "aliases",
+				"extensions": ["aliases", "mailaliases"],
+				"aliases": ["Mail Aliases", "aliases", "mailaliases"],
+				"filenames": ["aliases", "mailaliases"],
+				"filenamePatterns": ["/etc/aliases", "**/aliases", "**/mailaliases"]
+			},
+			{
+				"id": "fstab",
+				"extensions": ["fstab"],
+				"aliases": ["fstab"],
+				"filenames": ["fstab"],
+				"filenamePatterns": ["/etc/fstab", "**/fstab", "**/etc/fstab"]
+			},
+			{
+				"id": "hosts",
+				"extensions": ["hosts"],
+				"aliases": ["hosts"],
+				"filenames": ["hosts"],
+				"filenamePatterns": ["/etc/hosts", "**/hosts", "**/etc/hosts"]
+			},
+			{
+				"id": "wireguard",
+				"extensions": ["wireguard", "wg"],
+				"aliases": ["WireGuard", "wireguard", "wg"],
+				"filenames": ["wireguard", "wg0.conf", "wg1.conf", "wg0", "wg1"],
+				"filenamePatterns": ["/etc/wireguard/*.conf", "**/wireguard", "**/wireguard.conf"]
+			}
+		]
 	},
 	"activationEvents": [
 		"onLanguage:plaintext",
-		"onLanguage:yaml"
+		"onLanguage:yaml",
+		"onLanguage:sshconfig",
+		"onLanguage:sshdconfig",
+		"onLanguage:aliases",
+		"onLanguage:fstab",
+		"onLanguage:hosts",
+		"onLanguage:wireguard"
 	],
-	"main": "./out/extension",
+	"sponsor": {
+		"url": "https://github.com/Myzel394/contact-me"
+	},
+	"icon": "icon.png",
+	"galleryBanner": {
+		"color": "#373435",
+		"theme": "dark"
+	},
+	"files": [
+		"out",
+		"package.json",
+		"LICENSE.md",
+		"icon.png"
+	],
+	"keywords": [
+		"config",
+		"lsp",
+		"language",
+		"configuration",
+		"help",
+		"autocomplete",
+		"completions",
+		"diagnostics",
+		"hints",
+		"format",
+
+		"ssh",
+		"ssh_config",
+		"sshd_config",
+		"wireguard",
+		"fstab",
+		"hosts",
+		"aliases"
+	],
+	"engines": {
+		"vscode": "^1.74.0"
+	},
+	"main": "./out/extension.js",
 	"scripts": {
-		"compile": "tsc -b",
+		"compile": "node esbuild.js",
+		"compile:prod": "node esbuild.js --production",
 		"watch": "tsc -b -w",
-		"lint": "eslint ./src --ext .ts,.tsx"
+		"lint": "eslint ./src"
 	},
 	"dependencies": {
-		"vscode-languageclient": "^9.0.1"
+		"vscode-languageclient": "^9.0.1",
+		"esbuild": "^0.24.0"
 	},
 	"devDependencies": {
 		"@types/mocha": "^5.2.7",
 		"@types/node": "^22.7.4",
+		"@types/vscode": "^1.74.0",
 		"@typescript-eslint/eslint-plugin": "^7.14.0",
 		"@typescript-eslint/parser": "^7.14.0",
 		"eslint": "^9.11.1",
-		"typescript": "^5.5.2",
-		"@types/vscode": "^1.93.0"
+		"typescript": "^5.5.2"
 	}
 }

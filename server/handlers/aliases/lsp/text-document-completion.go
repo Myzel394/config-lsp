@@ -28,11 +28,7 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 
 	entry := rawEntry.(*ast.AliasEntry)
 
-	if entry.Key == nil {
-		return handlers.GetAliasesCompletions(d.Indexes), nil
-	}
-
-	if entry.Key.Location.ContainsPosition(cursor) {
+	if entry.Key == nil || entry.Key.Location.ContainsPosition(cursor) {
 		return handlers.GetAliasesCompletions(d.Indexes), nil
 	}
 
@@ -40,13 +36,9 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 		return nil, nil
 	}
 
-	if entry.Separator.IsPositionBeforeEnd(cursor) {
-		return handlers.GetCompletionsForEntry(
-			cursor,
-			entry,
-			d.Indexes,
-		)
-	}
-
-	return nil, nil
+	return handlers.GetCompletionsForEntry(
+		cursor,
+		entry,
+		d.Indexes,
+	)
 }

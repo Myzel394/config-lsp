@@ -151,3 +151,12 @@ func MergeSlices[T any](slices ...[]T) []T {
 
 	return result
 }
+
+func Without[T comparable](a []T, b []T) []T {
+	set := SliceToSet(b)
+
+	return FilterWhere(a, func(value T) bool {
+		_, found := set[value]
+		return !found
+	})
+}

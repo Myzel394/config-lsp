@@ -1,7 +1,9 @@
-package roothandler
+package lsp
 
 import (
 	"config-lsp/common"
+	"config-lsp/root-handler/shared"
+	"config-lsp/root-handler/utils"
 	"fmt"
 
 	aliases "config-lsp/handlers/aliases/lsp"
@@ -32,35 +34,21 @@ func TextDocumentDidOpen(context *glsp.Context, params *protocol.DidOpenTextDocu
 	}
 
 	switch *language {
-	case LanguageFstab:
+	case shared.LanguageFstab:
 		return fstab.TextDocumentDidOpen(context, params)
-	case LanguageSSHDConfig:
+	case shared.LanguageSSHDConfig:
 		return sshdconfig.TextDocumentDidOpen(context, params)
-	case LanguageSSHConfig:
+	case shared.LanguageSSHConfig:
 		return sshconfig.TextDocumentDidOpen(context, params)
-	case LanguageWireguard:
+	case shared.LanguageWireguard:
 		return wireguard.TextDocumentDidOpen(context, params)
-	case LanguageHosts:
+	case shared.LanguageHosts:
 		return hosts.TextDocumentDidOpen(context, params)
-	case LanguageAliases:
+	case shared.LanguageAliases:
 		return aliases.TextDocumentDidOpen(context, params)
 	}
 
 	panic(fmt.Sprintf("unexpected roothandler.SupportedLanguage: %#v", language))
-}
-
-func showParseError(
-	context *glsp.Context,
-	uri protocol.DocumentUri,
-	err common.ParseError,
-) {
-	context.Notify(
-		"window/showMessage",
-		protocol.ShowMessageParams{
-			Type:    protocol.MessageTypeError,
-			Message: err.Err.Error(),
-		},
-	)
 }
 
 func initFile(
@@ -68,24 +56,21 @@ func initFile(
 	content string,
 	uri protocol.DocumentUri,
 	advertisedLanguage string,
-) (*SupportedLanguage, error) {
-	language, err := DetectLanguage(content, advertisedLanguage, uri)
+) (*shared.SupportedLanguage, error) {
+	language, err := utils.DetectLanguage(content, advertisedLanguage, uri)
 
 	if err != nil {
-		parseError := err.(common.ParseError)
-		showParseError(
-			context,
-			uri,
-			parseError,
-		)
+		utils.NotifyLanguageUndetectable(context, uri)
 
-		return nil, parseError.Err
+		return nil, utils.LanguageUndetectableError{}
+	} else {
+		utils.NotifyDetectedLanguage(context, uri, language)
 	}
 
-	openedFiles[uri] = struct{}{}
+	shared.OpenedFiles[uri] = struct{}{}
 
 	// Everything okay, now we can handle the file
-	rootHandler.AddDocument(uri, language)
+	shared.Handler.AddDocument(uri, language)
 
 	return &language, nil
 }

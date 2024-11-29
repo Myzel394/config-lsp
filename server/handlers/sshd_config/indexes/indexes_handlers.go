@@ -11,10 +11,12 @@ import (
 
 var whitespacePattern = regexp.MustCompile(`\S+`)
 
+var includeOption = fields.CreateNormalizedName("Include")
+
 func CreateIndexes(config ast.SSHDConfig) (*SSHDIndexes, []common.LSPError) {
 	errs := make([]common.LSPError, 0)
 	indexes := &SSHDIndexes{
-		AllOptionsPerName: make(map[string](map[*ast.SSHDMatchBlock]([]*ast.SSHDOption))),
+		AllOptionsPerName: make(map[fields.NormalizedOptionName](map[*ast.SSHDMatchBlock]([]*ast.SSHDOption))),
 		Includes:          make(map[uint32]*SSHDIndexIncludeLine),
 	}
 
@@ -42,7 +44,7 @@ func CreateIndexes(config ast.SSHDConfig) (*SSHDIndexes, []common.LSPError) {
 	}
 
 	// Add Includes
-	for matchBlock, options := range indexes.AllOptionsPerName["Include"] {
+	for matchBlock, options := range indexes.AllOptionsPerName[includeOption] {
 		includeOption := options[0]
 		rawValue := includeOption.OptionValue.Value.Value
 		pathIndexes := whitespacePattern.FindAllStringIndex(rawValue, -1)
@@ -89,10 +91,11 @@ func addOption(
 	matchBlock *ast.SSHDMatchBlock,
 ) []common.LSPError {
 	var errs []common.LSPError
+	key := option.Key.Key
 
-	if optionsMap, found := i.AllOptionsPerName[option.Key.Key]; found {
+	if optionsMap, found := i.AllOptionsPerName[key]; found {
 		if options, found := optionsMap[matchBlock]; found {
-			if _, duplicatesAllowed := fields.AllowedDuplicateOptions[option.Key.Key]; !duplicatesAllowed {
+			if _, duplicatesAllowed := fields.AllowedDuplicateOptions[key]; !duplicatesAllowed {
 				firstDefinedOption := options[0]
 				errs = append(errs, common.LSPError{
 					Range: option.Key.LocationRange,
@@ -103,18 +106,18 @@ func addOption(
 					)),
 				})
 			} else {
-				i.AllOptionsPerName[option.Key.Key][matchBlock] = append(
-					i.AllOptionsPerName[option.Key.Key][matchBlock],
+				i.AllOptionsPerName[key][matchBlock] = append(
+					i.AllOptionsPerName[key][matchBlock],
 					option,
 				)
 			}
 		} else {
-			i.AllOptionsPerName[option.Key.Key][matchBlock] = []*ast.SSHDOption{
+			i.AllOptionsPerName[key][matchBlock] = []*ast.SSHDOption{
 				option,
 			}
 		}
 	} else {
-		i.AllOptionsPerName[option.Key.Key] = map[*ast.SSHDMatchBlock]([]*ast.SSHDOption){
+		i.AllOptionsPerName[key] = map[*ast.SSHDMatchBlock]([]*ast.SSHDOption){
 			matchBlock: {
 				option,
 			},

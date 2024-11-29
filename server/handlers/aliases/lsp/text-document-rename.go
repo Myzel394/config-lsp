@@ -44,9 +44,9 @@ func TextDocumentRename(context *glsp.Context, params *protocol.RenameParams) (*
 			return nil, nil
 		}
 
-		switch (*rawValue).(type) {
+		switch rawValue.(type) {
 		case ast.AliasValueUser:
-			userValue := (*rawValue).(ast.AliasValueUser)
+			userValue := rawValue.(ast.AliasValueUser)
 
 			changes := handlers.RenameAlias(
 				*d.Indexes,

@@ -1,6 +1,8 @@
 package roothandler
 
 import (
+	"config-lsp/root-handler/lsp"
+	"config-lsp/root-handler/shared"
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 
@@ -9,30 +11,29 @@ import (
 
 const lsName = "config-lsp"
 
-var version string = "0.0.1"
-
 var lspHandler protocol.Handler
 
 // The root handler which handles all the LSP requests and then forwards them to the appropriate handler
 func SetUpRootHandler() {
-	rootHandler = NewRootHandler()
+	shared.Handler = shared.NewRootHandler()
+
 	lspHandler = protocol.Handler{
 		Initialize:                  initialize,
 		Initialized:                 initialized,
 		Shutdown:                    shutdown,
 		SetTrace:                    setTrace,
-		TextDocumentDidOpen:         TextDocumentDidOpen,
-		TextDocumentDidChange:       TextDocumentDidChange,
-		TextDocumentCompletion:      TextDocumentCompletion,
-		TextDocumentHover:           TextDocumentHover,
-		TextDocumentDidClose:        TextDocumentDidClose,
-		TextDocumentCodeAction:      TextDocumentCodeAction,
-		TextDocumentDefinition:      TextDocumentDefinition,
-		WorkspaceExecuteCommand:     WorkspaceExecuteCommand,
-		TextDocumentRename:          TextDocumentRename,
-		TextDocumentPrepareRename:   TextDocumentPrepareRename,
-		TextDocumentSignatureHelp:   TextDocumentSignatureHelp,
-		TextDocumentRangeFormatting: TextDocumentRangeFormattingFunc,
+		TextDocumentDidOpen:         lsp.TextDocumentDidOpen,
+		TextDocumentDidChange:       lsp.TextDocumentDidChange,
+		TextDocumentCompletion:      lsp.TextDocumentCompletion,
+		TextDocumentHover:           lsp.TextDocumentHover,
+		TextDocumentDidClose:        lsp.TextDocumentDidClose,
+		TextDocumentCodeAction:      lsp.TextDocumentCodeAction,
+		TextDocumentDefinition:      lsp.TextDocumentDefinition,
+		WorkspaceExecuteCommand:     lsp.WorkspaceExecuteCommand,
+		TextDocumentRename:          lsp.TextDocumentRename,
+		TextDocumentPrepareRename:   lsp.TextDocumentPrepareRename,
+		TextDocumentSignatureHelp:   lsp.TextDocumentSignatureHelp,
+		TextDocumentRangeFormatting: lsp.TextDocumentRangeFormattingFunc,
 	}
 
 	server := server.NewServer(&lspHandler, lsName, false)
@@ -70,7 +71,7 @@ func initialize(context *glsp.Context, params *protocol.InitializeParams) (any, 
 		Capabilities: capabilities,
 		ServerInfo: &protocol.InitializeResultServerInfo{
 			Name:    lsName,
-			Version: &version,
+			Version: &Version,
 		},
 	}, nil
 }

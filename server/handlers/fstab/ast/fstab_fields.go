@@ -20,7 +20,7 @@ import (
 // LABEL=test  ext4 defaults 0 0
 func (e FstabEntry) GetFieldAtPosition(position common.Position) FstabFieldName {
 	// No fields defined, empty line
-	if e.Fields.Spec == nil && e.Fields.MountPoint == nil && e.Fields.FilesystemType == nil && e.Fields.Options == nil && e.Fields.Freq == nil && e.Fields.Pass == nil {
+	if e.Fields.Spec == nil && e.Fields.MountPoint == nil && e.Fields.FilesystemType == nil && e.Fields.Options == nil && e.Fields.Freq == nil && e.Fields.Fsck == nil {
 		return FstabFieldSpec
 	}
 
@@ -41,8 +41,8 @@ func (e FstabEntry) GetFieldAtPosition(position common.Position) FstabFieldName 
 	if e.Fields.Freq != nil && e.Fields.Freq.ContainsPosition(position) {
 		return FstabFieldFreq
 	}
-	if e.Fields.Pass != nil && e.Fields.Pass.ContainsPosition(position) {
-		return FstabFieldPass
+	if e.Fields.Fsck != nil && e.Fields.Fsck.ContainsPosition(position) {
+		return FstabFieldFsck
 	}
 
 	// Okay let's try to fetch the field by assuming the user is typing from left to right normally
@@ -63,8 +63,8 @@ func (e FstabEntry) GetFieldAtPosition(position common.Position) FstabFieldName 
 		return FstabFieldFreq
 	}
 
-	if e.Fields.Freq != nil && e.Fields.Freq.IsPositionAfterEnd(position) && (e.Fields.Pass == nil || e.Fields.Pass.IsPositionBeforeEnd(position)) {
-		return FstabFieldPass
+	if e.Fields.Freq != nil && e.Fields.Freq.IsPositionAfterEnd(position) && (e.Fields.Fsck == nil || e.Fields.Fsck.IsPositionBeforeEnd(position)) {
+		return FstabFieldFsck
 	}
 
 	// Okay shit no idea, let's just give whatever is missing
@@ -89,7 +89,7 @@ func (e FstabEntry) GetFieldAtPosition(position common.Position) FstabFieldName 
 		return FstabFieldFreq
 	}
 
-	return FstabFieldPass
+	return FstabFieldFsck
 }
 
 // LABEL=test /mnt/test btrfs subvol=backup,fat=32 [0] [0]
@@ -122,7 +122,7 @@ func (e FstabEntry) getDefinedFieldsAmount() uint8 {
 	if e.Fields.Freq != nil {
 		definedAmount++
 	}
-	if e.Fields.Pass != nil {
+	if e.Fields.Fsck != nil {
 		definedAmount++
 	}
 

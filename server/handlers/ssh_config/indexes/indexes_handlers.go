@@ -8,14 +8,15 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"strings"
 )
 
-var whitespacePattern = regexp.MustCompile(`\S+`)
+var includePattern = regexp.MustCompile(`".+?"|[^\s]+`)
 
 func NewSSHIndexes() *SSHIndexes {
 	return &SSHIndexes{
 		AllOptionsPerName: make(map[fields.NormalizedOptionName](map[ast.SSHBlock]([]*ast.SSHOption))),
-		Includes:          make([]*SSHIndexIncludeLine, 0),
+		Includes:          make(map[uint32]*SSHIndexIncludeLine),
 		IgnoredOptions:    make(map[ast.SSHBlock]SSHIndexIgnoredUnknowns),
 		UnknownOptions:    make(map[uint32]ast.AllOptionInfo),
 		Tags:              make(map[string]SSHIndexTagInfo),
@@ -57,15 +58,21 @@ func CreateIndexes(config ast.SSHConfig) (*SSHIndexes, []common.LSPError) {
 	// Add Includes
 	for block, options := range indexes.AllOptionsPerName[includeOption] {
 		includeOption := options[0]
-		rawValue := includeOption.OptionValue.Value.Value
-		pathIndexes := whitespacePattern.FindAllStringIndex(rawValue, -1)
+
+		// We want to parse quotes manually
+		rawValue := includeOption.OptionValue.Value.Raw
+		pathIndexes := includePattern.FindAllStringIndex(rawValue, -1)
 		paths := make([]*SSHIndexIncludeValue, 0)
 
 		for _, pathIndex := range pathIndexes {
 			startIndex := pathIndex[0]
 			endIndex := pathIndex[1]
 
-			rawPath := rawValue[startIndex:endIndex]
+			rawPath := strings.ReplaceAll(
+				rawValue[startIndex:endIndex],
+				`"`,
+				"",
+			)
 
 			offset := includeOption.OptionValue.Start.Character
 			path := SSHIndexIncludeValue{
