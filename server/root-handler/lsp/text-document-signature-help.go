@@ -2,6 +2,8 @@ package lsp
 
 import (
 	aliases "config-lsp/handlers/aliases/lsp"
+	fstab "config-lsp/handlers/fstab/lsp"
+	hosts "config-lsp/handlers/hosts/lsp"
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 	"config-lsp/root-handler/shared"
@@ -18,13 +20,13 @@ func TextDocumentSignatureHelp(context *glsp.Context, params *protocol.Signature
 
 	switch *language {
 	case shared.LanguageHosts:
-		return nil, nil
+		return hosts.TextDocumentSignatureHelp(context, params)
 	case shared.LanguageSSHDConfig:
 		return sshdconfig.TextDocumentSignatureHelp(context, params)
 	case shared.LanguageSSHConfig:
 		return sshconfig.TextDocumentSignatureHelp(context, params)
 	case shared.LanguageFstab:
-		return nil, nil
+		return fstab.TextDocumentSignatureHelp(context, params)
 	case shared.LanguageWireguard:
 		return nil, nil
 	case shared.LanguageAliases:

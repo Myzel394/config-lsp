@@ -20,6 +20,7 @@ func GetOptionSignatureHelp(
 	}
 
 	signature := uint32(0)
+
 	return &protocol.SignatureHelp{
 		ActiveSignature: &signature,
 		Signatures: []protocol.SignatureInformation{
@@ -37,7 +38,7 @@ func GetOptionSignatureHelp(
 					{
 						Label: []uint32{
 							uint32(len("<option>")),
-							uint32(len("<option>") + len("<value>") + 1),
+							uint32(len("<option> ") + len("<value>")),
 						},
 						Documentation: "The value for the option",
 					},
@@ -90,7 +91,7 @@ func GetMatchSignatureHelp(
 					{
 						Label: []uint32{
 							uint32(len("Host <criteria> ")),
-							uint32(len("Host <criteria> ") + len("<values>") + 1),
+							uint32(len("Host <criteria> ") + len("<values>")),
 						},
 						Documentation: "Values for the criteria",
 					},
@@ -132,14 +133,14 @@ func GetHostSignatureHelp(
 					{
 						Label: []uint32{
 							uint32(len("Host ")),
-							uint32(len("Host ") + len("<host1>") + 1),
+							uint32(len("Host ") + len("<host1>")),
 						},
 						Documentation: "A host that should match",
 					},
 					{
 						Label: []uint32{
 							uint32(len("Host <host1> ")),
-							uint32(len("Host <host1> ") + len("[<host2> ...]") + 1),
+							uint32(len("Host <host1> ") + len("[<host2> ...]")),
 						},
 						Documentation: "Additional (optional) hosts that should match",
 					},
