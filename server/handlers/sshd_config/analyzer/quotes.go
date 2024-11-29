@@ -3,7 +3,6 @@ package analyzer
 import (
 	"config-lsp/common"
 	commonparser "config-lsp/common/parser"
-	"config-lsp/utils"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -26,14 +25,10 @@ func checkIsUsingDoubleQuotes(
 	value commonparser.ParsedString,
 	valueRange common.LocationRange,
 ) {
-	quoteRanges := utils.GetQuoteRanges(value.Raw)
-	singleQuotePosition := strings.Index(value.Raw, "'")
-
-	// Single quote
-	if singleQuotePosition != -1 && !quoteRanges.IsIndexInsideQuotes(singleQuotePosition) {
+	if strings.HasPrefix(value.Raw, "'") && strings.HasSuffix(value.Raw, "'") {
 		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 			Range:    valueRange.ToLSPRange(),
-			Message:  "sshd_config does not support single quotes. Use double quotes (\") instead.",
+			Message:  "ssh_config does not support single quotes. Use double quotes (\") instead.",
 			Severity: &common.SeverityError,
 		})
 	}

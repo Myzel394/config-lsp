@@ -33,6 +33,45 @@ func (q quoteRanges) GetQuoteForIndex(index int) *quoteRange {
 	return &q[index]
 }
 
+func (q quoteRanges) GetInvertedRanges(textLength int) [][2]int {
+	if textLength == 0 {
+		return nil
+	}
+
+	if len(q) == 0 {
+		return [][2]int{
+			{
+				0,
+				textLength - 1,
+			},
+		}
+	}
+
+	inverted := make([][2]int, 0, len(q))
+
+	firstRange := q[0]
+
+	if firstRange[0] != 0 {
+		inverted = append(inverted, [2]int{0, firstRange[0]})
+	}
+
+	if len(q) > 1 {
+		for index, currentRange := range q[:len(q)-1] {
+			nextRange := q[index+1]
+
+			inverted = append(inverted, [2]int{currentRange[1] + 1, nextRange[0]})
+		}
+	}
+
+	lastRange := q[len(q)-1]
+
+	if lastRange[1] != (textLength - 1) {
+		inverted = append(inverted, [2]int{lastRange[1] + 1, textLength})
+	}
+
+	return inverted
+}
+
 func GetQuoteRanges(s string) quoteRanges {
 	quoteRanges := make(quoteRanges, 0, 2)
 	inQuote := false
