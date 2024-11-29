@@ -142,6 +142,16 @@ func MergeMaps[T comparable, O any](maps ...map[T]O) map[T]O {
 	return result
 }
 
+func MergeSlices[T any](slices ...[]T) []T {
+	result := make([]T, 0)
+
+	for _, slice := range slices {
+		result = append(result, slice...)
+	}
+
+	return result
+}
+
 func Without[T comparable](a []T, b []T) []T {
 	set := SliceToSet(b)
 

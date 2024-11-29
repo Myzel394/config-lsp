@@ -46,8 +46,12 @@ func (v PathValue) GetTypeDescription() []string {
 	return []string{strings.Join(hints, ", ")}
 }
 
+func (v PathValue) createSystemPath(value string) string {
+	return value
+}
+
 func (v PathValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
-	if !utils.DoesPathExist(value) {
+	if !utils.DoesPathExist(v.createSystemPath(value)) {
 		return []*InvalidValue{{
 			Err:   PathDoesNotExistError{},
 			Start: 0,
