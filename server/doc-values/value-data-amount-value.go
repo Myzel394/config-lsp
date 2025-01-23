@@ -45,11 +45,11 @@ func calculateLineToKilobyte(value string, unit string) string {
 
 	switch unit {
 	case "K":
-		return strconv.Itoa(val)
-	case "M":
 		return strconv.Itoa(val * 1000)
-	case "G":
+	case "M":
 		return strconv.Itoa(val * 1000 * 1000)
+	case "G":
+		return strconv.Itoa(val * 1000 * 1000 * 1000)
 	default:
 		return "<unknown>"
 	}
