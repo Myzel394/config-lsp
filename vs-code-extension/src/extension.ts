@@ -54,9 +54,11 @@ export async function activate({subscriptions}: ExtensionContext) {
 }
 
 function getBundledPath(): string {
-	const filePath = path.resolve(__dirname, "config-lsp");
+	if (process.platform === "win32") {
+		return path.resolve(__dirname, "config-lsp.exe");
+	}
 
-	return filePath;
+	return path.resolve(__dirname, "config-lsp");
 }
 
 export function deactivate(): Thenable<void> | undefined {
