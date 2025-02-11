@@ -30,7 +30,11 @@ func TextDocumentDidOpen(context *glsp.Context, params *protocol.DidOpenTextDocu
 	)
 
 	if err != nil {
-		return err
+		if common.ServerOptions.NoUndetectableErrors {
+			return nil
+		} else {
+			return err
+		}
 	}
 
 	switch *language {
@@ -57,15 +61,18 @@ func initFile(
 	uri protocol.DocumentUri,
 	advertisedLanguage string,
 ) (*shared.SupportedLanguage, error) {
+	println("Initializing the file")
+	println(advertisedLanguage)
+	println(uri)
 	language, err := utils.DetectLanguage(content, advertisedLanguage, uri)
 
 	if err != nil {
 		utils.NotifyLanguageUndetectable(context, uri)
 
 		return nil, utils.LanguageUndetectableError{}
-	} else {
-		utils.NotifyDetectedLanguage(context, uri, language)
 	}
+
+	utils.NotifyDetectedLanguage(context, uri, language)
 
 	shared.OpenedFiles[uri] = struct{}{}
 

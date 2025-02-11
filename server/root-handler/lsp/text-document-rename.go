@@ -1,6 +1,7 @@
 package lsp
 
 import (
+	"config-lsp/common"
 	aliases "config-lsp/handlers/aliases/lsp"
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	"config-lsp/root-handler/shared"
@@ -14,7 +15,11 @@ func TextDocumentRename(context *glsp.Context, params *protocol.RenameParams) (*
 	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
 
 	if language == nil {
-		return nil, utils.LanguageUndetectableError{}
+		if common.ServerOptions.NoUndetectableErrors {
+			return nil, nil
+		} else {
+			return nil, utils.LanguageUndetectableError{}
+		}
 	}
 
 	switch *language {

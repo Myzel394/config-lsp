@@ -7,7 +7,7 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-func FetchAddLanguageActions(uri protocol.DocumentUri) ([]protocol.CodeAction, error) {
+func FetchAddLanguageActions(uri protocol.DocumentUri) []protocol.CodeAction {
 	actions := make([]protocol.CodeAction, 0, len(shared.AllSupportedLanguages))
 
 	kind := protocol.CodeActionKindQuickFix
@@ -40,5 +40,5 @@ func FetchAddLanguageActions(uri protocol.DocumentUri) ([]protocol.CodeAction, e
 		})
 	}
 
-	return actions, nil
+	return actions
 }

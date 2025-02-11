@@ -1,6 +1,7 @@
 package lsp
 
 import (
+	"config-lsp/common"
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 	"config-lsp/root-handler/shared"
@@ -17,7 +18,11 @@ func TextDocumentRangeFormattingFunc(
 	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
 
 	if language == nil {
-		return nil, utils.LanguageUndetectableError{}
+		if common.ServerOptions.NoUndetectableErrors {
+			return nil, nil
+		} else {
+			return nil, utils.LanguageUndetectableError{}
+		}
 	}
 
 	switch *language {

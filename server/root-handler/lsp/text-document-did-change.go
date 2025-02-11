@@ -1,6 +1,7 @@
 package lsp
 
 import (
+	"config-lsp/common"
 	aliases "config-lsp/handlers/aliases/lsp"
 	fstab "config-lsp/handlers/fstab/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
@@ -8,6 +9,7 @@ import (
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 	"config-lsp/root-handler/shared"
+
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -24,7 +26,11 @@ func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeText
 	)
 
 	if err != nil {
-		return err
+		if common.ServerOptions.NoUndetectableErrors {
+			return nil
+		} else {
+			return err
+		}
 	}
 
 	if newLanguage != language {
