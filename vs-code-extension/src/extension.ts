@@ -8,6 +8,7 @@ import {
 	type ServerOptions,
 } from "vscode-languageclient/node";
 import { onUndetectable } from "./events/on-undetectable";
+import { onDetectable as onDetected } from "./events/on-detectable";
 
 const IS_DEBUG =
 	process.env.VSCODE_DEBUG_MODE === "true" ||
@@ -32,7 +33,8 @@ export async function activate({subscriptions}: ExtensionContext) {
 	const path = getBundledPath();
 	console.info(`Found config-lsp path at ${path}`);
 	const run: Executable = {
-		command: getBundledPath() ,
+		command: path,
+		args: ["--no-undetectable-errors"],
 	};
 	const serverOptions: ServerOptions = {
 		run,
@@ -51,6 +53,7 @@ export async function activate({subscriptions}: ExtensionContext) {
 	console.info("Started config-lsp");
 
 	subscriptions.push(client.onNotification("$/config-lsp/languageUndetectable", onUndetectable))
+	subscriptions.push(client.onNotification("$/config-lsp/detectedLanguage", onDetected))
 }
 
 function getBundledPath(): string {
