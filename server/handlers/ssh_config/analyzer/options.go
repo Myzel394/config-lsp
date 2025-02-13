@@ -66,8 +66,7 @@ func checkOption(
 		invalidValues := docOption.DeprecatedCheckIsValid(option.OptionValue.Value.Value)
 
 		for _, invalidValue := range invalidValues {
-			err := docvalues.LSPErrorFromInvalidValue(option.Start.Line, *invalidValue)
-			err.ShiftCharacter(option.OptionValue.Start.Character)
+			err := docvalues.LSPErrorFromInvalidValue(option.Start.Line, *invalidValue).ShiftCharacter(option.OptionValue.Start.Character)
 
 			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 				Range:    err.Range.ToLSPRange(),

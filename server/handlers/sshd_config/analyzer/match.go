@@ -129,8 +129,7 @@ func analyzeMatchValueIsValid(
 	invalidValues := docOption.DeprecatedCheckIsValid(value.Value.Raw)
 
 	for _, invalidValue := range invalidValues {
-		err := docvalues.LSPErrorFromInvalidValue(value.Start.Line, *invalidValue)
-		err.ShiftCharacter(value.Start.Character)
+		err := docvalues.LSPErrorFromInvalidValue(value.Start.Line, *invalidValue).ShiftCharacter(value.Start.Character)
 
 		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 			Range:    err.Range.ToLSPRange(),
