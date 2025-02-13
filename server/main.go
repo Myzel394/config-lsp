@@ -1,6 +1,7 @@
 package main
 
 import (
+	"config-lsp/common"
 	roothandler "config-lsp/root-handler"
 	"fmt"
 	"os"
@@ -23,5 +24,6 @@ func main() {
 	// This increases logging verbosity (optional)
 	commonlog.Configure(1, nil)
 
+	common.InitServerOptions()
 	roothandler.SetUpRootHandler()
 }

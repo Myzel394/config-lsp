@@ -8,6 +8,7 @@ import (
 func analyzeValuesAreValid(
 	ctx *analyzerContext,
 ) {
+	// Check if there are unknown options
 	for _, info := range ctx.document.Config.GetAllOptions() {
 		option := info.Option
 		block := info.Block

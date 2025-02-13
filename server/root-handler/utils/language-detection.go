@@ -75,11 +75,6 @@ var filenameToLanguageMap = map[string]shared.SupportedLanguage{
 var typeOverwriteRegex = regexp.MustCompile(`#\?\s*lsp\.language\s*=\s*(\w+)\s*`)
 var wireguardPattern = regexp.MustCompile(`wg(\d+)?(\.conf)?$`)
 
-var undetectableError = common.ParseError{
-	Line: 0,
-	Err:  LanguageUndetectableError{},
-}
-
 func DetectLanguage(
 	content string,
 	advertisedLanguage string,
@@ -154,5 +149,5 @@ func DetectLanguage(
 		return shared.LanguageSSHConfig, nil
 	}
 
-	return "", undetectableError
+	return "", LanguageUndetectableError{}
 }

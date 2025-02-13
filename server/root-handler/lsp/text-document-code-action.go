@@ -1,6 +1,7 @@
 package lsp
 
 import (
+	"config-lsp/common"
 	aliases "config-lsp/handlers/aliases/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
@@ -16,7 +17,13 @@ func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionPa
 	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
 
 	if language == nil {
-		return utils.FetchAddLanguageActions(params.TextDocument.URI)
+		actions := utils.FetchAddLanguageActions(params.TextDocument.URI)
+
+		if common.ServerOptions.NoUndetectableErrors {
+			return actions, nil
+		} else {
+			return actions, utils.LanguageUndetectableError{}
+		}
 	}
 
 	switch *language {

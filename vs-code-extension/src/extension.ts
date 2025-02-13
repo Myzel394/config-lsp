@@ -7,7 +7,8 @@ import {
 	type LanguageClientOptions,
 	type ServerOptions,
 } from "vscode-languageclient/node";
-import { onUndetectable } from "./events/on-undetectable";
+import { onLanguageUndetectable } from "./events/on-language-undetectable";
+import { onLanguageDetectable } from "./events/on-language-detected";
 
 const IS_DEBUG =
 	process.env.VSCODE_DEBUG_MODE === "true" ||
@@ -32,7 +33,8 @@ export async function activate({subscriptions}: ExtensionContext) {
 	const path = getBundledPath();
 	console.info(`Found config-lsp path at ${path}`);
 	const run: Executable = {
-		command: getBundledPath() ,
+		command: path,
+		args: ["--no-undetectable-errors"],
 	};
 	const serverOptions: ServerOptions = {
 		run,
@@ -50,13 +52,16 @@ export async function activate({subscriptions}: ExtensionContext) {
 	await client.start();
 	console.info("Started config-lsp");
 
-	subscriptions.push(client.onNotification("$/config-lsp/languageUndetectable", onUndetectable))
+	subscriptions.push(client.onNotification("$/config-lsp/languageUndetectable", onLanguageUndetectable))
+	subscriptions.push(client.onNotification("$/config-lsp/detectedLanguage", onLanguageDetectable))
 }
 
 function getBundledPath(): string {
-	const filePath = path.resolve(__dirname, "config-lsp");
+	if (process.platform === "win32") {
+		return path.resolve(__dirname, "config-lsp.exe");
+	}
 
-	return filePath;
+	return path.resolve(__dirname, "config-lsp");
 }
 
 export function deactivate(): Thenable<void> | undefined {
