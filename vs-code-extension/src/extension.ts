@@ -7,8 +7,8 @@ import {
 	type LanguageClientOptions,
 	type ServerOptions,
 } from "vscode-languageclient/node";
-import { onUndetectable } from "./events/on-undetectable";
-import { onDetectable as onDetected } from "./events/on-detectable";
+import { onLanguageUndetectable } from "./events/on-language-undetectable";
+import { onLanguageDetectable } from "./events/on-language-detected";
 
 const IS_DEBUG =
 	process.env.VSCODE_DEBUG_MODE === "true" ||
@@ -52,8 +52,8 @@ export async function activate({subscriptions}: ExtensionContext) {
 	await client.start();
 	console.info("Started config-lsp");
 
-	subscriptions.push(client.onNotification("$/config-lsp/languageUndetectable", onUndetectable))
-	subscriptions.push(client.onNotification("$/config-lsp/detectedLanguage", onDetected))
+	subscriptions.push(client.onNotification("$/config-lsp/languageUndetectable", onLanguageUndetectable))
+	subscriptions.push(client.onNotification("$/config-lsp/detectedLanguage", onLanguageDetectable))
 }
 
 function getBundledPath(): string {

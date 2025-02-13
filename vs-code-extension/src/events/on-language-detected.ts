@@ -1,7 +1,8 @@
 import { GenericNotificationHandler } from "vscode-languageclient";
 import { tempUndetectableFiles } from "./shared";
 
-export const onDetectable: GenericNotificationHandler = async (params: LSPLanguageDetected) => {
+export const onLanguageDetectable: GenericNotificationHandler = async (params: LSPLanguageDetected) => {
+	// Hide warning box
 	tempUndetectableFiles.add(params.Uri);
 }
 
