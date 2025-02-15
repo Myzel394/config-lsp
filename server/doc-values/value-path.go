@@ -48,11 +48,15 @@ func (v PathValue) GetTypeDescription() []string {
 
 func (v PathValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	if !utils.DoesPathExist(value) {
-		return []*InvalidValue{{
-			Err:   PathDoesNotExistError{},
-			Start: 0,
-			End:   uint32(len(value)),
-		}}
+		if v.RequiredType == PathTypeExistenceOptional {
+			return nil
+		} else {
+			return []*InvalidValue{{
+				Err:   PathDoesNotExistError{},
+				Start: 0,
+				End:   uint32(len(value)),
+			}}
+		}
 	}
 
 	isValid := false
