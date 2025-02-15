@@ -107,5 +107,5 @@ func (v TimeFormatValue) DeprecatedFetchCompletions(line string, cursor uint32) 
 }
 
 func (v TimeFormatValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
-	return []string{}
+	return []string{"A time value. For example: 5m (5 minutes)"}
 }
