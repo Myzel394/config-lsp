@@ -29,8 +29,6 @@ func analyzeValuesAreValid(
 				),
 			)
 			ctx.document.Indexes.UnknownOptions[info.Option.Start.Line] = info
-
-			continue
 		}
 	}
 }

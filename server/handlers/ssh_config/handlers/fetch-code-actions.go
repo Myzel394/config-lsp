@@ -12,11 +12,21 @@ func FetchCodeActions(
 	d *sshconfig.SSHDocument,
 	params *protocol.CodeActionParams,
 ) []protocol.CodeAction {
-	line := params.Range.Start.Line
-
 	if d.Indexes == nil {
 		return nil
 	}
+
+	actions := getAddToUnknownCodeAction(d, params)
+	actions = append(actions, getKeywordTypoFixes(d, params)...)
+
+	return actions
+}
+
+func getAddToUnknownCodeAction(
+	d *sshconfig.SSHDocument,
+	params *protocol.CodeActionParams,
+) []protocol.CodeAction {
+	line := params.Range.Start.Line
 
 	if unknownOption, found := d.Indexes.UnknownOptions[line]; found {
 		var blockLine *uint32
@@ -39,7 +49,7 @@ func FetchCodeActions(
 			},
 		}
 		kind := protocol.CodeActionKindQuickFix
-		codeAction := &protocol.CodeAction{
+		codeAction := protocol.CodeAction{
 			Title:   fmt.Sprintf("Add %s to unknown options", unknownOption.Option.Key.Key),
 			Command: &command,
 			Kind:    &kind,
@@ -52,7 +62,7 @@ func FetchCodeActions(
 		}
 
 		return []protocol.CodeAction{
-			*codeAction,
+			codeAction,
 		}
 	}
 

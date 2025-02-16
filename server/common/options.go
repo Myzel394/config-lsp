@@ -27,6 +27,9 @@ type ServerOptionsType struct {
 var ServerOptions = new(ServerOptionsType)
 
 func InitServerOptions() {
+	ServerOptions.NoUndetectableErrors = false
+	ServerOptions.NoTypoSuggestions = false
+
 	if slices.Contains(os.Args, "--no-undetectable-errors") {
 		Log.Info("config-lsp will not return errors for undetectable files")
 		ServerOptions.NoUndetectableErrors = true
