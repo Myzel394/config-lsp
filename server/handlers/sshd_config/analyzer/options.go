@@ -6,6 +6,7 @@ import (
 	"config-lsp/handlers/sshd_config/ast"
 	"config-lsp/handlers/sshd_config/diagnostics"
 	"config-lsp/handlers/sshd_config/fields"
+	"config-lsp/utils"
 	"fmt"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -38,13 +39,25 @@ func checkOption(
 		return
 	}
 
+	///// General checks
 	checkIsUsingDoubleQuotes(ctx, option.Key.Value, option.Key.LocationRange)
 	checkQuotesAreClosed(ctx, option.Key.Value, option.Key.LocationRange)
 
-	key := option.Key.Key
-	docOption, found := fields.Options[key]
+	if option.Separator == nil || option.Separator.Value.Value == "" {
+		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+			Range:    option.Key.LocationRange.ToLSPRange(),
+			Message:  fmt.Sprintf("There should be a separator between an option and its value"),
+			Severity: &common.SeverityError,
+		})
+	} else {
+		checkIsUsingDoubleQuotes(ctx, option.Separator.Value, option.Separator.LocationRange)
+		checkQuotesAreClosed(ctx, option.Separator.Value, option.Separator.LocationRange)
+	}
 
-	if !found {
+	///// Check if the key is valid
+	docOption, optionFound := fields.Options[option.Key.Key]
+
+	if !optionFound {
 		ctx.diagnostics = append(ctx.diagnostics, diagnostics.GenerateUnknownOption(
 			option.Key.ToLSPRange(),
 			option.Key.Value.Value,
@@ -54,17 +67,20 @@ func checkOption(
 			MatchBlock: matchBlock,
 		}
 
+		// Since we don't know the option, we can't verify the value
 		return
+	} else {
+		// Check for values that are not allowed in Match blocks
+		if matchBlock != nil && !utils.KeyExists(fields.MatchAllowedOptions, option.Key.Key) {
+			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+				Range:    option.Key.ToLSPRange(),
+				Message:  fmt.Sprintf("Option '%s' is not allowed in Match blocks", option.Key.Key),
+				Severity: &common.SeverityError,
+			})
+		}
 	}
 
-	if _, found := fields.MatchAllowedOptions[key]; !found && matchBlock != nil {
-		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-			Range:    option.Key.ToLSPRange(),
-			Message:  fmt.Sprintf("Option '%s' is not allowed inside Match blocks", option.Key.Key),
-			Severity: &common.SeverityError,
-		})
-	}
-
+	///// Check if the value is valid
 	if option.OptionValue != nil {
 		checkIsUsingDoubleQuotes(ctx, option.OptionValue.Value, option.OptionValue.LocationRange)
 		checkQuotesAreClosed(ctx, option.OptionValue.Value, option.OptionValue.LocationRange)
@@ -82,16 +98,6 @@ func checkOption(
 		}
 	}
 
-	if option.Separator == nil || option.Separator.Value.Value == "" {
-		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-			Range:    option.Key.LocationRange.ToLSPRange(),
-			Message:  fmt.Sprintf("There should be a separator between an option and its value"),
-			Severity: &common.SeverityError,
-		})
-	} else {
-		checkIsUsingDoubleQuotes(ctx, option.Separator.Value, option.Separator.LocationRange)
-		checkQuotesAreClosed(ctx, option.Separator.Value, option.Separator.LocationRange)
-	}
 }
 
 func checkMatchBlock(
