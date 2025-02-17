@@ -4,6 +4,7 @@ import (
 	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
 	"config-lsp/handlers/ssh_config/ast"
+	"config-lsp/handlers/ssh_config/diagnostics"
 	"config-lsp/handlers/ssh_config/fields"
 	"config-lsp/utils"
 	"fmt"
@@ -41,11 +42,33 @@ func checkOption(
 	checkIsUsingDoubleQuotes(ctx, option.Key.Value, option.Key.LocationRange)
 	checkQuotesAreClosed(ctx, option.Key.Value, option.Key.LocationRange)
 
-	docOption, found := fields.Options[option.Key.Key]
+	docOption, optionFound := fields.Options[option.Key.Key]
 
-	if !found {
+	if !optionFound {
 		// Diagnostics will be handled by `values.go`
-		return
+		if !ctx.document.Indexes.CanOptionBeIgnored(option, block) {
+			ctx.diagnostics = append(
+				ctx.diagnostics,
+				diagnostics.GenerateUnknownOption(
+					option.Key.ToLSPRange(),
+					option.Key.Value.Value,
+				),
+			)
+			ctx.document.Indexes.UnknownOptions[option.Start.Line] = ast.AllOptionInfo{
+				Option: option,
+				Block:  block,
+			}
+
+			return
+		}
+	}
+
+	if block != nil && block.GetBlockType() == ast.SSHBlockTypeHost && utils.KeyExists(fields.HostDisallowedOptions, option.Key.Key) {
+		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+			Range:    option.Key.LocationRange.ToLSPRange(),
+			Message:  fmt.Sprintf("Option '%s' is not allowed in Host blocks", option.Key.Key),
+			Severity: &common.SeverityError,
+		})
 	}
 
 	// Check for values that are not allowed in Host blocks
@@ -59,7 +82,7 @@ func checkOption(
 		}
 	}
 
-	if option.OptionValue != nil {
+	if option.OptionValue != nil && optionFound {
 		checkIsUsingDoubleQuotes(ctx, option.OptionValue.Value, option.OptionValue.LocationRange)
 		checkQuotesAreClosed(ctx, option.OptionValue.Value, option.OptionValue.LocationRange)
 
