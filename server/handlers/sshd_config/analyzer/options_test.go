@@ -18,7 +18,7 @@ ThisOptionDoesNotExist okay
 		diagnostics: make([]protocol.Diagnostic, 0),
 	}
 
-	analyzeValuesAreValid(ctx)
+	analyzeStructureIsValid(ctx)
 
 	if !(len(ctx.diagnostics) == 1) {
 		t.Errorf("Expected 1 error, got %v", len(ctx.diagnostics))

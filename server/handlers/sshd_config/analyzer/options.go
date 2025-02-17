@@ -4,6 +4,7 @@ import (
 	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
 	"config-lsp/handlers/sshd_config/ast"
+	"config-lsp/handlers/sshd_config/diagnostics"
 	"config-lsp/handlers/sshd_config/fields"
 	"fmt"
 
@@ -20,7 +21,7 @@ func analyzeStructureIsValid(
 
 		switch entry.(type) {
 		case *ast.SSHDOption:
-			checkOption(ctx, entry.(*ast.SSHDOption), false)
+			checkOption(ctx, entry.(*ast.SSHDOption), nil)
 		case *ast.SSHDMatchBlock:
 			matchBlock := entry.(*ast.SSHDMatchBlock)
 			checkMatchBlock(ctx, matchBlock)
@@ -31,7 +32,7 @@ func analyzeStructureIsValid(
 func checkOption(
 	ctx *analyzerContext,
 	option *ast.SSHDOption,
-	isInMatchBlock bool,
+	matchBlock *ast.SSHDMatchBlock,
 ) {
 	if option.Key == nil {
 		return
@@ -44,16 +45,19 @@ func checkOption(
 	docOption, found := fields.Options[key]
 
 	if !found {
-		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-			Range:    option.Key.ToLSPRange(),
-			Message:  fmt.Sprintf("Unknown option: %s", option.Key.Key),
-			Severity: &common.SeverityError,
-		})
+		ctx.diagnostics = append(ctx.diagnostics, diagnostics.GenerateUnknownOption(
+			option.Key.ToLSPRange(),
+			option.Key.Value.Value,
+		))
+		ctx.document.Indexes.UnknownOptions[option.Start.Line] = ast.SSHDOptionInfo{
+			Option:     option,
+			MatchBlock: matchBlock,
+		}
 
 		return
 	}
 
-	if _, found := fields.MatchAllowedOptions[key]; !found && isInMatchBlock {
+	if _, found := fields.MatchAllowedOptions[key]; !found && matchBlock != nil {
 		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 			Range:    option.Key.ToLSPRange(),
 			Message:  fmt.Sprintf("Option '%s' is not allowed inside Match blocks", option.Key.Key),
@@ -99,6 +103,6 @@ func checkMatchBlock(
 	for it.Next() {
 		option := it.Value().(*ast.SSHDOption)
 
-		checkOption(ctx, option, true)
+		checkOption(ctx, option, matchBlock)
 	}
 }
