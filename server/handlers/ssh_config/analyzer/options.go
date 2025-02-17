@@ -39,9 +39,26 @@ func checkOption(
 	option *ast.SSHOption,
 	block ast.SSHBlock,
 ) {
+	if option.Key == nil {
+		return
+	}
+
+	///// General checks
 	checkIsUsingDoubleQuotes(ctx, option.Key.Value, option.Key.LocationRange)
 	checkQuotesAreClosed(ctx, option.Key.Value, option.Key.LocationRange)
 
+	if option.Separator == nil || option.Separator.Value.Value == "" {
+		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+			Range:    option.Key.LocationRange.ToLSPRange(),
+			Message:  fmt.Sprintf("There should be a separator between an option and its value"),
+			Severity: &common.SeverityError,
+		})
+	} else {
+		checkIsUsingDoubleQuotes(ctx, option.Separator.Value, option.Separator.LocationRange)
+		checkQuotesAreClosed(ctx, option.Separator.Value, option.Separator.LocationRange)
+	}
+
+	///// Check if the key is valid
 	docOption, optionFound := fields.Options[option.Key.Key]
 
 	if !optionFound {
@@ -58,22 +75,13 @@ func checkOption(
 				Option: option,
 				Block:  block,
 			}
-
-			return
 		}
-	}
 
-	if block != nil && block.GetBlockType() == ast.SSHBlockTypeHost && utils.KeyExists(fields.HostDisallowedOptions, option.Key.Key) {
-		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-			Range:    option.Key.LocationRange.ToLSPRange(),
-			Message:  fmt.Sprintf("Option '%s' is not allowed in Host blocks", option.Key.Key),
-			Severity: &common.SeverityError,
-		})
-	}
-
-	// Check for values that are not allowed in Host blocks
-	if block != nil && block.GetBlockType() == ast.SSHBlockTypeHost {
-		if utils.KeyExists(fields.HostDisallowedOptions, option.Key.Key) {
+		// Since we don't know the option, we can't verify the value
+		return
+	} else {
+		// Check for values that are not allowed in Host blocks
+		if block != nil && block.GetBlockType() == ast.SSHBlockTypeHost && utils.KeyExists(fields.HostDisallowedOptions, option.Key.Key) {
 			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 				Range:    option.Key.LocationRange.ToLSPRange(),
 				Message:  fmt.Sprintf("Option '%s' is not allowed in Host blocks", option.Key.Key),
@@ -82,7 +90,8 @@ func checkOption(
 		}
 	}
 
-	if option.OptionValue != nil && optionFound {
+	///// Check if the value is valid
+	if option.OptionValue != nil {
 		checkIsUsingDoubleQuotes(ctx, option.OptionValue.Value, option.OptionValue.LocationRange)
 		checkQuotesAreClosed(ctx, option.OptionValue.Value, option.OptionValue.LocationRange)
 
@@ -97,17 +106,6 @@ func checkOption(
 				Severity: &common.SeverityError,
 			})
 		}
-	}
-
-	if option.Separator == nil || option.Separator.Value.Value == "" {
-		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-			Range:    option.Key.LocationRange.ToLSPRange(),
-			Message:  fmt.Sprintf("There should be a separator between an option and its value"),
-			Severity: &common.SeverityError,
-		})
-	} else {
-		checkIsUsingDoubleQuotes(ctx, option.Separator.Value, option.Separator.LocationRange)
-		checkQuotesAreClosed(ctx, option.Separator.Value, option.Separator.LocationRange)
 	}
 }
 
