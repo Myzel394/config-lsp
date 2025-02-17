@@ -18,6 +18,7 @@ func CreateIndexes(config ast.SSHDConfig) (*SSHDIndexes, []common.LSPError) {
 	indexes := &SSHDIndexes{
 		AllOptionsPerName: make(map[fields.NormalizedOptionName](map[*ast.SSHDMatchBlock]([]*ast.SSHDOption))),
 		Includes:          make(map[uint32]*SSHDIndexIncludeLine),
+		UnknownOptions:    make(map[uint32]ast.SSHDOptionInfo),
 	}
 
 	it := config.Options.Iterator()

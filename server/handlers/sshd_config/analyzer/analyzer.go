@@ -54,6 +54,7 @@ func Analyze(
 		}
 	}
 
+	analyzeValuesAreValid(ctx)
 	analyzeMatchBlocks(ctx)
 	analyzeTokens(ctx)
 
