@@ -9,18 +9,6 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-func analyzeQuotesAreValid(
-	ctx *analyzerContext,
-) {
-	for _, info := range ctx.document.Config.GetAllOptions() {
-		checkIsUsingDoubleQuotes(ctx, info.Option.Key.Value, info.Option.Key.LocationRange)
-		checkIsUsingDoubleQuotes(ctx, info.Option.OptionValue.Value, info.Option.OptionValue.LocationRange)
-
-		checkQuotesAreClosed(ctx, info.Option.Key.Value, info.Option.Key.LocationRange)
-		checkQuotesAreClosed(ctx, info.Option.OptionValue.Value, info.Option.OptionValue.LocationRange)
-	}
-}
-
 func checkIsUsingDoubleQuotes(
 	ctx *analyzerContext,
 	value commonparser.ParsedString,
