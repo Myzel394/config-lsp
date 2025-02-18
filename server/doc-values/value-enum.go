@@ -14,11 +14,7 @@ type ValueNotInEnumError struct {
 }
 
 func (e ValueNotInEnumError) Error() string {
-	if len(e.AvailableValues) <= 6 {
-		return fmt.Sprintf("This value is not valid. Select one from: %s", strings.Join(e.AvailableValues, ","))
-	} else {
-		return fmt.Sprintf("This value is not valid")
-	}
+	return fmt.Sprintf("This value is not an enum value. Select one from: %s", strings.Join(e.AvailableValues, ","))
 }
 
 type EnumString struct {
