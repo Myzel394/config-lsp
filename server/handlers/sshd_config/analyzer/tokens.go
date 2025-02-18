@@ -13,13 +13,13 @@ import (
 func analyzeTokens(
 	ctx *analyzerContext,
 ) {
-	for _, option := range ctx.document.Config.GetAllOptions() {
-		if option.Key == nil || option.OptionValue == nil {
+	for _, info := range ctx.document.Config.GetAllOptions() {
+		if info.Option.Key == nil || info.Option.OptionValue == nil {
 			continue
 		}
 
-		key := option.Key.Key
-		text := option.OptionValue.Value.Value
+		key := info.Option.Key.Key
+		text := info.Option.OptionValue.Value.Value
 		var tokens []string
 
 		if foundTokens, found := fields.OptionsTokensMap[key]; found {
@@ -39,7 +39,7 @@ func analyzeTokens(
 				}
 
 				ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-					Range:    option.OptionValue.ToLSPRange(),
+					Range:    info.Option.OptionValue.ToLSPRange(),
 					Message:  fmt.Sprintf("Token '%s' is not allowed for option '%s'", token, optionName),
 					Severity: &common.SeverityError,
 				})

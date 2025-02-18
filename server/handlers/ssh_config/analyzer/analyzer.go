@@ -54,7 +54,6 @@ func Analyze(
 		}
 	}
 
-	analyzeValuesAreValid(ctx)
 	analyzeTokens(ctx)
 	analyzeIgnoreUnknownHasNoUnnecessary(ctx)
 	analyzeDependents(ctx)
