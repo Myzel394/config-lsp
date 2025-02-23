@@ -35,7 +35,7 @@ PublicKey = 5555
 		t.Fatalf("parseFromString failed to collect comment lines %v", parser.commentLines)
 	}
 
-	if !((len(parser.Sections) == 3) && (*parser.Sections[0].Name == "Interface") && (*parser.Sections[1].Name == "Peer") && (*parser.Sections[2].Name == "Peer")) {
+	if !((len(parser.Sections) == 3) && (*parser.Sections[0].Header == "Interface") && (*parser.Sections[1].Header == "Peer") && (*parser.Sections[2].Header == "Peer")) {
 		t.Fatalf("parseFromString failed to collect sections %v", parser.Sections)
 	}
 
@@ -93,7 +93,7 @@ PublicKey = 1234567890
 		t.Fatalf("parseFromString failed with error %v", errors)
 	}
 
-	if !((len(parser.Sections) == 2) && (*parser.Sections[0].Name == "Interface") && (*parser.Sections[1].Name == "Peer")) {
+	if !((len(parser.Sections) == 2) && (*parser.Sections[0].Header == "Interface") && (*parser.Sections[1].Header == "Peer")) {
 		t.Fatalf("parseFromString failed to collect sections %v", parser.Sections)
 	}
 
@@ -120,7 +120,7 @@ PrivateKey = 1234567890
 		t.Fatalf("parseFromString failed with error %v", errors)
 	}
 
-	if !((len(parser.Sections) == 2) && (*parser.Sections[0].Name == "Inteface") && (*parser.Sections[1].Name == "Peer")) {
+	if !((len(parser.Sections) == 2) && (*parser.Sections[0].Header == "Inteface") && (*parser.Sections[1].Header == "Peer")) {
 		t.Fatalf("parseFromString failed to collect sections %v", parser.Sections)
 	}
 
@@ -168,7 +168,7 @@ PublicKey = 1234567890
 		t.Fatalf("parseFromString failed with error %v", errors)
 	}
 
-	if !((len(parser.Sections) == 2) && (*parser.Sections[0].Name == "Inte") && (*parser.Sections[1].Name == "Peer")) {
+	if !((len(parser.Sections) == 2) && (*parser.Sections[0].Header == "Inte") && (*parser.Sections[1].Header == "Peer")) {
 		t.Fatalf("parseFromString failed to collect sections: %v", parser.Sections)
 	}
 
@@ -202,7 +202,7 @@ PrivateKey = 1234567890
 		t.Fatalf("parseFromString failed with error: %v", errors)
 	}
 
-	if !((len(parser.Sections) == 2) && (*parser.Sections[0].Name == "Inte") && (*parser.Sections[1].Name == "Peer")) {
+	if !((len(parser.Sections) == 2) && (*parser.Sections[0].Header == "Inte") && (*parser.Sections[1].Header == "Peer")) {
 		t.Fatalf("parseFromString failed to collect sections: %v", parser.Sections)
 	}
 

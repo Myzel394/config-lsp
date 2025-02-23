@@ -1,10 +1,8 @@
 package parser
 
 import (
-	"fmt"
+	"config-lsp/handlers/wireguard/ast"
 	"regexp"
-
-	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 type PropertyNotFoundError struct{}
@@ -19,52 +17,7 @@ func (e PropertyNotFullyTypedError) Error() string {
 	return "Property not fully typed"
 }
 
-type WireguardSection struct {
-	Name       *string
-	StartLine  uint32
-	EndLine    uint32
-	Properties WireguardProperties
-}
-
-func (s WireguardSection) String() string {
-	var name string
-
-	if s.Name == nil {
-		name = "<nil>"
-	} else {
-		name = *s.Name
-	}
-
-	return fmt.Sprintf("[%s]; %d-%d: %v", name, s.StartLine, s.EndLine, s.Properties)
-}
-
-func (s WireguardSection) GetHeaderLineRange() protocol.Range {
-	return protocol.Range{
-		Start: protocol.Position{
-			Line:      s.StartLine,
-			Character: 0,
-		},
-		End: protocol.Position{
-			Line:      s.StartLine,
-			Character: 99999999,
-		},
-	}
-}
-
-func (s WireguardSection) GetRange() protocol.Range {
-	return protocol.Range{
-		Start: protocol.Position{
-			Line:      s.StartLine,
-			Character: 0,
-		},
-		End: protocol.Position{
-			Line:      s.EndLine,
-			Character: 99999999,
-		},
-	}
-}
-
-func (s WireguardSection) FetchFirstProperty(name string) (*uint32, *WireguardProperty) {
+func (s ast.WGSection) FetchFirstProperty(name string) (*uint32, *ast.WGProperty) {
 	for line, property := range s.Properties {
 		if property.Key.Name == name {
 			return &line, &property
@@ -74,13 +27,13 @@ func (s WireguardSection) FetchFirstProperty(name string) (*uint32, *WireguardPr
 	return nil, nil
 }
 
-func (s WireguardSection) ExistsProperty(name string) bool {
+func (s ast.WGSection) ExistsProperty(name string) bool {
 	_, property := s.FetchFirstProperty(name)
 
 	return property != nil
 }
 
-func (s WireguardSection) GetPropertyByLine(lineNumber uint32) (*WireguardProperty, error) {
+func (s ast.WGSection) GetPropertyByLine(lineNumber uint32) (*ast.WGProperty, error) {
 	property, found := s.Properties[lineNumber]
 
 	if !found {
@@ -99,7 +52,7 @@ func CreateWireguardSection(
 	endLine uint32,
 	headerLine string,
 	props WireguardProperties,
-) WireguardSection {
+) ast.WGSection {
 	match := validHeaderPattern.FindStringSubmatch(headerLine)
 
 	var header string
@@ -111,8 +64,8 @@ func CreateWireguardSection(
 		header = match[1]
 	}
 
-	return WireguardSection{
-		Name:       &header,
+	return ast.WGSection{
+		Header:     &header,
 		StartLine:  startLine,
 		EndLine:    endLine,
 		Properties: props,
