@@ -2,6 +2,7 @@ package parser
 
 import (
 	"config-lsp/common"
+	"config-lsp/handlers/wireguard/ast"
 	"regexp"
 	"slices"
 	"strings"
@@ -11,33 +12,7 @@ var commentPattern = regexp.MustCompile(`^\s*(;|#)`)
 var emptyLinePattern = regexp.MustCompile(`^\s*$`)
 var headerPattern = regexp.MustCompile(`^\s*\[`)
 
-type CharacterLocation struct {
-	Start uint32
-	End   uint32
-}
-
-type wireguardLineIndex struct {
-	Type             LineType
-	BelongingSection *WireguardSection
-}
-
-type WireguardParser struct {
-	// <key = name>: if nil then does not belong to a section
-	Sections []*WireguardSection
-	// Used to identify where not to show diagnostics
-	commentLines map[uint32]struct{}
-
-	// Indexes
-	linesIndexes map[uint32]wireguardLineIndex
-}
-
-func (p *WireguardParser) Clear() {
-	p.Sections = []*WireguardSection{}
-	p.commentLines = map[uint32]struct{}{}
-	p.linesIndexes = map[uint32]wireguardLineIndex{}
-}
-
-func (p *WireguardParser) ParseFromString(input string) []common.ParseError {
+func (p *ast.WGConfig) ParseFromString(input string) []common.ParseError {
 	var errors []common.ParseError
 	lines := strings.Split(
 		input,
@@ -116,7 +91,7 @@ func (p *WireguardParser) ParseFromString(input string) []common.ParseError {
 		}
 	}
 
-	var emptySection *WireguardSection
+	var emptySection *ast.WGSection
 
 	if len(collectedProperties) > 0 {
 		var endLine uint32
@@ -127,7 +102,7 @@ func (p *WireguardParser) ParseFromString(input string) []common.ParseError {
 			endLine = p.Sections[len(p.Sections)-1].StartLine
 		}
 
-		emptySection = &WireguardSection{
+		emptySection = &ast.WGSection{
 			StartLine:  0,
 			EndLine:    endLine,
 			Properties: collectedProperties,
@@ -152,7 +127,7 @@ func (p *WireguardParser) ParseFromString(input string) []common.ParseError {
 
 		// Add empty section
 		if endLine != 0 {
-			emptySection = &WireguardSection{
+			emptySection = &ast.WGSection{
 				StartLine:  0,
 				EndLine:    endLine,
 				Properties: collectedProperties,
@@ -203,7 +178,7 @@ func (p *WireguardParser) ParseFromString(input string) []common.ParseError {
 	return errors
 }
 
-func (p *WireguardParser) GetSectionByLine(line uint32) *WireguardSection {
+func (p *ast.WGConfig) GetSectionByLine(line uint32) *ast.WGSection {
 	for _, section := range p.Sections {
 		if section.StartLine <= line && section.EndLine >= line {
 			return section
@@ -215,7 +190,7 @@ func (p *WireguardParser) GetSectionByLine(line uint32) *WireguardSection {
 
 // Search for a property by name
 // Returns (line number, property)
-func (p *WireguardParser) FindFirstPropertyByName(name string) (*uint32, *WireguardProperty) {
+func (p *ast.WGConfig) FindFirstPropertyByName(name string) (*uint32, *ast.WGProperty) {
 	for _, section := range p.Sections {
 		for lineNumber, property := range section.Properties {
 			if property.Key.Name == name {
@@ -227,9 +202,9 @@ func (p *WireguardParser) FindFirstPropertyByName(name string) (*uint32, *Wiregu
 	return nil, nil
 }
 
-func (p WireguardParser) GetInterfaceSection() (*WireguardSection, bool) {
+func (p ast.WGConfig) GetInterfaceSection() (*ast.WGSection, bool) {
 	for _, section := range p.Sections {
-		if section.Name != nil && *section.Name == "Interface" {
+		if section.Header != nil && *section.Header == "Interface" {
 			return section, true
 		}
 	}
@@ -237,7 +212,7 @@ func (p WireguardParser) GetInterfaceSection() (*WireguardSection, bool) {
 	return nil, false
 }
 
-func (p WireguardParser) GetTypeByLine(line uint32) LineType {
+func (p ast.WGConfig) GetTypeByLine(line uint32) LineType {
 	// Check if line is a comment
 	if _, found := p.commentLines[line]; found {
 		return LineTypeComment
@@ -250,53 +225,8 @@ func (p WireguardParser) GetTypeByLine(line uint32) LineType {
 	return LineTypeEmpty
 }
 
-// Get the section that the line belongs to
-// Example:
-// [Interface]
-// Address = 10.0.0.1
-//
-// <line here>
-// [Peer]
-//
-// This would return the section [Interface]
-func (p *WireguardParser) GetBelongingSectionByLine(line uint32) *WireguardSection {
-	if info, found := p.linesIndexes[line]; found {
-		return info.BelongingSection
-	}
-
-	return nil
-}
-
-func (p *WireguardParser) GetPropertyByLine(line uint32) (*WireguardSection, *WireguardProperty) {
-	section := p.GetSectionByLine(line)
-
-	if section == nil || section.Name == nil {
-		return nil, nil
-	}
-
-	property, _ := section.GetPropertyByLine(line)
-
-	if property == nil {
-		return nil, nil
-	}
-
-	return section, property
-}
-
-func (p *WireguardParser) GetSectionsByName(name string) []*WireguardSection {
-	var sections []*WireguardSection
-
-	for _, section := range p.Sections {
-		if section.Name != nil && *section.Name == name {
-			sections = append(sections, section)
-		}
-	}
-
-	return sections
-}
-
-func CreateWireguardParser() WireguardParser {
-	parser := WireguardParser{}
+func CreateWireguardParser() ast.WGConfig {
+	parser := ast.WGConfig{}
 	parser.Clear()
 
 	return parser

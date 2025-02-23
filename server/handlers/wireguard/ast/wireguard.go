@@ -19,6 +19,7 @@ type WGPropertySeparator struct {
 }
 
 type WGProperty struct {
+	common.LocationRange
 	Key       WGPropertyKey
 	Separator *WGPropertySeparator
 	Value     *WGPropertyValue

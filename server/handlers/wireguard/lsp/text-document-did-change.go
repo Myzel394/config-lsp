@@ -2,8 +2,10 @@ package lsp
 
 import (
 	"config-lsp/common"
-	"config-lsp/handlers/wireguard/handlers"
+	"config-lsp/handlers/wireguard"
+	"config-lsp/handlers/wireguard/analyzer"
 	"config-lsp/utils"
+
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -15,22 +17,22 @@ func TextDocumentDidChange(
 	content := params.ContentChanges[0].(protocol.TextDocumentContentChangeEventWhole).Text
 	common.ClearDiagnostics(context, params.TextDocument.URI)
 
-	p := documentParserMap[params.TextDocument.URI]
-	p.Clear()
+	document := wireguard.DocumentParserMap[params.TextDocument.URI]
+	document.Config.Clear()
 
 	diagnostics := make([]protocol.Diagnostic, 0)
-	errors := p.ParseFromString(content)
+	errors := document.Config.Parse(content)
 
 	if len(errors) > 0 {
 		diagnostics = append(diagnostics, utils.Map(
 			errors,
-			func(err common.ParseError) protocol.Diagnostic {
+			func(err common.LSPError) protocol.Diagnostic {
 				return err.ToDiagnostic()
 			},
 		)...)
 	}
 
-	diagnostics = append(diagnostics, handlers.Analyze(*p)...)
+	diagnostics = append(diagnostics, analyzer.Analyze(document)...)
 
 	if len(diagnostics) > 0 {
 		common.SendDiagnostics(context, params.TextDocument.URI, diagnostics)

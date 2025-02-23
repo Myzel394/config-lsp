@@ -37,3 +37,13 @@ func (c *WGConfig) FindPropertyByLine(line uint32) *WGProperty {
 
 	return section.Properties[line]
 }
+
+func (s *WGSection) FindFirstPropertyByName(name string) *WGProperty {
+	for _, property := range s.Properties {
+		if property.Key.Name == name {
+			return property
+		}
+	}
+
+	return nil
+}

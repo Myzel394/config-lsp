@@ -22,7 +22,7 @@ func (c *WGConfig) Clear() {
 
 var commentPattern = regexp.MustCompile(`^\s*([;#])`)
 var emptyPattern = regexp.MustCompile(`^\s*$`)
-var headerPattern = regexp.MustCompile(`^\s*\[(\w+)]?`)
+var headerPattern = regexp.MustCompile(`^\s*\[(\w+)?]?`)
 var linePattern = regexp.MustCompile(`^\s*(?P<key>.+?)\s*(?P<separator>=)\s*(?P<value>\S.*?)?\s*(?:[;#].*)?\s*$`)
 
 func (c *WGConfig) Parse(input string) []common.LSPError {
@@ -177,11 +177,13 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 
 			// Construct value
 			var value *WGPropertyValue
+			propertyEnd := uint32(len(line))
 
 			if indexes[6] != -1 && indexes[7] != -1 {
 				// value exists
 				valueStart := uint32(indexes[6])
 				valueEnd := uint32(indexes[7])
+				propertyEnd = valueEnd
 
 				value = &WGPropertyValue{
 					LocationRange: common.LocationRange{
@@ -200,6 +202,16 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 
 			// And lastly, add the property
 			currentSection.Properties[lineNumber] = &WGProperty{
+				LocationRange: common.LocationRange{
+					Start: common.Location{
+						Line:      lineNumber,
+						Character: keyStart,
+					},
+					End: common.Location{
+						Line:      lineNumber,
+						Character: propertyEnd,
+					},
+				},
 				Key:       key,
 				Separator: &separator,
 				Value:     value,
