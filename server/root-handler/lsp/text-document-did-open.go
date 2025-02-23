@@ -61,9 +61,6 @@ func initFile(
 	uri protocol.DocumentUri,
 	advertisedLanguage string,
 ) (*shared.SupportedLanguage, error) {
-	println("Initializing the file")
-	println(advertisedLanguage)
-	println(uri)
 	language, err := utils.DetectLanguage(content, advertisedLanguage, uri)
 
 	if err != nil {

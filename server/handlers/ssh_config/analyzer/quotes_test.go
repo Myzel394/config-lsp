@@ -7,6 +7,18 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
+func testQuotes(
+	ctx *analyzerContext,
+) {
+	for _, info := range ctx.document.Config.GetAllOptions() {
+		checkIsUsingDoubleQuotes(ctx, info.Option.Key.Value, info.Option.Key.LocationRange)
+		checkIsUsingDoubleQuotes(ctx, info.Option.OptionValue.Value, info.Option.OptionValue.LocationRange)
+
+		checkQuotesAreClosed(ctx, info.Option.Key.Value, info.Option.Key.LocationRange)
+		checkQuotesAreClosed(ctx, info.Option.OptionValue.Value, info.Option.OptionValue.LocationRange)
+	}
+}
+
 func TestSimpleInvalidQuotesExample(
 	t *testing.T,
 ) {
@@ -17,7 +29,7 @@ PermitRootLogin 'yes'
 		document:    d,
 		diagnostics: make([]protocol.Diagnostic, 0),
 	}
-	analyzeQuotesAreValid(ctx)
+	testQuotes(ctx)
 
 	if !(len(ctx.diagnostics) == 1) {
 		t.Errorf("Expected 1 error, got %v", len(ctx.diagnostics))
@@ -34,7 +46,7 @@ func TestSingleQuotesKeyAndOptionExample(
 		document:    d,
 		diagnostics: make([]protocol.Diagnostic, 0),
 	}
-	analyzeQuotesAreValid(ctx)
+	testQuotes(ctx)
 
 	if !(len(ctx.diagnostics) == 2) {
 		t.Errorf("Expected 2 ctx.diagnostics, got %v", len(ctx.diagnostics))
@@ -51,7 +63,7 @@ PermitRootLogin "yes
 		document:    d,
 		diagnostics: make([]protocol.Diagnostic, 0),
 	}
-	analyzeQuotesAreValid(ctx)
+	testQuotes(ctx)
 
 	if !(len(ctx.diagnostics) == 1) {
 		t.Errorf("Expected 1 error, got %v", len(ctx.diagnostics))
@@ -68,7 +80,7 @@ func TestIncompleteQuotesExample(
 		document:    d,
 		diagnostics: make([]protocol.Diagnostic, 0),
 	}
-	analyzeQuotesAreValid(ctx)
+	testQuotes(ctx)
 
 	if !(len(ctx.diagnostics) == 1) {
 		t.Errorf("Expected 1 error, got %v", len(ctx.diagnostics))

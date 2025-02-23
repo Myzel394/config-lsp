@@ -37,4 +37,6 @@ type SSHDIndexes struct {
 	AllOptionsPerName map[fields.NormalizedOptionName](map[*ast.SSHDMatchBlock]([]*ast.SSHDOption))
 
 	Includes map[uint32]*SSHDIndexIncludeLine
+
+	UnknownOptions map[uint32]ast.SSHDOptionInfo
 }
