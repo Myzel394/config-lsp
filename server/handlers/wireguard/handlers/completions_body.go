@@ -86,13 +86,20 @@ func getPropertyCompletions(
 	Address = 10.|
 	*/
 
-	if property == nil || property.Separator == nil {
+	currentLine := params.Position.Line
+	position := common.LSPCharacterAsCursorPosition(params.Position.Character)
+
+	// Special case, key defined but separator missing
+	if property != nil && property.Separator == nil && !property.Key.ContainsPosition(position) {
+		return getKeyCompletions(section, true, currentLine), nil
+	}
+
+	if property == nil || property.Separator == nil || property.Key.ContainsPosition(position) {
 		// First scenario
-		return getKeyCompletions(section), nil
+		return getKeyCompletions(section, false, currentLine), nil
 	}
 
 	// Check if the cursor it outside the value
-	position := common.LSPCharacterAsCursorPosition(params.Position.Character)
 	if property.Value != nil && property.Value.IsPositionAfterEnd(position) {
 		// Then we don't show anything
 		return nil, nil
@@ -104,45 +111,55 @@ func getPropertyCompletions(
 
 func getKeyCompletions(
 	section ast.WGSection,
+	onlySeparator bool,
+	currentLine uint32,
 ) []protocol.CompletionItem {
 	options := make(map[string]docvalues.DocumentationValue)
+	allowedDuplicatedFields := make(map[string]struct{})
 
 	switch section.Header.Name {
 	case "Interface":
 		maps.Copy(options, fields.InterfaceOptions)
-
-		// Remove existing, non-duplicate options
-		for _, property := range section.Properties {
-			if _, found := fields.InterfaceAllowedDuplicateFields[property.Key.Name]; found {
-				continue
-			}
-
-			delete(options, property.Key.Name)
-		}
+		allowedDuplicatedFields = fields.InterfaceAllowedDuplicateFields
 	case "Peer":
 		maps.Copy(options, fields.PeerOptions)
+		allowedDuplicatedFields = fields.PeerAllowedDuplicateFields
+	}
 
-		// Remove existing, non-duplicate options
-		for _, property := range section.Properties {
-			if _, found := fields.PeerAllowedDuplicateFields[property.Key.Name]; found {
-				continue
-			}
-
-			delete(options, property.Key.Name)
+	// Remove existing, non-duplicate options
+	for _, property := range section.Properties {
+		if _, found := allowedDuplicatedFields[property.Key.Name]; found {
+			continue
 		}
+
+		if property.Key.Start.Line == currentLine {
+			// The user is currently typing the key, thus we should suggest it
+			continue
+		}
+
+		delete(options, property.Key.Name)
 	}
 
 	kind := protocol.CompletionItemKindField
 
 	return utils.MapMapToSlice(
 		options,
-		func(optionName string, value docvalues.DocumentationValue) protocol.CompletionItem {
-			insertText := optionName + " = "
+		func(rawOptionName string, value docvalues.DocumentationValue) protocol.CompletionItem {
+			var label string
+			var insertText string
+
+			if onlySeparator {
+				label = rawOptionName + " = "
+				insertText = "= "
+			} else {
+				label = rawOptionName
+				insertText = rawOptionName + " = "
+			}
 
 			return protocol.CompletionItem{
 				Kind:          &kind,
 				Documentation: value.Documentation,
-				Label:         optionName,
+				Label:         label,
 				InsertText:    &insertText,
 			}
 		},

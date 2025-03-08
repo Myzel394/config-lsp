@@ -1,6 +1,7 @@
 package ast
 
 import (
+	"config-lsp/utils"
 	"slices"
 )
 
@@ -46,4 +47,24 @@ func (s *WGSection) FindFirstPropertyByName(name string) *WGProperty {
 	}
 
 	return nil
+}
+
+func (s *WGSection) FindPropertyByName(name string) *WGProperty {
+	for _, property := range s.Properties {
+		if property.Key.Name == name {
+			return property
+		}
+	}
+
+	return nil
+}
+
+func (s *WGSection) GetLastProperty() *WGProperty {
+	if len(s.Properties) == 0 {
+		return nil
+	}
+
+	lastLine := utils.FindBiggestKey(s.Properties)
+
+	return s.Properties[lastLine]
 }

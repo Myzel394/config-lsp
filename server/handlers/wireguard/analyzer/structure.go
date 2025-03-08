@@ -55,7 +55,7 @@ func analyzeStructureIsValid(ctx *analyzerContext) {
 				if property.Value == nil || property.Value.Value == "" {
 					ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 						Message:  "This property is missing a value",
-						Range:    property.Value.ToLSPRange(),
+						Range:    property.ToLSPRange(),
 						Severity: &common.SeverityError,
 					})
 				}
