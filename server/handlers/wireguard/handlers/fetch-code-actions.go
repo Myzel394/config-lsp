@@ -1,19 +1,20 @@
 package handlers
 
+/*
 import (
+	"config-lsp/handlers/wireguard/ast"
 	"config-lsp/handlers/wireguard/commands"
-	"config-lsp/handlers/wireguard/parser"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func GetKeepaliveCodeActions(
-	p *parser.WireguardParser,
+	p *ast.WGConfig,
 	params *protocol.CodeActionParams,
 ) []protocol.CodeAction {
 	line := params.Range.Start.Line
 
 	for index, section := range p.Sections {
-		if section.StartLine >= line && line <= section.EndLine && section.Name != nil && *section.Name == "Peer" {
+		if section.StartLine >= line && line <= section.EndLine && section.Header != nil && *section.Header == "Peer" {
 			if section.ExistsProperty("Endpoint") && !section.ExistsProperty("PersistentKeepalive") {
 				commandID := "wireguard." + CodeActionAddKeepalive
 				command := protocol.Command{
@@ -41,7 +42,7 @@ func GetKeepaliveCodeActions(
 }
 
 func GetKeyGenerationCodeActions(
-	p *parser.WireguardParser,
+	p *ast.WGConfig,
 	params *protocol.CodeActionParams,
 ) []protocol.CodeAction {
 	line := params.Range.Start.Line
@@ -102,3 +103,4 @@ func GetKeyGenerationCodeActions(
 
 	return nil
 }
+*/

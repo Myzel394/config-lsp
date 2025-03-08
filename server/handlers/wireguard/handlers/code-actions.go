@@ -1,8 +1,9 @@
 package handlers
 
+/*
 import (
+	"config-lsp/handlers/wireguard/ast"
 	wgcommands "config-lsp/handlers/wireguard/commands"
-	"config-lsp/handlers/wireguard/parser"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
@@ -15,7 +16,7 @@ const (
 )
 
 type CodeAction interface {
-	RunCommand(*parser.WireguardParser) (*protocol.ApplyWorkspaceEditParams, error)
+	RunCommand(*ast.WGConfig) (*protocol.ApplyWorkspaceEditParams, error)
 }
 
 type CodeActionArgs interface{}
@@ -32,7 +33,7 @@ func CodeActionGeneratePrivateKeyArgsFromArguments(arguments map[string]any) Cod
 	}
 }
 
-func (args CodeActionGeneratePrivateKeyArgs) RunCommand(p *parser.WireguardParser) (*protocol.ApplyWorkspaceEditParams, error) {
+func (args CodeActionGeneratePrivateKeyArgs) RunCommand(p *ast.WGConfig) (*protocol.ApplyWorkspaceEditParams, error) {
 	privateKey, err := wgcommands.CreateNewPrivateKey()
 
 	if err != nil {
@@ -73,7 +74,7 @@ func CodeActionGeneratePresharedKeyArgsFromArguments(arguments map[string]any) C
 	}
 }
 
-func (args CodeActionGeneratePresharedKeyArgs) RunCommand(p *parser.WireguardParser) (*protocol.ApplyWorkspaceEditParams, error) {
+func (args CodeActionGeneratePresharedKeyArgs) RunCommand(p *ast.WGConfig) (*protocol.ApplyWorkspaceEditParams, error) {
 	presharedKey, err := wgcommands.CreatePresharedKey()
 
 	if err != nil {
@@ -114,7 +115,7 @@ func CodeActionAddKeepaliveArgsFromArguments(arguments map[string]any) CodeActio
 	}
 }
 
-func (args CodeActionAddKeepaliveArgs) RunCommand(p *parser.WireguardParser) (*protocol.ApplyWorkspaceEditParams, error) {
+func (args CodeActionAddKeepaliveArgs) RunCommand(p *ast.WGConfig) (*protocol.ApplyWorkspaceEditParams, error) {
 	section := p.Sections[args.SectionIndex]
 
 	label := "Add PersistentKeepalive"
@@ -141,3 +142,4 @@ func (args CodeActionAddKeepaliveArgs) RunCommand(p *parser.WireguardParser) (*p
 		},
 	}, nil
 }
+*/

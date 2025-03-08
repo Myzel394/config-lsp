@@ -36,6 +36,14 @@ PublicKey = 1234567890
 		t.Errorf("Parse: Expected comments to be present on lines 0 and 12")
 	}
 
+	if !(config.Sections[0].Start.Line == 3 && config.Sections[0].End.Line == 8) {
+		t.Errorf("Parse: Expected section 0 to be present on lines 3 and 6, but it is: %v", config.Sections[0].End)
+	}
+
+	if !(config.Sections[0].Start.Character == 0 && config.Sections[0].End.Character == 0) {
+		t.Errorf("Parse: Expected section 0 to be present on characters 0 and 0, but it is: %v", config.Sections[0].End)
+	}
+
 	if !(config.Sections[0].Header.Name == "Interface" && config.Sections[1].Header.Name == "Peer") {
 		t.Errorf("Parse: Expected sections to be present on lines 0, 1, and 2")
 	}

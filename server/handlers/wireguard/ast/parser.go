@@ -35,12 +35,21 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 		lineNumber := uint32(rawLineNumber)
 
 		if emptyPattern.MatchString(line) {
+			// Set end of last section
+			if currentSection != nil {
+				currentSection.End.Line = lineNumber
+				currentSection.End.Character = 0
+			}
 			continue
 		}
 
 		if commentPattern.MatchString(line) {
 			c.CommentLines[lineNumber] = struct{}{}
-
+			// Set end of last section
+			if currentSection != nil {
+				currentSection.End.Line = lineNumber
+				currentSection.End.Character = uint32(len(line))
+			}
 			continue
 		}
 
@@ -80,6 +89,13 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 		}
 
 		// Else property
+
+		// Set end of last section
+		if currentSection != nil {
+			currentSection.End.Line = lineNumber
+			currentSection.End.Character = uint32(len(line))
+		}
+
 		if currentSection == nil {
 			// Root properties are not allowed
 			errors = append(errors, common.LSPError{
@@ -212,12 +228,12 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 						Character: propertyEnd,
 					},
 				},
+				RawValue:  line,
 				Key:       key,
 				Separator: &separator,
 				Value:     value,
 			}
 		}
-
 	}
 
 	return errors

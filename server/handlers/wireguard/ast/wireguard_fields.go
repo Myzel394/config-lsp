@@ -10,11 +10,11 @@ func (c *WGConfig) FindSectionByLine(line uint32) *WGSection {
 		line,
 		func(current *WGSection, target uint32) int {
 			if target < current.Start.Line {
-				return 1
+				return -1
 			}
 
-			if target > current.Start.Line {
-				return -1
+			if target > current.End.Line {
+				return 1
 			}
 
 			return 0

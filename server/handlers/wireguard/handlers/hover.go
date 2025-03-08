@@ -1,20 +1,21 @@
 package handlers
 
+/*
 import (
 	docvalues "config-lsp/doc-values"
+	"config-lsp/handlers/wireguard/ast"
 	"config-lsp/handlers/wireguard/fields"
-	"config-lsp/handlers/wireguard/parser"
 	"fmt"
 	"strings"
 )
 
 func getPropertyInfo(
-	p parser.WireguardProperty,
+	p ast.WGProperty,
 	cursor uint32,
-	section parser.WireguardSection,
+	section ast.WGSection,
 ) []string {
 	if cursor <= p.Key.Location.End {
-		options, found := fields.OptionsHeaderMap[*section.Name]
+		options, found := fields.OptionsHeaderMap[*section.Header]
 
 		if !found {
 			return []string{}
@@ -29,7 +30,7 @@ func getPropertyInfo(
 		return strings.Split(option.Documentation, "\n")
 	}
 
-	options, found := fields.OptionsHeaderMap[*section.Name]
+	options, found := fields.OptionsHeaderMap[*section.Header]
 
 	if !found {
 		return []string{}
@@ -42,19 +43,19 @@ func getPropertyInfo(
 	return []string{}
 }
 
-func getSectionInfo(s parser.WireguardSection) []string {
-	if s.Name == nil {
+func getSectionInfo(s ast.WGSection) []string {
+	if s.Header == nil {
 		return []string{}
 	}
 
 	contents := []string{
-		fmt.Sprintf("## [%s]", *s.Name),
+		fmt.Sprintf("## [%s]", *s.Header),
 		"",
 	}
 
 	var option *docvalues.EnumString = nil
 
-	switch *s.Name {
+	switch *s.Header {
 	case "Interface":
 		option = &fields.HeaderInterfaceEnum
 	case "Peer":
@@ -71,7 +72,7 @@ func getSectionInfo(s parser.WireguardSection) []string {
 }
 
 func GetHoverContent(
-	p parser.WireguardParser,
+	p ast.WGConfig,
 	line uint32,
 	cursor uint32,
 ) []string {
@@ -103,3 +104,4 @@ func GetHoverContent(
 
 	return contents
 }
+*/
