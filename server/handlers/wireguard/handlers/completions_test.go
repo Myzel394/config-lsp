@@ -227,10 +227,10 @@ Table =
 	completions, err := SuggestCompletions(d, params)
 
 	if err != nil {
-		t.Errorf("getCompletionsForPropertyLine failed with error: %v", err)
+		t.Errorf("SuggestComplete failed with error: %v", err)
 	}
 
 	if !(len(completions) == 2) {
-		t.Errorf("getCompletionsForPropertyLine: Expected completions, but got %v", len(completions))
+		t.Errorf("Expected 2 completions, but got %v", len(completions))
 	}
 }

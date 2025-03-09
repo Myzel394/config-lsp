@@ -10,30 +10,30 @@ func TextDocumentHover(
 	params *protocol.HoverParams,
 ) (*protocol.Hover, error) {
 	/*
-	p := documentParserMap[params.TextDocument.URI]
+		p := documentParserMap[params.TextDocument.URI]
 
-	switch p.GetTypeByLine(params.Position.Line) {
-	case parser.LineTypeComment:
-		return nil, nil
-	case parser.LineTypeEmpty:
-		return nil, nil
-	case parser.LineTypeHeader:
-		fallthrough
-	case parser.LineTypeProperty:
-		documentation := handlers.GetHoverContent(
-			*p,
-			params.Position.Line,
-			params.Position.Character,
-		)
+		switch p.GetTypeByLine(params.Position.Line) {
+		case parser.LineTypeComment:
+			return nil, nil
+		case parser.LineTypeEmpty:
+			return nil, nil
+		case parser.LineTypeHeader:
+			fallthrough
+		case parser.LineTypeProperty:
+			documentation := handlers.GetHoverContent(
+				*p,
+				params.Position.Line,
+				params.Position.Character,
+			)
 
-		hover := protocol.Hover{
-			Contents: protocol.MarkupContent{
-				Kind:  protocol.MarkupKindMarkdown,
-				Value: strings.Join(documentation, "\n"),
-			},
+			hover := protocol.Hover{
+				Contents: protocol.MarkupContent{
+					Kind:  protocol.MarkupKindMarkdown,
+					Value: strings.Join(documentation, "\n"),
+				},
+			}
+			return &hover, nil
 		}
-		return &hover, nil
-	}
 	*/
 
 	return nil, nil

@@ -27,7 +27,7 @@ func GetKeepaliveCodeActions(
 
 				return []protocol.CodeAction{
 					{
-						Title:   "Add PersistentKeepalive",
+						Title: "Add PersistentKeepalive",
 						Edit: &protocol.WorkspaceEdit{
 							Changes: map[protocol.DocumentUri][]protocol.TextEdit{
 								params.TextDocument.URI: {

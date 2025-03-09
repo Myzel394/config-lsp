@@ -2,6 +2,7 @@ package ast
 
 import (
 	"config-lsp/common"
+	"github.com/emirpasic/gods/maps/treemap"
 )
 
 type WGPropertyKey struct {
@@ -34,8 +35,8 @@ type WGHeader struct {
 type WGSection struct {
 	common.LocationRange
 	Header WGHeader
-	// map of: line number -> WGProperty
-	Properties map[uint32]*WGProperty
+	// [uint32]WGProperty: line number -> WGProperty
+	Properties *treemap.Map
 }
 
 type WGConfig struct {

@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/emirpasic/gods/maps/treemap"
+	gods "github.com/emirpasic/gods/utils"
 )
 
 func NewWGConfig() *WGConfig {
@@ -80,7 +83,7 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 					},
 					Name: name,
 				},
-				Properties: make(map[uint32]*WGProperty),
+				Properties: treemap.NewWith(gods.UInt32Comparator),
 			}
 
 			c.Sections = append(c.Sections, currentSection)
@@ -119,7 +122,7 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 			// Incomplete property
 			indexes := utils.GetTrimIndex(line)
 
-			currentSection.Properties[lineNumber] = &WGProperty{
+			newProperty := &WGProperty{
 				Key: WGPropertyKey{
 					LocationRange: common.LocationRange{
 						Start: common.Location{
@@ -134,6 +137,8 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 					Name: line[indexes[0]:indexes[1]],
 				},
 			}
+
+			currentSection.Properties.Put(lineNumber, newProperty)
 		} else {
 			// Fully written out property
 
@@ -217,7 +222,7 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 			}
 
 			// And lastly, add the property
-			currentSection.Properties[lineNumber] = &WGProperty{
+			newProperty := &WGProperty{
 				LocationRange: common.LocationRange{
 					Start: common.Location{
 						Line:      lineNumber,
@@ -233,6 +238,7 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 				Separator: &separator,
 				Value:     value,
 			}
+			currentSection.Properties.Put(lineNumber, newProperty)
 		}
 	}
 

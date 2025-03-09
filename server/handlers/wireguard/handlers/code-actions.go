@@ -122,4 +122,3 @@ func (args CodeActionGeneratePresharedKeyArgs) RunCommand(d *wireguard.WGDocumen
 		},
 	}, nil
 }
-

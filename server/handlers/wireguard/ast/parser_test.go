@@ -48,15 +48,21 @@ PublicKey = 1234567890
 		t.Errorf("Parse: Expected sections to be present on lines 0, 1, and 2")
 	}
 
-	if !(config.Sections[0].Properties[4].Key.Name == "PrivateKey" && config.Sections[0].Properties[4].Value.Value == "1234567890") {
+	rawFourthProperty, _ := config.Sections[0].Properties.Get(uint32(4))
+	fourthProperty := rawFourthProperty.(*WGProperty)
+	if !(fourthProperty.Key.Name == "PrivateKey" && fourthProperty.Value.Value == "1234567890") {
 		t.Errorf("Parse: Expected property line 4 to be correct")
 	}
 
-	if !(config.Sections[0].Properties[5].Key.Name == "Address" && config.Sections[0].Properties[5].Value.Value == "10.0.0.1") {
+	rawFifthProperty, _ := config.Sections[0].Properties.Get(uint32(5))
+	fifthProperty := rawFifthProperty.(*WGProperty)
+	if !(fifthProperty.Key.Name == "Address" && fifthProperty.Value.Value == "10.0.0.1") {
 		t.Errorf("Parse: Expected property line 5 to be correct")
 	}
 
-	if !(config.Sections[1].Properties[10].Key.Name == "PublicKey" && config.Sections[1].Properties[10].Value.Value == "1234567890") {
+	rawTenthProperty, _ := config.Sections[1].Properties.Get(uint32(10))
+	tenthProperty := rawTenthProperty.(*WGProperty)
+	if !(tenthProperty.Key.Name == "PublicKey" && tenthProperty.Value.Value == "1234567890") {
 		t.Errorf("Parse: Expected property line 10 to be correct")
 	}
 }

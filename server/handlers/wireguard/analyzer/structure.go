@@ -12,6 +12,7 @@ import (
 
 func analyzeStructureIsValid(ctx *analyzerContext) {
 	for _, section := range ctx.document.Config.Sections {
+		normalizedHeaderName := fields.CreateNormalizedName(section.Header.Name)
 		// Whether to check if the property is allowed in the section
 		checkAllowedProperty := true
 
@@ -21,7 +22,7 @@ func analyzeStructureIsValid(ctx *analyzerContext) {
 				Range:    section.Header.ToLSPRange(),
 				Severity: &common.SeverityError,
 			})
-		} else if !utils.KeyExists(fields.OptionsHeaderMap, section.Header.Name) {
+		} else if !utils.KeyExists(fields.OptionsHeaderMap, normalizedHeaderName) {
 			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 				Message:  fmt.Sprintf("Unknown section '%s'. It must be one of: [Interface], [Peer]", section.Header.Name),
 				Range:    section.Header.ToLSPRange(),
@@ -31,7 +32,7 @@ func analyzeStructureIsValid(ctx *analyzerContext) {
 			checkAllowedProperty = false
 		}
 
-		if len(section.Properties) == 0 {
+		if section.Properties.Size() == 0 {
 			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 				Message:  "This section is empty",
 				Range:    section.Header.ToLSPRange(),
@@ -41,9 +42,13 @@ func analyzeStructureIsValid(ctx *analyzerContext) {
 				},
 			})
 		} else {
-			existingProperties := make(map[string]*ast.WGProperty)
+			existingProperties := make(map[fields.NormalizedName]*ast.WGProperty)
 
-			for _, property := range section.Properties {
+			it := section.Properties.Iterator()
+			for it.Next() {
+				property := it.Value().(*ast.WGProperty)
+				normalizedPropertyName := fields.CreateNormalizedName(property.Key.Name)
+
 				if property.Key.Name == "" {
 					ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 						Message:  "This property is missing a name",
@@ -61,21 +66,23 @@ func analyzeStructureIsValid(ctx *analyzerContext) {
 				}
 
 				if checkAllowedProperty {
-					options := fields.OptionsHeaderMap[section.Header.Name]
+					options := fields.OptionsHeaderMap[normalizedHeaderName]
 
-					if !utils.KeyExists(options, property.Key.Name) {
+					if !utils.KeyExists(options, normalizedPropertyName) {
 						ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 							Message:  fmt.Sprintf("Unknown property '%s'", property.Key.Name),
 							Range:    property.Key.ToLSPRange(),
 							Severity: &common.SeverityError,
 						})
-					} else if existingProperty, found := existingProperties[property.Key.Name]; found {
+					} else if existingProperty, found := existingProperties[normalizedPropertyName]; found {
 						ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 							Message:  fmt.Sprintf("Property '%s' has already been defined on line %d", property.Key.Name, existingProperty.Start.Line+1),
 							Severity: &common.SeverityError,
 							Range:    existingProperty.ToLSPRange(),
 						})
 					}
+
+					existingProperties[normalizedPropertyName] = property
 				}
 			}
 		}

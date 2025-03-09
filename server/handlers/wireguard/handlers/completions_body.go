@@ -55,6 +55,11 @@ func GetSectionBodyCompletions(
 	// In this case, the user may want to add a property or add a new section.
 	// We should therefore suggest both options.
 
+	isLineEmpty := property == nil
+	if !isLineEmpty {
+		return completions, nil
+	}
+
 	// Check if previous line is empty
 	previousLineProperty := d.Config.FindPropertyByLine(params.Position.Line - 1)
 
@@ -114,8 +119,8 @@ func getKeyCompletions(
 	onlySeparator bool,
 	currentLine uint32,
 ) []protocol.CompletionItem {
-	options := make(map[string]docvalues.DocumentationValue)
-	allowedDuplicatedFields := make(map[string]struct{})
+	options := make(map[fields.NormalizedName]docvalues.DocumentationValue)
+	allowedDuplicatedFields := make(map[fields.NormalizedName]struct{})
 
 	switch section.Header.Name {
 	case "Interface":
@@ -127,8 +132,11 @@ func getKeyCompletions(
 	}
 
 	// Remove existing, non-duplicate options
-	for _, property := range section.Properties {
-		if _, found := allowedDuplicatedFields[property.Key.Name]; found {
+	it := section.Properties.Iterator()
+	for it.Next() {
+		property := it.Value().(*ast.WGProperty)
+		normalizedName := fields.CreateNormalizedName(property.Key.Name)
+		if _, found := allowedDuplicatedFields[normalizedName]; found {
 			continue
 		}
 
@@ -137,23 +145,24 @@ func getKeyCompletions(
 			continue
 		}
 
-		delete(options, property.Key.Name)
+		delete(options, normalizedName)
 	}
 
 	kind := protocol.CompletionItemKindField
 
 	return utils.MapMapToSlice(
 		options,
-		func(rawOptionName string, value docvalues.DocumentationValue) protocol.CompletionItem {
+		func(rawOptionName fields.NormalizedName, value docvalues.DocumentationValue) protocol.CompletionItem {
+			optionName := fields.AllOptionsFormatted[rawOptionName]
 			var label string
 			var insertText string
 
 			if onlySeparator {
-				label = rawOptionName + " = "
+				label = optionName + " = "
 				insertText = "= "
 			} else {
-				label = rawOptionName
-				insertText = rawOptionName + " = "
+				label = optionName
+				insertText = optionName + " = "
 			}
 
 			return protocol.CompletionItem{
@@ -172,13 +181,14 @@ func getValueCompletions(
 	cursorPosition common.CursorPosition,
 ) []protocol.CompletionItem {
 	// TODO: Normalize section header name
-	options, found := fields.OptionsHeaderMap[section.Header.Name]
+	normalizedHeaderName := fields.CreateNormalizedName(section.Header.Name)
+	options, found := fields.OptionsHeaderMap[normalizedHeaderName]
 
 	if !found {
 		return nil
 	}
 
-	option, found := options[property.Key.Name]
+	option, found := options[fields.CreateNormalizedName(property.Key.Name)]
 
 	if !found {
 		return nil

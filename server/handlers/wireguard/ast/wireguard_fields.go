@@ -1,7 +1,6 @@
 package ast
 
 import (
-	"config-lsp/utils"
 	"slices"
 )
 
@@ -36,11 +35,17 @@ func (c *WGConfig) FindPropertyByLine(line uint32) *WGProperty {
 		return nil
 	}
 
-	return section.Properties[line]
+	if property, found := section.Properties.Get(line); found {
+		return property.(*WGProperty)
+	}
+
+	return nil
 }
 
 func (s *WGSection) FindFirstPropertyByName(name string) *WGProperty {
-	for _, property := range s.Properties {
+	it := s.Properties.Iterator()
+	for it.Next() {
+		property := it.Value().(*WGProperty)
 		if property.Key.Name == name {
 			return property
 		}
@@ -50,7 +55,9 @@ func (s *WGSection) FindFirstPropertyByName(name string) *WGProperty {
 }
 
 func (s *WGSection) FindPropertyByName(name string) *WGProperty {
-	for _, property := range s.Properties {
+	it := s.Properties.Iterator()
+	for it.Next() {
+		property := it.Value().(*WGProperty)
 		if property.Key.Name == name {
 			return property
 		}
@@ -60,11 +67,11 @@ func (s *WGSection) FindPropertyByName(name string) *WGProperty {
 }
 
 func (s *WGSection) GetLastProperty() *WGProperty {
-	if len(s.Properties) == 0 {
+	if s.Properties.Size() == 0 {
 		return nil
 	}
 
-	lastLine := utils.FindBiggestKey(s.Properties)
-
-	return s.Properties[lastLine]
+	lastLine, _ := s.Properties.Max()
+	lastProperty, _ := s.Properties.Get(lastLine)
+	return lastProperty.(*WGProperty)
 }
