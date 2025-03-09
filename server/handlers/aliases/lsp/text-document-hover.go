@@ -51,7 +51,7 @@ func TextDocumentHover(
 		contents := []string{}
 		contents = append(contents, handlers.GetAliasValueTypeInfo(value)...)
 		contents = append(contents, "")
-		contents = append(contents, "#### Value")
+		contents = append(contents, "#### Name")
 		contents = append(contents, handlers.GetAliasValueHoverInfo(*document.Indexes, value))
 
 		text := strings.Join(contents, "\n")
