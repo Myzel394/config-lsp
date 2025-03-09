@@ -2,6 +2,7 @@ package analyzer
 
 import (
 	"config-lsp/common"
+	docvalues "config-lsp/doc-values"
 	"config-lsp/handlers/wireguard/ast"
 	"config-lsp/handlers/wireguard/fields"
 	"config-lsp/utils"
@@ -63,22 +64,38 @@ func analyzeStructureIsValid(ctx *analyzerContext) {
 						Range:    property.ToLSPRange(),
 						Severity: &common.SeverityError,
 					})
+					checkAllowedProperty = false
 				}
 
 				if checkAllowedProperty {
-					options := fields.OptionsHeaderMap[normalizedHeaderName]
+					availableOptions := fields.OptionsHeaderMap[normalizedHeaderName]
 
-					if !utils.KeyExists(options, normalizedPropertyName) {
-						ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-							Message:  fmt.Sprintf("Unknown property '%s'", property.Key.Name),
-							Range:    property.Key.ToLSPRange(),
-							Severity: &common.SeverityError,
-						})
-					} else if existingProperty, found := existingProperties[normalizedPropertyName]; found {
+					// Duplicate check
+					if existingProperty, found := existingProperties[normalizedPropertyName]; found {
 						ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 							Message:  fmt.Sprintf("Property '%s' has already been defined on line %d", property.Key.Name, existingProperty.Start.Line+1),
 							Severity: &common.SeverityError,
 							Range:    existingProperty.ToLSPRange(),
+						})
+						// Check if value is valid
+					} else if option, found := availableOptions[normalizedPropertyName]; found {
+						invalidValues := option.DeprecatedCheckIsValid(property.Value.Value)
+
+						for _, invalidValue := range invalidValues {
+							err := docvalues.LSPErrorFromInvalidValue(property.Start.Line, *invalidValue).ShiftCharacter(property.Value.Start.Character)
+
+							ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+								Range:    err.Range.ToLSPRange(),
+								Message:  err.Err.Error(),
+								Severity: &common.SeverityError,
+							})
+						}
+						// Unknown property
+					} else {
+						ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+							Message:  fmt.Sprintf("Unknown property '%s'", property.Key.Name),
+							Range:    property.Key.ToLSPRange(),
+							Severity: &common.SeverityError,
 						})
 					}
 
