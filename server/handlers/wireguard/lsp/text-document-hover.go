@@ -1,6 +1,10 @@
 package lsp
 
 import (
+	"config-lsp/common"
+	"config-lsp/handlers/wireguard"
+	"config-lsp/handlers/wireguard/handlers"
+
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -9,32 +13,29 @@ func TextDocumentHover(
 	context *glsp.Context,
 	params *protocol.HoverParams,
 ) (*protocol.Hover, error) {
-	/*
-		p := documentParserMap[params.TextDocument.URI]
+	d := wireguard.DocumentParserMap[params.TextDocument.URI]
+	line := params.Position.Line
 
-		switch p.GetTypeByLine(params.Position.Line) {
-		case parser.LineTypeComment:
-			return nil, nil
-		case parser.LineTypeEmpty:
-			return nil, nil
-		case parser.LineTypeHeader:
-			fallthrough
-		case parser.LineTypeProperty:
-			documentation := handlers.GetHoverContent(
-				*p,
-				params.Position.Line,
-				params.Position.Character,
-			)
+	section := d.Config.FindSectionByLine(line)
+	property := d.Config.FindPropertyByLine(line)
 
-			hover := protocol.Hover{
-				Contents: protocol.MarkupContent{
-					Kind:  protocol.MarkupKindMarkdown,
-					Value: strings.Join(documentation, "\n"),
-				},
-			}
-			return &hover, nil
-		}
-	*/
+	index := common.LSPCharacterAsIndexPosition(params.Position.Character)
+
+	if property != nil && section != nil {
+		return handlers.GetPropertyHoverInfo(
+			d,
+			*section,
+			*property,
+			index,
+		)
+	}
+
+	if section != nil && section.Start.Line == line {
+		return handlers.GetSectionHoverInfo(
+			d,
+			*section,
+		)
+	}
 
 	return nil, nil
 }
