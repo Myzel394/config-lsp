@@ -94,6 +94,12 @@ func analyzeSymmetricPropertiesSet(
 	}
 }
 
+type key int
+
+const (
+	lineKey key = iota
+)
+
 // Strategy
 // Simply compare the host bits of the IP addresses.
 // Use a binary tree to store the host bits.
@@ -117,7 +123,7 @@ func analyzeDuplicateAllowedIPs(
 		}
 
 		if ipContext, _ := ipHostSet.ContainsIP(ipAddress); ipContext != nil {
-			definedLine := (*ipContext).Value("line").(uint32)
+			definedLine := (*ipContext).Value(lineKey).(uint32)
 
 			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 				Message:  fmt.Sprintf("This IP range is already covered on line %d", definedLine+1),
@@ -125,7 +131,11 @@ func analyzeDuplicateAllowedIPs(
 				Range:    property.ToLSPRange(),
 			})
 		} else {
-			ipContext := context.WithValue(context.Background(), "line", property.Start.Line)
+			ipContext := context.WithValue(
+				context.Background(),
+				lineKey,
+				property.Start.Line,
+			)
 
 			ipHostSet.AddIP(
 				ipAddress,

@@ -144,7 +144,7 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 
 			indexes := linePattern.FindStringSubmatchIndex(line)
 
-			if indexes == nil || len(indexes) == 0 {
+			if len(indexes) == 0 {
 				// Error
 				errors = append(errors, common.LSPError{
 					Range: common.LocationRange{

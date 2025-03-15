@@ -49,7 +49,7 @@ func checkOption(
 	if option.Separator == nil || option.Separator.Value.Value == "" {
 		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 			Range:    option.Key.LocationRange.ToLSPRange(),
-			Message:  fmt.Sprintf("There should be a separator between an option and its value"),
+			Message:  "There should be a separator between an option and its value",
 			Severity: &common.SeverityError,
 		})
 	} else {
