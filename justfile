@@ -23,3 +23,8 @@ show-nvim-logs:
 test:
     nix develop --command bash -c 'go test ./... -count=1'
 
+# Ready for a PR? Run this recipe before opening the PR!
+ready:
+    just lint
+    just test
+
