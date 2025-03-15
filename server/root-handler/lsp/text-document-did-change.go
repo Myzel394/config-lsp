@@ -33,7 +33,7 @@ func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeText
 		}
 	}
 
-	if newLanguage != language {
+	if *newLanguage != *language {
 		language = newLanguage
 
 		params := &protocol.DidOpenTextDocumentParams{
