@@ -6,7 +6,10 @@ import (
 )
 
 func ClearDiagnostics(context *glsp.Context, uri protocol.DocumentUri) {
-	go context.Notify(
+	// Diagnostics are sent synchronously, as sending them async
+	// could result in a race condition when we send diagnostics
+	// to the client.
+	context.Notify(
 		protocol.ServerTextDocumentPublishDiagnostics,
 		protocol.PublishDiagnosticsParams{
 			URI:         uri,
