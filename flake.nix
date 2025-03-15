@@ -136,6 +136,7 @@
             mailutils
             wireguard-tools
             antlr
+            just
           ]) ++ (if pkgs.stdenv.isLinux then with pkgs; [
             postfix
           ] else []);
