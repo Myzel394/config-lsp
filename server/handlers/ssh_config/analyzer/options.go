@@ -4,7 +4,6 @@ import (
 	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
 	"config-lsp/handlers/ssh_config/ast"
-	"config-lsp/handlers/ssh_config/diagnostics"
 	"config-lsp/handlers/ssh_config/fields"
 	"config-lsp/utils"
 	"fmt"
@@ -63,31 +62,16 @@ func checkOption(
 
 	if !optionFound {
 		// Diagnostics will be handled by `values.go`
-		if !ctx.document.Indexes.CanOptionBeIgnored(option, block) {
-			ctx.diagnostics = append(
-				ctx.diagnostics,
-				diagnostics.GenerateUnknownOption(
-					option.Key.ToLSPRange(),
-					option.Key.Value.Value,
-				),
-			)
-			ctx.document.Indexes.UnknownOptions[option.Start.Line] = ast.AllOptionInfo{
-				Option: option,
-				Block:  block,
-			}
-		}
-
-		// Since we don't know the option, we can't verify the value
 		return
-	} else {
-		// Check for values that are not allowed in Host blocks
-		if block != nil && block.GetBlockType() == ast.SSHBlockTypeHost && utils.KeyExists(fields.HostDisallowedOptions, option.Key.Key) {
-			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-				Range:    option.Key.LocationRange.ToLSPRange(),
-				Message:  fmt.Sprintf("Option '%s' is not allowed in Host blocks", option.Key.Key),
-				Severity: &common.SeverityError,
-			})
-		}
+	}
+
+	// Check for values that are not allowed in Host blocks
+	if block != nil && block.GetBlockType() == ast.SSHBlockTypeHost && utils.KeyExists(fields.HostDisallowedOptions, option.Key.Key) {
+		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+			Range:    option.Key.LocationRange.ToLSPRange(),
+			Message:  fmt.Sprintf("Option '%s' is not allowed in Host blocks", option.Key.Key),
+			Severity: &common.SeverityError,
+		})
 	}
 
 	///// Check if the value is valid
