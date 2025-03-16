@@ -1,7 +1,8 @@
-package handlers
+package analyzer
 
 import (
-	"config-lsp/handlers/wireguard/parser"
+	"config-lsp/handlers/wireguard"
+	"config-lsp/handlers/wireguard/ast"
 	"config-lsp/utils"
 	"testing"
 )
@@ -14,12 +15,14 @@ PrivateKey = abc
 [Interface]
 PrivateKey = def
 `)
-	p := parser.CreateWireguardParser()
-	p.ParseFromString(content)
+	d := &wireguard.WGDocument{
+		Config: ast.NewWGConfig(),
+	}
+	d.Config.Parse(content)
 
-	diagnostics := Analyze(p)
+	diagnostics := Analyze(d)
 
-	if len(diagnostics) == 0 {
+	if !(len(diagnostics) > 0) {
 		t.Errorf("Expected diagnostic errors, got %d", len(diagnostics))
 	}
 }
@@ -29,12 +32,14 @@ func TestInvalidValue(t *testing.T) {
 [Interface]
 DNS = nope
 `)
-	p := parser.CreateWireguardParser()
-	p.ParseFromString(content)
+	d := &wireguard.WGDocument{
+		Config: ast.NewWGConfig(),
+	}
+	d.Config.Parse(content)
 
-	diagnostics := Analyze(p)
+	diagnostics := Analyze(d)
 
-	if len(diagnostics) == 0 {
+	if !(len(diagnostics) > 0) {
 		t.Errorf("Expected diagnostic errors, got %d", len(diagnostics))
 	}
 }
@@ -46,12 +51,15 @@ PrivateKey = abc
 DNS = 1.1.1.1
 PrivateKey = def
 `)
-	p := parser.CreateWireguardParser()
-	p.ParseFromString(content)
 
-	diagnostics := Analyze(p)
+	d := &wireguard.WGDocument{
+		Config: ast.NewWGConfig(),
+	}
+	d.Config.Parse(content)
 
-	if len(diagnostics) == 0 {
+	diagnostics := Analyze(d)
+
+	if !(len(diagnostics) > 0) {
 		t.Errorf("Expected diagnostic errors, got %d", len(diagnostics))
 	}
 }

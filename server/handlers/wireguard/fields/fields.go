@@ -25,8 +25,8 @@ var maxPortValue = 65535
 var minMTUValue = 68
 var maxMTUValue = 1500
 
-var InterfaceOptions = map[string]docvalues.DocumentationValue{
-	"Address": {
+var InterfaceOptions = map[NormalizedName]docvalues.DocumentationValue{
+	"address": {
 		Documentation: `Defines what address range the local node should route traffic for. Depending on whether the node is a simple client joining the VPN subnet, or a bounce server that's relaying traffic between multiple clients, this can be set to a single IP of the node itself (specified with CIDR notation), e.g. 192.0.2.3/32), or a range of IPv4/IPv6 subnets that the node can route traffic for.
 
 ## Examples
@@ -49,7 +49,7 @@ You can also specify multiple subnets or IPv6 subnets like so:
 			AllowRange: true,
 		},
 	},
-	"ListenPort": {
+	"listenport": {
 		Documentation: `When the node is acting as a public bounce server, it should hardcode a port to listen for incoming VPN connections from the public internet. Clients not acting as relays should not set this value. If not specified, chosen randomly.
 
 ## Examples
@@ -66,14 +66,14 @@ Using custom WireGuard port
 			Max: &maxPortValue,
 		},
 	},
-	"PrivateKey": {
+	"privatekey": {
 		Documentation: `This is the private key for the local node, never shared with other servers. All nodes must have a private key set, regardless of whether they are public bounce servers relaying traffic, or simple clients joining the VPN.
 
 This key can be generated with [wg genkey > example.key]
 `,
 		Value: docvalues.StringValue{},
 	},
-	"DNS": {
+	"dns": {
 		Documentation: `The DNS server(s) to announce to VPN clients via DHCP, most clients will use this server for DNS requests over the VPN, but clients can also override this value locally on their nodes
 
 The value can be left unconfigured to use the system's default DNS servers
@@ -97,7 +97,7 @@ or multiple DNS servers can be provided
 			},
 		},
 	},
-	"Table": {
+	"table": {
 		Documentation: `Optionally defines which routing table to use for the WireGuard routes, not necessary to configure for most setups.
 
 There are two special values: ‘off’ disables the creation of routes altogether, and ‘auto’ (the default) adds routes to the default table and enables special handling of default routes.
@@ -127,7 +127,7 @@ https://git.zx2c4.com/WireGuard/about/src/tools/man/wg-quick.8
 			},
 		},
 	},
-	"MTU": {
+	"mtu": {
 		Documentation: `Optionally defines the maximum transmission unit (MTU, aka packet/frame size) to use when connecting to the peer, not necessary to configure for most setups.
 
 The MTU is automatically determined from the endpoint addresses or the system default route, which is usually a sane choice.
@@ -142,7 +142,7 @@ https://git.zx2c4.com/WireGuard/about/src/tools/man/wg-quick.8
 			Max: &maxMTUValue,
 		},
 	},
-	"PreUp": {
+	"preup": {
 		Documentation: `Optionally run a command before the interface is brought up. This option can be specified multiple times, with commands executed in the order they appear in the file.
 
 ## Examples
@@ -152,7 +152,7 @@ Add an IP route
 	PreUp = ip rule add ipproto tcp dport 22 table 1234
 	`, Value: docvalues.StringValue{},
 	},
-	"PostUp": {
+	"postup": {
 		Documentation: `Optionally run a command after the interface is brought up. This option can appear multiple times, as with PreUp
 
 ## Examples
@@ -182,7 +182,7 @@ Force WireGuard to re-resolve IP address for peer domain
 	`,
 		Value: docvalues.StringValue{},
 	},
-	"PreDown": {
+	"predown": {
 		Documentation: `Optionally run a command before the interface is brought down. This option can appear multiple times, as with PreUp
 
 ## Examples
@@ -196,7 +196,7 @@ Hit a webhook on another server
 	`,
 		Value: docvalues.StringValue{},
 	},
-	"PostDown": {
+	"postdown": {
 		Documentation: `Optionally run a command after the interface is brought down. This option can appear multiple times, as with PreUp
 
 ## Examples
@@ -215,21 +215,21 @@ Remove the iptables rule that forwards packets on the WireGuard interface
 	`,
 		Value: docvalues.StringValue{},
 	},
-	"FwMark": {
+	"fwmark": {
 		Documentation: "a 32-bit fwmark for outgoing packets. If set to 0 or \"off\", this option is disabled. May be specified in hexadecimal by prepending \"0x\". Optional",
 		Value:         docvalues.StringValue{},
 	},
 }
 
-var InterfaceAllowedDuplicateFields = map[string]struct{}{
-	"PreUp":    {},
-	"PostUp":   {},
-	"PreDown":  {},
-	"PostDown": {},
+var InterfaceAllowedDuplicateFields = map[NormalizedName]struct{}{
+	"preup":    {},
+	"postup":   {},
+	"predown":  {},
+	"postdown": {},
 }
 
-var PeerOptions = map[string]docvalues.DocumentationValue{
-	"Endpoint": {
+var PeerOptions = map[NormalizedName]docvalues.DocumentationValue{
+	"endpoint": {
 		Documentation: `Defines the publicly accessible address for a remote peer. This should be left out for peers behind a NAT or peers that don't have a stable publicly accessible IP:PORT pair. Typically, this only needs to be defined on the main bounce server, but it can also be defined on other public nodes with stable IPs like public-server2 in the example config below.
 
 ## Examples
@@ -243,7 +243,7 @@ Endpoint is a hostname/FQDN
 	 `,
 		Value: docvalues.StringValue{},
 	},
-	"AllowedIPs": {
+	"allowedips": {
 		Documentation: `This defines the IP ranges for which a peer will route traffic. On simple clients, this is usually a single address (the VPN address of the simple client itself). For bounce servers this will be a range of the IPs or subnets that the relay server is capable of routing traffic for. Multiple IPs and subnets may be specified using comma-separated IPv4 or IPv6 CIDR notation (from a single /32 or /128 address, all the way up to 0.0.0.0/0 and ::/0 to indicate a default route to send all internet and VPN traffic through that peer). This option may be specified multiple times.
 
 When deciding how to route a packet, the system chooses the most specific route first, and falls back to broader routes. So for a packet destined to 192.0.2.3, the system would first look for a peer advertising 192.0.2.3/32 specifically, and would fall back to a peer advertising 192.0.2.1/24 or a larger range like 0.0.0.0/0 as a last resort.
@@ -280,7 +280,7 @@ Peer is a relay server that routes to itself and all nodes on its local LAN
 			},
 		},
 	},
-	"PublicKey": {
+	"publickey": {
 		Documentation: `This is the public key for the remote node, shareable with all peers. All nodes must have a public key set, regardless of whether they are public bounce servers relaying traffic, or simple clients joining the VPN.
 
 This key can be generated with wg pubkey < example.key > example.key.pub. (see above for how to generate the private key example.key)
@@ -291,7 +291,7 @@ This key can be generated with wg pubkey < example.key > example.key.pub. (see a
 	`,
 		Value: docvalues.StringValue{},
 	},
-	"PersistentKeepalive": {
+	"persistentkeepalive": {
 		Documentation: `If the connection is going from a NAT-ed peer to a public peer, the node behind the NAT must regularly send an outgoing ping in order to keep the bidirectional connection alive in the NAT router's connection table.
 
 ## Examples
@@ -310,17 +310,17 @@ Oocal NAT-ed node to remote public node
 `,
 		Value: docvalues.PositiveNumberValue(),
 	},
-	"PresharedKey": {
+	"presharedkey": {
 		Documentation: "Optionally defines a pre-shared key for the peer, used to authenticate the connection. This is not necessary, but strongly recommended for security.",
 		Value:         docvalues.StringValue{},
 	},
 }
 
-var PeerAllowedDuplicateFields = map[string]struct{}{
-	"AllowedIPs": {},
+var PeerAllowedDuplicateFields = map[NormalizedName]struct{}{
+	"allowedips": {},
 }
 
-var OptionsHeaderMap = map[string](map[string]docvalues.DocumentationValue){
-	"Interface": InterfaceOptions,
-	"Peer":      PeerOptions,
+var OptionsHeaderMap = map[NormalizedName](map[NormalizedName]docvalues.DocumentationValue){
+	"interface": InterfaceOptions,
+	"peer":      PeerOptions,
 }

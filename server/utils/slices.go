@@ -150,3 +150,15 @@ func Without[T comparable](a []T, b []T) []T {
 		return !found
 	})
 }
+
+func FindBiggestKey[T any](values map[uint32]T) uint32 {
+	var biggestKey uint32
+
+	for k := range values {
+		if k > biggestKey {
+			biggestKey = k
+		}
+	}
+
+	return biggestKey
+}

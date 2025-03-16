@@ -1,6 +1,7 @@
 package lsp
 
 import (
+	"config-lsp/handlers/wireguard"
 	"config-lsp/handlers/wireguard/handlers"
 	"strings"
 
@@ -15,21 +16,15 @@ func WorkspaceExecuteCommand(context *glsp.Context, params *protocol.ExecuteComm
 	case string(handlers.CodeActionGeneratePrivateKey):
 		args := handlers.CodeActionGeneratePrivateKeyArgsFromArguments(params.Arguments[0].(map[string]any))
 
-		p := documentParserMap[args.URI]
+		d := wireguard.DocumentParserMap[args.URI]
 
-		return args.RunCommand(p)
+		return args.RunCommand(d)
 	case string(handlers.CodeActionGeneratePresharedKey):
 		args := handlers.CodeActionGeneratePresharedKeyArgsFromArguments(params.Arguments[0].(map[string]any))
 
-		parser := documentParserMap[args.URI]
+		d := wireguard.DocumentParserMap[args.URI]
 
-		return args.RunCommand(parser)
-	case string(handlers.CodeActionAddKeepalive):
-		args := handlers.CodeActionAddKeepaliveArgsFromArguments(params.Arguments[0].(map[string]any))
-
-		p := documentParserMap[args.URI]
-
-		return args.RunCommand(p)
+		return args.RunCommand(d)
 	}
 
 	return nil, nil

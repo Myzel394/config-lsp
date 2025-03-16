@@ -6,7 +6,8 @@ import (
 )
 
 var UuidField = docvalues.RegexValue{
-	Regex: *regexp.MustCompile(`[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}`),
+	// Can either be a UUID or UID
+	Regex: *regexp.MustCompile(`(?i)([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}|[a-f0-9]{4}-[a-f0-9]{4})`),
 }
 var LabelField = docvalues.RegexValue{
 	Regex: *regexp.MustCompile(`\S+`),

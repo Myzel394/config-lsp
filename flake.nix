@@ -23,7 +23,7 @@
       "aarch64-windows"
     ] (system: 
       let
-        version = "0.1.4"; # CI:CD-VERSION
+        version = "0.2.0"; # CI:CD-VERSION
         pkgs = import nixpkgs {
           inherit system;
           overlays = [
@@ -42,7 +42,7 @@
           pname = "github.com/Myzel394/config-lsp";
           version = version;
           src = ./server;
-          vendorHash = "sha256-eO1eY+2XuOCd/dKwgFtu05+bnn/Cv8ZbUIwRjCwJF+U=";
+          vendorHash = "sha256-ttr45N8i86mSJX9Scy/Cf+YlxU5wAKMVb0YhKg28JKM=";
           ldflags = [ "-s" "-w" ];
           checkPhase = ''
             go test -v $(pwd)/...
@@ -136,6 +136,7 @@
             mailutils
             wireguard-tools
             antlr
+            just
           ]) ++ (if pkgs.stdenv.isLinux then with pkgs; [
             postfix
           ] else []);

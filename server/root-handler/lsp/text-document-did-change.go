@@ -18,46 +18,39 @@ func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeText
 	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
 
 	content := params.ContentChanges[0].(protocol.TextDocumentContentChangeEventWhole).Text
-	newLanguage, err := initFile(
-		context,
-		content,
-		params.TextDocument.URI,
-		"",
-	)
 
-	if err != nil {
-		if common.ServerOptions.NoUndetectableErrors {
-			return nil
-		} else {
-			return err
-		}
-	}
+	if _, found := shared.OpenedFiles[params.TextDocument.URI]; !found {
+		// The file couldn't be initialized when opening it,
+		// so we will try it again here
 
-	if newLanguage != language {
-		language = newLanguage
+		newLanguage, err := initFile(
+			context,
+			content,
+			params.TextDocument.URI,
+			"",
+		)
 
-		params := &protocol.DidOpenTextDocumentParams{
-			TextDocument: protocol.TextDocumentItem{
-				URI:        params.TextDocument.URI,
-				Text:       content,
-				Version:    params.TextDocument.Version,
-				LanguageID: string(*language),
-			},
+		if err != nil {
+			if common.ServerOptions.NoUndetectableErrors {
+				return nil
+			} else {
+				return err
+			}
 		}
 
-		switch *language {
-		case shared.LanguageFstab:
-			return fstab.TextDocumentDidOpen(context, params)
-		case shared.LanguageSSHDConfig:
-			return sshdconfig.TextDocumentDidOpen(context, params)
-		case shared.LanguageSSHConfig:
-			return sshconfig.TextDocumentDidOpen(context, params)
-		case shared.LanguageWireguard:
-			return wireguard.TextDocumentDidOpen(context, params)
-		case shared.LanguageHosts:
-			return hosts.TextDocumentDidOpen(context, params)
-		case shared.LanguageAliases:
-			return aliases.TextDocumentDidOpen(context, params)
+		if *newLanguage != *language {
+			language = newLanguage
+
+			params := &protocol.DidOpenTextDocumentParams{
+				TextDocument: protocol.TextDocumentItem{
+					URI:        params.TextDocument.URI,
+					Text:       content,
+					Version:    params.TextDocument.Version,
+					LanguageID: string(*language),
+				},
+			}
+
+			return TextDocumentDidOpen(context, params)
 		}
 	}
 

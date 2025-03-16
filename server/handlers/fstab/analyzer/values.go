@@ -21,6 +21,8 @@ func analyzeValuesAreValid(
 		checkField(ctx, entry.Fields.MountPoint, fields.MountPointField)
 		checkField(ctx, entry.Fields.FilesystemType, fields.FileSystemTypeField)
 
+		analyzeSpecField(ctx, entry.Fields.Spec)
+
 		if entry.Fields.Options != nil {
 			mountOptions := entry.FetchMountOptionsField(true)
 

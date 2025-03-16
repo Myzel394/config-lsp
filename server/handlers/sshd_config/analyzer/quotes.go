@@ -11,12 +11,12 @@ import (
 func analyzeQuotesAreValid(
 	ctx *analyzerContext,
 ) {
-	for _, option := range ctx.document.Config.GetAllOptions() {
-		checkIsUsingDoubleQuotes(ctx, option.Key.Value, option.Key.LocationRange)
-		checkIsUsingDoubleQuotes(ctx, option.OptionValue.Value, option.OptionValue.LocationRange)
+	for _, info := range ctx.document.Config.GetAllOptions() {
+		checkIsUsingDoubleQuotes(ctx, info.Option.Key.Value, info.Option.Key.LocationRange)
+		checkIsUsingDoubleQuotes(ctx, info.Option.OptionValue.Value, info.Option.OptionValue.LocationRange)
 
-		checkQuotesAreClosed(ctx, option.Key.Value, option.Key.LocationRange)
-		checkQuotesAreClosed(ctx, option.OptionValue.Value, option.OptionValue.LocationRange)
+		checkQuotesAreClosed(ctx, info.Option.Key.Value, info.Option.Key.LocationRange)
+		checkQuotesAreClosed(ctx, info.Option.OptionValue.Value, info.Option.OptionValue.LocationRange)
 	}
 }
 

@@ -1,0 +1,1 @@
+{"root":["./src/extension.ts","./src/events/on-language-detected.ts","./src/events/on-language-undetectable.ts","./src/events/shared.ts","./src/events/types.ts"],"version":"5.7.3"}

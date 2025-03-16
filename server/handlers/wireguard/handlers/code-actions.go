@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"config-lsp/handlers/wireguard"
+	"config-lsp/handlers/wireguard/ast"
 	wgcommands "config-lsp/handlers/wireguard/commands"
-	"config-lsp/handlers/wireguard/parser"
+
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
@@ -11,11 +13,10 @@ type CodeActionName string
 const (
 	CodeActionGeneratePrivateKey   CodeActionName = "generatePrivateKey"
 	CodeActionGeneratePresharedKey CodeActionName = "generatePresharedKey"
-	CodeActionAddKeepalive         CodeActionName = "addKeepalive"
 )
 
 type CodeAction interface {
-	RunCommand(*parser.WireguardParser) (*protocol.ApplyWorkspaceEditParams, error)
+	RunCommand(*ast.WGConfig) (*protocol.ApplyWorkspaceEditParams, error)
 }
 
 type CodeActionArgs interface{}
@@ -32,14 +33,15 @@ func CodeActionGeneratePrivateKeyArgsFromArguments(arguments map[string]any) Cod
 	}
 }
 
-func (args CodeActionGeneratePrivateKeyArgs) RunCommand(p *parser.WireguardParser) (*protocol.ApplyWorkspaceEditParams, error) {
+func (args CodeActionGeneratePrivateKeyArgs) RunCommand(d *wireguard.WGDocument) (*protocol.ApplyWorkspaceEditParams, error) {
 	privateKey, err := wgcommands.CreateNewPrivateKey()
 
 	if err != nil {
 		return &protocol.ApplyWorkspaceEditParams{}, err
 	}
 
-	section, property := p.GetPropertyByLine(args.Line)
+	section := d.Config.FindSectionByLine(args.Line)
+	property := d.Config.FindPropertyByLine(args.Line)
 
 	if section == nil || property == nil {
 		return nil, nil
@@ -53,7 +55,16 @@ func (args CodeActionGeneratePrivateKeyArgs) RunCommand(p *parser.WireguardParse
 				args.URI: {
 					{
 						NewText: " " + privateKey,
-						Range:   property.GetInsertRange(args.Line),
+						Range: protocol.Range{
+							Start: protocol.Position{
+								Line:      property.End.Line,
+								Character: property.End.Character,
+							},
+							End: protocol.Position{
+								Line:      property.End.Line,
+								Character: property.End.Character,
+							},
+						},
 					},
 				},
 			},
@@ -73,14 +84,15 @@ func CodeActionGeneratePresharedKeyArgsFromArguments(arguments map[string]any) C
 	}
 }
 
-func (args CodeActionGeneratePresharedKeyArgs) RunCommand(p *parser.WireguardParser) (*protocol.ApplyWorkspaceEditParams, error) {
+func (args CodeActionGeneratePresharedKeyArgs) RunCommand(d *wireguard.WGDocument) (*protocol.ApplyWorkspaceEditParams, error) {
 	presharedKey, err := wgcommands.CreatePresharedKey()
 
 	if err != nil {
 		return &protocol.ApplyWorkspaceEditParams{}, err
 	}
 
-	section, property := p.GetPropertyByLine(args.Line)
+	section := d.Config.FindSectionByLine(args.Line)
+	property := d.Config.FindPropertyByLine(args.Line)
 
 	if section == nil || property == nil {
 		return nil, nil
@@ -94,45 +106,14 @@ func (args CodeActionGeneratePresharedKeyArgs) RunCommand(p *parser.WireguardPar
 				args.URI: {
 					{
 						NewText: " " + presharedKey,
-						Range:   property.GetInsertRange(args.Line),
-					},
-				},
-			},
-		},
-	}, nil
-}
-
-type CodeActionAddKeepaliveArgs struct {
-	URI          protocol.DocumentUri
-	SectionIndex uint32
-}
-
-func CodeActionAddKeepaliveArgsFromArguments(arguments map[string]any) CodeActionAddKeepaliveArgs {
-	return CodeActionAddKeepaliveArgs{
-		URI:          arguments["URI"].(protocol.DocumentUri),
-		SectionIndex: uint32(arguments["SectionIndex"].(float64)),
-	}
-}
-
-func (args CodeActionAddKeepaliveArgs) RunCommand(p *parser.WireguardParser) (*protocol.ApplyWorkspaceEditParams, error) {
-	section := p.Sections[args.SectionIndex]
-
-	label := "Add PersistentKeepalive"
-	return &protocol.ApplyWorkspaceEditParams{
-		Label: &label,
-		Edit: protocol.WorkspaceEdit{
-			Changes: map[protocol.DocumentUri][]protocol.TextEdit{
-				args.URI: {
-					{
-						NewText: "PersistentKeepalive = 25\n",
 						Range: protocol.Range{
 							Start: protocol.Position{
-								Line:      section.EndLine + 1,
-								Character: 0,
+								Line:      property.End.Line,
+								Character: property.End.Character,
 							},
 							End: protocol.Position{
-								Line:      section.EndLine + 1,
-								Character: 0,
+								Line:      property.End.Line,
+								Character: property.End.Character,
 							},
 						},
 					},

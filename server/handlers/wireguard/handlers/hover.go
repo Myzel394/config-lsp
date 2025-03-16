@@ -1,105 +1,81 @@
 package handlers
 
 import (
+	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
+	"config-lsp/handlers/wireguard"
+	"config-lsp/handlers/wireguard/ast"
 	"config-lsp/handlers/wireguard/fields"
-	"config-lsp/handlers/wireguard/parser"
 	"fmt"
 	"strings"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-func getPropertyInfo(
-	p parser.WireguardProperty,
-	cursor uint32,
-	section parser.WireguardSection,
-) []string {
-	if cursor <= p.Key.Location.End {
-		options, found := fields.OptionsHeaderMap[*section.Name]
-
-		if !found {
-			return []string{}
-		}
-
-		option, found := options[p.Key.Name]
-
-		if !found {
-			return []string{}
-		}
-
-		return strings.Split(option.Documentation, "\n")
-	}
-
-	options, found := fields.OptionsHeaderMap[*section.Name]
+func GetPropertyHoverInfo(
+	d *wireguard.WGDocument,
+	section ast.WGSection,
+	property ast.WGProperty,
+	index common.IndexPosition,
+) (*protocol.Hover, error) {
+	availableOptions, found := fields.OptionsHeaderMap[fields.CreateNormalizedName(section.Header.Name)]
 
 	if !found {
-		return []string{}
+		return nil, nil
 	}
 
-	if option, found := options[p.Key.Name]; found {
-		return option.GetTypeDescription()
+	option, found := availableOptions[fields.CreateNormalizedName(property.Key.Name)]
+
+	if !found {
+		return nil, nil
 	}
 
-	return []string{}
+	if property.Key.ContainsPosition(index) {
+		return &protocol.Hover{
+			Contents: protocol.MarkupContent{
+				Kind:  protocol.MarkupKindMarkdown,
+				Value: option.Documentation,
+			},
+		}, nil
+	}
+
+	if property.Value != nil && property.Value.ContainsPosition(index) {
+		return &protocol.Hover{
+			Contents: protocol.MarkupContent{
+				Kind:  protocol.MarkupKindMarkdown,
+				Value: strings.Join(option.GetTypeDescription(), "\n"),
+			},
+		}, nil
+	}
+
+	return nil, nil
 }
 
-func getSectionInfo(s parser.WireguardSection) []string {
-	if s.Name == nil {
-		return []string{}
-	}
+func GetSectionHoverInfo(
+	d *wireguard.WGDocument,
+	section ast.WGSection,
+) (*protocol.Hover, error) {
+	var docValue *docvalues.EnumString = nil
 
-	contents := []string{
-		fmt.Sprintf("## [%s]", *s.Name),
-		"",
-	}
-
-	var option *docvalues.EnumString = nil
-
-	switch *s.Name {
+	switch section.Header.Name {
 	case "Interface":
-		option = &fields.HeaderInterfaceEnum
+		docValue = &fields.HeaderInterfaceEnum
 	case "Peer":
-		option = &fields.HeaderPeerEnum
+		docValue = &fields.HeaderPeerEnum
 	}
 
-	if option == nil {
-		return contents
+	if docValue == nil {
+		return nil, nil
 	}
 
-	contents = append(contents, strings.Split(option.Documentation, "\n")...)
-
-	return contents
-}
-
-func GetHoverContent(
-	p parser.WireguardParser,
-	line uint32,
-	cursor uint32,
-) []string {
-	section := p.GetSectionByLine(line)
-
-	if section == nil {
-		return []string{}
-	}
-
-	sectionInfo := getSectionInfo(*section)
-
-	property, _ := section.GetPropertyByLine(line)
-
-	if property == nil {
-		return sectionInfo
-	}
-
-	propertyInfo := getPropertyInfo(*property, cursor, *section)
-
-	if len(propertyInfo) == 0 {
-		return sectionInfo
-	}
-
-	contents := append(sectionInfo, []string{
-		"",
-		fmt.Sprintf("### %s", property.Key.Name),
-	}...)
-	contents = append(contents, propertyInfo...)
-
-	return contents
+	return &protocol.Hover{
+		Contents: protocol.MarkupContent{
+			Kind: protocol.MarkupKindMarkdown,
+			Value: fmt.Sprintf(
+				"## [%s]\n\n%s",
+				section.Header.Name,
+				docValue.Documentation,
+			),
+		},
+	}, nil
 }

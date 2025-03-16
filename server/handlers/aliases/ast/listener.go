@@ -68,7 +68,7 @@ func (s *aliasesParserListener) EnterValues(ctx *parser.ValuesContext) {
 	}
 }
 
-// === Value === //
+// === Name === //
 
 func (s *aliasesParserListener) EnterUser(ctx *parser.UserContext) {
 	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)

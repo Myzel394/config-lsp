@@ -5,6 +5,7 @@ import (
 	aliases "config-lsp/handlers/aliases/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
+	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 	"config-lsp/root-handler/shared"
 	utils "config-lsp/root-handler/utils"
@@ -32,7 +33,7 @@ func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionPa
 	case shared.LanguageHosts:
 		return hosts.TextDocumentCodeAction(context, params)
 	case shared.LanguageSSHDConfig:
-		return nil, nil
+		return sshdconfig.TextDocumentCodeAction(context, params)
 	case shared.LanguageSSHConfig:
 		return sshconfig.TextDocumentCodeAction(context, params)
 	case shared.LanguageWireguard:

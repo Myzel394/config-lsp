@@ -1,36 +1,52 @@
 package handlers
 
 import (
+	"config-lsp/handlers/wireguard"
 	"config-lsp/handlers/wireguard/commands"
-	"config-lsp/handlers/wireguard/parser"
+
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func GetKeepaliveCodeActions(
-	p *parser.WireguardParser,
+	d *wireguard.WGDocument,
 	params *protocol.CodeActionParams,
 ) []protocol.CodeAction {
 	line := params.Range.Start.Line
 
-	for index, section := range p.Sections {
-		if section.StartLine >= line && line <= section.EndLine && section.Name != nil && *section.Name == "Peer" {
-			if section.ExistsProperty("Endpoint") && !section.ExistsProperty("PersistentKeepalive") {
-				commandID := "wireguard." + CodeActionAddKeepalive
-				command := protocol.Command{
-					Title:   "Add PersistentKeepalive",
-					Command: string(commandID),
-					Arguments: []any{
-						CodeActionAddKeepaliveArgs{
-							URI:          params.TextDocument.URI,
-							SectionIndex: uint32(index),
-						},
-					},
+	for _, section := range d.Indexes.SectionsByName["Peer"] {
+		if section.Start.Line >= line && line <= section.End.Line {
+			if section.FindPropertyByName("Endpoint") != nil && section.FindFirstPropertyByName("PersistentKeepalive") == nil {
+				var insertionLine uint32
+				lastProperty := section.GetLastProperty()
+
+				if lastProperty == nil {
+					insertionLine = section.End.Line
+				} else {
+					insertionLine = lastProperty.End.Line + 1
 				}
 
 				return []protocol.CodeAction{
 					{
-						Title:   "Add PersistentKeepalive",
-						Command: &command,
+						Title: "Add PersistentKeepalive",
+						Edit: &protocol.WorkspaceEdit{
+							Changes: map[protocol.DocumentUri][]protocol.TextEdit{
+								params.TextDocument.URI: {
+									{
+										Range: protocol.Range{
+											Start: protocol.Position{
+												Line:      insertionLine,
+												Character: 0,
+											},
+											End: protocol.Position{
+												Line:      insertionLine,
+												Character: 0,
+											},
+										},
+										NewText: "PersistentKeepalive = 25\n",
+									},
+								},
+							},
+						},
 					},
 				}
 			}
@@ -41,11 +57,17 @@ func GetKeepaliveCodeActions(
 }
 
 func GetKeyGenerationCodeActions(
-	p *parser.WireguardParser,
+	d *wireguard.WGDocument,
 	params *protocol.CodeActionParams,
 ) []protocol.CodeAction {
+	if !wgcommands.AreWireguardToolsAvailable() {
+		return nil
+	}
+
 	line := params.Range.Start.Line
-	section, property := p.GetPropertyByLine(line)
+
+	section := d.Config.FindSectionByLine(line)
+	property := d.Config.FindPropertyByLine(line)
 
 	if section == nil || property == nil || property.Separator == nil {
 		return nil
@@ -53,10 +75,6 @@ func GetKeyGenerationCodeActions(
 
 	switch property.Key.Name {
 	case "PrivateKey":
-		if !wgcommands.AreWireguardToolsAvailable() {
-			return nil
-		}
-
 		commandID := "wireguard." + CodeActionGeneratePrivateKey
 		command := protocol.Command{
 			Title:   "Generate Private Key",

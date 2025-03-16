@@ -33,7 +33,7 @@ func FormatDocument(
 	// it := d.Config.Options.Iterator()
 	// for it.Next() {
 	// 	line := it.Key().(uint32)
-	// 	entry := it.Value().(ast.SSHEntry)
+	// 	entry := it.Name().(ast.SSHEntry)
 	//
 	// 	if !(line >= textRange.Start.Line && line <= textRange.End.Line) {
 	// 		continue
