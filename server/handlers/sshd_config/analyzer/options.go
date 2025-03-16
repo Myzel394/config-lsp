@@ -69,15 +69,13 @@ func checkOption(
 
 		// Since we don't know the option, we can't verify the value
 		return
-	} else {
 		// Check for values that are not allowed in Match blocks
-		if matchBlock != nil && !utils.KeyExists(fields.MatchAllowedOptions, option.Key.Key) {
-			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-				Range:    option.Key.ToLSPRange(),
-				Message:  fmt.Sprintf("Option '%s' is not allowed in Match blocks", option.Key.Key),
-				Severity: &common.SeverityError,
-			})
-		}
+	} else if matchBlock != nil && !utils.KeyExists(fields.MatchAllowedOptions, option.Key.Key) {
+		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+			Range:    option.Key.ToLSPRange(),
+			Message:  fmt.Sprintf("Option '%s' is not allowed in Match blocks", option.Key.Key),
+			Severity: &common.SeverityError,
+		})
 	}
 
 	///// Check if the value is valid

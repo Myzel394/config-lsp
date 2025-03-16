@@ -22,3 +22,12 @@ jobs:
       - name: Build app
         run: nix develop --command bash -c "cd server && go build"
 
+      - name: Build VS Code extension
+        run: nix build .#vs-code-extension
+
+      - name: Upload VS Code extension
+        uses: actions/upload-artifact@v3
+        with:
+          name: vs-code-extension
+          path: result/bin/vs-code-extension.vsix
+
