@@ -26,8 +26,8 @@ jobs:
         run: nix build .#vs-code-extension
 
       - name: Upload VS Code extension
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: vs-code-extension
-          path: result/bin/vs-code-extension.vsix
+          path: result/config-lsp-*.vsix
 
