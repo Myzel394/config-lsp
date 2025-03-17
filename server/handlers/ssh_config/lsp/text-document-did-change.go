@@ -20,7 +20,6 @@ func TextDocumentDidChange(
 	document := sshconfig.DocumentParserMap[params.TextDocument.URI]
 	document.Config.Clear()
 
-	println("reparsing everything")
 	diagnostics := make([]protocol.Diagnostic, 0)
 	errors := document.Config.Parse(content)
 
