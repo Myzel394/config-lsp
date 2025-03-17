@@ -10,11 +10,11 @@ func (c *WGConfig) FindSectionByLine(line uint32) *WGSection {
 		line,
 		func(current *WGSection, target uint32) int {
 			if target < current.Start.Line {
-				return -1
+				return 1
 			}
 
 			if target > current.End.Line {
-				return 1
+				return -1
 			}
 
 			return 0
@@ -42,28 +42,17 @@ func (c *WGConfig) FindPropertyByLine(line uint32) *WGProperty {
 	return nil
 }
 
-func (s *WGSection) FindFirstPropertyByName(name string) *WGProperty {
+func (s *WGSection) FindFirstPropertyByName(name string) (uint32, *WGProperty) {
 	it := s.Properties.Iterator()
 	for it.Next() {
+		line := it.Key().(uint32)
 		property := it.Value().(*WGProperty)
 		if property.Key.Name == name {
-			return property
+			return line, property
 		}
 	}
 
-	return nil
-}
-
-func (s *WGSection) FindPropertyByName(name string) *WGProperty {
-	it := s.Properties.Iterator()
-	for it.Next() {
-		property := it.Value().(*WGProperty)
-		if property.Key.Name == name {
-			return property
-		}
-	}
-
-	return nil
+	return 0, nil
 }
 
 func (s *WGSection) GetLastProperty() *WGProperty {

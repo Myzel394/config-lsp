@@ -22,7 +22,7 @@ func analyzeDNSPropertyContainsFallback(
 
 	interfaceSection := sections[0]
 
-	property := interfaceSection.FindFirstPropertyByName("DNS")
+	_, property := interfaceSection.FindFirstPropertyByName("DNS")
 
 	if property == nil {
 		return
@@ -44,7 +44,10 @@ func analyzeKeepAlivePropertyIsSet(
 ) {
 	for _, section := range ctx.document.Indexes.SectionsByName["Peer"] {
 		// If an endpoint is set, then we should only check for the keepalive property
-		if section.FindFirstPropertyByName("Endpoint") != nil && section.FindFirstPropertyByName("PersistentKeepalive") == nil {
+		_, endpoint := section.FindFirstPropertyByName("Endpoint")
+		_, persistentKeepAlive := section.FindFirstPropertyByName("PersistentKeepalive")
+
+		if endpoint != nil && persistentKeepAlive == nil {
 			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 				Message:  "PersistentKeepalive is not set. It is recommended to set this property, as it helps to maintain the connection when users are behind NAT",
 				Severity: &common.SeverityHint,
@@ -58,11 +61,11 @@ func analyzeSymmetricPropertiesSet(
 	ctx *analyzerContext,
 ) {
 	for _, section := range ctx.document.Indexes.SectionsByName["Interface"] {
-		preUpProperty := section.FindFirstPropertyByName("PreUp")
-		preDownProperty := section.FindFirstPropertyByName("PreDown")
+		_, preUpProperty := section.FindFirstPropertyByName("PreUp")
+		_, preDownProperty := section.FindFirstPropertyByName("PreDown")
 
-		postUpProperty := section.FindFirstPropertyByName("PostUp")
-		postDownProperty := section.FindFirstPropertyByName("PostDown")
+		_, postUpProperty := section.FindFirstPropertyByName("PostUp")
+		_, postDownProperty := section.FindFirstPropertyByName("PostDown")
 
 		if preUpProperty != nil && preDownProperty == nil {
 			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
@@ -94,7 +97,7 @@ func analyzeSymmetricPropertiesSet(
 	}
 }
 
-type key int
+type key uint8
 
 const (
 	lineKey key = iota
@@ -109,7 +112,7 @@ func analyzeDuplicateAllowedIPs(
 	ipHostSet := utils.CreateIPv4HostSet()
 
 	for _, section := range ctx.document.Indexes.SectionsByName["Peer"] {
-		property := section.FindFirstPropertyByName("AllowedIPs")
+		_, property := section.FindFirstPropertyByName("AllowedIPs")
 
 		if property == nil {
 			continue
@@ -123,12 +126,15 @@ func analyzeDuplicateAllowedIPs(
 		}
 
 		if ipContext, _ := ipHostSet.ContainsIP(ipAddress); ipContext != nil {
-			definedLine := (*ipContext).Value(lineKey).(uint32)
+			ctxx := *ipContext
+			definedLineRaw := ctxx.Value(lineKey)
+
+			definedLine := definedLineRaw.(uint32)
 
 			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 				Message:  fmt.Sprintf("This IP range is already covered on line %d", definedLine+1),
 				Severity: &common.SeverityError,
-				Range:    property.ToLSPRange(),
+				Range:    property.Value.ToLSPRange(),
 			})
 		} else {
 			ipContext := context.WithValue(

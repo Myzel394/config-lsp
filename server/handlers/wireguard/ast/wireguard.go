@@ -35,7 +35,7 @@ type WGHeader struct {
 type WGSection struct {
 	common.LocationRange
 	Header WGHeader
-	// [uint32]WGProperty: line number -> WGProperty
+	// [uint32]*WGProperty: line number -> *WGProperty
 	Properties *treemap.Map
 }
 
