@@ -50,7 +50,6 @@ func GetCompletion(
 			optionsValue = fields.DefaultMountOptionsField
 		}
 
-
 		for _, completion := range optionsValue.DeprecatedFetchCompletions(line, cursor) {
 			var documentation string
 
@@ -67,7 +66,6 @@ func GetCompletion(
 			}
 			completions = append(completions, completion)
 		}
-
 
 		return completions, nil
 	case ast.FstabFieldFreq:
