@@ -44,24 +44,14 @@ func GetCompletion(
 		fileSystemType := entry.Fields.FilesystemType.Value.Value
 		completions := make([]protocol.CompletionItem, 0, 50)
 
-		for _, completion := range fields.DefaultMountOptionsField.DeprecatedFetchCompletions(line, cursor) {
-			var documentation string
+		optionsValue := entry.FetchMountOptionsField(false)
 
-			switch completion.Documentation.(type) {
-			case string:
-				documentation = completion.Documentation.(string)
-			case *string:
-				documentation = *completion.Documentation.(*string)
-			}
-
-			completion.Documentation = protocol.MarkupContent{
-				Kind:  protocol.MarkupKindMarkdown,
-				Value: documentation + "\n\n" + "From: _Default Mount Options_",
-			}
-			completions = append(completions, completion)
+		if optionsValue == nil {
+			optionsValue = fields.DefaultMountOptionsField
 		}
 
-		for _, completion := range entry.FetchMountOptionsField(false).DeprecatedFetchCompletions(line, cursor) {
+
+		for _, completion := range optionsValue.DeprecatedFetchCompletions(line, cursor) {
 			var documentation string
 
 			switch completion.Documentation.(type) {
@@ -77,6 +67,7 @@ func GetCompletion(
 			}
 			completions = append(completions, completion)
 		}
+
 
 		return completions, nil
 	case ast.FstabFieldFreq:

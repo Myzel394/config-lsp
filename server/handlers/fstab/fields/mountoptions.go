@@ -478,4 +478,8 @@ var MountOptionsMapField = map[string]optionField{
 		Enums:      commondocumentation.VfatDocumentationEnums,
 		Assignable: commondocumentation.VfatDocumentationAssignable,
 	},
+	"bcachefs": {
+		Enums:      commondocumentation.BcacheFSDocumentationEnums,
+		Assignable: commondocumentation.BcacheFSDocumentationAssignable,
+	},
 }
