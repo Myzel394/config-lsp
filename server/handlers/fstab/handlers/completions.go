@@ -46,26 +46,27 @@ func GetCompletion(
 
 		optionsValue := entry.FetchMountOptionsField(false)
 
-		if optionsValue == nil {
-			optionsValue = fields.DefaultMountOptionsField
+		if optionsValue != nil {
+			for _, completion := range optionsValue.DeprecatedFetchCompletions(line, cursor) {
+				var documentation string
+
+				switch completion.Documentation.(type) {
+				case string:
+					documentation = completion.Documentation.(string)
+				case *string:
+					documentation = *completion.Documentation.(*string)
+				}
+
+				completion.Documentation = protocol.MarkupContent{
+					Kind:  protocol.MarkupKindMarkdown,
+					Value: documentation + "\n\n" + fmt.Sprintf("From: _%s_", fileSystemType),
+				}
+				completions = append(completions, completion)
+			}
 		}
 
-		for _, completion := range optionsValue.DeprecatedFetchCompletions(line, cursor) {
-			var documentation string
-
-			switch completion.Documentation.(type) {
-			case string:
-				documentation = completion.Documentation.(string)
-			case *string:
-				documentation = *completion.Documentation.(*string)
-			}
-
-			completion.Documentation = protocol.MarkupContent{
-				Kind:  protocol.MarkupKindMarkdown,
-				Value: documentation + "\n\n" + fmt.Sprintf("From: _%s_", fileSystemType),
-			}
-			completions = append(completions, completion)
-		}
+		// Add defaults
+		completions = append(completions, fields.DefaultMountOptionsField.DeprecatedFetchCompletions(line, cursor)...)
 
 		return completions, nil
 	case ast.FstabFieldFreq:

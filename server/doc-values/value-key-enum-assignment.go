@@ -177,7 +177,7 @@ func (v KeyEnumAssignmentValue) DeprecatedFetchCompletions(line string, cursor u
 	)
 
 	if found {
-		relativePosition := min(foundPosition, len(line) - 1)
+		relativePosition := min(foundPosition, len(line)-1)
 		selectedKey := line[:uint32(relativePosition)]
 		line = line[uint32(relativePosition+len(v.Separator)):]
 		cursor -= uint32(relativePosition)

@@ -6,6 +6,31 @@ import (
 	"strings"
 )
 
+func createMountOptionField(
+	options []docvalues.EnumString,
+	assignOption map[docvalues.EnumString]docvalues.DeprecatedValue,
+) docvalues.DeprecatedValue {
+	// dynamicOptions := docvalues.MergeKeyEnumAssignmentMaps(defaultAssignOptions, assignOption)
+
+	return docvalues.ArrayValue{
+		Separator:           ",",
+		DuplicatesExtractor: &MountOptionsExtractor,
+		SubValue: docvalues.OrValue{
+			Values: []docvalues.DeprecatedValue{
+				docvalues.KeyEnumAssignmentValue{
+					Values:          assignOption,
+					ValueIsOptional: false,
+					Separator:       "=",
+				},
+				docvalues.EnumValue{
+					EnforceValues: true,
+					Values:        options,
+				},
+			},
+		},
+	}
+}
+
 var MountOptionsExtractor = func(value string) string {
 	separatorIndex := strings.Index(value, "=")
 
@@ -337,31 +362,6 @@ Added in version 233.`,
 		"defcontext",
 		"You can set the default security context for unlabeled files using defcontext= option. This overrides the value set for unlabeled files in the policy and requires a filesystem that supports xattr labeling.",
 	): docvalues.StringValue{},
-}
-
-func createMountOptionField(
-	options []docvalues.EnumString,
-	assignOption map[docvalues.EnumString]docvalues.DeprecatedValue,
-) docvalues.DeprecatedValue {
-	// dynamicOptions := docvalues.MergeKeyEnumAssignmentMaps(defaultAssignOptions, assignOption)
-
-	return docvalues.ArrayValue{
-		Separator:           ",",
-		DuplicatesExtractor: &MountOptionsExtractor,
-		SubValue: docvalues.OrValue{
-			Values: []docvalues.DeprecatedValue{
-				docvalues.KeyEnumAssignmentValue{
-					Values:          assignOption,
-					ValueIsOptional: false,
-					Separator:       "=",
-				},
-				docvalues.EnumValue{
-					EnforceValues: true,
-					Values:        options,
-				},
-			},
-		},
-	}
 }
 
 type optionField struct {
