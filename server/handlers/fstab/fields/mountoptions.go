@@ -376,6 +376,10 @@ var MountOptionsMapField = map[string]optionField{
 		Enums:      commondocumentation.AdfsDocumentationEnums,
 		Assignable: commondocumentation.AdfsDocumentationAssignable,
 	},
+	"apfs": {
+		Enums:      commondocumentation.APFSDocumentationEnums,
+		Assignable: commondocumentation.APFSDocumentationAssignable,
+	},
 	"affs": {
 		Enums:      commondocumentation.AffsDocumentationEnums,
 		Assignable: commondocumentation.AffsDocumentationAssignable,
