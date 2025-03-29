@@ -6,16 +6,10 @@ and definition requests.
 
 Install this extension and load your config files in VS Code to get started.
 
-If `config-lsp` is unable to detect the language of your config file, you can manually
-specify it by adding a line in the form of:
+_config-lsp_ adds the new languages directly to VS Code, so you can use the built-in language selector
+at the bottom right of the window to switch between different config files.
 
-```plaintext
-#?lsp.language=<language>
-
-# For example
-
-#?lsp.language=sshconfig
-#?lsp.language=fstab
-#?lsp.language=aliases
-```
+**Please note that this extension is still in beta. There are still bugs and missing features.**
+I'm working on this as a hobby project in my free time, so I can't provide you with a timeline 
+as to when a stable version will be released.
 

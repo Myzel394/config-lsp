@@ -23,7 +23,7 @@
       "aarch64-windows"
     ] (system: 
       let
-        version = "0.2.0"; # CI:CD-VERSION
+        version = "0.2.1"; # CI:CD-VERSION
         pkgs = import nixpkgs {
           inherit system;
           overlays = [
