@@ -141,8 +141,8 @@ func (e FstabEntry) FetchMountOptionsField(includeDefaults bool) docvalues.Depre
 		return nil
 	}
 
-	var enums []docvalues.EnumString
-	var assignable map[docvalues.EnumString]docvalues.DeprecatedValue
+	var enums []docvalues.EnumString = make([]docvalues.EnumString, 0)
+	var assignable map[docvalues.EnumString]docvalues.DeprecatedValue = make(map[docvalues.EnumString]docvalues.DeprecatedValue, 0)
 
 	if includeDefaults {
 		enums = append(option.Enums, fields.DefaultOptions...)

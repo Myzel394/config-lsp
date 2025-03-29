@@ -6,6 +6,31 @@ import (
 	"strings"
 )
 
+func createMountOptionField(
+	options []docvalues.EnumString,
+	assignOption map[docvalues.EnumString]docvalues.DeprecatedValue,
+) docvalues.DeprecatedValue {
+	// dynamicOptions := docvalues.MergeKeyEnumAssignmentMaps(defaultAssignOptions, assignOption)
+
+	return docvalues.ArrayValue{
+		Separator:           ",",
+		DuplicatesExtractor: &MountOptionsExtractor,
+		SubValue: docvalues.OrValue{
+			Values: []docvalues.DeprecatedValue{
+				docvalues.KeyEnumAssignmentValue{
+					Values:          assignOption,
+					ValueIsOptional: false,
+					Separator:       "=",
+				},
+				docvalues.EnumValue{
+					EnforceValues: true,
+					Values:        options,
+				},
+			},
+		},
+	}
+}
+
 var MountOptionsExtractor = func(value string) string {
 	separatorIndex := strings.Index(value, "=")
 
@@ -339,31 +364,6 @@ Added in version 233.`,
 	): docvalues.StringValue{},
 }
 
-func createMountOptionField(
-	options []docvalues.EnumString,
-	assignOption map[docvalues.EnumString]docvalues.DeprecatedValue,
-) docvalues.DeprecatedValue {
-	// dynamicOptions := docvalues.MergeKeyEnumAssignmentMaps(defaultAssignOptions, assignOption)
-
-	return docvalues.ArrayValue{
-		Separator:           ",",
-		DuplicatesExtractor: &MountOptionsExtractor,
-		SubValue: docvalues.OrValue{
-			Values: []docvalues.DeprecatedValue{
-				docvalues.KeyEnumAssignmentValue{
-					Values:          assignOption,
-					ValueIsOptional: false,
-					Separator:       "=",
-				},
-				docvalues.EnumValue{
-					EnforceValues: true,
-					Values:        options,
-				},
-			},
-		},
-	}
-}
-
 type optionField struct {
 	Assignable map[docvalues.EnumString]docvalues.DeprecatedValue
 	Enums      []docvalues.EnumString
@@ -375,6 +375,10 @@ var MountOptionsMapField = map[string]optionField{
 	"adfs": {
 		Enums:      commondocumentation.AdfsDocumentationEnums,
 		Assignable: commondocumentation.AdfsDocumentationAssignable,
+	},
+	"apfs": {
+		Enums:      commondocumentation.APFSDocumentationEnums,
+		Assignable: commondocumentation.APFSDocumentationAssignable,
 	},
 	"affs": {
 		Enums:      commondocumentation.AffsDocumentationEnums,
@@ -477,5 +481,9 @@ var MountOptionsMapField = map[string]optionField{
 	"vfat": {
 		Enums:      commondocumentation.VfatDocumentationEnums,
 		Assignable: commondocumentation.VfatDocumentationAssignable,
+	},
+	"bcachefs": {
+		Enums:      commondocumentation.BcacheFSDocumentationEnums,
+		Assignable: commondocumentation.BcacheFSDocumentationAssignable,
 	},
 }

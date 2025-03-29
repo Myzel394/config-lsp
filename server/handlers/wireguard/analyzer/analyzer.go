@@ -35,6 +35,12 @@ func Analyze(
 
 	d.Indexes = i
 
+	analyzeProperties(ctx)
+
+	if len(ctx.diagnostics) > 0 {
+		return ctx.diagnostics
+	}
+
 	analyzeInterfaceSection(ctx)
 	analyzeDNSPropertyContainsFallback(ctx)
 	analyzeKeepAlivePropertyIsSet(ctx)

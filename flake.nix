@@ -3,12 +3,12 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    utils.url = "github:numtide/flake-utils";
     gomod2nix = {
       url = "github:tweag/gomod2nix";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.utils.follows = "utils";
     };
-    utils.url = "github:numtide/flake-utils";
   };
 
   outputs = { self, nixpkgs, utils, gomod2nix }: 
@@ -23,7 +23,7 @@
       "aarch64-windows"
     ] (system: 
       let
-        version = "0.2.0"; # CI:CD-VERSION
+        version = "0.2.1"; # CI:CD-VERSION
         pkgs = import nixpkgs {
           inherit system;
           overlays = [
@@ -131,21 +131,48 @@
             };
           in node-modules;
         };
-        devShells.default = pkgs.mkShell {
-          buildInputs = inputs ++ (with pkgs; [
-            mailutils
-            wireguard-tools
-            antlr
-            just
-          ]) ++ (if pkgs.stdenv.isLinux then with pkgs; [
-            postfix
-          ] else []);
-        };
+
+        devShells.default = let 
+          version = "0.16.2";
+          ourGopls = pkgs.buildGoModule {
+              pname = "gopls";
+              inherit version;
+              modRoot = "gopls";
+              vendorHash = "sha256-ta94xPboFtSxFeuMtPX76XiC1O7osNl4oLk64wIyyz4=";
+
+              # https://github.com/golang/tools/blob/9ed98faa/gopls/main.go#L27-L30
+              ldflags = [ "-X main.version=v${version}" ];
+
+              doCheck = false;
+
+              # Only build gopls, and not the integration tests or documentation generator.
+              subPackages = [ "." ];
+
+              src = pkgs.fetchFromGitHub {
+                owner = "golang";
+                repo = "tools";
+                rev = "gopls/v${version}";
+                hash = "sha256-amy00VMUcmyjDoZ4d9/+YswfcZ+1/cGvFsA4sAmc1dA=";
+              };
+          };
+        in
+          pkgs.mkShell {
+            buildInputs = inputs ++ (with pkgs; [
+              mailutils
+              wireguard-tools
+              antlr
+              just
+              ourGopls
+            ]) ++ (if pkgs.stdenv.isLinux then with pkgs; [
+              postfix
+            ] else []);
+          };
+
         devShells."vs-code-extension" = pkgs.mkShell {
-          buildInputs = [
-            pkgs.nodejs
-            pkgs.vsce
-            pkgs.yarn2nix
+          buildInputs = with pkgs; [
+            nodejs
+            vsce
+            yarn2nix
           ];
         };
       }

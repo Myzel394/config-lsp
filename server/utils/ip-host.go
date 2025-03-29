@@ -35,8 +35,12 @@ func (t *iPv4Tree) addHostBits(
 }
 
 func (t *iPv4Tree) getFromHostBits(hostBits []bool) *context.Context {
-	if t.Context != nil || len(hostBits) == 0 {
+	if t.Context != nil {
 		return &t.Context
+	}
+
+	if len(hostBits) == 0 {
+		return nil
 	}
 
 	if hostBits[0] {

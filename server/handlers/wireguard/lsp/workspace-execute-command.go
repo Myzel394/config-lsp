@@ -25,6 +25,12 @@ func WorkspaceExecuteCommand(context *glsp.Context, params *protocol.ExecuteComm
 		d := wireguard.DocumentParserMap[args.URI]
 
 		return args.RunCommand(d)
+	case string(handlers.CodeActionCreatePeer):
+		args := handlers.CodeActionCreatePeerArgsFromArguments(params.Arguments[0].(map[string]any))
+
+		d := wireguard.DocumentParserMap[args.URI]
+
+		return args.RunCommand(d)
 	}
 
 	return nil, nil
