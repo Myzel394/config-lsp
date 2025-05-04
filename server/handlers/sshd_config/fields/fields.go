@@ -146,14 +146,24 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 		Documentation: `Specifies a file that lists principal names that are accepted for certificate authentication. When using certificates signed by a key listed in TrustedUserCAKeys, this file lists names, one of which must appear in the certificate for it to be accepted for authentication. Names are listed one per line preceded by key options (as described in “AUTHORIZED_KEYS FILE FORMAT” in sshd(8)). Empty lines and comments starting with ‘#’ are ignored.
  Arguments to AuthorizedPrincipalsFile accept the tokens described in the “TOKENS” section. After expansion, AuthorizedPrincipalsFile is taken to be an absolute path or one relative to the user's home directory. The default is none, i.e. not to use a principals file – in this case, the username of the user must appear in a certificate's principals list for it to be accepted.
  Note that AuthorizedPrincipalsFile is only used when authentication proceeds using a CA listed in TrustedUserCAKeys and is not consulted for certification authorities trusted via ~/.ssh/authorized_keys, though the principals= key option offers a similar facility (see sshd(8) for details).`,
-		Value: docvalues.PathValue{
-			RequiredType: docvalues.PathTypeFile,
+		Value: docvalues.OrValue{
+			Values: []docvalues.DeprecatedValue{
+				docvalues.SingleEnumValue("none"),
+				docvalues.PathValue{
+					RequiredType: docvalues.PathTypeFile,
+				},
+			},
 		},
 	},
 	"banner": {
 		Documentation: `The contents of the specified file are sent to the remote user before authentication is allowed. If the argument is none then no banner is displayed. By default, no banner is displayed.`,
-		Value: docvalues.PathValue{
-			RequiredType: docvalues.PathTypeFile,
+		Value: docvalues.OrValue{
+			Values: []docvalues.DeprecatedValue{
+				docvalues.SingleEnumValue("none"),
+				docvalues.PathValue{
+					RequiredType: docvalues.PathTypeFile,
+				},
+			},
 		},
 	},
 	"casignaturealgorithms": {
@@ -592,7 +602,7 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 		},
 	},
 	"modulifile": {
-		Documentation: `Specifies the moduli(5) file that contains the Diffie- Hellman groups used for the “diffie-hellman-group-exchange-sha1” and “diffie-hellman-group-exchange-sha256” key exchange methods. The default is /etc/moduli.`,
+		Documentation: `Specifies the moduli(5) file that contains the Diffie-Hellman groups used for the “diffie-hellman-group-exchange-sha1” and “diffie-hellman-group-exchange-sha256” key exchange methods. The default is /etc/moduli.`,
 		Value: docvalues.PathValue{
 			RequiredType: docvalues.PathTypeFile,
 		},
