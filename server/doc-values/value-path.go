@@ -21,12 +21,12 @@ func (e PathInvalidError) Error() string {
 type PathType uint8
 
 const (
-	PathTypeExistenceOptional PathType = 0
 	PathTypeFile              PathType = 1
 	PathTypeDirectory         PathType = 2
 )
 
 type PathValue struct {
+	IsOptional bool
 	RequiredType PathType
 }
 
@@ -34,29 +34,30 @@ func (v PathValue) GetTypeDescription() []string {
 	hints := make([]string, 0)
 
 	switch v.RequiredType {
-	case PathTypeExistenceOptional:
-		hints = append(hints, "Optional")
-		break
 	case PathTypeFile:
 		hints = append(hints, "File")
 	case PathTypeDirectory:
 		hints = append(hints, "Directory")
 	}
 
+	if v.IsOptional {
+		hints = append(hints, "Optional")
+	}
+
 	return []string{strings.Join(hints, ", ")}
 }
 
 func (v PathValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
-	if v.RequiredType == PathTypeExistenceOptional {
-		return nil
-	}
-
 	if !utils.DoesPathExist(value) {
-		return []*InvalidValue{{
-			Err:   PathDoesNotExistError{},
-			Start: 0,
-			End:   uint32(len(value)),
-		}}
+		if v.IsOptional {
+			return nil
+		} else {
+			return []*InvalidValue{{
+				Err:   PathDoesNotExistError{},
+				Start: 0,
+				End:   uint32(len(value)),
+			}}
+		}
 	}
 
 	isValid := false
@@ -77,8 +78,7 @@ func (v PathValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 		Err:   PathInvalidError{},
 		Start: 0,
 		End:   uint32(len(value)),
-	},
-	}
+	}}
 }
 
 func (v PathValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {

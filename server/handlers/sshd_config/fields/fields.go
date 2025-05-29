@@ -155,6 +155,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			Values: []docvalues.DeprecatedValue{
 				docvalues.SingleEnumValue("none"),
 				docvalues.PathValue{
+					IsOptional: false,
 					RequiredType: docvalues.PathTypeFile,
 				},
 			},
@@ -166,6 +167,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			Values: []docvalues.DeprecatedValue{
 				docvalues.SingleEnumValue("none"),
 				docvalues.PathValue{
+					IsOptional: false,
 					RequiredType: docvalues.PathTypeFile,
 				},
 			},
@@ -358,13 +360,19 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	},
 	"hostcertificate": {
 		Documentation: `Specifies a file containing a public host certificate. The certificate's public key must match a private host key already specified by HostKey. The default behaviour of sshd(8) is not to load any certificates.`,
-		Value:         docvalues.PathValue{},
+		Value:         docvalues.PathValue{
+			IsOptional: true,
+			RequiredType: docvalues.PathTypeFile,
+		},
 	},
 	"hostkey": {
 		Documentation: `Specifies a file containing a private host key used by SSH. The defaults are /etc/ssh/ssh_host_ecdsa_key, /etc/ssh/ssh_host_ed25519_key and /etc/ssh/ssh_host_rsa_key.
  Note that sshd(8) will refuse to use a file if it is group/world-accessible and that the HostKeyAlgorithms option restricts which of the keys are actually used by sshd(8).
  It is possible to have multiple host key files. It is also possible to specify public host key files instead. In this case operations on the private key will be delegated to an ssh-agent(1).`,
-		Value: docvalues.PathValue{},
+		Value: docvalues.PathValue{
+			IsOptional: true,
+			RequiredType: docvalues.PathTypeFile,
+		},
 	},
 	"hostkeyagent": {
 		Documentation: `Identifies the UNIX-domain socket used to communicate with an agent that has access to the private host keys. If the string "SSH_AUTH_SOCK" is specified, the location of the socket will be read from the SSH_AUTH_SOCK environment variable.`,
@@ -609,6 +617,7 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 	"modulifile": {
 		Documentation: `Specifies the moduli(5) file that contains the Diffie-Hellman groups used for the “diffie-hellman-group-exchange-sha1” and “diffie-hellman-group-exchange-sha256” key exchange methods. The default is /etc/moduli.`,
 		Value: docvalues.PathValue{
+			IsOptional: false,
 			RequiredType: docvalues.PathTypeFile,
 		},
 	},
@@ -874,6 +883,7 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 	"securitykeyprovider": {
 		Documentation: `Specifies a path to a library that will be used when loading FIDO authenticator-hosted keys, overriding the default of using the built-in USB HID support.`,
 		Value: docvalues.PathValue{
+			IsOptional: false,
 			RequiredType: docvalues.PathTypeFile,
 		},
 	},

@@ -28,14 +28,14 @@
           inherit system;
           overlays = [
             (final: prev: {
-              go = prev.go_1_22;
-              buildGoModule = prev.buildGo122Module;
+              go = prev.go_1_24;
+              buildGoModule = prev.buildGo124Module;
             })
             gomod2nix.overlays.default
           ];
         };
         inputs = [
-          pkgs.go_1_22
+          pkgs.go_1_24
         ];
         serverUncompressed = pkgs.buildGoModule {
           nativeBuildInputs = inputs;
@@ -133,7 +133,7 @@
         };
 
         devShells.default = let 
-          version = "0.16.2";
+          version = "0.18.1";
           ourGopls = pkgs.buildGoModule {
               pname = "gopls";
               inherit version;
