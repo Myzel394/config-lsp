@@ -2,31 +2,21 @@ package docvalues
 
 import (
 	"config-lsp/utils"
-	protocol "github.com/tliron/glsp/protocol_3_16"
+	"errors"
 	"strings"
+
+	protocol "github.com/tliron/glsp/protocol_3_16"
 )
-
-type PathDoesNotExistError struct{}
-
-func (e PathDoesNotExistError) Error() string {
-	return "This path does not exist"
-}
-
-type PathInvalidError struct{}
-
-func (e PathInvalidError) Error() string {
-	return "This path is invalid"
-}
 
 type PathType uint8
 
 const (
-	PathTypeFile              PathType = 1
-	PathTypeDirectory         PathType = 2
+	PathTypeFile      PathType = 1
+	PathTypeDirectory PathType = 2
 )
 
 type PathValue struct {
-	IsOptional bool
+	IsOptional   bool
 	RequiredType PathType
 }
 
@@ -53,29 +43,66 @@ func (v PathValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 			return nil
 		} else {
 			return []*InvalidValue{{
-				Err:   PathDoesNotExistError{},
+				Err:   errors.New("This path does not exist"),
 				Start: 0,
 				End:   uint32(len(value)),
 			}}
 		}
 	}
 
-	isValid := false
+	fileRequired := (v.RequiredType & PathTypeFile) == PathTypeFile
+	directoryRequired := (v.RequiredType & PathTypeDirectory) == PathTypeDirectory
 
-	if (v.RequiredType & PathTypeFile) == PathTypeFile {
+	isValid := true
+
+	// If file is expected
+	if fileRequired {
+		// and exists
 		isValid = isValid && utils.IsPathFile(value)
+		// file not expected
+	} else {
+		// and should not exist
+		isValid = isValid && !utils.IsPathFile(value)
 	}
 
-	if (v.RequiredType & PathTypeDirectory) == PathTypeDirectory {
+	// if directory
+	if directoryRequired {
+		// and exists
 		isValid = isValid && utils.IsPathDirectory(value)
+		// directory not expected
+	} else {
+		// and should not exist
+		isValid = isValid && !utils.IsPathDirectory(value)
 	}
 
 	if isValid {
 		return nil
 	}
 
+	if fileRequired && directoryRequired {
+		return []*InvalidValue{{
+			Err:   errors.New("This must be either a file or a directory"),
+			Start: 0,
+			End:   uint32(len(value)),
+		}}
+	}
+	if fileRequired {
+		return []*InvalidValue{{
+			Err:   errors.New("This must be a file"),
+			Start: 0,
+			End:   uint32(len(value)),
+		}}
+	}
+	if directoryRequired {
+		return []*InvalidValue{{
+			Err:   errors.New("This must be a directory"),
+			Start: 0,
+			End:   uint32(len(value)),
+		}}
+	}
+
 	return []*InvalidValue{{
-		Err:   PathInvalidError{},
+		Err:   errors.New("This path is invalid"),
 		Start: 0,
 		End:   uint32(len(value)),
 	}}

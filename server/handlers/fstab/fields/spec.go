@@ -16,7 +16,7 @@ var LabelField = docvalues.RegexValue{
 var SpecField = docvalues.OrValue{
 	Values: []docvalues.DeprecatedValue{
 		docvalues.PathValue{
-			IsOptional: false,
+			IsOptional:   false,
 			RequiredType: docvalues.PathTypeFile,
 		},
 		docvalues.KeyEnumAssignmentValue{

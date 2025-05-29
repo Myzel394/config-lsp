@@ -24,7 +24,6 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 
 	entry, matchBlock := d.Config.FindOption(line)
 
-
 	if entry == nil ||
 		entry.Separator == nil ||
 		entry.Key == nil ||
