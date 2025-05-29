@@ -16,6 +16,12 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Check if project can be linted
+        run: nix develop --command bash -c "just lint" && git diff --exit-code
+
+      - name: Check if antlr parsers are up to date
+        run: nix develop --command bash -c "just update-antlr-parsers" && git diff --exit-code
+
       - name: Check Nix flake
         run: nix flake check
 
