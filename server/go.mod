@@ -1,6 +1,6 @@
 module config-lsp
 
-go 1.22.5
+go 1.24
 
 require (
 	github.com/antlr4-go/antlr/v4 v4.13.1
