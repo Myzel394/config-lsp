@@ -42,7 +42,8 @@
           pname = "github.com/Myzel394/config-lsp";
           version = version;
           src = ./server;
-          vendorHash = "sha256-ttr45N8i86mSJX9Scy/Cf+YlxU5wAKMVb0YhKg28JKM";
+          vendorHash = "sha256-0/oMmrdQGnx7opL4SYaYU2FdroKkF60FtRTvZ1dYr/Y";
+          proxyVendor = true;
           ldflags = [ "-s" "-w" ];
           checkPhase = ''
             go test -v $(pwd)/...
