@@ -8,4 +8,5 @@ var AllowedDuplicateOptions = map[NormalizedOptionName]struct{}{
 	"listenaddress": {},
 	"match":         {},
 	"port":          {},
+	"hostkey":       {},
 }

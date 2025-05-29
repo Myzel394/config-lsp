@@ -18,6 +18,10 @@ func GetRootCompletions(
 	parentMatchBlock *ast.SSHDMatchBlock,
 	suggestValue bool,
 ) ([]protocol.CompletionItem, error) {
+	if d.Indexes == nil {
+		return nil, nil
+	}
+
 	kind := protocol.CompletionItemKindField
 
 	availableOptions := make(map[fields.NormalizedOptionName]docvalues.DocumentationValue, 0)

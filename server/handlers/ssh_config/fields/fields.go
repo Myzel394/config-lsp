@@ -139,6 +139,7 @@ rsa-sha2-512,rsa-sha2-256
     Arguments to CertificateFile may use the tilde syntax to refer to a user's home directory, the tokens described in the TOKENS section and environment variables as described in the ENVIRONMENT VARIABLES section.
     It is possible to have multiple certificate files specified in configuration files; these certificates will be tried in sequence. Multiple CertificateFile directives will add to the list of certificates used for authentication.`,
 		Value: docvalues.PathValue{
+			IsOptional:   true,
 			RequiredType: docvalues.PathTypeFile,
 		},
 	},
@@ -366,6 +367,7 @@ aes128-gcm@openssh.com,aes256-gcm@openssh.com
 			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
 			RespectQuotes:       true,
 			SubValue: docvalues.PathValue{
+				IsOptional:   true,
 				RequiredType: docvalues.PathTypeFile,
 			},
 		},
@@ -834,6 +836,7 @@ rsa-sha2-512,rsa-sha2-256
 		Documentation: `Specifies a path to a library that will be used when loading any FIDO authenticator-hosted keys, overriding the default of using the built-in USB HID support.
     If the specified value begins with a ‘$’ character, then it will be treated as an environment variable containing the path to the library.`,
 		Value: docvalues.PathValue{
+			IsOptional:   false,
 			RequiredType: docvalues.PathTypeFile,
 		},
 	},
@@ -963,6 +966,7 @@ rsa-sha2-512,rsa-sha2-256
 			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
 			RespectQuotes:       true,
 			SubValue: docvalues.PathValue{
+				IsOptional:   true,
 				RequiredType: docvalues.PathTypeFile,
 			},
 		},
@@ -986,6 +990,7 @@ rsa-sha2-512,rsa-sha2-256
 	"xauthlocation": {
 		Documentation: `Specifies the full pathname of the xauth(1) program. The default is /usr/X11R6/bin/xauth.`,
 		Value: docvalues.PathValue{
+			IsOptional:   false,
 			RequiredType: docvalues.PathTypeFile,
 		},
 	},

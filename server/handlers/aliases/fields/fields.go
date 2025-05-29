@@ -15,6 +15,7 @@ var UserDeclaration = "`user`"
 var PathField = docvalues.DocumentationValue{
 	Documentation: "Append messages to file, specified by its absolute pathname",
 	Value: docvalues.PathValue{
+		IsOptional:   true,
 		RequiredType: docvalues.PathTypeFile,
 	},
 }
@@ -40,6 +41,7 @@ var EmailDeclaration = "`user-part@domain-part`"
 var IncludeField = docvalues.DocumentationValue{
 	Documentation: "Include any definitions in file as alias entries. The format of the file is identical to this one.",
 	Value: docvalues.PathValue{
+		IsOptional:   false,
 		RequiredType: docvalues.PathTypeFile,
 	},
 }

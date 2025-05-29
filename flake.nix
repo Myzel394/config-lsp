@@ -23,26 +23,27 @@
       "aarch64-windows"
     ] (system: 
       let
-        version = "0.2.1"; # CI:CD-VERSION
+        version = "0.2.2"; # CI:CD-VERSION
         pkgs = import nixpkgs {
           inherit system;
           overlays = [
             (final: prev: {
-              go = prev.go_1_22;
-              buildGoModule = prev.buildGo122Module;
+              go = prev.go_1_24;
+              buildGoModule = prev.buildGo124Module;
             })
             gomod2nix.overlays.default
           ];
         };
         inputs = [
-          pkgs.go_1_22
+          pkgs.go_1_24
         ];
         serverUncompressed = pkgs.buildGoModule {
           nativeBuildInputs = inputs;
           pname = "github.com/Myzel394/config-lsp";
           version = version;
           src = ./server;
-          vendorHash = "sha256-ttr45N8i86mSJX9Scy/Cf+YlxU5wAKMVb0YhKg28JKM=";
+          vendorHash = "sha256-0/oMmrdQGnx7opL4SYaYU2FdroKkF60FtRTvZ1dYr/Y";
+          proxyVendor = true;
           ldflags = [ "-s" "-w" ];
           checkPhase = ''
             go test -v $(pwd)/...
@@ -68,6 +69,7 @@
       in {
         packages = {
           default = server;
+          "server-uncompressed" = serverUncompressed;
           "vs-code-extension-bare" = let
             name = "config-lsp";
             node-modules = pkgs.mkYarnPackage {
@@ -133,28 +135,7 @@
         };
 
         devShells.default = let 
-          version = "0.16.2";
-          ourGopls = pkgs.buildGoModule {
-              pname = "gopls";
-              inherit version;
-              modRoot = "gopls";
-              vendorHash = "sha256-ta94xPboFtSxFeuMtPX76XiC1O7osNl4oLk64wIyyz4=";
-
-              # https://github.com/golang/tools/blob/9ed98faa/gopls/main.go#L27-L30
-              ldflags = [ "-X main.version=v${version}" ];
-
-              doCheck = false;
-
-              # Only build gopls, and not the integration tests or documentation generator.
-              subPackages = [ "." ];
-
-              src = pkgs.fetchFromGitHub {
-                owner = "golang";
-                repo = "tools";
-                rev = "gopls/v${version}";
-                hash = "sha256-amy00VMUcmyjDoZ4d9/+YswfcZ+1/cGvFsA4sAmc1dA=";
-              };
-          };
+          ourGopls = pkgs.gopls;
         in
           pkgs.mkShell {
             buildInputs = inputs ++ (with pkgs; [

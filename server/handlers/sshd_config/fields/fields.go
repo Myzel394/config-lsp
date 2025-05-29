@@ -83,31 +83,36 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 					},
 				},
 				docvalues.ArrayValue{
-					Separator:           ",",
-					DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+					Separator:           " ",
+					DuplicatesExtractor: nil,
 					RespectQuotes:       true,
-					SubValue: docvalues.EnumValue{
-						EnforceValues: true,
-						Values: []docvalues.EnumString{
-							docvalues.CreateEnumString("none"),
+					SubValue: docvalues.ArrayValue{
+						Separator:           ",",
+						DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
+						RespectQuotes:       true,
+						SubValue: docvalues.EnumValue{
+							EnforceValues: true,
+							Values: []docvalues.EnumString{
+								docvalues.CreateEnumString("none"),
 
-							docvalues.CreateEnumString("password"),
-							docvalues.CreateEnumString("publickey"),
-							docvalues.CreateEnumString("gssapi-with-mic"),
-							docvalues.CreateEnumString("keyboard-interactive"),
-							docvalues.CreateEnumString("hostbased"),
+								docvalues.CreateEnumString("password"),
+								docvalues.CreateEnumString("publickey"),
+								docvalues.CreateEnumString("gssapi-with-mic"),
+								docvalues.CreateEnumString("keyboard-interactive"),
+								docvalues.CreateEnumString("hostbased"),
 
-							docvalues.CreateEnumString("password:bsdauth"),
-							docvalues.CreateEnumString("publickey:bsdauth"),
-							docvalues.CreateEnumString("gssapi-with-mic:bsdauth"),
-							docvalues.CreateEnumString("keyboard-interactive:bsdauth"),
-							docvalues.CreateEnumString("hostbased:bsdauth"),
+								docvalues.CreateEnumString("password:bsdauth"),
+								docvalues.CreateEnumString("publickey:bsdauth"),
+								docvalues.CreateEnumString("gssapi-with-mic:bsdauth"),
+								docvalues.CreateEnumString("keyboard-interactive:bsdauth"),
+								docvalues.CreateEnumString("hostbased:bsdauth"),
 
-							docvalues.CreateEnumString("password:pam"),
-							docvalues.CreateEnumString("publickey:pam"),
-							docvalues.CreateEnumString("gssapi-with-mic:pam"),
-							docvalues.CreateEnumString("keyboard-interactive:pam"),
-							docvalues.CreateEnumString("hostbased:pam"),
+								docvalues.CreateEnumString("password:pam"),
+								docvalues.CreateEnumString("publickey:pam"),
+								docvalues.CreateEnumString("gssapi-with-mic:pam"),
+								docvalues.CreateEnumString("keyboard-interactive:pam"),
+								docvalues.CreateEnumString("hostbased:pam"),
+							},
 						},
 					},
 				},
@@ -146,14 +151,26 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 		Documentation: `Specifies a file that lists principal names that are accepted for certificate authentication. When using certificates signed by a key listed in TrustedUserCAKeys, this file lists names, one of which must appear in the certificate for it to be accepted for authentication. Names are listed one per line preceded by key options (as described in “AUTHORIZED_KEYS FILE FORMAT” in sshd(8)). Empty lines and comments starting with ‘#’ are ignored.
  Arguments to AuthorizedPrincipalsFile accept the tokens described in the “TOKENS” section. After expansion, AuthorizedPrincipalsFile is taken to be an absolute path or one relative to the user's home directory. The default is none, i.e. not to use a principals file – in this case, the username of the user must appear in a certificate's principals list for it to be accepted.
  Note that AuthorizedPrincipalsFile is only used when authentication proceeds using a CA listed in TrustedUserCAKeys and is not consulted for certification authorities trusted via ~/.ssh/authorized_keys, though the principals= key option offers a similar facility (see sshd(8) for details).`,
-		Value: docvalues.PathValue{
-			RequiredType: docvalues.PathTypeFile,
+		Value: docvalues.OrValue{
+			Values: []docvalues.DeprecatedValue{
+				docvalues.SingleEnumValue("none"),
+				docvalues.PathValue{
+					IsOptional:   false,
+					RequiredType: docvalues.PathTypeFile,
+				},
+			},
 		},
 	},
 	"banner": {
 		Documentation: `The contents of the specified file are sent to the remote user before authentication is allowed. If the argument is none then no banner is displayed. By default, no banner is displayed.`,
-		Value: docvalues.PathValue{
-			RequiredType: docvalues.PathTypeFile,
+		Value: docvalues.OrValue{
+			Values: []docvalues.DeprecatedValue{
+				docvalues.SingleEnumValue("none"),
+				docvalues.PathValue{
+					IsOptional:   false,
+					RequiredType: docvalues.PathTypeFile,
+				},
+			},
 		},
 	},
 	"casignaturealgorithms": {
@@ -343,13 +360,19 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 	},
 	"hostcertificate": {
 		Documentation: `Specifies a file containing a public host certificate. The certificate's public key must match a private host key already specified by HostKey. The default behaviour of sshd(8) is not to load any certificates.`,
-		Value:         docvalues.PathValue{},
+		Value: docvalues.PathValue{
+			IsOptional:   true,
+			RequiredType: docvalues.PathTypeFile,
+		},
 	},
 	"hostkey": {
 		Documentation: `Specifies a file containing a private host key used by SSH. The defaults are /etc/ssh/ssh_host_ecdsa_key, /etc/ssh/ssh_host_ed25519_key and /etc/ssh/ssh_host_rsa_key.
  Note that sshd(8) will refuse to use a file if it is group/world-accessible and that the HostKeyAlgorithms option restricts which of the keys are actually used by sshd(8).
  It is possible to have multiple host key files. It is also possible to specify public host key files instead. In this case operations on the private key will be delegated to an ssh-agent(1).`,
-		Value: docvalues.PathValue{},
+		Value: docvalues.PathValue{
+			IsOptional:   false,
+			RequiredType: docvalues.PathTypeFile,
+		},
 	},
 	"hostkeyagent": {
 		Documentation: `Identifies the UNIX-domain socket used to communicate with an agent that has access to the private host keys. If the string "SSH_AUTH_SOCK" is specified, the location of the socket will be read from the SSH_AUTH_SOCK environment variable.`,
@@ -592,8 +615,9 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 		},
 	},
 	"modulifile": {
-		Documentation: `Specifies the moduli(5) file that contains the Diffie- Hellman groups used for the “diffie-hellman-group-exchange-sha1” and “diffie-hellman-group-exchange-sha256” key exchange methods. The default is /etc/moduli.`,
+		Documentation: `Specifies the moduli(5) file that contains the Diffie-Hellman groups used for the “diffie-hellman-group-exchange-sha1” and “diffie-hellman-group-exchange-sha256” key exchange methods. The default is /etc/moduli.`,
 		Value: docvalues.PathValue{
+			IsOptional:   false,
 			RequiredType: docvalues.PathTypeFile,
 		},
 	},
@@ -859,6 +883,7 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 	"securitykeyprovider": {
 		Documentation: `Specifies a path to a library that will be used when loading FIDO authenticator-hosted keys, overriding the default of using the built-in USB HID support.`,
 		Value: docvalues.PathValue{
+			IsOptional:   false,
 			RequiredType: docvalues.PathTypeFile,
 		},
 	},
