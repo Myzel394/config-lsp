@@ -2,7 +2,6 @@ package utils
 
 import (
 	"errors"
-	"fmt"
 	"os"
 )
 
@@ -24,8 +23,6 @@ func IsPathDirectory(path string) bool {
 
 func IsPathFile(path string) bool {
 	_, err := os.Stat(path)
-
-	print(fmt.Sprintf("Checking if path %s is a file: %v\n", path, err))
 
 	if errors.Is(err, os.ErrNotExist) {
 		return false
