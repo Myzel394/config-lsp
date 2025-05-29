@@ -23,6 +23,26 @@ show-nvim-logs:
 test:
     nix develop --command bash -c 'go test ./... -count=1'
 
+[working-directory: "./server"]
+update-antlr-parsers:
+    # aliases
+    cd handlers/aliases && antlr4 -Dlanguage=Go -o ast/parser Aliases.g4
+
+    # fstab
+    cd handlers/fstab && antlr4 -Dlanguage=Go -o ast/parser Fstab.g4
+
+    # sshd_config
+    cd handlers/sshd_config && antlr4 -Dlanguage=Go -o ast/parser Config.g4
+    cd handlers/sshd_config/match-parser && antlr4 -Dlanguage=Go -o parser Match.g4
+
+    # ssh_config
+    cd handlers/ssh_config && antlr4 -Dlanguage=Go -o ast/parser Config.g4
+    cd handlers/ssh_config/match-parser && antlr4 -Dlanguage=Go -o parser Match.g4
+
+    # hosts
+    cd handlers/hosts && antlr4 -Dlanguage=Go -o ast/parser Hosts.g4
+
+
 # Ready for a PR? Run this recipe before opening the PR!
 ready:
     just lint
