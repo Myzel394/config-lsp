@@ -23,26 +23,26 @@
       "aarch64-windows"
     ] (system: 
       let
-        version = "0.2.1"; # CI:CD-VERSION
+        version = "0.2.2"; # CI:CD-VERSION
         pkgs = import nixpkgs {
           inherit system;
           overlays = [
             (final: prev: {
-              go = prev.go_1_24;
-              buildGoModule = prev.buildGo124Module;
+              go = prev.go_1_22;
+              buildGoModule = prev.buildGo122Module;
             })
             gomod2nix.overlays.default
           ];
         };
         inputs = [
-          pkgs.go_1_24
+          pkgs.go_1_22
         ];
         serverUncompressed = pkgs.buildGoModule {
           nativeBuildInputs = inputs;
           pname = "github.com/Myzel394/config-lsp";
           version = version;
           src = ./server;
-          vendorHash = "sha256-ttr45N8i86mSJX9Scy/Cf+YlxU5wAKMVb0YhKg28JKM=";
+          vendorHash = "sha256-kfWB99unxBmDVseOt9LmFBVSE3DBS5969M5oZJMlAAQ=";
           ldflags = [ "-s" "-w" ];
           checkPhase = ''
             go test -v $(pwd)/...
@@ -133,7 +133,7 @@
         };
 
         devShells.default = let 
-          version = "0.18.1";
+          version = "0.16.2";
           ourGopls = pkgs.buildGoModule {
               pname = "gopls";
               inherit version;
