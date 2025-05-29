@@ -50,13 +50,13 @@ func (v PathValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 		}
 	}
 
-	fileRequired := (v.RequiredType & PathTypeFile) == PathTypeFile
-	directoryRequired := (v.RequiredType & PathTypeDirectory) == PathTypeDirectory
+	fileExpected := (v.RequiredType & PathTypeFile) == PathTypeFile
+	directoryExpected := (v.RequiredType & PathTypeDirectory) == PathTypeDirectory
 
 	isValid := true
 
 	// If file is expected
-	if fileRequired {
+	if fileExpected {
 		// and exists
 		isValid = isValid && utils.IsPathFile(value)
 		// file not expected
@@ -66,7 +66,7 @@ func (v PathValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	}
 
 	// if directory
-	if directoryRequired {
+	if directoryExpected {
 		// and exists
 		isValid = isValid && utils.IsPathDirectory(value)
 		// directory not expected
@@ -79,21 +79,21 @@ func (v PathValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 		return nil
 	}
 
-	if fileRequired && directoryRequired {
+	if fileExpected && directoryExpected {
 		return []*InvalidValue{{
 			Err:   errors.New("This must be either a file or a directory"),
 			Start: 0,
 			End:   uint32(len(value)),
 		}}
 	}
-	if fileRequired {
+	if fileExpected {
 		return []*InvalidValue{{
 			Err:   errors.New("This must be a file"),
 			Start: 0,
 			End:   uint32(len(value)),
 		}}
 	}
-	if directoryRequired {
+	if directoryExpected {
 		return []*InvalidValue{{
 			Err:   errors.New("This must be a directory"),
 			Start: 0,
