@@ -18,7 +18,7 @@ func GetRootCompletions(
 	parentMatchBlock *ast.SSHDMatchBlock,
 	suggestValue bool,
 ) ([]protocol.CompletionItem, error) {
-	if d.Indexes == nil {
+	if utils.BlockUntilIndexesNotNil(d.Indexes) == false {
 		return nil, nil
 	}
 

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	sshconfig "config-lsp/handlers/ssh_config"
+	"config-lsp/utils"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -10,7 +11,7 @@ func FetchCodeActions(
 	d *sshconfig.SSHDocument,
 	params *protocol.CodeActionParams,
 ) []protocol.CodeAction {
-	if d.Indexes == nil {
+	if utils.BlockUntilIndexesNotNil(d.Indexes) == false {
 		return nil
 	}
 
