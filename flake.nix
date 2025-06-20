@@ -42,7 +42,7 @@
           pname = "github.com/Myzel394/config-lsp";
           version = version;
           src = ./server;
-          vendorHash = "sha256-0/oMmrdQGnx7opL4SYaYU2FdroKkF60FtRTvZ1dYr/Y";
+          vendorHash = "sha256-TClNTOuYag6MZe1yUO00AfJ8ZbgCSr6Ei/nodUm9ti0=";
           proxyVendor = true;
           ldflags = [ "-s" "-w" ];
           checkPhase = ''
