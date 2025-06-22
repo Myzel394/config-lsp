@@ -1,14 +1,15 @@
-package ast
+package ini
 
 import (
 	"slices"
 )
 
-func (c *WGConfig) FindSectionByLine(line uint32) *WGSection {
+// Find the section containing the specified line
+func (c *Config) FindSectionByLine(line uint32) *Section {
 	index, found := slices.BinarySearchFunc(
 		c.Sections,
 		line,
-		func(current *WGSection, target uint32) int {
+		func(current *Section, target uint32) int {
 			if target < current.Start.Line {
 				return 1
 			}
@@ -28,7 +29,8 @@ func (c *WGConfig) FindSectionByLine(line uint32) *WGSection {
 	return c.Sections[index]
 }
 
-func (c *WGConfig) FindPropertyByLine(line uint32) *WGProperty {
+// Find a property at the specified line
+func (c *Config) FindPropertyByLine(line uint32) *Property {
 	section := c.FindSectionByLine(line)
 
 	if section == nil {
@@ -36,17 +38,18 @@ func (c *WGConfig) FindPropertyByLine(line uint32) *WGProperty {
 	}
 
 	if property, found := section.Properties.Get(line); found {
-		return property.(*WGProperty)
+		return property.(*Property)
 	}
 
 	return nil
 }
 
-func (s *WGSection) FindFirstPropertyByName(name string) (uint32, *WGProperty) {
+// Find the first property with the given name in a section
+func (s *Section) FindFirstPropertyByName(name string) (uint32, *Property) {
 	it := s.Properties.Iterator()
 	for it.Next() {
 		line := it.Key().(uint32)
-		property := it.Value().(*WGProperty)
+		property := it.Value().(*Property)
 		if property.Key.Name == name {
 			return line, property
 		}
@@ -55,12 +58,14 @@ func (s *WGSection) FindFirstPropertyByName(name string) (uint32, *WGProperty) {
 	return 0, nil
 }
 
-func (s *WGSection) GetLastProperty() *WGProperty {
+// Find the last property in a section
+func (s *Section) GetLastProperty() *Property {
 	if s.Properties.Size() == 0 {
 		return nil
 	}
 
 	lastLine, _ := s.Properties.Max()
 	lastProperty, _ := s.Properties.Get(lastLine)
-	return lastProperty.(*WGProperty)
+	return lastProperty.(*Property)
 }
+
