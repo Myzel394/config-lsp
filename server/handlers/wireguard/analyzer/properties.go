@@ -3,10 +3,10 @@ package analyzer
 import (
 	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
-	"config-lsp/handlers/wireguard/ast"
 	"config-lsp/handlers/wireguard/diagnostics"
 	"config-lsp/handlers/wireguard/fields"
 	"config-lsp/handlers/wireguard/indexes"
+	"config-lsp/parsers/ini"
 	"fmt"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -20,11 +20,11 @@ func analyzeProperties(
 
 		// Whether to check if the property is allowed in the section
 		checkAllowedProperty := true
-		existingProperties := make(map[fields.NormalizedName]*ast.WGProperty)
+		existingProperties := make(map[fields.NormalizedName]*ini.Property)
 
 		it := section.Properties.Iterator()
 		for it.Next() {
-			property := it.Value().(*ast.WGProperty)
+			property := it.Value().(*ini.Property)
 			normalizedPropertyName := fields.CreateNormalizedName(property.Key.Name)
 
 			if property.Key.Name == "" {

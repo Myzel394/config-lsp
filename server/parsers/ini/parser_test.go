@@ -1,13 +1,11 @@
-package ast
+package ini
 
 import (
 	"config-lsp/utils"
 	"testing"
 )
 
-func TestExample1Works(
-	t *testing.T,
-) {
+func TestParserWorks(t *testing.T) {
 	sample := utils.Dedent(`
 # A comment at the very top
 
@@ -24,7 +22,7 @@ PublicKey = 1234567890
 ; I'm a comment
 `)
 
-	config := NewWGConfig()
+	config := NewConfig()
 
 	errors := config.Parse(sample)
 
@@ -49,19 +47,19 @@ PublicKey = 1234567890
 	}
 
 	rawFourthProperty, _ := config.Sections[0].Properties.Get(uint32(4))
-	fourthProperty := rawFourthProperty.(*WGProperty)
+	fourthProperty := rawFourthProperty.(*Property)
 	if !(fourthProperty.Key.Name == "PrivateKey" && fourthProperty.Value.Value == "1234567890") {
 		t.Errorf("Parse: Expected property line 4 to be correct")
 	}
 
 	rawFifthProperty, _ := config.Sections[0].Properties.Get(uint32(5))
-	fifthProperty := rawFifthProperty.(*WGProperty)
+	fifthProperty := rawFifthProperty.(*Property)
 	if !(fifthProperty.Key.Name == "Address" && fifthProperty.Value.Value == "10.0.0.1") {
 		t.Errorf("Parse: Expected property line 5 to be correct")
 	}
 
 	rawTenthProperty, _ := config.Sections[1].Properties.Get(uint32(10))
-	tenthProperty := rawTenthProperty.(*WGProperty)
+	tenthProperty := rawTenthProperty.(*Property)
 	if !(tenthProperty.Key.Name == "PublicKey" && tenthProperty.Value.Value == "1234567890") {
 		t.Errorf("Parse: Expected property line 10 to be correct")
 	}
