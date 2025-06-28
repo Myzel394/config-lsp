@@ -3,18 +3,22 @@ package indexes
 import (
 	"config-lsp/common"
 	"config-lsp/handlers/wireguard/ast"
+	"config-lsp/parsers/ini"
 )
 
 func CreateIndexes(config *ast.WGConfig) (*WGIndexes, []common.LSPError) {
 	errs := make([]common.LSPError, 0)
 	indexes := &WGIndexes{
-		SectionsByName:    make(map[string][]*ast.WGSection),
+		SectionsByName:    make(map[string][]*ini.Section),
 		UnknownProperties: make(map[uint32]WGIndexPropertyInfo),
 	}
 
+	// Use the WGSections from the config
 	for _, section := range config.Sections {
-		indexes.SectionsByName[section.Header.Name] = append(
-			indexes.SectionsByName[section.Header.Name],
+		sectionName := section.Header.Name
+
+		indexes.SectionsByName[sectionName] = append(
+			indexes.SectionsByName[sectionName],
 			section,
 		)
 	}
