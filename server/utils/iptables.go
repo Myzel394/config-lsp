@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"regexp"
+	"strings"
 )
 
 type IpTableActionEnum uint8
@@ -20,6 +21,40 @@ type IpTableRule struct {
 	// This is used to make the deletion command as similar to the original rule as possible
 	ActionIndex uint32
 	Command     string
+}
+
+func (i IpTableRule) InvertAction() IpTableRule {
+	actionMap := map[IpTableActionEnum]IpTableActionEnum{
+		IpTableActionAppend: IpTableActionDelete,
+		IpTableActionInsert: IpTableActionDelete,
+		IpTableActionCheck:  IpTableActionDelete,
+		IpTableActionDelete: IpTableActionAppend,
+	}
+
+	return IpTableRule{
+		Action:      actionMap[i.Action],
+		ActionIndex: i.ActionIndex,
+		Command:     i.Command,
+	}
+}
+
+func (i IpTableRule) String() string {
+	actionStr := ""
+
+	switch i.Action {
+	case IpTableActionAppend:
+		actionStr = "-A"
+	case IpTableActionInsert:
+		actionStr = "-I"
+	case IpTableActionCheck:
+		actionStr = "-C"
+	case IpTableActionDelete:
+		actionStr = "-D"
+	}
+
+	ruleRaw := i.Command[:i.ActionIndex] + " " + actionStr + " " + i.Command[i.ActionIndex:]
+
+	return strings.ReplaceAll(ruleRaw, "  ", " ")
 }
 
 var rulePattern = regexp.MustCompile(`\B(-I|-D|-C|-A|--insert|--append|--check|--delete)\b`)
