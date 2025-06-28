@@ -5,7 +5,6 @@ import (
 	"config-lsp/handlers/wireguard/fields"
 	"config-lsp/parsers/ini"
 	"config-lsp/utils"
-	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -40,66 +39,27 @@ func GetGeneratePostDownCodeActions(
 		// Only propose this action if no PostDown is already present
 		_, postDownProperty := section.FindFirstPropertyByName("PostDown")
 
-		if postDownProperty != nil {
-			return nil
-		}
+		if postDownProperty == nil {
+			commandID := "wireguard." + CodeActionGeneratePostDown
 
-		// TODO: Find out if the user specified multiple PreDown or only one (or maybe don't do this at all)
-
-		rules := property.Value.Value
-		invertedRules := generateInvertedRules(strings.Split(rules, ";"))
-
-		if len(invertedRules) == 0 {
-			return nil
-		}
-
-		newRulesString := strings.Join(invertedRules, "; ")
-		newPropertyString := "\nPostDown = " + newRulesString + "\n"
-
-		return []protocol.CodeAction{
-			{
-				Title: "Generate PostDown with inverted rules",
-				Edit: &protocol.WorkspaceEdit{
-					Changes: map[protocol.DocumentUri][]protocol.TextEdit{
-						params.TextDocument.URI: {
-							{
-								Range: protocol.Range{
-									Start: property.Value.ToLSPRange().End,
-									End:   property.Value.ToLSPRange().End,
-								},
-								NewText: newPropertyString,
-							},
-						},
+			command := protocol.Command{
+				Title:   "Generate PostDown with inverted rules",
+				Command: string(commandID),
+				Arguments: []any{
+					CodeActionGeneratePostdownKeyArgs{
+						URI: params.TextDocument.URI,
 					},
 				},
-			},
+			}
+
+			return []protocol.CodeAction{
+				{
+					Title:   "Generate PostDown with inverted rules",
+					Command: &command,
+				},
+			}
 		}
 	}
 
 	return nil
-}
-
-func generateInvertedRules(rules []string) []string {
-	var postDownRules []string
-
-	for _, rule := range rules {
-		ipTableRule, err := utils.ParseIpTableRule(rule)
-
-		if err != nil {
-			return nil
-		}
-
-		inverted := ipTableRule.InvertAction()
-
-		if inverted.Action != utils.IpTableActionDelete {
-			// We only want to generate actions for common actions
-			return nil
-		}
-
-		ruleStringRaw := inverted.String()
-		ruleString := strings.ReplaceAll(strings.TrimSpace(ruleStringRaw), "  ", " ")
-		postDownRules = append(postDownRules, ruleString)
-	}
-
-	return postDownRules
 }
