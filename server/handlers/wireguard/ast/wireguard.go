@@ -5,7 +5,6 @@ import (
 	"config-lsp/parsers/ini"
 )
 
-
 type WGConfig struct {
 	*ini.Config
 }
@@ -26,4 +25,3 @@ func (c *WGConfig) Clear() {
 func (c *WGConfig) Parse(input string) []common.LSPError {
 	return c.Config.Parse(input)
 }
-

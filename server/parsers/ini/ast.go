@@ -25,7 +25,7 @@ type PropertySeparator struct {
 // Property represents a key-value pair in an INI document
 type Property struct {
 	common.LocationRange
-	RawValue  string
+	RawValue string
 
 	Key       PropertyKey
 	Separator *PropertySeparator

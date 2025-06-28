@@ -68,4 +68,3 @@ func (s *Section) GetLastProperty() *Property {
 	lastProperty, _ := s.Properties.Get(lastLine)
 	return lastProperty.(*Property)
 }
-

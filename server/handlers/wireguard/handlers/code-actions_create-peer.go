@@ -34,7 +34,7 @@ func (args CodeActionCreatePeerArgs) RunCommand(d *wireguard.WGDocument) (*proto
 	// IP Address
 	ipAddressLine, ipAddress := newSection.FindFirstPropertyByName("AllowedIPs")
 	_, address := interfaceSection.FindFirstPropertyByName("Address")
-	
+
 	if ipAddress != nil && address != nil {
 		_, network, err := net.ParseCIDR(address.Value.Value)
 
@@ -63,7 +63,7 @@ func (args CodeActionCreatePeerArgs) RunCommand(d *wireguard.WGDocument) (*proto
 					Value: newIPAddress,
 				},
 			}
-			
+
 			// Then wrap it with a WGProperty
 			newSection.Properties.Put(ipAddressLine, iniProperty)
 		}
@@ -89,7 +89,7 @@ func (args CodeActionCreatePeerArgs) RunCommand(d *wireguard.WGDocument) (*proto
 			Line:      presharedKey.End.Line,
 			Character: presharedKey.Value.Start.Character + uint32(len(newKey)) + 1,
 		}
-		
+
 		// Create the underlying ini.Property first
 		iniProperty := &ini.Property{
 			LocationRange: common.LocationRange{
@@ -107,7 +107,7 @@ func (args CodeActionCreatePeerArgs) RunCommand(d *wireguard.WGDocument) (*proto
 				Value: newKey,
 			},
 		}
-		
+
 		// Then add it to the section
 		newSection.Properties.Put(presharedKeyLine, iniProperty)
 	}
@@ -171,7 +171,7 @@ func createNewIP(
 	}
 
 	lastAddress := uint32(network.IP[0])<<24 | uint32(network.IP[1])<<16 | uint32(network.IP[2])<<8 | uint32(network.IP[3])
-	
+
 	networkMask, _ := network.Mask.Size()
 	for index := range 32 - networkMask {
 		lastAddress |= 1 << index
@@ -191,4 +191,3 @@ func createNewIP(
 	// Let's return the formatted IP now.
 	return fmt.Sprintf("%d.%d.%d.%d/32", newIP>>24, newIP>>16&0xFF, newIP>>8&0xFF, newIP&0xFF)
 }
-
