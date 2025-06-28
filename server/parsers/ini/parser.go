@@ -28,7 +28,7 @@ func (c *Config) Clear() {
 var commentPattern = regexp.MustCompile(`^\s*([;#])`)
 var emptyPattern = regexp.MustCompile(`^\s*$`)
 var headerPattern = regexp.MustCompile(`^\s*\[(\w+)?]?`)
-var linePattern = regexp.MustCompile(`^\s*(?P<key>.+?)\s*(?P<separator>=)\s*(?P<value>\S.*?)?\s*(?:[;#].*)?\s*$`)
+var linePattern = regexp.MustCompile(`^\s*(?P<key>.+?)\s*(?P<separator>=)\s*(?P<value>\S.*?)?\s*(?: [;#].*)?\s*$`)
 
 // Parse parses an INI string and returns any errors encountered
 func (c *Config) Parse(input string) []common.LSPError {
