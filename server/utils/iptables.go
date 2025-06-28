@@ -3,7 +3,6 @@ package utils
 import (
 	"errors"
 	"regexp"
-	"strings"
 )
 
 type IpTableActionEnum uint8
@@ -54,7 +53,8 @@ func (i IpTableRule) String() string {
 
 	ruleRaw := i.Command[:i.ActionIndex] + " " + actionStr + " " + i.Command[i.ActionIndex:]
 
-	return strings.ReplaceAll(ruleRaw, "  ", " ")
+	// Multiple spaces should be removed by the caller
+	return ruleRaw
 }
 
 var rulePattern = regexp.MustCompile(`\B(-I|-D|-C|-A|--insert|--append|--check|--delete)\b`)

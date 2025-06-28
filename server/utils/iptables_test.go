@@ -1,6 +1,9 @@
 package utils
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestSimpleIPTableRuleParsing(t *testing.T) {
 	rule := `iptables -I FORWARD -i wg0 -j ACCEPT`
@@ -55,7 +58,11 @@ func TestSimpleIPTableRuleNegation(t *testing.T) {
 		t.Fatalf("Failed to parse rule: %v", err)
 	}
 
-	negatedRule := parsedRule.InvertAction().String()
+	negatedRule := strings.ReplaceAll(
+		strings.TrimSpace(
+			parsedRule.InvertAction().String(),
+		), "  ", " ",
+	)
 
 	if negatedRule != `iptables -D FORWARD -i wg0 -j ACCEPT` {
 		t.Errorf("Expected negated rule to be 'iptables -D FORWARD -i wg0 -j ACCEPT', got '%s'", negatedRule)
@@ -71,7 +78,11 @@ func TestComplexIPTableRuleNegation(t *testing.T) {
 		t.Fatalf("Failed to parse rule: %v", err)
 	}
 
-	negatedRule := parsedRule.InvertAction().String()
+	negatedRule := strings.ReplaceAll(
+		strings.TrimSpace(
+			parsedRule.InvertAction().String(),
+		), "  ", " ",
+	)
 
 	if negatedRule != `iptables -D FORWARD -i wg0 -o eth0 -p tcp --dport 80 -j ACCEPT` {
 		t.Errorf("Expected negated rule to be 'iptables -D FORWARD -i wg0 -o eth0 -p tcp --dport 80 -j ACCEPT', got '%s'", negatedRule)
