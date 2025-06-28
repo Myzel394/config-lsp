@@ -15,8 +15,9 @@ func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionPa
 
 	actions = append(actions, handlers.GetKeyGenerationCodeActions(d, params)...)
 	actions = append(actions, handlers.GetKeepaliveCodeActions(d, params)...)
-	actions = append(actions, handlers.GetAddPeerLikeThis(d, params)...)
+	actions = append(actions, handlers.GetAddPeerLikeThisCodeActions(d, params)...)
 	actions = append(actions, handlers.GetPropertyKeywordTypoFixes(d, params)...)
+	actions = append(actions, handlers.GetGeneratePostDownCodeActions(d, params)...)
 
 	if len(actions) > 0 {
 		return actions, nil
