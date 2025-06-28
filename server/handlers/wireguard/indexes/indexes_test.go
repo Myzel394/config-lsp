@@ -13,10 +13,10 @@ PreUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT
 `
 
 	config := ast.NewWGConfig()
-	error := config.Parse(content)
+	errs := config.Parse(content)
 
-	if len(error) > 0 {
-		t.Fatalf("Failed to parse config: %v", error)
+	if len(errs) > 0 {
+		t.Fatalf("Failed to parse config: %v", errs)
 	}
 
 	indexes, errs := CreateIndexes(config)
