@@ -29,8 +29,13 @@ This is preferred over having passwords in plaintext in a shared file, such as /
 	docvalues.CreateEnumStringWithDoc(
 		"uid",
 		`sets the uid that will own all files or directories on the mounted filesystem when the server does not provide ownership information. It may be specified as either a username or a numeric uid. When not specified, the default is uid 0. The mount.cifs helper must be at version 1.10 or higher to support specifying the uid in non-numeric form. See the section on FILE AND DIRECTORY OWNERSHIP AND PERMISSIONS below for more information.`,
-	): docvalues.UIDValue{
-		EnforceUsingExisting: false,
+	): docvalues.OrValue{
+		Values: []docvalues.DeprecatedValue{
+			docvalues.UIDValue{
+				EnforceUsingExisting: false,
+			},
+			docvalues.UserValue("", false),
+		},
 	},
 	docvalues.CreateEnumStringWithDoc(
 		"cruid",
@@ -41,8 +46,13 @@ This is preferred over having passwords in plaintext in a shared file, such as /
 	docvalues.CreateEnumStringWithDoc(
 		"gid",
 		`sets the gid that will own all files or directories on the mounted filesystem when the server does not provide ownership information. It may be specified as either a groupname or a numeric gid. When not specified, the default is gid 0. The mount.cifs helper must be at version 1.10 or higher to support specifying the gid in non-numeric form. See the section on FILE AND DIRECTORY OWNERSHIP AND PERMISSIONS below for more information.`,
-	): docvalues.GIDValue{
-		EnforceUsingExisting: false,
+	): docvalues.OrValue{
+		Values: []docvalues.DeprecatedValue{
+			docvalues.GIDValue{
+				EnforceUsingExisting: false,
+			},
+			docvalues.GroupValue("", false),
+		},
 	},
 	docvalues.CreateEnumStringWithDoc(
 		"port",
