@@ -266,16 +266,6 @@ The CIFS client can get and set POSIX ACLs (getfacl, setfacl) to Samba servers v
 See sections on CIFS/NTFS ACL, SID/UID/GID MAPPING, SECURITY DESCRIPTORS for more information.`,
 	),
 	docvalues.CreateEnumStringWithDoc(
-		"backupuid",
-		`Restrict access to files with the backup intent to a user. Either a name or an id must be provided as an argument, there are no default values.
-See section ACCESSING FILES WITH BACKUP INTENT for more details`,
-	),
-	docvalues.CreateEnumStringWithDoc(
-		"backupgid",
-		`Restrict access to files with the backup intent to a group. Either a name or an id must be provided as an argument, there are no default values.
-See section ACCESSING FILES WITH BACKUP INTENT for more details`,
-	),
-	docvalues.CreateEnumStringWithDoc(
 		"nocase",
 		`Request case insensitive path name matching (case sensitive is the default if the server suports it).`,
 	),
