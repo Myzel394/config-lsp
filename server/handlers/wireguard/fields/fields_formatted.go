@@ -10,7 +10,7 @@ var AllOptionsFormatted = map[NormalizedName]string{
 	"mtu":        "MTU",
 	"preup":      "PreUp",
 	"postup":     "PostUp",
-	"predown":    "Predown",
+	"predown":    "PreDown",
 	"postdown":   "PostDown",
 	"fwmark":     "FwMark",
 
