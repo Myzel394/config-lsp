@@ -71,42 +71,38 @@ func (v ArrayValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	}
 
 	if *v.DuplicatesExtractor != nil {
-		valuesOccurrences := utils.SliceToMap(
-			utils.Map(values, *v.DuplicatesExtractor),
-			0,
-		)
+		// Stores the values that are already found
+		valueSet := map[string]struct{}{}
 
-		// Only continue if there are actually duplicate values
-		if len(values) != len(valuesOccurrences) {
-			for _, duplicateRawValue := range values {
-				duplicateValue := (*v.DuplicatesExtractor)(duplicateRawValue)
-				valuesOccurrences[duplicateValue]++
+		currentIndex := uint32(0)
+
+		for _, rawValue := range values {
+			extractedValue := (*v.DuplicatesExtractor)(rawValue)
+			valueLength := uint32(len(rawValue))
+
+			if extractedValue == "" {
+				// Skip empty values
+				continue
 			}
 
-			duplicateValuesAsList := utils.FilterMapWhere(valuesOccurrences, func(_ string, value int) bool {
-				return value > 1
-			})
-			duplicateValues := utils.KeysAsSet(duplicateValuesAsList)
-
-			duplicateIndexStart := uint32(0)
-			duplicateIndexEnd := uint32(0)
-
-			currentIndex := uint32(0)
-			for _, rawValue := range values {
-				if _, found := duplicateValues[rawValue]; found {
-					duplicateIndexStart = currentIndex
-					duplicateIndexEnd = currentIndex + uint32(len(rawValue))
-
-					errors = append(errors, &InvalidValue{
-						Err: ArrayContainsDuplicatesError{
-							Value: rawValue,
-						},
-						Start: duplicateIndexStart,
-						End:   duplicateIndexEnd,
-					})
-				}
+			if _, found := valueSet[extractedValue]; found {
+				// This value is a duplicate, so we add an error
+				errors = append(errors, &InvalidValue{
+					Err: ArrayContainsDuplicatesError{
+						Value: rawValue,
+					},
+					Start: currentIndex,
+					End:   currentIndex + valueLength,
+				})
+			} else {
+				valueSet[extractedValue] = struct{}{}
 			}
 
+			currentIndex += valueLength + uint32(len(v.Separator))
+		}
+
+		if len(errors) > 0 {
+			// If there are errors, we return them immediately
 			return errors
 		}
 	}
