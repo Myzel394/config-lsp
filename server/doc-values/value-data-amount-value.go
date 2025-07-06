@@ -11,6 +11,74 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
+func simpleParseValueToByte(
+	value string,
+	base float64,
+) uint64 {
+	match := laxPattern.FindStringSubmatchIndex(value)
+
+	if len(match) == 0 {
+		panic(fmt.Sprintf("Invalid numeric value '%s'", value))
+	}
+
+	amount := value[match[2]:match[3]]
+	amountFloat, err := strconv.ParseFloat(amount, 64)
+
+	if err != nil {
+		panic(fmt.Sprintf("Invalid numeric value '%s': %v", value, err))
+	}
+
+	unit := rune(value[match[6]])
+
+	var suffix string
+	if match[8] != -1 && match[9] != -1 {
+		suffix = value[match[8]:match[9]]
+	} else {
+		suffix = ""
+	}
+
+	byteAmount, err := utils.CalculateNumericValueToByte(
+		amountFloat,
+		unit,
+		suffix,
+		base,
+	)
+
+	if err != nil {
+		panic(fmt.Sprintf("Failed to calculate byte amount from '%s': %v", value, err))
+	}
+
+	return byteAmount
+}
+
+// Validate that the value is within a specific range.
+// The range is inclusive, meaning that the min and max values are valid.
+// The min and max values are expected to be in a data amount format
+func CreateDARangeValidator(
+	min string,
+	max string,
+	base DataAmountValueBase,
+) *func(string, uint64) *[]InvalidValue {
+	minBytes := simpleParseValueToByte(min, float64(base))
+	maxBytes := simpleParseValueToByte(max, float64(base))
+
+	validator := func(value string, byteAmount uint64) *[]InvalidValue {
+		if byteAmount < minBytes || byteAmount > maxBytes {
+			return &[]InvalidValue{
+				{
+					Err:   fmt.Errorf("Value '%s' is out of range (%s - %s)", value, min, max),
+					Start: 0,
+					End:   uint32(len(value)),
+				},
+			}
+		}
+
+		return nil
+	}
+
+	return &validator
+}
+
 var unitDocumentationMap = map[rune]string{
 	'k': "Kilobytes",
 	'm': "Megabytes",
@@ -24,10 +92,11 @@ var unitDocumentationMap = map[rune]string{
 // A lax regex pattern to further validate the data amount value.
 var laxPattern = regexp.MustCompile(`(?i)^(?<amount>\d+)(?:\.(?<decimal_amount>\d+))?(?<unit>[a-z])?(?<suffix>b)?$`)
 
-type DataAmountValueBase uint8
+type DataAmountValueBase uint32
+
 const (
-	DataAmountValueBase1024 DataAmountValueBase = 0
-	DataAmountValueBase1000 DataAmountValueBase = 1
+	DataAmountValueBase1024 DataAmountValueBase = 1024
+	DataAmountValueBase1000 DataAmountValueBase = 1000
 )
 
 // We store the raw value and indexes so that we can later parse them
@@ -38,19 +107,19 @@ type cachedValue struct {
 	rawValue string
 
 	amountStart int
-	amountEnd int
+	amountEnd   int
 
 	decimalStart int
-	decimalEnd int
+	decimalEnd   int
 
 	unitStart int
-	unitEnd int
+	unitEnd   int
 
 	suffixStart int
-	suffixEnd int
+	suffixEnd   int
 }
 
-type DataAmountValue struct{
+type DataAmountValue struct {
 	// The rune set that is allowed for this value.
 	// Valid options are:
 	// - 'k' for kilobytes
@@ -74,30 +143,87 @@ type DataAmountValue struct{
 	// Default = 1024
 	Base DataAmountValueBase
 
+	// An extra validator to run after the initial validation.
+	// This should be a pointer to a function that takes the raw value and the byte amount,
+	//
+	// The first argument is the raw value as a string,
+	// The second argument is the byte amount as uint64.
+	// The first argument is guaranteed to be a valid data amount value,
+	// The second argument may be 0 if the value is not a valid data amount value.
+	//
+	// The return value should be a slice of InvalidValue pointers,
+	// where each InvalidValue represents an invalid part of the value.
+	// If the validator returns nil, or an empty slice, the value is considered valid.
+	Validator *(func(string, uint64) *[]InvalidValue)
+
 	_cachedValue *cachedValue
 }
 
-func (v DataAmountValue) GetRegexPattern() *regexp.Regexp {
-	unitsAsStr := utils.MapMapToSlice(v.AllowedUnits, func(unit rune, _ struct{}) string {
-		return string(unit)
-	})
-	allowedUnits := strings.Join(unitsAsStr, "|")
+func (v DataAmountValue) generateUnitSuggestions() []protocol.CompletionItem {
+	units := make([]protocol.CompletionItem, 0)
+	completionKind := protocol.CompletionItemKindUnit
 
-	decimalPart := ""
+	for unit := range v.AllowedUnits {
+		unitStr := string(unit)
 
-	if v.AllowDecimal {
-		decimalPart = `(\.\d+)?`
+		units = append(units, protocol.CompletionItem{
+			Label:         unitStr,
+			Kind:          &completionKind,
+			Documentation: unitDocumentationMap[unit],
+		})
 	}
 
-	byteSuffix := ""
+	return units
+}
 
-	if v.AllowByteSuffix {
-		byteSuffix = "(b|B)?"
+func (v DataAmountValue) calculateBytesAmount() (uint64, error) {
+	if v._cachedValue == nil {
+		return 0, errors.New("value is not cached, please call DeprecatedCheckIsValid first")
 	}
 
-	pattern := fmt.Sprintf(`(?i)^(\d+%s)%s%s$`, allowedUnits, decimalPart, byteSuffix)
+	// Parse float
+	rawAmount := v._cachedValue.rawValue[v._cachedValue.amountStart:v._cachedValue.amountEnd]
 
-	return regexp.MustCompile(pattern)
+	if v._cachedValue.decimalStart != -1 {
+		rawAmount += "." + v._cachedValue.rawValue[v._cachedValue.decimalStart:v._cachedValue.decimalEnd]
+	}
+
+	amount, err := strconv.ParseFloat(rawAmount, 64)
+
+	if err != nil {
+		return 0, fmt.Errorf("invalid amount '%s': %w", rawAmount, err)
+	}
+
+	unit := rune(v._cachedValue.rawValue[v._cachedValue.unitStart])
+
+	var suffix string
+
+	if v._cachedValue.suffixStart != -1 {
+		suffix = v._cachedValue.rawValue[v._cachedValue.suffixStart:v._cachedValue.suffixEnd]
+	} else {
+		suffix = ""
+	}
+
+	var base float64
+
+	if v.Base == DataAmountValueBase1024 {
+		base = 1024
+	} else {
+		base = 1000
+	}
+
+	byteAmount, err := utils.CalculateNumericValueToByte(
+		amount,
+		unit,
+		suffix,
+		base,
+	)
+
+	if err != nil {
+		return 0, fmt.Errorf("failed to calculate byte amount from '%s': %w", rawAmount, err)
+	}
+
+	return byteAmount, nil
 }
 
 func (v DataAmountValue) GetTypeDescription() []string {
@@ -212,35 +338,18 @@ func (v *DataAmountValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 
 	// Validation done, store cached value
 	v._cachedValue = &cachedValue{
-		rawValue: value,
-		amountStart: amountStart,
-		amountEnd: amountEnd,
+		rawValue:     value,
+		amountStart:  amountStart,
+		amountEnd:    amountEnd,
 		decimalStart: decimalStart,
-		decimalEnd: decimalEnd,
-		unitStart: unitStart,
-		unitEnd: unitEnd,
-		suffixStart: suffixStart,
-		suffixEnd: suffixEnd,
+		decimalEnd:   decimalEnd,
+		unitStart:    unitStart,
+		unitEnd:      unitEnd,
+		suffixStart:  suffixStart,
+		suffixEnd:    suffixEnd,
 	}
 
 	return nil
-}
-
-func (v DataAmountValue) generateUnitSuggestions() []protocol.CompletionItem {
-	units := make([]protocol.CompletionItem, 0)
-	completionKind := protocol.CompletionItemKindUnit
-
-	for unit := range v.AllowedUnits {
-		unitStr := string(unit)
-
-		units = append(units, protocol.CompletionItem{
-			Label:         unitStr,
-			Kind:          &completionKind,
-			Documentation: unitDocumentationMap[unit],
-		})
-	}
-
-	return units
 }
 
 func (v DataAmountValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
@@ -273,16 +382,12 @@ func (v DataAmountValue) DeprecatedFetchCompletions(line string, cursor uint32) 
 				Documentation: "Decimal point",
 			})
 		}
-	} else 
-
-	if isDecimal && v.AllowDecimal {
+	} else if isDecimal && v.AllowDecimal {
 		// Possible scenarios:
 		// `5.` - suggest numbers
 
 		completions = append(completions, GenerateBase10Completions(line)...)
-	} else 
-
-	if isUnit && utils.KeyExists(v.AllowedUnits, lastChar) && v.AllowByteSuffix {
+	} else if isUnit && utils.KeyExists(v.AllowedUnits, lastChar) && v.AllowByteSuffix {
 		// Possible scenarios:
 		// `5K` - suggest byte suffix
 		// `5M` - suggest byte suffix
@@ -307,46 +412,10 @@ func (v DataAmountValue) DeprecatedFetchCompletions(line string, cursor uint32) 
 func (v DataAmountValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	///// Calculate the byte amount from the value
 	var byteAmountMessage string
+	bytesAmount, err := v.calculateBytesAmount()
 
-	if v._cachedValue != nil {
-		// Parse float
-		rawAmount := v._cachedValue.rawValue[v._cachedValue.amountStart:v._cachedValue.amountEnd]
-
-		if v._cachedValue.decimalStart != -1 {
-			rawAmount += "." + v._cachedValue.rawValue[v._cachedValue.decimalStart:v._cachedValue.decimalEnd]
-		}
-
-		amount, err := strconv.ParseFloat(rawAmount, 64)
-		unit := rune(v._cachedValue.rawValue[v._cachedValue.unitStart])
-
-		var suffix string
-
-		if v._cachedValue.suffixStart != -1 {
-			suffix = v._cachedValue.rawValue[v._cachedValue.suffixStart:v._cachedValue.suffixEnd]
-		} else {
-			suffix = ""
-		}
-
-		var base uint64
-
-		if v.Base == DataAmountValueBase1024 {
-			base = uint64(1024)
-		} else {
-			base = uint64(1000)
-		}
-
-		if err == nil {
-			byteAmount, err := utils.CalculateNumericValueToByte(
-				amount,
-				unit,
-				suffix,
-				base,
-			)
-
-			if err == nil {
-				byteAmountMessage = fmt.Sprintf("%s = %d bytes", rawAmount, byteAmount)
-			}
-		}
+	if err == nil {
+		byteAmountMessage = fmt.Sprintf("%s = %d bytes", v._cachedValue.rawValue, bytesAmount)
 	}
 
 	messages := []string{

@@ -51,7 +51,7 @@ func CalculateNumericValueToByte(
 	amount float64,
 	unit rune,
 	suffix string,
-	base uint64,
+	base float64,
 ) (uint64, error) {
 	if base != 1000 && base != 1024 {
 		return 0, errors.New("base must be either 1000 or 1024")
@@ -71,19 +71,19 @@ func CalculateNumericValueToByte(
 
 	switch unit {
 	case 'k':
-		byteAmount = uint64(amount) * base
+		byteAmount = uint64(amount * base)
 	case 'm':
-		byteAmount = uint64(amount) * base*base
+		byteAmount = uint64(amount * base*base)
 	case 'g':
-		byteAmount = uint64(amount) * base*base*base
+		byteAmount = uint64(amount * base*base*base)
 	case 't':
-		byteAmount = uint64(amount) * base*base*base*base
+		byteAmount = uint64(amount * base*base*base*base)
 	case 'e':
-		byteAmount = uint64(amount) * base*base*base*base*base
+		byteAmount = uint64(amount * base*base*base*base*base)
 	case 'p':
-		byteAmount = uint64(amount) * base*base*base*base*base*base
+		byteAmount = uint64(amount * base*base*base*base*base*base)
 	case 'z':
-		byteAmount = uint64(amount) * base*base*base*base*base*base*base
+		byteAmount = uint64(amount * base*base*base*base*base*base*base)
 	default:
 		byteAmount = uint64(amount)
 	}
