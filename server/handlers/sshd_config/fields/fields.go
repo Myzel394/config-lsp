@@ -851,7 +851,17 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 		Value: docvalues.KeyValueAssignmentValue{
 			Separator:       " ",
 			ValueIsOptional: true,
-			Key:             docvalues.DataAmountValue{},
+			Key:             &docvalues.DataAmountValue{
+				AllowedUnits: map[rune]struct{}{
+					'K': {},
+					'M': {},
+					'G': {},
+				},
+				AllowDecimal: false,
+				AllowByteSuffix: false,
+				Base: docvalues.DataAmountValueBase1024,
+				Validator: docvalues.CreateDARangeValidator("1G", "4G", docvalues.DataAmountValueBase1024),
+			},
 			Value:           docvalues.TimeFormatValue{},
 		},
 	},
