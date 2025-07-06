@@ -191,4 +191,3 @@ func TestDAParseInvalidExampleNotAllowedUnit(t *testing.T) {
 	print(value.GetTypeDescription())
 	print(value.DeprecatedFetchHoverInfo("1.5t", 0))
 }
-

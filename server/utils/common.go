@@ -73,17 +73,17 @@ func CalculateNumericValueToByte(
 	case 'k':
 		byteAmount = uint64(amount * base)
 	case 'm':
-		byteAmount = uint64(amount * base*base)
+		byteAmount = uint64(amount * base * base)
 	case 'g':
-		byteAmount = uint64(amount * base*base*base)
+		byteAmount = uint64(amount * base * base * base)
 	case 't':
-		byteAmount = uint64(amount * base*base*base*base)
+		byteAmount = uint64(amount * base * base * base * base)
 	case 'e':
-		byteAmount = uint64(amount * base*base*base*base*base)
+		byteAmount = uint64(amount * base * base * base * base * base)
 	case 'p':
-		byteAmount = uint64(amount * base*base*base*base*base*base)
+		byteAmount = uint64(amount * base * base * base * base * base * base)
 	case 'z':
-		byteAmount = uint64(amount * base*base*base*base*base*base*base)
+		byteAmount = uint64(amount * base * base * base * base * base * base * base)
 	default:
 		byteAmount = uint64(amount)
 	}
