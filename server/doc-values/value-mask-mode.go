@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"fmt"
 	"regexp"
 
@@ -122,6 +123,17 @@ func (v MaskModeValue) DeprecatedFetchCompletions(line string, cursor uint32) []
 			Kind:          &kind,
 		},
 	}
+}
+
+func (v MaskModeValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
+	return v.DeprecatedFetchCompletions(
+		value,
+		common.DeprecatedImprovedCursorToIndex(
+			cursor,
+			value,
+			0,
+		),
+	)
 }
 
 func getMaskRepresentation(digit uint8) string {

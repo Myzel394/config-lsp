@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"regexp"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -109,6 +110,17 @@ func (v UmaskValue) DeprecatedFetchCompletions(line string, cursor uint32) []pro
 			Kind:          &kind,
 		},
 	}
+}
+
+func (v UmaskValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
+	return v.DeprecatedFetchCompletions(
+		value,
+		common.DeprecatedImprovedCursorToIndex(
+			cursor,
+			value,
+			0,
+		),
+	)
 }
 
 func (v UmaskValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {

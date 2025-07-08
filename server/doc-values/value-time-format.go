@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
 	"fmt"
 	"regexp"
@@ -104,6 +105,17 @@ func (v TimeFormatValue) DeprecatedFetchCompletions(line string, cursor uint32) 
 	}
 
 	return completions
+}
+
+func (v TimeFormatValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
+	return v.DeprecatedFetchCompletions(
+		value,
+		common.DeprecatedImprovedCursorToIndex(
+			cursor,
+			value,
+			0,
+		),
+	)
 }
 
 func (v TimeFormatValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {

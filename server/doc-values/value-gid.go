@@ -128,6 +128,18 @@ func (v GIDValue) DeprecatedFetchCompletions(line string, cursor uint32) []proto
 
 	return completions
 }
+
+func (v GIDValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
+	return v.DeprecatedFetchCompletions(
+		value,
+		common.DeprecatedImprovedCursorToIndex(
+			cursor,
+			value,
+			0,
+		),
+	)
+}
+
 func (v GIDValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	uid, err := strconv.Atoi(line)
 

@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
 	"fmt"
 	"strings"
@@ -118,6 +119,18 @@ func (v EnumValue) DeprecatedFetchCompletions(line string, cursor uint32) []prot
 
 	return completions
 }
+
+func (v EnumValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
+	return v.DeprecatedFetchCompletions(
+		value,
+		common.DeprecatedImprovedCursorToIndex(
+			cursor,
+			value,
+			0,
+		),
+	)
+}
+
 func (v EnumValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	for _, value := range v.Values {
 		if value.InsertText == line {

@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
 	"errors"
 	"strings"
@@ -110,6 +111,17 @@ func (v PathValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 
 func (v PathValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
 	return []protocol.CompletionItem{}
+}
+
+func (v PathValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
+	return v.DeprecatedFetchCompletions(
+		value,
+		common.DeprecatedImprovedCursorToIndex(
+			cursor,
+			value,
+			0,
+		),
+	)
 }
 
 func (v PathValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {

@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
 	"fmt"
 	"regexp"
@@ -203,6 +204,17 @@ func (v ArrayValue) DeprecatedFetchCompletions(line string, cursor uint32) []pro
 	value, cursor := v.getCurrentValue(line, cursor)
 
 	return v.SubValue.DeprecatedFetchCompletions(value, cursor)
+}
+
+func (v ArrayValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
+	return v.DeprecatedFetchCompletions(
+		value,
+		common.DeprecatedImprovedCursorToIndex(
+			cursor,
+			value,
+			0,
+		),
+	)
 }
 
 func (v ArrayValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {

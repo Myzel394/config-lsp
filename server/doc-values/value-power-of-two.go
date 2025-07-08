@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
 	"strconv"
 
@@ -73,6 +74,17 @@ func (v PowerOfTwoValue) DeprecatedFetchCompletions(line string, cursor uint32) 
 				Kind:             &kind,
 			}
 		},
+	)
+}
+
+func (v PowerOfTwoValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
+	return v.DeprecatedFetchCompletions(
+		value,
+		common.DeprecatedImprovedCursorToIndex(
+			cursor,
+			value,
+			0,
+		),
 	)
 }
 

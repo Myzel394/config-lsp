@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
 	"fmt"
 	"strings"
@@ -163,6 +164,17 @@ func (v KeyEnumAssignmentValue) getValueAtCursor(line string, cursor uint32) (st
 
 	// No separator, so we can just return the whole line
 	return line, &selected, cursor
+}
+
+func (v KeyEnumAssignmentValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
+	return v.DeprecatedFetchCompletions(
+		value,
+		common.DeprecatedImprovedCursorToIndex(
+			cursor,
+			value,
+			0,
+		),
+	)
 }
 
 func (v KeyEnumAssignmentValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
