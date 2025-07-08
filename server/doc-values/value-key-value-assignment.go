@@ -105,37 +105,37 @@ func (v KeyValueAssignmentValue) DeprecatedCheckIsValid(value string) []*Invalid
 }
 
 func (v KeyValueAssignmentValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
-	if cursor == 0 || line == "" {
-		return v.Key.DeprecatedFetchCompletions(line, cursor)
-	}
-
-	foundPosition, found := utils.FindPreviousCharacter(
-		line,
-		v.Separator,
-		int(cursor),
-	)
-
-	if found {
-		relativePosition := max(1, foundPosition) - 1
-		selectedKey := line[:uint32(relativePosition)]
-		line = line[uint32(relativePosition+len(v.Separator)):]
-		cursor -= uint32(relativePosition)
-
-		return v.getValue(selectedKey).DeprecatedFetchCompletions(line, cursor)
-	} else {
-		return v.Key.DeprecatedFetchCompletions(line, cursor)
-	}
+	return nil
 }
 
 func (v KeyValueAssignmentValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
-	return v.DeprecatedFetchCompletions(
+	if value == "" {
+		return v.Key.FetchCompletions(value, 0)
+	}
+
+	index := common.DeprecatedImprovedCursorToIndex(
+		cursor,
 		value,
-		common.DeprecatedImprovedCursorToIndex(
-			cursor,
-			value,
-			0,
-		),
+		0,
 	)
+
+	foundPosition, found := utils.FindPreviousCharacter(
+		value,
+		v.Separator,
+		int(index),
+	)
+
+	if found {
+		selectedKey := value[:uint32(foundPosition)]
+
+		start := uint32(foundPosition + len(v.Separator))
+		remainingValue := value[start:]
+		remainingCursor := cursor.ShiftHorizontal(-start)
+
+		return v.getValue(selectedKey).FetchCompletions(remainingValue, remainingCursor)
+	} else {
+		return v.Key.FetchCompletions(value, cursor)
+	}
 }
 
 func (v KeyValueAssignmentValue) getValueAtCursor(line string, cursor uint32) (string, *selectedValue, uint32) {

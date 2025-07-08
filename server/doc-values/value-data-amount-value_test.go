@@ -232,7 +232,7 @@ func TestDAEmptyCompletions(t *testing.T) {
 		Base: DataAmountValueBase1024,
 	}
 
-	completions := value.DeprecatedFetchCompletions("", 0)
+	completions := value.FetchCompletions("", 0)
 
 	if len(completions) != 10 {
 		t.Errorf("Expected no completions, got: %v", completions)
@@ -249,9 +249,9 @@ func TestDACompletionsWithValidInput(t *testing.T) {
 		Base: DataAmountValueBase1024,
 	}
 
-	completions := value.DeprecatedFetchCompletions("1", 1)
+	completions := value.FetchCompletions("1", 1)
 
-	if len(completions) == 0 {
+	if len(completions) != 3 {
 		t.Error("Expected completions, got none")
 	}
 }
@@ -266,7 +266,7 @@ func TestDACompletionsAtEnd(t *testing.T) {
 		Base: DataAmountValueBase1024,
 	}
 
-	completions := value.DeprecatedFetchCompletions("1k", 2)
+	completions := value.FetchCompletions("1k", 2)
 
 	if len(completions) != 0 {
 		t.Error("Expected completions, got none")
@@ -284,7 +284,7 @@ func TestDACompletionsNoDecimal(t *testing.T) {
 		AllowDecimal: false,
 	}
 
-	completions := value.DeprecatedFetchCompletions("1.5", 2)
+	completions := value.FetchCompletions("1.5", 2)
 
 	if len(completions) != 0 {
 		t.Error("Expected no completions, got some")
@@ -302,7 +302,7 @@ func TestDaCompletionsDecimal(t *testing.T) {
 		AllowDecimal: true,
 	}
 
-	completions := value.DeprecatedFetchCompletions("1.5", 2)
+	completions := value.FetchCompletions("1.5", 2)
 
 	if len(completions) == 0 {
 		t.Error("Expected completions, got none")

@@ -1,10 +1,10 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
 	"errors"
 	"fmt"
-	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -332,8 +332,9 @@ func (v *DataAmountValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	if !v.AllowDecimal && decimalStart != -1 && decimalEnd != -1 {
 		return []*InvalidValue{
 			{
-				Err:   errors.New("Decimal part is not allowed"),
-				Start: uint32(decimalStart),
+				Err: errors.New("Only whole numbers are allowed."),
+				// `- 1` to include the decimal point in the error range
+				Start: uint32(decimalStart) - 1,
 				End:   uint32(decimalEnd),
 			},
 		}
@@ -355,19 +356,19 @@ func (v *DataAmountValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	return nil
 }
 
-func (v DataAmountValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v DataAmountValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	completions := make([]protocol.CompletionItem, 0)
 
-	if line == "" {
-		return GenerateBase10Completions(line)
+	if value == "" {
+		return GenerateBase10Completions(value)
 	}
 
-	lastChar := []rune(line)[int(math.Max(0, float64(cursor)-1))]
+	lastChar := rune(cursor.GetCharacterBefore(value))
 	isDigit := lastChar >= '0' && lastChar <= '9'
 	isDecimal := lastChar == '.'
 	isUnit := utils.KeyExists(v.AllowedUnits, lastChar)
 
-	lineUntilNow := line[:cursor]
+	valueUntilNow := value[:cursor]
 
 	if isDigit {
 		// Possible scenarios:
@@ -377,7 +378,7 @@ func (v DataAmountValue) DeprecatedFetchCompletions(line string, cursor uint32) 
 		// Suggest unit
 		completions = append(completions, v.generateUnitSuggestions()...)
 
-		if v.AllowDecimal && !strings.Contains(lineUntilNow, ".") {
+		if v.AllowDecimal && !strings.Contains(valueUntilNow, ".") {
 			kind := protocol.CompletionItemKindValue
 			completions = append(completions, protocol.CompletionItem{
 				Label:         ".",
@@ -389,7 +390,7 @@ func (v DataAmountValue) DeprecatedFetchCompletions(line string, cursor uint32) 
 		// Possible scenarios:
 		// `5.` - suggest numbers
 
-		completions = append(completions, GenerateBase10Completions(line)...)
+		completions = append(completions, GenerateBase10Completions(value)...)
 	} else if isUnit && utils.KeyExists(v.AllowedUnits, lastChar) && v.AllowByteSuffix {
 		// Possible scenarios:
 		// `5K` - suggest byte suffix
@@ -409,7 +410,11 @@ func (v DataAmountValue) DeprecatedFetchCompletions(line string, cursor uint32) 
 		})
 	}
 
-	return completions
+	return utils.AddSubstrToCompletionItems(completions, valueUntilNow)
+}
+
+func (v DataAmountValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+	return nil
 }
 
 func (v DataAmountValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {

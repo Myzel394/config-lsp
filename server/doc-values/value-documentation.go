@@ -25,14 +25,7 @@ func (v DocumentationValue) DeprecatedFetchCompletions(line string, cursor uint3
 }
 
 func (v DocumentationValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
-	return v.DeprecatedFetchCompletions(
-		value,
-		common.DeprecatedImprovedCursorToIndex(
-			cursor,
-			value,
-			0,
-		),
-	)
+	return v.Value.FetchCompletions(value, cursor)
 }
 
 func (v DocumentationValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
