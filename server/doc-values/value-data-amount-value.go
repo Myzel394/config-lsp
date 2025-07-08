@@ -4,6 +4,7 @@ import (
 	"config-lsp/utils"
 	"errors"
 	"fmt"
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -361,7 +362,7 @@ func (v DataAmountValue) DeprecatedFetchCompletions(line string, cursor uint32) 
 		return GenerateBase10Completions(line)
 	}
 
-	lastChar := []rune(line)[cursor]
+	lastChar := []rune(line)[int(math.Max(0, float64(cursor)-1))]
 	isDigit := lastChar >= '0' && lastChar <= '9'
 	isDecimal := lastChar == '.'
 	isUnit := utils.KeyExists(v.AllowedUnits, lastChar)

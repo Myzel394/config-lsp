@@ -221,3 +221,90 @@ func TestDAParseInvalidExampleNotAllowedUnit(t *testing.T) {
 	print(value.GetTypeDescription())
 	print(value.DeprecatedFetchHoverInfo("1.5t", 0))
 }
+
+func TestDAEmptyCompletions(t *testing.T) {
+	value := DataAmountValue{
+		AllowedUnits: map[rune]struct{}{
+			'k': {},
+			'm': {},
+			'g': {},
+		},
+		Base: DataAmountValueBase1024,
+	}
+
+	completions := value.DeprecatedFetchCompletions("", 0)
+
+	if len(completions) != 10 {
+		t.Errorf("Expected no completions, got: %v", completions)
+	}
+}
+
+func TestDACompletionsWithValidInput(t *testing.T) {
+	value := DataAmountValue{
+		AllowedUnits: map[rune]struct{}{
+			'k': {},
+			'm': {},
+			'g': {},
+		},
+		Base: DataAmountValueBase1024,
+	}
+
+	completions := value.DeprecatedFetchCompletions("1", 1)
+
+	if len(completions) == 0 {
+		t.Error("Expected completions, got none")
+	}
+}
+
+func TestDACompletionsAtEnd(t *testing.T) {
+	value := DataAmountValue{
+		AllowedUnits: map[rune]struct{}{
+			'k': {},
+			'm': {},
+			'g': {},
+		},
+		Base: DataAmountValueBase1024,
+	}
+
+	completions := value.DeprecatedFetchCompletions("1k", 2)
+
+	if len(completions) != 0 {
+		t.Error("Expected completions, got none")
+	}
+}
+
+func TestDACompletionsNoDecimal(t *testing.T) {
+	value := DataAmountValue{
+		AllowedUnits: map[rune]struct{}{
+			'k': {},
+			'm': {},
+			'g': {},
+		},
+		Base:         DataAmountValueBase1024,
+		AllowDecimal: false,
+	}
+
+	completions := value.DeprecatedFetchCompletions("1.5", 2)
+
+	if len(completions) != 0 {
+		t.Error("Expected no completions, got some")
+	}
+}
+
+func TestDaCompletionsDecimal(t *testing.T) {
+	value := DataAmountValue{
+		AllowedUnits: map[rune]struct{}{
+			'k': {},
+			'm': {},
+			'g': {},
+		},
+		Base:         DataAmountValueBase1024,
+		AllowDecimal: true,
+	}
+
+	completions := value.DeprecatedFetchCompletions("1.5", 2)
+
+	if len(completions) == 0 {
+		t.Error("Expected completions, got none")
+	}
+}
