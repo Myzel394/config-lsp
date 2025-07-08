@@ -28,7 +28,11 @@ func simpleParseValueToByte(
 		panic(fmt.Sprintf("Invalid numeric value '%s': %v", value, err))
 	}
 
-	unit := rune(value[match[6]])
+	var unit rune
+
+	if match[6] != -1 {
+		unit = rune(value[match[6]])
+	}
 
 	var suffix string
 	if match[8] != -1 && match[9] != -1 {
@@ -194,7 +198,11 @@ func (v DataAmountValue) calculateBytesAmount() (uint64, error) {
 		return 0, fmt.Errorf("invalid amount '%s': %w", rawAmount, err)
 	}
 
-	unit := rune(v._cachedValue.rawValue[v._cachedValue.unitStart])
+	var unit rune
+
+	if v._cachedValue.unitStart != -1 {
+		unit = rune(v._cachedValue.rawValue[v._cachedValue.unitStart])
+	}
 
 	var suffix string
 
@@ -292,27 +300,21 @@ func (v *DataAmountValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 			},
 		}
 	}
-	if unitStart == -1 && unitEnd != -1 {
-		return []*InvalidValue{
-			{
-				Err:   errors.New("Unit is missing"),
-				Start: uint32(unitStart),
-				End:   uint32(unitEnd),
-			},
-		}
-	}
+	if unitStart != -1 && unitEnd != -1 {
+		unit := rune(value[unitStart])
 
-	unit := rune(value[unitStart])
-	if !utils.KeyExists(v.AllowedUnits, unit) {
-		allowedUnitsString := strings.Join(utils.MapMapToSlice(v.AllowedUnits, func(unit rune, _ struct{}) string {
-			return string(unit)
-		}), ", ")
-		return []*InvalidValue{
-			{
-				Err:   fmt.Errorf("Unit '%c' is not allowed; It must be one of: %s", unit, allowedUnitsString),
-				Start: uint32(unitStart),
-				End:   uint32(unitEnd),
-			},
+		if !utils.KeyExists(v.AllowedUnits, unit) {
+			allowedUnitsString := strings.Join(utils.MapMapToSlice(v.AllowedUnits, func(unit rune, _ struct{}) string {
+				return string(unit)
+			}), ", ")
+
+			return []*InvalidValue{
+				{
+					Err:   fmt.Errorf("Unit '%c' is not allowed; It must be one of: %s", unit, allowedUnitsString),
+					Start: uint32(unitStart),
+					End:   uint32(unitEnd),
+				},
+			}
 		}
 	}
 

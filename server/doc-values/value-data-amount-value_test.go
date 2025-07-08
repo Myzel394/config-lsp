@@ -127,6 +127,36 @@ func TestDAParseValidExampleBitSuffix(t *testing.T) {
 	}
 }
 
+func TestDAParseValidExampleNoSuffix(t *testing.T) {
+	value := DataAmountValue{
+		AllowedUnits: map[rune]struct{}{
+			'k': {},
+			'm': {},
+			'g': {},
+		},
+		Base: DataAmountValueBase1024,
+	}
+
+	errs := value.DeprecatedCheckIsValid("1024")
+
+	if len(errs) != 0 {
+		t.Errorf("Expected no errors, got: %v", errs)
+	}
+
+	print(value.GetTypeDescription())
+	print(value.DeprecatedFetchHoverInfo("1024", 0))
+
+	bytesAmount, err := value.calculateBytesAmount()
+
+	if err != nil {
+		t.Errorf("Expected no error, got: %v", err)
+	}
+
+	if bytesAmount != 1024 {
+		t.Errorf("Expected 1024 bytes, got: %d", bytesAmount)
+	}
+}
+
 func TestDAParseInvalidExample1(t *testing.T) {
 	value := DataAmountValue{
 		AllowedUnits: map[rune]struct{}{
