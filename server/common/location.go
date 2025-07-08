@@ -204,7 +204,7 @@ func (c CursorPosition) IsAfterIndexPosition(i IndexPosition) bool {
 	return uint32(c) > uint32(i)+1
 }
 
-// Get the rune that is before the cursor position
+// Get the byte that is before the cursor position
 // This expects that the cursor is not out of bounds
 func (c CursorPosition) GetCharacterBefore(value string) byte {
 	if c.getValue() == 0 {
@@ -212,6 +212,21 @@ func (c CursorPosition) GetCharacterBefore(value string) byte {
 	} else {
 		return value[max(0, c.getValue()-1)]
 	}
+}
+
+// Get the byte that is after the cursor position
+// This expects that the cursor is not out of bounds
+func (c CursorPosition) GetCharacterAfter(value string) byte {
+	if c.getValue() >= uint32(len(value)) {
+		return value[len(value)-1]
+	} else {
+		return value[c.getValue()]
+	}
+}
+
+func (c CursorPosition) IsAtEdge(value string) bool {
+	// If the cursor is at the start or end of the value
+	return c.getValue() == 0 || c.getValue() >= uint32(len(value))
 }
 
 // Use this type if you want to use an index based position

@@ -42,7 +42,7 @@ func (v MaskModeValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	return []*InvalidValue{}
 }
 
-func (v MaskModeValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v MaskModeValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	kind := protocol.CompletionItemKindValue
 
 	perm0644 := "0644"
@@ -123,17 +123,6 @@ func (v MaskModeValue) DeprecatedFetchCompletions(line string, cursor uint32) []
 			Kind:          &kind,
 		},
 	}
-}
-
-func (v MaskModeValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
-	return v.DeprecatedFetchCompletions(
-		value,
-		common.DeprecatedImprovedCursorToIndex(
-			cursor,
-			value,
-			0,
-		),
-	)
 }
 
 func getMaskRepresentation(digit uint8) string {

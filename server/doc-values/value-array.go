@@ -124,16 +124,18 @@ func (v ArrayValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	return errors
 }
 
-func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32) {
+func (v ArrayValue) getCurrentValue(line string, cursor common.CursorPosition) (string, common.CursorPosition) {
+	index := common.DeprecatedImprovedCursorToIndex(cursor, line, 0)
+
 	if line == "" {
-		return line, cursor
+		return line, 0
 	}
 
 	MIN := uint32(0)
 	MAX := uint32(len(line) - 1)
 
-	var cursorSearchStart = cursor
-	var cursorSearchEnd = cursor
+	var indexSearchStart = index
+	var indexSearchEnd = index
 
 	var start uint32
 	var end uint32
@@ -144,11 +146,11 @@ func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32)
 		quotes := utils.GetQuoteRanges(line)
 
 		if len(quotes) > 0 {
-			quote := quotes.GetQuoteForIndex(int(cursor))
+			quote := quotes.GetQuoteForIndex(int(index))
 
 			if quote != nil {
-				cursorSearchStart = uint32(quote[0])
-				cursorSearchEnd = uint32(quote[1])
+				indexSearchStart = uint32(quote[0])
+				indexSearchEnd = uint32(quote[1])
 			}
 		}
 	}
@@ -163,7 +165,7 @@ func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32)
 	relativePosition, found := utils.FindPreviousCharacter(
 		line,
 		v.Separator,
-		int(cursorSearchStart),
+		int(indexSearchStart),
 	)
 
 	if found {
@@ -179,7 +181,7 @@ func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32)
 	relativePosition, found = utils.FindNextCharacter(
 		line,
 		v.Separator,
-		int(cursorSearchEnd),
+		int(indexSearchEnd),
 	)
 
 	if found {
@@ -192,33 +194,20 @@ func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32)
 		end = MAX
 	}
 
-	if cursor > end {
+	if index > end {
 		// The user is typing a new (yet empty) value
 		return "", 0
 	}
 
-	return line[start : end+1], cursor - start
-}
-
-func (v ArrayValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
-	value, cursor := v.getCurrentValue(line, cursor)
-
-	return v.SubValue.DeprecatedFetchCompletions(value, cursor)
+	return line[start : end+1], cursor.ShiftHorizontal(-start)
 }
 
 func (v ArrayValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
-	return v.DeprecatedFetchCompletions(
-		value,
-		common.DeprecatedImprovedCursorToIndex(
-			cursor,
-			value,
-			0,
-		),
-	)
+	relativeValue, relativeCursor := v.getCurrentValue(value, cursor)
+
+	return v.SubValue.FetchCompletions(relativeValue, relativeCursor)
 }
 
 func (v ArrayValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
-	value, cursor := v.getCurrentValue(line, cursor)
-
-	return v.SubValue.DeprecatedFetchHoverInfo(value, cursor)
+	return nil
 }

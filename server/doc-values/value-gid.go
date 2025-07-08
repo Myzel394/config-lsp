@@ -90,7 +90,7 @@ var defaultGIDsExplanation = []EnumString{
 	},
 }
 
-func (v GIDValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v GIDValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	infos, err := common.FetchGroupInfo()
 
 	if err != nil {
@@ -127,17 +127,6 @@ func (v GIDValue) DeprecatedFetchCompletions(line string, cursor uint32) []proto
 	}
 
 	return completions
-}
-
-func (v GIDValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
-	return v.DeprecatedFetchCompletions(
-		value,
-		common.DeprecatedImprovedCursorToIndex(
-			cursor,
-			value,
-			0,
-		),
-	)
 }
 
 func (v GIDValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {

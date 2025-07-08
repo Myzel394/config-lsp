@@ -220,10 +220,6 @@ func (v KeyEnumAssignmentValue) FetchCompletions(value string, cursor common.Cur
 	}
 }
 
-func (v KeyEnumAssignmentValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
-	return nil
-}
-
 func (v KeyEnumAssignmentValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	if len(v.DeprecatedCheckIsValid(line)) != 0 {
 		return []string{}

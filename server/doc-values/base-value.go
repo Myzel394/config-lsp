@@ -10,7 +10,6 @@ import (
 type DeprecatedValue interface {
 	GetTypeDescription() []string
 	DeprecatedCheckIsValid(value string) []*InvalidValue
-	DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem
 	DeprecatedFetchHoverInfo(line string, cursor uint32) []string
 
 	FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem

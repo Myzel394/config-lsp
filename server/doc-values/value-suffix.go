@@ -44,7 +44,7 @@ func (v SuffixWithMeaningValue) DeprecatedCheckIsValid(value string) []*InvalidV
 	return v.SubValue.DeprecatedCheckIsValid(value)
 }
 
-func (v SuffixWithMeaningValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v SuffixWithMeaningValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	textFormat := protocol.InsertTextFormatPlainText
 	kind := protocol.CompletionItemKindText
 
@@ -57,18 +57,7 @@ func (v SuffixWithMeaningValue) DeprecatedFetchCompletions(line string, cursor u
 		}
 	})
 
-	return append(suffixCompletions, v.SubValue.DeprecatedFetchCompletions(line, cursor)...)
-}
-
-func (v SuffixWithMeaningValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
-	return v.DeprecatedFetchCompletions(
-		value,
-		common.DeprecatedImprovedCursorToIndex(
-			cursor,
-			value,
-			0,
-		),
-	)
+	return append(suffixCompletions, v.SubValue.FetchCompletions(value, cursor)...)
 }
 
 func (v SuffixWithMeaningValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {

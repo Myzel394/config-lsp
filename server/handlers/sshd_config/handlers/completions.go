@@ -92,7 +92,7 @@ func GetOptionCompletions(
 	}
 
 	if entry.OptionValue == nil {
-		return option.DeprecatedFetchCompletions("", 0)
+		return option.FetchCompletions("", 0)
 	}
 
 	// token completions
@@ -101,14 +101,13 @@ func GetOptionCompletions(
 	// Hello wo|rld
 	line := entry.OptionValue.Value.Raw
 	// NEW: docvalues index
-	completions = append(completions, option.DeprecatedFetchCompletions(
-		line,
-		common.DeprecatedImprovedCursorToIndex(
-			cursor,
+	completions = append(
+		completions,
+		option.FetchCompletions(
 			line,
-			entry.OptionValue.Start.Character,
-		),
-	)...)
+			cursor.ShiftHorizontal(-entry.OptionValue.Start.Character),
+		)...,
+	)
 
 	return completions
 }

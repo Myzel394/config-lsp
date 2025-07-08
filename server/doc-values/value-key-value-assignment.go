@@ -104,10 +104,6 @@ func (v KeyValueAssignmentValue) DeprecatedCheckIsValid(value string) []*Invalid
 	return nil
 }
 
-func (v KeyValueAssignmentValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
-	return nil
-}
-
 func (v KeyValueAssignmentValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	if value == "" {
 		return v.Key.FetchCompletions(value, 0)

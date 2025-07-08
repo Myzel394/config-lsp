@@ -50,7 +50,8 @@ func (v OrValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 
 	return errors
 }
-func (v OrValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+
+func (v OrValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	// Check for special cases
 	if len(v.Values) == 2 {
 		switch v.Values[0].(type) {
@@ -61,14 +62,16 @@ func (v OrValue) DeprecatedFetchCompletions(line string, cursor uint32) []protoc
 				// the values of the KeyEnumAssignment
 				keyEnumValue := v.Values[0].(KeyEnumAssignmentValue)
 
+				index := common.DeprecatedImprovedCursorToIndex(cursor, value, 0)
+
 				_, found := utils.FindPreviousCharacter(
-					line,
+					value,
 					keyEnumValue.Separator,
-					int(cursor),
+					int(index),
 				)
 
 				if found {
-					return keyEnumValue.DeprecatedFetchCompletions(line, cursor)
+					return keyEnumValue.FetchCompletions(value, cursor)
 				}
 			}
 		}
@@ -77,21 +80,10 @@ func (v OrValue) DeprecatedFetchCompletions(line string, cursor uint32) []protoc
 	completions := make([]protocol.CompletionItem, 0)
 
 	for _, subValue := range v.Values {
-		completions = append(completions, subValue.DeprecatedFetchCompletions(line, cursor)...)
+		completions = append(completions, subValue.FetchCompletions(value, cursor)...)
 	}
 
 	return completions
-}
-
-func (v OrValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
-	return v.DeprecatedFetchCompletions(
-		value,
-		common.DeprecatedImprovedCursorToIndex(
-			cursor,
-			value,
-			0,
-		),
-	)
 }
 
 func (v OrValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {

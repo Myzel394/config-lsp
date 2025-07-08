@@ -38,19 +38,8 @@ func (v RegexValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	return []*InvalidValue{}
 }
 
-func (v RegexValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
-	return []protocol.CompletionItem{}
-}
-
 func (v RegexValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
-	return v.DeprecatedFetchCompletions(
-		value,
-		common.DeprecatedImprovedCursorToIndex(
-			cursor,
-			value,
-			0,
-		),
-	)
+	return []protocol.CompletionItem{}
 }
 
 func (v RegexValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {

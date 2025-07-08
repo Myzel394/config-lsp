@@ -413,10 +413,6 @@ func (v DataAmountValue) FetchCompletions(value string, cursor common.CursorPosi
 	return utils.AddSubstrToCompletionItems(completions, valueUntilNow)
 }
 
-func (v DataAmountValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
-	return nil
-}
-
 func (v DataAmountValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	///// Calculate the byte amount from the value
 	var byteAmountMessage string

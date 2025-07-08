@@ -41,7 +41,7 @@ func (v UmaskValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	return []*InvalidValue{}
 }
 
-func (v UmaskValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v UmaskValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	kind := protocol.CompletionItemKindValue
 
 	return []protocol.CompletionItem{
@@ -110,17 +110,6 @@ func (v UmaskValue) DeprecatedFetchCompletions(line string, cursor uint32) []pro
 			Kind:          &kind,
 		},
 	}
-}
-
-func (v UmaskValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
-	return v.DeprecatedFetchCompletions(
-		value,
-		common.DeprecatedImprovedCursorToIndex(
-			cursor,
-			value,
-			0,
-		),
-	)
 }
 
 func (v UmaskValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {

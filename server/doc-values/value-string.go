@@ -47,19 +47,8 @@ func (v StringValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	return nil
 }
 
-func (v StringValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
-	return []protocol.CompletionItem{}
-}
-
 func (v StringValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
-	return v.DeprecatedFetchCompletions(
-		value,
-		common.DeprecatedImprovedCursorToIndex(
-			cursor,
-			value,
-			0,
-		),
-	)
+	return []protocol.CompletionItem{}
 }
 
 func (v StringValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {

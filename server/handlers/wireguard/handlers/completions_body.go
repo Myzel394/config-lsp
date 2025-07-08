@@ -178,7 +178,7 @@ func getKeyCompletions(
 func getValueCompletions(
 	section ini.Section,
 	property *ini.Property,
-	cursorPosition common.CursorPosition,
+	cursor common.CursorPosition,
 ) []protocol.CompletionItem {
 	// TODO: Normalize section header name
 	normalizedHeaderName := fields.CreateNormalizedName(section.Header.Name)
@@ -195,15 +195,11 @@ func getValueCompletions(
 	}
 
 	if property.Value == nil {
-		return option.DeprecatedFetchCompletions("", 0)
+		return option.FetchCompletions("", 0)
 	} else {
-		return option.DeprecatedFetchCompletions(
+		return option.FetchCompletions(
 			property.Value.Value,
-			common.DeprecatedImprovedCursorToIndex(
-				cursorPosition,
-				property.Value.Value,
-				property.Value.Start.Character,
-			),
+			cursor.ShiftHorizontal(-property.Value.Start.Character),
 		)
 	}
 }

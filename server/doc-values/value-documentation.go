@@ -20,10 +20,6 @@ func (v DocumentationValue) DeprecatedCheckIsValid(value string) []*InvalidValue
 	return v.Value.DeprecatedCheckIsValid(value)
 }
 
-func (v DocumentationValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
-	return v.Value.DeprecatedFetchCompletions(line, cursor)
-}
-
 func (v DocumentationValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	return v.Value.FetchCompletions(value, cursor)
 }

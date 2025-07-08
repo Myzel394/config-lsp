@@ -90,7 +90,7 @@ var defaultUIDsExplanation = []EnumString{
 	},
 }
 
-func (v UIDValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v UIDValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	infos, err := common.FetchPasswdInfo()
 
 	if err != nil {
@@ -127,17 +127,6 @@ func (v UIDValue) DeprecatedFetchCompletions(line string, cursor uint32) []proto
 	}
 
 	return completions
-}
-
-func (v UIDValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
-	return v.DeprecatedFetchCompletions(
-		value,
-		common.DeprecatedImprovedCursorToIndex(
-			cursor,
-			value,
-			0,
-		),
-	)
 }
 
 func (v UIDValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
