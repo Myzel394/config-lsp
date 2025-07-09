@@ -34,7 +34,7 @@ PreUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT
 	}
 
 	if indexes.UpProperties[3].Property.Key.Name != "PreUp" {
-		t.Errorf("Expected UpProperty key name 'PreUp', got '%s'", indexes.UpProperties[0].Property.Key.Name)
+		t.Errorf("Expected UpProperty key name 'PreUp', got '%s'", indexes.UpProperties[3].Property.Key.Name)
 	}
 
 	if indexes.UpProperties[3].Property.Value.Value != "iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT" {
