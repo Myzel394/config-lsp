@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"cmp"
 	"slices"
 )
 
@@ -22,7 +21,14 @@ func (q quoteRanges) GetQuoteForIndex(index int) *quoteRange {
 		q,
 		index,
 		func(current quoteRange, target int) int {
-			return cmp.Compare(target, current[0])
+			if target < current[0] {
+				return -1
+			}
+			if target > current[1] {
+				return 1
+			}
+
+			return 0
 		},
 	)
 

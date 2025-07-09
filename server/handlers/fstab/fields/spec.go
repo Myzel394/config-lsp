@@ -13,12 +13,12 @@ var LabelField = docvalues.RegexValue{
 	Regex: *regexp.MustCompile(`\S+`),
 }
 
+var sambaShareField = docvalues.RegexValue{
+	// Match even a trailing slash and later show a diagnostic
+	Regex: *regexp.MustCompile(`^//[^/]+?/.+$`),
+}
 var SpecField = docvalues.OrValue{
 	Values: []docvalues.DeprecatedValue{
-		docvalues.PathValue{
-			IsOptional:   false,
-			RequiredType: docvalues.PathTypeFile,
-		},
 		docvalues.KeyEnumAssignmentValue{
 			Separator:       "=",
 			ValueIsOptional: false,
@@ -28,6 +28,11 @@ var SpecField = docvalues.OrValue{
 				docvalues.CreateEnumString("LABEL"):     LabelField,
 				docvalues.CreateEnumString("PARTLABEL"): LabelField,
 			},
+		},
+		sambaShareField,
+		docvalues.PathValue{
+			IsOptional:   false,
+			RequiredType: docvalues.PathTypeFile,
 		},
 	},
 }

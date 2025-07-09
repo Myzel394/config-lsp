@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
 	"fmt"
 	"strings"
@@ -103,26 +104,33 @@ func (v KeyValueAssignmentValue) DeprecatedCheckIsValid(value string) []*Invalid
 	return nil
 }
 
-func (v KeyValueAssignmentValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
-	if cursor == 0 || line == "" {
-		return v.Key.DeprecatedFetchCompletions(line, cursor)
+func (v KeyValueAssignmentValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
+	if value == "" {
+		return v.Key.FetchCompletions(value, 0)
 	}
 
+	index := common.DeprecatedImprovedCursorToIndex(
+		cursor,
+		value,
+		0,
+	)
+
 	foundPosition, found := utils.FindPreviousCharacter(
-		line,
+		value,
 		v.Separator,
-		int(cursor),
+		int(index),
 	)
 
 	if found {
-		relativePosition := max(1, foundPosition) - 1
-		selectedKey := line[:uint32(relativePosition)]
-		line = line[uint32(relativePosition+len(v.Separator)):]
-		cursor -= uint32(relativePosition)
+		selectedKey := value[:uint32(foundPosition)]
 
-		return v.getValue(selectedKey).DeprecatedFetchCompletions(line, cursor)
+		start := uint32(foundPosition + len(v.Separator))
+		remainingValue := value[start:]
+		remainingCursor := cursor.ShiftHorizontal(-start)
+
+		return v.getValue(selectedKey).FetchCompletions(remainingValue, remainingCursor)
 	} else {
-		return v.Key.DeprecatedFetchCompletions(line, cursor)
+		return v.Key.FetchCompletions(value, cursor)
 	}
 }
 

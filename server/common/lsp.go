@@ -17,7 +17,7 @@ func DeprecatedImprovedCursorToIndex(
 		return 0
 	}
 
-	return min(uint32(len(line)-1), uint32(c)-offset+1)
+	return min(uint32(len(line)-1), uint32(c)-offset)
 }
 
 var SeverityError = protocol.DiagnosticSeverityError

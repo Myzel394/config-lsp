@@ -6,7 +6,7 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-func GetAddPeerLikeThis(
+func GetAddPeerLikeThisCodeActions(
 	d *wireguard.WGDocument,
 	params *protocol.CodeActionParams,
 ) []protocol.CodeAction {

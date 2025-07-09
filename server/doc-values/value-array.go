@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
 	"fmt"
 	"regexp"
@@ -46,6 +47,10 @@ type ArrayValue struct {
 
 	// If true, array ArrayValue ignores the `Separator` if it's within quotes
 	RespectQuotes bool
+
+	// If true, the quotes will not be unwrapped and the raw string will be passed
+	// to the subvalue
+	PersistQuotes bool
 }
 
 func (v ArrayValue) GetTypeDescription() []string {
@@ -70,43 +75,39 @@ func (v ArrayValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 		values = strings.Split(value, v.Separator)
 	}
 
-	if *v.DuplicatesExtractor != nil {
-		valuesOccurrences := utils.SliceToMap(
-			utils.Map(values, *v.DuplicatesExtractor),
-			0,
-		)
+	if v.DuplicatesExtractor != nil && *v.DuplicatesExtractor != nil {
+		// Stores the values that are already found
+		valueSet := map[string]struct{}{}
 
-		// Only continue if there are actually duplicate values
-		if len(values) != len(valuesOccurrences) {
-			for _, duplicateRawValue := range values {
-				duplicateValue := (*v.DuplicatesExtractor)(duplicateRawValue)
-				valuesOccurrences[duplicateValue]++
+		currentIndex := uint32(0)
+
+		for _, rawValue := range values {
+			extractedValue := (*v.DuplicatesExtractor)(rawValue)
+			valueLength := uint32(len(rawValue))
+
+			if extractedValue == "" {
+				// Skip empty values
+				continue
 			}
 
-			duplicateValuesAsList := utils.FilterMapWhere(valuesOccurrences, func(_ string, value int) bool {
-				return value > 1
-			})
-			duplicateValues := utils.KeysAsSet(duplicateValuesAsList)
-
-			duplicateIndexStart := uint32(0)
-			duplicateIndexEnd := uint32(0)
-
-			currentIndex := uint32(0)
-			for _, rawValue := range values {
-				if _, found := duplicateValues[rawValue]; found {
-					duplicateIndexStart = currentIndex
-					duplicateIndexEnd = currentIndex + uint32(len(rawValue))
-
-					errors = append(errors, &InvalidValue{
-						Err: ArrayContainsDuplicatesError{
-							Value: rawValue,
-						},
-						Start: duplicateIndexStart,
-						End:   duplicateIndexEnd,
-					})
-				}
+			if _, found := valueSet[extractedValue]; found {
+				// This value is a duplicate, so we add an error
+				errors = append(errors, &InvalidValue{
+					Err: ArrayContainsDuplicatesError{
+						Value: rawValue,
+					},
+					Start: currentIndex,
+					End:   currentIndex + valueLength,
+				})
+			} else {
+				valueSet[extractedValue] = struct{}{}
 			}
 
+			currentIndex += valueLength + uint32(len(v.Separator))
+		}
+
+		if len(errors) > 0 {
+			// If there are errors, we return them immediately
 			return errors
 		}
 	}
@@ -127,16 +128,18 @@ func (v ArrayValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	return errors
 }
 
-func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32) {
+func (v ArrayValue) getCurrentValue(line string, cursor common.CursorPosition) (string, common.CursorPosition) {
+	index := max(uint32(cursor), 1) - 1
+
 	if line == "" {
-		return line, cursor
+		return line, 0
 	}
 
 	MIN := uint32(0)
-	MAX := uint32(len(line) - 1)
+	MAX := uint32(len(line))
 
-	var cursorSearchStart = cursor
-	var cursorSearchEnd = cursor
+	var indexSearchStart = index
+	var indexSearchEnd = index
 
 	var start uint32
 	var end uint32
@@ -147,11 +150,11 @@ func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32)
 		quotes := utils.GetQuoteRanges(line)
 
 		if len(quotes) > 0 {
-			quote := quotes.GetQuoteForIndex(int(cursor))
+			quote := quotes.GetQuoteForIndex(int(index))
 
 			if quote != nil {
-				cursorSearchStart = uint32(quote[0])
-				cursorSearchEnd = uint32(quote[1])
+				indexSearchStart = uint32(quote[0])
+				indexSearchEnd = uint32(quote[1])
 			}
 		}
 	}
@@ -166,51 +169,80 @@ func (v ArrayValue) getCurrentValue(line string, cursor uint32) (string, uint32)
 	relativePosition, found := utils.FindPreviousCharacter(
 		line,
 		v.Separator,
-		int(cursorSearchStart),
+		int(indexSearchStart),
 	)
 
 	if found {
+		// Edge case, two separators in a row
+		// -> value is empty
+		if relativePosition < (len(line)-1) && line[relativePosition+1] == v.Separator[0] {
+			return "", 0
+		}
+
+		// Edge case, separator at start
+		if relativePosition == 0 && cursor == 0 {
+			return "", 0
+		}
+
 		// + 1 to skip the separator
 		start = min(
 			MAX,
 			uint32(relativePosition)+1,
 		)
+		indexSearchEnd += 1
 	} else {
 		start = MIN
 	}
 
-	relativePosition, found = utils.FindNextCharacter(
-		line,
-		v.Separator,
-		int(cursorSearchEnd),
-	)
-
-	if found {
-		// - 1 to skip the separator
-		end = max(
-			MIN,
-			uint32(relativePosition)-1,
-		)
-	} else {
+	if indexSearchEnd >= uint32(len(line)) {
 		end = MAX
+	} else {
+
+		relativePosition, found = utils.FindNextCharacter(
+			line,
+			v.Separator,
+			int(indexSearchEnd),
+		)
+
+		if found {
+			// - 1 to skip the separator
+			end = max(
+				MIN,
+				uint32(relativePosition)-1,
+			) + 1
+		} else {
+			end = MAX
+		}
+
 	}
 
-	if cursor > end {
-		// The user is typing a new (yet empty) value
-		return "", 0
-	}
-
-	return line[start : end+1], cursor - start
+	return line[start:end], cursor.ShiftHorizontal(-start)
 }
 
-func (v ArrayValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
-	value, cursor := v.getCurrentValue(line, cursor)
+func (v ArrayValue) unwrapQuotes(value string, cursor common.CursorPosition) (string, common.CursorPosition) {
+	if v.RespectQuotes && !v.PersistQuotes && len(value) >= 1 {
+		newValue := strings.TrimSuffix(strings.TrimPrefix(value, "\""), "\"")
 
-	return v.SubValue.DeprecatedFetchCompletions(value, cursor)
+		if value[0] == '"' && cursor <= 1 {
+			return newValue, 0
+		}
+
+		if value[len(value)-1] == '"' && uint32(cursor) >= uint32(len(value))-1 {
+			return newValue, common.CursorPosition(uint32(len(value)))
+		}
+	}
+
+	// Nothing to do
+	return value, cursor
+}
+
+func (v ArrayValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
+	relativeValue, relativeCursor := v.getCurrentValue(value, cursor)
+	newValue, newCursor := v.unwrapQuotes(relativeValue, relativeCursor)
+
+	return v.SubValue.FetchCompletions(newValue, newCursor)
 }
 
 func (v ArrayValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
-	value, cursor := v.getCurrentValue(line, cursor)
-
-	return v.SubValue.DeprecatedFetchHoverInfo(value, cursor)
+	return nil
 }
