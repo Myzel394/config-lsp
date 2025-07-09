@@ -343,7 +343,7 @@ func (v *DataAmountValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	if v.Validator != nil {
 		// Calculate the byte amount
 		byteAmount, err := v.calculateBytesAmount()
-		
+
 		if err != nil {
 			return []*InvalidValue{
 				{

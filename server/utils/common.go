@@ -88,9 +88,5 @@ func CalculateNumericValueToByte(
 		byteAmount = uint64(amount)
 	}
 
-	if byteAmount < 0 {
-		return 0, errors.New("calculated byte amount is negative")
-	}
-
 	return byteAmount, nil
 }

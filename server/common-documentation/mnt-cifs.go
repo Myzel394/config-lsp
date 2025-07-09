@@ -153,9 +153,9 @@ If the server requires signing during protocol negotiation, then it may be enabl
 			'm': {},
 		},
 		AllowByteSuffix: false,
-		Base: docvalues.DataAmountValueBase1024,
-		AllowDecimal: false,
-		Validator: docvalues.CreateDARangeValidator("2048", "127K", docvalues.DataAmountValueBase1024),
+		Base:            docvalues.DataAmountValueBase1024,
+		AllowDecimal:    false,
+		Validator:       docvalues.CreateDARangeValidator("2048", "127K", docvalues.DataAmountValueBase1024),
 	},
 	docvalues.CreateEnumStringWithDoc(
 		"wsize",
