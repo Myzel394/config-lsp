@@ -63,13 +63,13 @@ func CreateDARangeValidator(
 	min string,
 	max string,
 	base DataAmountValueBase,
-) *func(string, uint64) *[]InvalidValue {
+) func(string, uint64) []*InvalidValue {
 	minBytes := simpleParseValueToByte(min, float64(base))
 	maxBytes := simpleParseValueToByte(max, float64(base))
 
-	validator := func(value string, byteAmount uint64) *[]InvalidValue {
+	validator := func(value string, byteAmount uint64) []*InvalidValue {
 		if byteAmount < minBytes || byteAmount > maxBytes {
-			return &[]InvalidValue{
+			return []*InvalidValue{
 				{
 					Err:   fmt.Errorf("Value '%s' is out of range (%s - %s)", value, min, max),
 					Start: 0,
@@ -81,7 +81,7 @@ func CreateDARangeValidator(
 		return nil
 	}
 
-	return &validator
+	return validator
 }
 
 var unitDocumentationMap = map[rune]string{
@@ -159,7 +159,7 @@ type DataAmountValue struct {
 	// The return value should be a slice of InvalidValue pointers,
 	// where each InvalidValue represents an invalid part of the value.
 	// If the validator returns nil, or an empty slice, the value is considered valid.
-	Validator *(func(string, uint64) *[]InvalidValue)
+	Validator (func(string, uint64) []*InvalidValue)
 
 	_cachedValue *cachedValue
 }
@@ -296,8 +296,8 @@ func (v *DataAmountValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 		return []*InvalidValue{
 			{
 				Err:   errors.New("Amount is missing"),
-				Start: uint32(amountStart),
-				End:   uint32(amountEnd),
+				Start: 0,
+				End:   uint32(len(value)),
 			},
 		}
 	}
@@ -337,6 +337,28 @@ func (v *DataAmountValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 				Start: uint32(decimalStart) - 1,
 				End:   uint32(decimalEnd),
 			},
+		}
+	}
+
+	if v.Validator != nil {
+		// Calculate the byte amount
+		byteAmount, err := v.calculateBytesAmount()
+		
+		if err != nil {
+			return []*InvalidValue{
+				{
+					Err:   fmt.Errorf("Invalid numeric value: %s", err.Error()),
+					Start: 0,
+					End:   uint32(len(value)),
+				},
+			}
+		}
+
+		// Run the Validator
+		validationErrors := v.Validator(value, byteAmount)
+
+		if len(validationErrors) > 0 {
+			return validationErrors
 		}
 	}
 

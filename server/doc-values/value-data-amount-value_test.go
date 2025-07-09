@@ -235,7 +235,7 @@ func TestDAEmptyCompletions(t *testing.T) {
 	completions := value.FetchCompletions("", 0)
 
 	if len(completions) != 10 {
-		t.Errorf("Expected no completions, got: %v", completions)
+		t.Errorf("Expected 10 completions, got: %v", completions)
 	}
 }
 
@@ -269,7 +269,7 @@ func TestDACompletionsAtEnd(t *testing.T) {
 	completions := value.FetchCompletions("1k", 2)
 
 	if len(completions) != 0 {
-		t.Error("Expected completions, got none")
+		t.Error("Expected no completions, got none")
 	}
 }
 

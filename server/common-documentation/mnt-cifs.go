@@ -75,11 +75,11 @@ This is preferred over having passwords in plaintext in a shared file, such as /
 	docvalues.CreateEnumStringWithDoc(
 		"file_mode",
 		`If the server does not support the CIFS Unix extensions this overrides the default file mode.`,
-	): docvalues.StringValue{},
+	): docvalues.MaskModeValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"dir_mode",
 		`If the server does not support the CIFS Unix extensions this overrides the default mode for directories.`,
-	): docvalues.StringValue{},
+	): docvalues.MaskModeValue{},
 	docvalues.CreateEnumStringWithDoc(
 		"ip",
 		`sets the destination IP address. This option is set automatically if the server name portion of the requested UNC name can be resolved so rarely needs to be specified by the user.`,
@@ -147,7 +147,16 @@ If the server requires signing during protocol negotiation, then it may be enabl
 	docvalues.CreateEnumStringWithDoc(
 		"rsize",
 		`default network read size (usually 16K). The client currently can not use rsize larger than CIFSMaxBufSize. CIFSMaxBufSize defaults to 16K and may be changed (from 8K to the maximum kmalloc size allowed by your kernel) at module install time for cifs.ko. Setting CIFSMaxBufSize to a very large value will cause cifs to use more memory and may reduce performance in some cases. To use rsize greater than 127K (the original cifs protocol maximum) also requires that the server support a new Unix Capability flag (for very large read) which some newer servers (e.g. Samba 3.0.26 or later) do. rsize can be set from a minimum of 2048 to a maximum of 130048 (127K or CIFSMaxBufSize, whichever is smaller)`,
-	): docvalues.StringValue{},
+	): &docvalues.DataAmountValue{
+		AllowedUnits: map[rune]struct{}{
+			'k': {},
+			'm': {},
+		},
+		AllowByteSuffix: false,
+		Base: docvalues.DataAmountValueBase1024,
+		AllowDecimal: false,
+		Validator: docvalues.CreateDARangeValidator("2048", "127K", docvalues.DataAmountValueBase1024),
+	},
 	docvalues.CreateEnumStringWithDoc(
 		"wsize",
 		`Maximum amount of data that the kernel will send in a write request in bytes. Prior to RHEL6.2 kernels, the default and maximum was 57344 (14 * 4096 pages). As of RHEL6.2, the default depends on whether the client and server negotiate large writes via POSIX extensions. If they do then the default is 1M, and the maximum allowed is 16M. If they do not, then the default is 65536 and the maximum allowed is 131007.

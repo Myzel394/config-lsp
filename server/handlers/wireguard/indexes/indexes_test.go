@@ -30,14 +30,14 @@ PreUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT
 	}
 
 	if indexes.UpProperties[3].Section.Header.Name != "Interface" {
-		t.Errorf("Expected UpProperty section name 'Interface', got '%s'", indexes.UpProperties[0].Section.Header.Name)
+		t.Errorf("Expected UpProperty section name 'Interface', got '%s'", indexes.UpProperties[3].Section.Header.Name)
 	}
 
 	if indexes.UpProperties[3].Property.Key.Name != "PreUp" {
-		t.Errorf("Expected UpProperty key name 'PreUp', got '%s'", indexes.UpProperties[0].Property.Key.Name)
+		t.Errorf("Expected UpProperty key name 'PreUp', got '%s'", indexes.UpProperties[3].Property.Key.Name)
 	}
 
 	if indexes.UpProperties[3].Property.Value.Value != "iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT" {
-		t.Errorf("Expected UpProperty value; %v", indexes.UpProperties[0].Property.Value.Value)
+		t.Errorf("Expected UpProperty value; %v", indexes.UpProperties[3].Property.Value.Value)
 	}
 }
