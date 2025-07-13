@@ -5,6 +5,8 @@ import (
 	docvalues "config-lsp/doc-values"
 	"config-lsp/handlers/fstab/ast"
 	"config-lsp/handlers/fstab/fields"
+	"errors"
+	"regexp"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -24,11 +26,7 @@ func analyzeValuesAreValid(
 		analyzeSpecField(ctx, entry.Fields.Spec)
 
 		if entry.Fields.Options != nil {
-			mountOptions := entry.FetchMountOptionsField(true)
-
-			if mountOptions != nil {
-				checkField(ctx, entry.Fields.Options, mountOptions)
-			}
+			checkMountOptions(ctx, entry)
 		}
 
 		if entry.Fields.Freq != nil {
@@ -57,4 +55,77 @@ func checkField(
 			Severity: &common.SeverityError,
 		})
 	}
+}
+
+func checkMountOptions(
+	ctx *analyzerContext,
+	entry *ast.FstabEntry,
+) {
+	mountOptions := entry.FetchMountOptionsField(true)
+
+	if mountOptions == nil {
+		return
+	}
+
+	field := entry.Fields.Options
+	invalidValues := mountOptions.DeprecatedCheckIsValid(field.Value.Value)
+
+	isZFS := entry.Fields.FilesystemType.Value.Value == "zfs"
+
+	for _, invalidValue := range invalidValues {
+		// Edge case for ZFS:
+		// ZFS allows "User Properties", basically arbitrary keys to be set
+		// See https://openzfs.github.io/openzfs-docs/man/master/7/zfsprops.7.html#User_Properties
+		if isZFS {
+			notInEnumError, isNotInEnumError := (invalidValue.Err).(any).(docvalues.ValueEnumValNotInEnumsError)
+
+			if isNotInEnumError {
+				// Edge case confirmed, just validate if the user property follows the rules
+				invalidValue = checkZFSUserProperty(notInEnumError.ProvidedValue)
+
+				if invalidValue == nil {
+					continue
+				}
+			}
+		}
+
+		err := docvalues.LSPErrorFromInvalidValue(field.Start.Line, *invalidValue).ShiftCharacter(field.Start.Character)
+
+		ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+			Range:    err.Range.ToLSPRange(),
+			Message:  err.Err.Error(),
+			Severity: &common.SeverityError,
+		})
+	}
+}
+
+var validZFSUserProperties = regexp.MustCompile(`^(?<key>[a-z0-9:._][a-z0-9:._-]*?:[a-z0-9:._-]+)(?:=(?<value>.+))?$`)
+
+func checkZFSUserProperty(
+	propertyName string,
+) *docvalues.InvalidValue {
+	match := validZFSUserProperties.FindStringSubmatch(propertyName)
+
+	if match == nil {
+		return &docvalues.InvalidValue{
+			Err:   errors.New(`Invalid ZFS user property format. User property names must contain a colon (":") character to distinguish them from native properties. They may contain lowercase letters, numbers, and the following punctuation characters: colon (":"), dash ("-"), period ("."), and underscore ("_")`),
+			Start: 0,
+			End:   uint32(len(propertyName)),
+		}
+	}
+
+	key := match[1]
+	// value := match[2]
+
+	if len(key) > 256 {
+		return &docvalues.InvalidValue{
+			Err:   errors.New("ZFS user property key is too long, maximum length is 256 characters"),
+			Start: 0,
+			End:   uint32(len(key)),
+		}
+	}
+
+	// TODO: Value check can be added later
+
+	return nil
 }

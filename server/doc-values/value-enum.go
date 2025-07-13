@@ -9,12 +9,12 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-type ValueNotInEnumError struct {
+type ValueEnumValNotInEnumsError struct {
 	AvailableValues []string
 	ProvidedValue   string
 }
 
-func (e ValueNotInEnumError) Error() string {
+func (e ValueEnumValNotInEnumsError) Error() string {
 	if len(e.AvailableValues) <= 6 {
 		return fmt.Sprintf("This value is not valid. Select one from: %s", strings.Join(e.AvailableValues, ","))
 	} else {
@@ -93,7 +93,7 @@ func (v EnumValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 
 	return []*InvalidValue{
 		{
-			Err: ValueNotInEnumError{
+			Err: ValueEnumValNotInEnumsError{
 				ProvidedValue:   value,
 				AvailableValues: utils.Map(v.Values, func(value EnumString) string { return value.InsertText }),
 			},

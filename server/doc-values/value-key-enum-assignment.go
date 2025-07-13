@@ -100,7 +100,7 @@ func (v KeyEnumAssignmentValue) DeprecatedCheckIsValid(value string) []*InvalidV
 	if !found {
 		return []*InvalidValue{
 			{
-				Err: ValueNotInEnumError{
+				Err: ValueEnumValNotInEnumsError{
 					AvailableValues: utils.Map(utils.KeysOfMap(v.Values), func(key EnumString) string { return key.InsertText }),
 					ProvidedValue:   parts[0],
 				},

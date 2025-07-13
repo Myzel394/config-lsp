@@ -10,11 +10,11 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-type ArrayContainsDuplicatesError struct {
+type ValueArrayContainsDuplicatesError struct {
 	Value string
 }
 
-func (e ArrayContainsDuplicatesError) Error() string {
+func (e ValueArrayContainsDuplicatesError) Error() string {
 	return fmt.Sprintf("'%s' is a duplicate value (and duplicates are not allowed)", e.Value)
 }
 
@@ -93,7 +93,7 @@ func (v ArrayValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 			if _, found := valueSet[extractedValue]; found {
 				// This value is a duplicate, so we add an error
 				errors = append(errors, &InvalidValue{
-					Err: ArrayContainsDuplicatesError{
+					Err: ValueArrayContainsDuplicatesError{
 						Value: rawValue,
 					},
 					Start: currentIndex,
