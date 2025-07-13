@@ -186,8 +186,8 @@ func (c CursorPosition) getValue() uint32 {
 	return uint32(c)
 }
 
-func (c CursorPosition) ShiftHorizontal(offset uint32) CursorPosition {
-	return CursorPosition(uint32(c) + offset)
+func (c CursorPosition) ShiftHorizontal(offset int) CursorPosition {
+	return CursorPosition(uint32(int(c) + offset))
 }
 
 func LSPCharacterAsCursorPosition(character uint32) CursorPosition {

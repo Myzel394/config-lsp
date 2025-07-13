@@ -164,7 +164,7 @@ func (v KeyValueAssignmentValue) FetchCompletions(value string, cursor common.Cu
 	if found {
 		selectedKey := value[:uint32(foundPosition)]
 
-		start := uint32(foundPosition + len(v.Separator))
+		start := foundPosition + len(v.Separator)
 		remainingValue := value[start:]
 		remainingCursor := cursor.ShiftHorizontal(-start)
 

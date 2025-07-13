@@ -180,6 +180,71 @@ func TestVAValidExampleQuotes(t *testing.T) {
 		SubValue:      StringValue{},
 		Separator:     ",",
 		RespectQuotes: true,
+		PersistQuotes: true,
+	}
+
+	line := `"1,212",3445`
+
+	errs := value.DeprecatedCheckIsValid(line)
+
+	if len(errs) != 0 {
+		t.Errorf("Expected no errors, got: %v", errs)
+	}
+
+	val1, val1Cursor := value.getCurrentValue(line, 0)
+	val1, val1Cursor = value.unwrapQuotes(val1, val1Cursor)
+	if !(val1 == `"1,212"` && val1Cursor == 0) {
+		t.Errorf("Expected first value to be '1,212' at cursor 0, got '%s' at %d", val1, val1Cursor)
+	}
+
+	val1, val1Cursor = value.getCurrentValue(line, 1)
+	val1, val1Cursor = value.unwrapQuotes(val1, val1Cursor)
+	if !(val1 == `"1,212"` && val1Cursor == 1) {
+		t.Errorf("Expected first value to be '1,212' at cursor 1, got '%s' at %d", val1, val1Cursor)
+	}
+
+	val1, val1Cursor = value.getCurrentValue(line, 2)
+	val1, val1Cursor = value.unwrapQuotes(val1, val1Cursor)
+	if !(val1 == `"1,212"` && val1Cursor == 2) {
+		t.Errorf("Expected first value to be '1,212' at cursor 2, got '%s' at %d", val1, val1Cursor)
+	}
+
+	val1, val1Cursor = value.getCurrentValue(line, 6)
+	val1, val1Cursor = value.unwrapQuotes(val1, val1Cursor)
+	if !(val1 == `"1,212"` && val1Cursor == 6) {
+		t.Errorf("Expected first value to be '1,212' at cursor 5, got '%s' at %d", val1, val1Cursor)
+	}
+
+	val1, val1Cursor = value.getCurrentValue(line, 7)
+	val1, val1Cursor = value.unwrapQuotes(val1, val1Cursor)
+	if !(val1 == `"1,212"` && val1Cursor == 7) {
+		t.Errorf("Expected first value to be '1,212' at cursor 6, got '%s' at %d", val1, val1Cursor)
+	}
+
+	val2, val2Cursor := value.getCurrentValue(line, 8)
+	val2, val2Cursor = value.unwrapQuotes(val2, val2Cursor)
+	if !(val2 == "3445" && val2Cursor == 0) {
+		t.Errorf("Expected second value to be '3445' at cursor 8, got '%s' at %d", val2, val2Cursor)
+	}
+
+	val2, val2Cursor = value.getCurrentValue(line, 9)
+	val2, val2Cursor = value.unwrapQuotes(val2, val2Cursor)
+	if !(val2 == "3445" && val2Cursor == 1) {
+		t.Errorf("Expected second value to be '3445' at cursor 9, got '%s' at %d", val2, val2Cursor)
+	}
+
+	val2, val2Cursor = value.getCurrentValue(line, 12)
+	val2, val2Cursor = value.unwrapQuotes(val2, val2Cursor)
+	if !(val2 == "3445" && val2Cursor == 4) {
+		t.Errorf("Expected second value to be '3445' at cursor 12, got '%s' at %d", val2, val2Cursor)
+	}
+}
+
+func TestVAValidExampleQuotesNotPersist(t *testing.T) {
+	value := ArrayValue{
+		SubValue:      StringValue{},
+		Separator:     ",",
+		RespectQuotes: true,
 		PersistQuotes: false,
 	}
 
@@ -192,41 +257,49 @@ func TestVAValidExampleQuotes(t *testing.T) {
 	}
 
 	val1, val1Cursor := value.getCurrentValue(line, 0)
-	if !(val1 == `"1,212"` && val1Cursor == 0) {
+	val1, val1Cursor = value.unwrapQuotes(val1, val1Cursor)
+	if !(val1 == `1,212` && val1Cursor == 0) {
 		t.Errorf("Expected first value to be '1,212' at cursor 0, got '%s' at %d", val1, val1Cursor)
 	}
 
 	val1, val1Cursor = value.getCurrentValue(line, 1)
-	if !(val1 == `"1,212"` && val1Cursor == 1) {
+	val1, val1Cursor = value.unwrapQuotes(val1, val1Cursor)
+	if !(val1 == `1,212` && val1Cursor == 0) {
 		t.Errorf("Expected first value to be '1,212' at cursor 1, got '%s' at %d", val1, val1Cursor)
 	}
 
 	val1, val1Cursor = value.getCurrentValue(line, 2)
-	if !(val1 == `"1,212"` && val1Cursor == 2) {
+	val1, val1Cursor = value.unwrapQuotes(val1, val1Cursor)
+	if !(val1 == `1,212` && val1Cursor == 1) {
 		t.Errorf("Expected first value to be '1,212' at cursor 2, got '%s' at %d", val1, val1Cursor)
 	}
 
 	val1, val1Cursor = value.getCurrentValue(line, 6)
-	if !(val1 == `"1,212"` && val1Cursor == 6) {
+	val1, val1Cursor = value.unwrapQuotes(val1, val1Cursor)
+	if !(val1 == `1,212` && val1Cursor == 5) {
 		t.Errorf("Expected first value to be '1,212' at cursor 5, got '%s' at %d", val1, val1Cursor)
 	}
 
 	val1, val1Cursor = value.getCurrentValue(line, 7)
-	if !(val1 == `"1,212"` && val1Cursor == 7) {
+	val1, val1Cursor = value.unwrapQuotes(val1, val1Cursor)
+	if !(val1 == `1,212` && val1Cursor == 5) {
 		t.Errorf("Expected first value to be '1,212' at cursor 6, got '%s' at %d", val1, val1Cursor)
 	}
 
 	val2, val2Cursor := value.getCurrentValue(line, 8)
+	val2, val2Cursor = value.unwrapQuotes(val2, val2Cursor)
 	if !(val2 == "3445" && val2Cursor == 0) {
 		t.Errorf("Expected second value to be '3445' at cursor 8, got '%s' at %d", val2, val2Cursor)
 	}
 
 	val2, val2Cursor = value.getCurrentValue(line, 9)
+	val2, val2Cursor = value.unwrapQuotes(val2, val2Cursor)
 	if !(val2 == "3445" && val2Cursor == 1) {
 		t.Errorf("Expected second value to be '3445' at cursor 9, got '%s' at %d", val2, val2Cursor)
 	}
 
 	val2, val2Cursor = value.getCurrentValue(line, 12)
+	val2, val2Cursor = value.unwrapQuotes(val2, val2Cursor)
 	if !(val2 == "3445" && val2Cursor == 4) {
 		t.Errorf("Expected second value to be '3445' at cursor 12, got '%s' at %d", val2, val2Cursor)
 	}

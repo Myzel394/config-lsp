@@ -105,7 +105,7 @@ func GetOptionCompletions(
 		completions,
 		option.FetchCompletions(
 			line,
-			cursor.ShiftHorizontal(-entry.OptionValue.Start.Character),
+			cursor.ShiftHorizontal(-int(entry.OptionValue.Start.Character)),
 		)...,
 	)
 

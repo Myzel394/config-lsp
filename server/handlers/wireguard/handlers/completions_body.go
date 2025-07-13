@@ -199,7 +199,7 @@ func getValueCompletions(
 	} else {
 		return option.FetchCompletions(
 			property.Value.Value,
-			cursor.ShiftHorizontal(-property.Value.Start.Character),
+			cursor.ShiftHorizontal(-int(property.Value.Start.Character)),
 		)
 	}
 }

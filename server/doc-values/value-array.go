@@ -135,14 +135,14 @@ func (v ArrayValue) getCurrentValue(line string, cursor common.CursorPosition) (
 		return line, 0
 	}
 
-	MIN := uint32(0)
-	MAX := uint32(len(line))
+	MIN := 0
+	MAX := len(line)
 
 	var indexSearchStart = index
 	var indexSearchEnd = index
 
-	var start uint32
-	var end uint32
+	var start int
+	var end int
 
 	// Hello,world,how,are,you
 	// Hello,"world,how",are,you
@@ -187,7 +187,7 @@ func (v ArrayValue) getCurrentValue(line string, cursor common.CursorPosition) (
 		// + 1 to skip the separator
 		start = min(
 			MAX,
-			uint32(relativePosition)+1,
+			relativePosition+1,
 		)
 		indexSearchEnd += 1
 	} else {
@@ -208,7 +208,7 @@ func (v ArrayValue) getCurrentValue(line string, cursor common.CursorPosition) (
 			// - 1 to skip the separator
 			end = max(
 				MIN,
-				uint32(relativePosition)-1,
+				relativePosition-1,
 			) + 1
 		} else {
 			end = MAX
@@ -220,20 +220,34 @@ func (v ArrayValue) getCurrentValue(line string, cursor common.CursorPosition) (
 }
 
 func (v ArrayValue) unwrapQuotes(value string, cursor common.CursorPosition) (string, common.CursorPosition) {
-	if v.RespectQuotes && !v.PersistQuotes && len(value) >= 1 {
-		newValue := strings.TrimSuffix(strings.TrimPrefix(value, "\""), "\"")
+	newValue := value
+	newCursor := cursor
 
-		if value[0] == '"' && cursor <= 1 {
-			return newValue, 0
+	if v.RespectQuotes && !v.PersistQuotes && len(value) >= 1 {
+		newValue = strings.TrimSuffix(strings.TrimPrefix(value, "\""), "\"")
+
+		// Scenarios:
+		// |"val" -> 0
+		// "|val" -> 0
+		// "va|l" -> x - va|l
+		// "val|" -> len(value)
+		// "val"| -> len(value)
+
+		if value[0] == '"' {
+			if cursor <= 1 {
+				newCursor = 0
+			} else {
+				newCursor = cursor.ShiftHorizontal(-1)
+			}
 		}
 
 		if value[len(value)-1] == '"' && uint32(cursor) >= uint32(len(value))-1 {
-			return newValue, common.CursorPosition(uint32(len(value)))
+			newCursor = common.CursorPosition(len(newValue))
 		}
 	}
 
 	// Nothing to do
-	return value, cursor
+	return newValue, newCursor
 }
 
 func (v ArrayValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {

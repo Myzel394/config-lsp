@@ -111,5 +111,5 @@ func getFieldSafely(field *ast.FstabField, cursor common.CursorPosition) (string
 		return "", 0
 	}
 
-	return field.Value.Raw, cursor.ShiftHorizontal(-field.Start.Character)
+	return field.Value.Raw, cursor.ShiftHorizontal(-int(field.Start.Character))
 }

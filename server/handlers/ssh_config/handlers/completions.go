@@ -103,7 +103,7 @@ func GetOptionCompletions(
 	// NEW: docvalues index
 	completions = append(completions, option.FetchCompletions(
 		lineValue,
-		cursor.ShiftHorizontal(-entry.OptionValue.Start.Character),
+		cursor.ShiftHorizontal(-int(entry.OptionValue.Start.Character)),
 	)...)
 
 	return completions

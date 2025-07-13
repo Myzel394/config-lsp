@@ -108,7 +108,7 @@ func getMatchValueCompletions(
 
 	if value != nil {
 		line = value.Value.Raw
-		relativeCursor = cursor.ShiftHorizontal(-value.Start.Character)
+		relativeCursor = cursor.ShiftHorizontal(-int(value.Start.Character))
 	} else {
 		line = ""
 		relativeCursor = 0
