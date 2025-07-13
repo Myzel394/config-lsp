@@ -175,14 +175,11 @@ func (v KeyValueAssignmentValue) FetchCompletions(value string, cursor common.Cu
 }
 
 func (v KeyValueAssignmentValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
-	println("aaahhh")
 	if len(v.DeprecatedCheckIsValid(line)) != 0 {
-		println("Invalid key-value assignment, returning empty hover info")
 		return []string{}
 	}
 
 	value, selected, cursor := v.getValueAtCursor(line, cursor)
-	println(fmt.Sprintf("Value: %s, Selected: %v, Cursor: %d", value, selected, cursor))
 
 	if selected == nil {
 		return []string{}
