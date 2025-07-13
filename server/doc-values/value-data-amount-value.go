@@ -164,7 +164,7 @@ type DataAmountValue struct {
 	_cachedValue *cachedValue
 }
 
-func (v DataAmountValue) generateUnitSuggestions() []protocol.CompletionItem {
+func (v *DataAmountValue) generateUnitSuggestions() []protocol.CompletionItem {
 	units := make([]protocol.CompletionItem, 0)
 	completionKind := protocol.CompletionItemKindUnit
 
@@ -181,7 +181,7 @@ func (v DataAmountValue) generateUnitSuggestions() []protocol.CompletionItem {
 	return units
 }
 
-func (v DataAmountValue) calculateBytesAmount() (uint64, error) {
+func (v *DataAmountValue) calculateBytesAmount() (uint64, error) {
 	if v._cachedValue == nil {
 		return 0, errors.New("value is not cached, please call DeprecatedCheckIsValid first")
 	}
@@ -235,7 +235,7 @@ func (v DataAmountValue) calculateBytesAmount() (uint64, error) {
 	return byteAmount, nil
 }
 
-func (v DataAmountValue) GetTypeDescription() []string {
+func (v *DataAmountValue) GetTypeDescription() []string {
 	description := []string{
 		"Byte amount",
 		"Example: 512, 2K, 1M",
@@ -378,7 +378,7 @@ func (v *DataAmountValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	return nil
 }
 
-func (v DataAmountValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
+func (v *DataAmountValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	completions := make([]protocol.CompletionItem, 0)
 
 	if value == "" {
@@ -435,7 +435,7 @@ func (v DataAmountValue) FetchCompletions(value string, cursor common.CursorPosi
 	return utils.AddSubstrToCompletionItems(completions, valueUntilNow)
 }
 
-func (v DataAmountValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
+func (v *DataAmountValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	///// Calculate the byte amount from the value
 	var byteAmountMessage string
 	bytesAmount, err := v.calculateBytesAmount()
