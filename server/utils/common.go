@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"os"
+	"unicode"
 )
 
 func DoesPathExist(path string) bool {
@@ -69,7 +70,7 @@ func CalculateNumericValueToByte(
 		amount /= 8
 	}
 
-	switch unit {
+	switch unicode.ToLower(unit) {
 	case 'k':
 		byteAmount = uint64(amount * base)
 	case 'm':
@@ -84,8 +85,10 @@ func CalculateNumericValueToByte(
 		byteAmount = uint64(amount * base * base * base * base * base * base)
 	case 'z':
 		byteAmount = uint64(amount * base * base * base * base * base * base * base)
+	case ' ':
+		byteAmount = uint64(amount) // No unit, treat as bytes
 	default:
-		byteAmount = uint64(amount)
+		return 0, errors.New("unsupported unit: " + string(unit))
 	}
 
 	return byteAmount, nil

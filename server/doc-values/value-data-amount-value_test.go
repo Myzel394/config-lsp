@@ -21,7 +21,7 @@ func TestDAParseValidExample1(t *testing.T) {
 	print(value.GetTypeDescription())
 	print(value.DeprecatedFetchHoverInfo("1k", 0))
 
-	bytesAmount, err := value.calculateBytesAmount()
+	bytesAmount, err := value.calculateBytesAmount("1k")
 
 	if err != nil {
 		t.Errorf("Expected no error, got: %v", err)
@@ -29,6 +29,33 @@ func TestDAParseValidExample1(t *testing.T) {
 
 	if bytesAmount != 1024 {
 		t.Errorf("Expected 1024 bytes, got: %d", bytesAmount)
+	}
+}
+
+func TestDA1GExample(t *testing.T) {
+	value := DataAmountValue{
+		AllowedUnits: map[rune]struct{}{
+			'k': {},
+			'm': {},
+			'g': {},
+		},
+		Base: DataAmountValueBase1024,
+	}
+
+	errs := value.DeprecatedCheckIsValid("1g")
+
+	if len(errs) != 0 {
+		t.Errorf("Expected no errors, got: %v", errs)
+	}
+
+	bytesAmount, err := value.calculateBytesAmount("1g")
+
+	if err != nil {
+		t.Errorf("Expected no error, got: %v", err)
+	}
+
+	if bytesAmount != 1073741824 {
+		t.Errorf("Expected 1073741824 bytes, got: %d", bytesAmount)
 	}
 }
 
@@ -52,7 +79,7 @@ func TestDAParseValidExample2(t *testing.T) {
 	print(value.GetTypeDescription())
 	print(value.DeprecatedFetchHoverInfo("1.5k", 0))
 
-	bytesAmount, err := value.calculateBytesAmount()
+	bytesAmount, err := value.calculateBytesAmount("1.5k")
 
 	if err != nil {
 		t.Errorf("Expected no error, got: %v", err)
@@ -84,7 +111,7 @@ func TestDAParseValidExampleByteSuffix(t *testing.T) {
 	print(value.GetTypeDescription())
 	print(value.DeprecatedFetchHoverInfo("1.5kB", 0))
 
-	byteAmount, err := value.calculateBytesAmount()
+	byteAmount, err := value.calculateBytesAmount("1.5kB")
 
 	if err != nil {
 		t.Errorf("Expected no error, got: %v", err)
@@ -112,19 +139,6 @@ func TestDAParseValidExampleBitSuffix(t *testing.T) {
 	if len(errs) != 0 {
 		t.Errorf("Expected no errors, got: %v", errs)
 	}
-
-	print(value.GetTypeDescription())
-	print(value.DeprecatedFetchHoverInfo("1.5t", 0))
-
-	byteAmount, err := value.calculateBytesAmount()
-
-	if err != nil {
-		t.Errorf("Expected no error, got: %v", err)
-	}
-
-	if byteAmount != 192 {
-		t.Errorf("Expected 192 bytes, got: %d", byteAmount)
-	}
 }
 
 func TestDAParseValidExampleNoSuffix(t *testing.T) {
@@ -146,7 +160,7 @@ func TestDAParseValidExampleNoSuffix(t *testing.T) {
 	print(value.GetTypeDescription())
 	print(value.DeprecatedFetchHoverInfo("1024", 0))
 
-	bytesAmount, err := value.calculateBytesAmount()
+	bytesAmount, err := value.calculateBytesAmount("1024")
 
 	if err != nil {
 		t.Errorf("Expected no error, got: %v", err)

@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -33,6 +34,8 @@ func simpleParseValueToByte(
 
 	if match[6] != -1 {
 		unit = rune(value[match[6]])
+	} else {
+		unit = ' '
 	}
 
 	var suffix string
@@ -160,11 +163,9 @@ type DataAmountValue struct {
 	// where each InvalidValue represents an invalid part of the value.
 	// If the validator returns nil, or an empty slice, the value is considered valid.
 	Validator (func(string, uint64) []*InvalidValue)
-
-	_cachedValue *cachedValue
 }
 
-func (v *DataAmountValue) generateUnitSuggestions() []protocol.CompletionItem {
+func (v DataAmountValue) generateUnitSuggestions() []protocol.CompletionItem {
 	units := make([]protocol.CompletionItem, 0)
 	completionKind := protocol.CompletionItemKindUnit
 
@@ -174,23 +175,26 @@ func (v *DataAmountValue) generateUnitSuggestions() []protocol.CompletionItem {
 		units = append(units, protocol.CompletionItem{
 			Label:         unitStr,
 			Kind:          &completionKind,
-			Documentation: unitDocumentationMap[unit],
+			Documentation: unitDocumentationMap[unicode.ToLower(unit)],
 		})
 	}
 
 	return units
 }
 
-func (v *DataAmountValue) calculateBytesAmount() (uint64, error) {
-	if v._cachedValue == nil {
-		return 0, errors.New("value is not cached, please call DeprecatedCheckIsValid first")
+func (v DataAmountValue) calculateBytesAmount(line string) (uint64, error) {
+	match := laxPattern.FindStringSubmatch(line)
+
+	if len(match) == 0 {
+		return 0, fmt.Errorf("invalid numeric value '%s'", line)
 	}
 
-	// Parse float
-	rawAmount := v._cachedValue.rawValue[v._cachedValue.amountStart:v._cachedValue.amountEnd]
+	rawAmount := match[1]
+	rawDecimal := match[2]
 
-	if v._cachedValue.decimalStart != -1 {
-		rawAmount += "." + v._cachedValue.rawValue[v._cachedValue.decimalStart:v._cachedValue.decimalEnd]
+	// Parse float
+	if rawDecimal != "" && v.AllowDecimal {
+		rawAmount += "." + rawDecimal
 	}
 
 	amount, err := strconv.ParseFloat(rawAmount, 64)
@@ -201,14 +205,16 @@ func (v *DataAmountValue) calculateBytesAmount() (uint64, error) {
 
 	var unit rune
 
-	if v._cachedValue.unitStart != -1 {
-		unit = rune(v._cachedValue.rawValue[v._cachedValue.unitStart])
+	if match[3] != "" {
+		unit = rune(match[3][0])
+	} else {
+		unit = ' '
 	}
 
 	var suffix string
 
-	if v._cachedValue.suffixStart != -1 {
-		suffix = v._cachedValue.rawValue[v._cachedValue.suffixStart:v._cachedValue.suffixEnd]
+	if match[4] != "" {
+		suffix = match[4]
 	} else {
 		suffix = ""
 	}
@@ -235,14 +241,14 @@ func (v *DataAmountValue) calculateBytesAmount() (uint64, error) {
 	return byteAmount, nil
 }
 
-func (v *DataAmountValue) GetTypeDescription() []string {
+func (v DataAmountValue) GetTypeDescription() []string {
 	description := []string{
 		"Byte amount",
 		"Example: 512, 2K, 1M",
 	}
 
 	allowedUnits := utils.MapMapToSlice(v.AllowedUnits, func(unit rune, _ struct{}) string {
-		return fmt.Sprintf("'%c' (%s)", unit, unitDocumentationMap[unit])
+		return fmt.Sprintf("'%c' (%s)", unit, unitDocumentationMap[unicode.ToLower(unit)])
 	})
 
 	description = append(description, fmt.Sprintf("* Allowed units: %s", strings.Join(allowedUnits, ", ")))
@@ -268,9 +274,7 @@ func (v *DataAmountValue) GetTypeDescription() []string {
 	return description
 }
 
-func (v *DataAmountValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
-	v._cachedValue = nil
-
+func (v DataAmountValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	match := laxPattern.FindStringSubmatchIndex(value)
 
 	if len(match) == 0 {
@@ -342,7 +346,7 @@ func (v *DataAmountValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 
 	if v.Validator != nil {
 		// Calculate the byte amount
-		byteAmount, err := v.calculateBytesAmount()
+		byteAmount, err := v.calculateBytesAmount(value)
 
 		if err != nil {
 			return []*InvalidValue{
@@ -362,23 +366,10 @@ func (v *DataAmountValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 		}
 	}
 
-	// Validation done, store cached value
-	v._cachedValue = &cachedValue{
-		rawValue:     value,
-		amountStart:  amountStart,
-		amountEnd:    amountEnd,
-		decimalStart: decimalStart,
-		decimalEnd:   decimalEnd,
-		unitStart:    unitStart,
-		unitEnd:      unitEnd,
-		suffixStart:  suffixStart,
-		suffixEnd:    suffixEnd,
-	}
-
 	return nil
 }
 
-func (v *DataAmountValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
+func (v DataAmountValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	completions := make([]protocol.CompletionItem, 0)
 
 	if value == "" {
@@ -435,13 +426,13 @@ func (v *DataAmountValue) FetchCompletions(value string, cursor common.CursorPos
 	return utils.AddSubstrToCompletionItems(completions, valueUntilNow)
 }
 
-func (v *DataAmountValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
+func (v DataAmountValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	///// Calculate the byte amount from the value
 	var byteAmountMessage string
-	bytesAmount, err := v.calculateBytesAmount()
+	bytesAmount, err := v.calculateBytesAmount(line)
 
 	if err == nil {
-		byteAmountMessage = fmt.Sprintf("%s = %d bytes", v._cachedValue.rawValue, bytesAmount)
+		byteAmountMessage = fmt.Sprintf("%s = %d bytes", line, bytesAmount)
 	}
 
 	messages := []string{
