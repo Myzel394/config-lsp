@@ -147,7 +147,7 @@ If the server requires signing during protocol negotiation, then it may be enabl
 	docvalues.CreateEnumStringWithDoc(
 		"rsize",
 		`default network read size (usually 16K). The client currently can not use rsize larger than CIFSMaxBufSize. CIFSMaxBufSize defaults to 16K and may be changed (from 8K to the maximum kmalloc size allowed by your kernel) at module install time for cifs.ko. Setting CIFSMaxBufSize to a very large value will cause cifs to use more memory and may reduce performance in some cases. To use rsize greater than 127K (the original cifs protocol maximum) also requires that the server support a new Unix Capability flag (for very large read) which some newer servers (e.g. Samba 3.0.26 or later) do. rsize can be set from a minimum of 2048 to a maximum of 130048 (127K or CIFSMaxBufSize, whichever is smaller)`,
-	): &docvalues.DataAmountValue{
+	): docvalues.DataAmountValue{
 		AllowedUnits: map[rune]struct{}{
 			'k': {},
 			'm': {},
