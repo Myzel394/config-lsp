@@ -244,5 +244,16 @@ func (v ArrayValue) FetchCompletions(value string, cursor common.CursorPosition)
 }
 
 func (v ArrayValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
-	return nil
+	// TODO: Replace DeprecatedFetchHoverInfo with FetchHoverInfo and make sure cursor is a common.CursorPosition
+	value, newCursor := v.getCurrentValue(line, common.CursorPosition(cursor))
+
+	if v.RespectQuotes && !v.PersistQuotes {
+		value, newCursor = v.unwrapQuotes(value, common.CursorPosition(newCursor))
+	}
+
+	if len(value) == 0 {
+		return []string{}
+	}
+
+	return v.SubValue.DeprecatedFetchHoverInfo(value, uint32(newCursor))
 }
