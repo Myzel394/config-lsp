@@ -13,7 +13,7 @@ func GetGeneratePostDownCodeActions(
 	d *wireguard.WGDocument,
 	params *protocol.CodeActionParams,
 ) []protocol.CodeAction {
-	postDownPropertyNames := map[fields.NormalizedName]struct{}{
+	postPrePropertyNames := map[fields.NormalizedName]struct{}{
 		fields.CreateNormalizedName("PreUp"):  {},
 		fields.CreateNormalizedName("PostUp"): {},
 	}
@@ -35,7 +35,7 @@ func GetGeneratePostDownCodeActions(
 	property := rawProperty.(*ini.Property)
 
 	propertyName := fields.CreateNormalizedName(property.Key.Name)
-	if (utils.KeyExists(postDownPropertyNames, propertyName)) && (property.Value != nil) {
+	if (utils.KeyExists(postPrePropertyNames, propertyName)) && (property.Value != nil) {
 		// Only propose this action if no PostDown is already present
 		_, postDownProperty := section.FindFirstPropertyByName("PostDown")
 

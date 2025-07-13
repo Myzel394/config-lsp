@@ -82,7 +82,7 @@ func TestDAParseValidExampleByteSuffix(t *testing.T) {
 	}
 
 	print(value.GetTypeDescription())
-	print(value.DeprecatedFetchHoverInfo("1.5t", 0))
+	print(value.DeprecatedFetchHoverInfo("1.5kB", 0))
 
 	byteAmount, err := value.calculateBytesAmount()
 
