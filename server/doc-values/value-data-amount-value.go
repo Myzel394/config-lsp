@@ -107,26 +107,6 @@ const (
 	DataAmountValueBase1000 DataAmountValueBase = 1000
 )
 
-// We store the raw value and indexes so that we can later parse them
-// Why don't we parse the value directly?
-// -> Because we want to avoid parsing the value multiple times
-// -> And only a few values will need to be parsed to calculate the byte amount
-type cachedValue struct {
-	rawValue string
-
-	amountStart int
-	amountEnd   int
-
-	decimalStart int
-	decimalEnd   int
-
-	unitStart int
-	unitEnd   int
-
-	suffixStart int
-	suffixEnd   int
-}
-
 type DataAmountValue struct {
 	// The rune set that is allowed for this value.
 	// Valid options are:
