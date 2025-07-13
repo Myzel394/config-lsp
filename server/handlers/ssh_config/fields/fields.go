@@ -795,7 +795,7 @@ rsa-sha2-512,rsa-sha2-256
 		Value: docvalues.KeyValueAssignmentValue{
 			Separator:       " ",
 			ValueIsOptional: true,
-			Key: &docvalues.DataAmountValue{
+			Key: docvalues.DataAmountValue{
 				AllowedUnits: map[rune]struct{}{
 					'K': {},
 					'M': {},
