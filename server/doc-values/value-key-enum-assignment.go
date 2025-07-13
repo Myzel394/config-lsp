@@ -1,7 +1,9 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -9,8 +11,10 @@ import (
 )
 
 type KeyEnumAssignmentValue struct {
-	Values          map[EnumString]DeprecatedValue
-	Separator       string
+	Values    map[EnumString]DeprecatedValue
+	Separator string
+	// If true, the value is optional, so this won't return an error if the value is not present
+	// This is useful for cases where they key can stand on its own without a value
 	ValueIsOptional bool
 }
 
@@ -67,7 +71,7 @@ func (v KeyEnumAssignmentValue) DeprecatedCheckIsValid(value string) []*InvalidV
 		return nil
 	}
 
-	if len(parts) != 2 {
+	if len(parts) < 2 {
 		if v.ValueIsOptional {
 			return nil
 		}
@@ -81,12 +85,22 @@ func (v KeyEnumAssignmentValue) DeprecatedCheckIsValid(value string) []*InvalidV
 		}
 	}
 
+	if len(parts) > 2 {
+		return []*InvalidValue{
+			{
+				Err:   errors.New("Key-DeprecatedValue pair must be in the form of 'key<separator>value'"),
+				Start: 0,
+				End:   uint32(len(value)),
+			},
+		}
+	}
+
 	checkValue, found := v.getValue(parts[0])
 
 	if !found {
 		return []*InvalidValue{
 			{
-				Err: ValueNotInEnumError{
+				Err: ValueEnumValNotInEnumsError{
 					AvailableValues: utils.Map(utils.KeysOfMap(v.Values), func(key EnumString) string { return key.InsertText }),
 					ProvidedValue:   parts[0],
 				},
@@ -165,32 +179,43 @@ func (v KeyEnumAssignmentValue) getValueAtCursor(line string, cursor uint32) (st
 	return line, &selected, cursor
 }
 
-func (v KeyEnumAssignmentValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
-	if cursor == 0 {
+func (v KeyEnumAssignmentValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
+	// Possible scenarios:
+	// <empty> -> Fetch enum completions
+	// enu| -> Fetch enum completions
+	// enu|=value -> Fetch enum completions
+	// enum=| -> Fetch enum completions
+	// enum=val|ue -> Fetch value
+	// This boils down to checking for the separator
+	if value == "" {
 		return v.FetchEnumCompletions()
 	}
 
+	index := common.DeprecatedImprovedCursorToIndex(cursor, value, 0)
+
 	foundPosition, found := utils.FindPreviousCharacter(
-		line,
+		value,
 		v.Separator,
-		int(cursor),
+		int(index),
 	)
 
 	if found {
-		relativePosition := min(foundPosition, len(line)-1)
-		selectedKey := line[:uint32(relativePosition)]
-		line = line[uint32(relativePosition+len(v.Separator)):]
-		cursor -= uint32(relativePosition)
+		selectedEnum := value[:uint32(foundPosition)]
 
-		keyValue, found := v.getValue(selectedKey)
+		enumValue, found := v.getValue(selectedEnum)
 
 		if !found {
-			// Hmm... weird
-			return v.FetchEnumCompletions()
+			// The user typed in an enum that is not in the list
+			return nil
 		}
 
-		return (*keyValue).DeprecatedFetchCompletions(line, cursor)
+		start := foundPosition + len(v.Separator)
+		remainingValue := value[start:]
+		remainingCursor := cursor.ShiftHorizontal(-start)
+
+		return (*enumValue).FetchCompletions(remainingValue, remainingCursor)
 	} else {
+		// No separator found, so we can just return the enum completions
 		return v.FetchEnumCompletions()
 	}
 }

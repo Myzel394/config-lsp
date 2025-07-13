@@ -4,8 +4,8 @@ import (
 	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
 	"config-lsp/handlers/wireguard"
-	"config-lsp/handlers/wireguard/ast"
 	"config-lsp/handlers/wireguard/fields"
+	"config-lsp/parsers/ini"
 	"config-lsp/utils"
 	"maps"
 
@@ -14,8 +14,8 @@ import (
 
 func GetSectionBodyCompletions(
 	d *wireguard.WGDocument,
-	section ast.WGSection,
-	property *ast.WGProperty,
+	section ini.Section,
+	property *ini.Property,
 	params *protocol.CompletionParams,
 ) ([]protocol.CompletionItem, error) {
 	// These are the possible scenarios:
@@ -78,8 +78,8 @@ func GetSectionBodyCompletions(
 
 func getPropertyCompletions(
 	d *wireguard.WGDocument,
-	section ast.WGSection,
-	property *ast.WGProperty,
+	section ini.Section,
+	property *ini.Property,
 	params *protocol.CompletionParams,
 ) ([]protocol.CompletionItem, error) {
 	// These are the possible scenarios:
@@ -111,11 +111,11 @@ func getPropertyCompletions(
 	}
 
 	// Otherwise, suggest value completions
-	return getValueCompletions(section, *property, position), nil
+	return getValueCompletions(section, property, position), nil
 }
 
 func getKeyCompletions(
-	section ast.WGSection,
+	section ini.Section,
 	onlySeparator bool,
 	currentLine uint32,
 ) []protocol.CompletionItem {
@@ -134,13 +134,13 @@ func getKeyCompletions(
 	// Remove existing, non-duplicate options
 	it := section.Properties.Iterator()
 	for it.Next() {
-		property := it.Value().(*ast.WGProperty)
-		normalizedName := fields.CreateNormalizedName(property.Key.Name)
+		iniProperty := it.Value().(*ini.Property)
+		normalizedName := fields.CreateNormalizedName(iniProperty.Key.Name)
 		if _, found := allowedDuplicatedFields[normalizedName]; found {
 			continue
 		}
 
-		if property.Key.Start.Line == currentLine {
+		if iniProperty.Key.Start.Line == currentLine {
 			// The user is currently typing the key, thus we should suggest it
 			continue
 		}
@@ -176,9 +176,9 @@ func getKeyCompletions(
 }
 
 func getValueCompletions(
-	section ast.WGSection,
-	property ast.WGProperty,
-	cursorPosition common.CursorPosition,
+	section ini.Section,
+	property *ini.Property,
+	cursor common.CursorPosition,
 ) []protocol.CompletionItem {
 	// TODO: Normalize section header name
 	normalizedHeaderName := fields.CreateNormalizedName(section.Header.Name)
@@ -195,15 +195,11 @@ func getValueCompletions(
 	}
 
 	if property.Value == nil {
-		return option.DeprecatedFetchCompletions("", 0)
+		return option.FetchCompletions("", 0)
 	} else {
-		return option.DeprecatedFetchCompletions(
+		return option.FetchCompletions(
 			property.Value.Value,
-			common.DeprecatedImprovedCursorToIndex(
-				cursorPosition,
-				property.Value.Value,
-				property.Value.Start.Character,
-			),
+			cursor.ShiftHorizontal(-int(property.Value.Start.Character)),
 		)
 	}
 }

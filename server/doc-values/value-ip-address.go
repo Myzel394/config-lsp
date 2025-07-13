@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
 	"fmt"
 	net "net/netip"
@@ -151,7 +152,7 @@ func (v IPAddressValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	}
 }
 
-func (v IPAddressValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v IPAddressValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	if v.AllowedIPs != nil && len(*v.AllowedIPs) != 0 {
 		kind := protocol.CompletionItemKindValue
 
@@ -164,9 +165,9 @@ func (v IPAddressValue) DeprecatedFetchCompletions(line string, cursor uint32) [
 	}
 
 	if v.AllowRange {
-		slashIndex := strings.LastIndex(line, "/")
+		slashIndex := strings.LastIndex(value, "/")
 
-		if slashIndex > -1 && cursor >= uint32(slashIndex) {
+		if slashIndex > -1 && cursor.IsAfterIndexPosition(common.IndexPosition(slashIndex)) {
 			completions := make([]protocol.CompletionItem, 33)
 
 			for i := 0; i < len(completions); i++ {

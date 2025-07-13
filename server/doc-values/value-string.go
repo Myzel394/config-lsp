@@ -1,6 +1,8 @@
 package docvalues
 
 import (
+	"config-lsp/common"
+
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
@@ -45,7 +47,7 @@ func (v StringValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	return nil
 }
 
-func (v StringValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v StringValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	return []protocol.CompletionItem{}
 }
 

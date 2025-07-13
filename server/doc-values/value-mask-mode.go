@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"fmt"
 	"regexp"
 
@@ -41,7 +42,7 @@ func (v MaskModeValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	return []*InvalidValue{}
 }
 
-func (v MaskModeValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v MaskModeValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	kind := protocol.CompletionItemKindValue
 
 	perm0644 := "0644"

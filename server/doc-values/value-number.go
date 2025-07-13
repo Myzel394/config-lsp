@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"fmt"
 	"strconv"
 
@@ -73,7 +74,8 @@ func (v NumberValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 
 	return nil
 }
-func (v NumberValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+
+func (v NumberValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	return []protocol.CompletionItem{}
 }
 

@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
 	"fmt"
 	"strings"
@@ -8,12 +9,12 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-type ValueNotInEnumError struct {
+type ValueEnumValNotInEnumsError struct {
 	AvailableValues []string
 	ProvidedValue   string
 }
 
-func (e ValueNotInEnumError) Error() string {
+func (e ValueEnumValNotInEnumsError) Error() string {
 	if len(e.AvailableValues) <= 6 {
 		return fmt.Sprintf("This value is not valid. Select one from: %s", strings.Join(e.AvailableValues, ","))
 	} else {
@@ -92,7 +93,7 @@ func (v EnumValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 
 	return []*InvalidValue{
 		{
-			Err: ValueNotInEnumError{
+			Err: ValueEnumValNotInEnumsError{
 				ProvidedValue:   value,
 				AvailableValues: utils.Map(v.Values, func(value EnumString) string { return value.InsertText }),
 			},
@@ -101,7 +102,7 @@ func (v EnumValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 		},
 	}
 }
-func (v EnumValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v EnumValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	completions := make([]protocol.CompletionItem, len(v.Values))
 
 	for index, value := range v.Values {
@@ -118,6 +119,7 @@ func (v EnumValue) DeprecatedFetchCompletions(line string, cursor uint32) []prot
 
 	return completions
 }
+
 func (v EnumValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	for _, value := range v.Values {
 		if value.InsertText == line {

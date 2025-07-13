@@ -56,8 +56,11 @@ func GetHoverInfoForOption(
 	}
 
 	if option.OptionValue != nil && option.OptionValue.ContainsPosition(index) {
-		line := option.OptionValue.Value.Raw
-		contents := docValue.DeprecatedFetchHoverInfo(
+		line := option.OptionValue.Value.Value
+		// `DocumentationValue` only shows the documentation for `DeprecatedFetchHoverInfo`,
+		// since the cursor here is now at the value, we use the `Value`'s method instead to
+		// get the proper info.
+		contents := docValue.Value.DeprecatedFetchHoverInfo(
 			line,
 			uint32(option.OptionValue.Start.GetRelativeIndexPosition(index)),
 		)

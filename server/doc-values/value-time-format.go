@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
 	"fmt"
 	"regexp"
@@ -56,10 +57,10 @@ func calculateInSeconds(value int, unit string) int {
 	}
 }
 
-func (v TimeFormatValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v TimeFormatValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	completions := make([]protocol.CompletionItem, 0)
 
-	if line != "" && !timeFormatCompletionsPattern.MatchString(line) {
+	if value != "" && !timeFormatCompletionsPattern.MatchString(value) {
 		completions = append(
 			completions,
 			utils.Map(
@@ -76,18 +77,18 @@ func (v TimeFormatValue) DeprecatedFetchCompletions(line string, cursor uint32) 
 					}[unit]
 
 					var detail string
-					value, err := strconv.Atoi(line)
+					numberValue, err := strconv.Atoi(value)
 
 					if err == nil {
 						if unit == "s" {
-							detail = fmt.Sprintf("%d seconds", value)
+							detail = fmt.Sprintf("%d seconds", numberValue)
 						} else {
-							detail = fmt.Sprintf("%d %s (%d seconds)", value, unitName, calculateInSeconds(value, unit))
+							detail = fmt.Sprintf("%d %s (%d seconds)", numberValue, unitName, calculateInSeconds(numberValue, unit))
 						}
 					}
 
 					return protocol.CompletionItem{
-						Label:  line + unit,
+						Label:  value + unit,
 						Kind:   &kind,
 						Detail: &detail,
 					}
@@ -96,10 +97,10 @@ func (v TimeFormatValue) DeprecatedFetchCompletions(line string, cursor uint32) 
 		)
 	}
 
-	if line == "" || isJustDigitsPattern.MatchString(line) {
+	if value == "" || isJustDigitsPattern.MatchString(value) {
 		completions = append(
 			completions,
-			GenerateBase10Completions(line)...,
+			GenerateBase10Completions(value)...,
 		)
 	}
 

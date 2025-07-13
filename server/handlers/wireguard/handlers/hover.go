@@ -4,8 +4,8 @@ import (
 	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
 	"config-lsp/handlers/wireguard"
-	"config-lsp/handlers/wireguard/ast"
 	"config-lsp/handlers/wireguard/fields"
+	"config-lsp/parsers/ini"
 	"fmt"
 	"strings"
 
@@ -14,8 +14,8 @@ import (
 
 func GetPropertyHoverInfo(
 	d *wireguard.WGDocument,
-	section ast.WGSection,
-	property ast.WGProperty,
+	section ini.Section,
+	property ini.Property,
 	index common.IndexPosition,
 ) (*protocol.Hover, error) {
 	availableOptions, found := fields.OptionsHeaderMap[fields.CreateNormalizedName(section.Header.Name)]
@@ -53,7 +53,7 @@ func GetPropertyHoverInfo(
 
 func GetSectionHoverInfo(
 	d *wireguard.WGDocument,
-	section ast.WGSection,
+	section ini.Section,
 ) (*protocol.Hover, error) {
 	var docValue *docvalues.EnumString = nil
 
