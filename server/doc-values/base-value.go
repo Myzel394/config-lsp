@@ -1,15 +1,18 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
+
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 type DeprecatedValue interface {
 	GetTypeDescription() []string
 	DeprecatedCheckIsValid(value string) []*InvalidValue
-	DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem
 	DeprecatedFetchHoverInfo(line string, cursor uint32) []string
+
+	FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem
 }
 
 type InvalidValue struct {

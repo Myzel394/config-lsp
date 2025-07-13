@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
 	"fmt"
 	"strings"
@@ -30,23 +31,6 @@ type KeyValueAssignmentValue struct {
 	Separator       string
 }
 
-func (v KeyValueAssignmentValue) GetTypeDescription() []string {
-	keyDescription := v.Key.GetTypeDescription()
-	valueDescription := v.Value.GetTypeDescription()
-
-	if len(keyDescription) == 1 && len(valueDescription) == 1 {
-		return []string{
-			fmt.Sprintf("Key-DeprecatedValue pair in form of '<%s>%s<%s>'", keyDescription[0], v.Separator, valueDescription[0]),
-		}
-	} else {
-		return []string{
-			fmt.Sprintf("Key-DeprecatedValue pair in form of 'key%svalue'", v.Separator),
-			fmt.Sprintf("#### Key\n%s", strings.Join(v.Key.GetTypeDescription(), "\n")),
-			fmt.Sprintf("#### DeprecatedValue:\n%s", strings.Join(v.Value.GetTypeDescription(), "\n")),
-		}
-	}
-}
-
 func (v KeyValueAssignmentValue) getValue(selectedKey string) DeprecatedValue {
 	switch v.Value.(type) {
 	case CustomValue:
@@ -61,6 +45,63 @@ func (v KeyValueAssignmentValue) getValue(selectedKey string) DeprecatedValue {
 	default:
 		{
 			return v.Value
+		}
+	}
+}
+
+func (v KeyValueAssignmentValue) getValueAtCursor(line string, index uint32) (string, *selectedValue, uint32) {
+	foundPosition, found := utils.FindPreviousCharacter(
+		line,
+		v.Separator,
+		int(index),
+	)
+
+	// Cursor is at value
+	if found {
+		// Edge case, cursor is at separator
+		if index == uint32(foundPosition) {
+			return "", nil, 0
+		}
+
+		value := line[uint32(foundPosition)+1:]
+		selected := valueSelected
+
+		return value, &selected, index - uint32(foundPosition+1)
+	}
+
+	// Cursor is at key
+	// Let's find the next separator to extract the key
+	relativePosition, found := utils.FindNextCharacter(line, v.Separator, int(index))
+
+	if found {
+		// Key found
+		key := line[:uint32(relativePosition)]
+		selected := keySelected
+
+		return key, &selected, index
+	}
+
+	// No separator found, this is just a key
+
+	selected := keySelected
+	return line, &selected, index
+}
+
+func (v KeyValueAssignmentValue) GetTypeDescription() []string {
+	keyDescription := v.Key.GetTypeDescription()
+	valueDescription := v.Value.GetTypeDescription()
+
+	if len(keyDescription) == 1 && len(valueDescription) == 1 {
+		return []string{
+			fmt.Sprintf("Key-Value pair in form of '<%s>%s<%s>'", keyDescription[0], v.Separator, valueDescription[0]),
+		}
+	} else {
+		return []string{
+			fmt.Sprintf("Key-Value pair in form of '<key>%s<value>'", v.Separator),
+			"",
+			fmt.Sprintf("#### Key\n%s", strings.Join(v.Key.GetTypeDescription(), "\n")),
+			"",
+			fmt.Sprintf("#### Value\n%s", strings.Join(v.Value.GetTypeDescription(), "\n")),
 		}
 	}
 }
@@ -103,49 +144,34 @@ func (v KeyValueAssignmentValue) DeprecatedCheckIsValid(value string) []*Invalid
 	return nil
 }
 
-func (v KeyValueAssignmentValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
-	if cursor == 0 || line == "" {
-		return v.Key.DeprecatedFetchCompletions(line, cursor)
+func (v KeyValueAssignmentValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
+	if value == "" {
+		return v.Key.FetchCompletions(value, 0)
 	}
 
+	index := common.DeprecatedImprovedCursorToIndex(
+		cursor,
+		value,
+		0,
+	)
+
 	foundPosition, found := utils.FindPreviousCharacter(
-		line,
+		value,
 		v.Separator,
-		int(cursor),
+		int(index),
 	)
 
 	if found {
-		relativePosition := max(1, foundPosition) - 1
-		selectedKey := line[:uint32(relativePosition)]
-		line = line[uint32(relativePosition+len(v.Separator)):]
-		cursor -= uint32(relativePosition)
+		selectedKey := value[:uint32(foundPosition)]
 
-		return v.getValue(selectedKey).DeprecatedFetchCompletions(line, cursor)
+		start := foundPosition + len(v.Separator)
+		remainingValue := value[start:]
+		remainingCursor := cursor.ShiftHorizontal(-start)
+
+		return v.getValue(selectedKey).FetchCompletions(remainingValue, remainingCursor)
 	} else {
-		return v.Key.DeprecatedFetchCompletions(line, cursor)
+		return v.Key.FetchCompletions(value, cursor)
 	}
-}
-
-func (v KeyValueAssignmentValue) getValueAtCursor(line string, cursor uint32) (string, *selectedValue, uint32) {
-	relativePosition, found := utils.FindPreviousCharacter(line, v.Separator, int(cursor))
-
-	if found {
-		// DeprecatedValue found
-		selected := valueSelected
-		return line[:uint32(relativePosition)], &selected, cursor - uint32(relativePosition)
-	}
-
-	selected := keySelected
-
-	// Key, let's check for the separator
-	relativePosition, found = utils.FindNextCharacter(line, v.Separator, int(cursor))
-
-	if found {
-		return line[:uint32(relativePosition)], &selected, cursor
-	}
-
-	// No separator, so we can just return the whole line
-	return line, &selected, cursor
 }
 
 func (v KeyValueAssignmentValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {

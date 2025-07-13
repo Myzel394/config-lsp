@@ -12,6 +12,7 @@ const (
 	CodeActionGeneratePrivateKey   CodeActionName = "generatePrivateKey"
 	CodeActionGeneratePresharedKey CodeActionName = "generatePresharedKey"
 	CodeActionCreatePeer           CodeActionName = "createPeer"
+	CodeActionGeneratePostDown     CodeActionName = "generatePostDown"
 )
 
 type CodeAction interface {

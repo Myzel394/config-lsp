@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
 	"fmt"
 	"strings"
@@ -43,7 +44,7 @@ func (v SuffixWithMeaningValue) DeprecatedCheckIsValid(value string) []*InvalidV
 	return v.SubValue.DeprecatedCheckIsValid(value)
 }
 
-func (v SuffixWithMeaningValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v SuffixWithMeaningValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	textFormat := protocol.InsertTextFormatPlainText
 	kind := protocol.CompletionItemKindText
 
@@ -56,7 +57,7 @@ func (v SuffixWithMeaningValue) DeprecatedFetchCompletions(line string, cursor u
 		}
 	})
 
-	return append(suffixCompletions, v.SubValue.DeprecatedFetchCompletions(line, cursor)...)
+	return append(suffixCompletions, v.SubValue.FetchCompletions(value, cursor)...)
 }
 
 func (v SuffixWithMeaningValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {

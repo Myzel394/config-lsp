@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
 	"fmt"
 	"strings"
@@ -42,14 +43,14 @@ func (v PrefixWithMeaningValue) DeprecatedCheckIsValid(value string) []*InvalidV
 	return v.SubValue.DeprecatedCheckIsValid(value)
 }
 
-func (v PrefixWithMeaningValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v PrefixWithMeaningValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	textFormat := protocol.InsertTextFormatPlainText
 	kind := protocol.CompletionItemKindText
 
 	// Check if the line starts with a prefix
 	startsWithPrefix := false
 	for _, prefix := range v.Prefixes {
-		if strings.HasPrefix(line, prefix.Prefix) {
+		if strings.HasPrefix(value, prefix.Prefix) {
 			startsWithPrefix = true
 			break
 		}
@@ -67,7 +68,7 @@ func (v PrefixWithMeaningValue) DeprecatedFetchCompletions(line string, cursor u
 		})
 	}
 
-	return append(prefixCompletions, v.SubValue.DeprecatedFetchCompletions(line, cursor)...)
+	return append(prefixCompletions, v.SubValue.FetchCompletions(value, cursor)...)
 }
 
 func (v PrefixWithMeaningValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {

@@ -3,8 +3,8 @@ package handlers
 import (
 	"config-lsp/common"
 	"config-lsp/handlers/wireguard"
-	"config-lsp/handlers/wireguard/ast"
 	wgcommands "config-lsp/handlers/wireguard/commands"
+	"config-lsp/parsers/ini"
 	"fmt"
 	"net"
 
@@ -34,6 +34,7 @@ func (args CodeActionCreatePeerArgs) RunCommand(d *wireguard.WGDocument) (*proto
 	// IP Address
 	ipAddressLine, ipAddress := newSection.FindFirstPropertyByName("AllowedIPs")
 	_, address := interfaceSection.FindFirstPropertyByName("Address")
+
 	if ipAddress != nil && address != nil {
 		_, network, err := net.ParseCIDR(address.Value.Value)
 
@@ -45,25 +46,26 @@ func (args CodeActionCreatePeerArgs) RunCommand(d *wireguard.WGDocument) (*proto
 				Character: ipAddress.Value.Start.Character + uint32(len(newIPAddress)) + 1,
 			}
 
-			newSection.Properties.Put(
-				ipAddressLine,
-				&ast.WGProperty{
+			// Create the underlying ini.Property first
+			iniProperty := &ini.Property{
+				LocationRange: common.LocationRange{
+					Start: ipAddress.Start,
+					End:   valueEnd,
+				},
+				Key:       ipAddress.Key,
+				RawValue:  newIPAddress,
+				Separator: address.Separator,
+				Value: &ini.PropertyValue{
 					LocationRange: common.LocationRange{
-						Start: ipAddress.Start,
+						Start: ipAddress.Value.Start,
 						End:   valueEnd,
 					},
-					Key:       ipAddress.Key,
-					RawValue:  newIPAddress,
-					Separator: address.Separator,
-					Value: &ast.WGPropertyValue{
-						LocationRange: common.LocationRange{
-							Start: ipAddress.Value.Start,
-							End:   valueEnd,
-						},
-						Value: newIPAddress,
-					},
+					Value: newIPAddress,
 				},
-			)
+			}
+
+			// Then wrap it with a WGProperty
+			newSection.Properties.Put(ipAddressLine, iniProperty)
 		}
 	}
 
@@ -87,32 +89,32 @@ func (args CodeActionCreatePeerArgs) RunCommand(d *wireguard.WGDocument) (*proto
 			Line:      presharedKey.End.Line,
 			Character: presharedKey.Value.Start.Character + uint32(len(newKey)) + 1,
 		}
-		newSection.Properties.Put(
-			presharedKeyLine,
-			&ast.WGProperty{
+
+		// Create the underlying ini.Property first
+		iniProperty := &ini.Property{
+			LocationRange: common.LocationRange{
+				Start: presharedKey.Start,
+				End:   valueEnd,
+			},
+			Key:       presharedKey.Key,
+			RawValue:  newKey,
+			Separator: presharedKey.Separator,
+			Value: &ini.PropertyValue{
 				LocationRange: common.LocationRange{
-					Start: presharedKey.Start,
+					Start: presharedKey.Value.Start,
 					End:   valueEnd,
 				},
-				Key:       presharedKey.Key,
-				RawValue:  newKey,
-				Separator: presharedKey.Separator,
-				Value: &ast.WGPropertyValue{
-					LocationRange: common.LocationRange{
-						Start: presharedKey.Value.Start,
-						End:   valueEnd,
-					},
-					Value: newKey,
-				},
+				Value: newKey,
 			},
-		)
+		}
+
+		// Then add it to the section
+		newSection.Properties.Put(presharedKeyLine, iniProperty)
 	}
 
 	lastProperty := newSection.GetLastProperty()
-	println("last line")
-	println(lastProperty.End.Line)
-	println(fmt.Sprintf("~~~%s~~~", writeSection(*newSection)))
 	newText := writeSection(*newSection)
+
 	return &protocol.ApplyWorkspaceEditParams{
 		Label: &label,
 		Edit: protocol.WorkspaceEdit{
@@ -137,14 +139,14 @@ func (args CodeActionCreatePeerArgs) RunCommand(d *wireguard.WGDocument) (*proto
 	}, nil
 }
 
-func writeSection(section ast.WGSection) string {
+func writeSection(section ini.Section) string {
 	text := "\n\n"
 
 	text += fmt.Sprintf("[%s]\n", section.Header.Name)
 
 	it := section.Properties.Iterator()
 	for it.Next() {
-		property := it.Value().(*ast.WGProperty)
+		property := it.Value().(*ini.Property)
 		text += fmt.Sprintf("%s = %s\n", property.Key.Name, property.Value.Value)
 	}
 

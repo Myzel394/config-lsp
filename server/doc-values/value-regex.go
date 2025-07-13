@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"fmt"
 	"regexp"
 
@@ -37,7 +38,7 @@ func (v RegexValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	return []*InvalidValue{}
 }
 
-func (v RegexValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v RegexValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	return []protocol.CompletionItem{}
 }
 

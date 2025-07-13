@@ -1,4 +1,4 @@
-package ast
+package ini
 
 import (
 	"config-lsp/common"
@@ -11,28 +11,31 @@ import (
 	gods "github.com/emirpasic/gods/utils"
 )
 
-func NewWGConfig() *WGConfig {
-	config := &WGConfig{}
+// NewConfig creates a new empty INI configuration
+func NewConfig() *Config {
+	config := &Config{}
 	config.Clear()
 
 	return config
 }
 
-func (c *WGConfig) Clear() {
-	c.Sections = make([]*WGSection, 0, 2)
+// Clear resets the configuration
+func (c *Config) Clear() {
+	c.Sections = make([]*Section, 0, 2)
 	c.CommentLines = make(map[uint32]struct{})
 }
 
 var commentPattern = regexp.MustCompile(`^\s*([;#])`)
 var emptyPattern = regexp.MustCompile(`^\s*$`)
 var headerPattern = regexp.MustCompile(`^\s*\[(\w+)?]?`)
-var linePattern = regexp.MustCompile(`^\s*(?P<key>.+?)\s*(?P<separator>=)\s*(?P<value>\S.*?)?\s*(?:[;#].*)?\s*$`)
+var linePattern = regexp.MustCompile(`^\s*(?P<key>.+?)\s*(?P<separator>=)\s*(?P<value>\S.*?)?\s*(?: [;#].*)?\s*$`)
 
-func (c *WGConfig) Parse(input string) []common.LSPError {
+// Parse parses an INI string and returns any errors encountered
+func (c *Config) Parse(input string) []common.LSPError {
 	errors := make([]common.LSPError, 0)
 	lines := utils.SplitIntoLines(input)
 
-	var currentSection *WGSection
+	var currentSection *Section
 
 	for rawLineNumber, line := range lines {
 		lineNumber := uint32(rawLineNumber)
@@ -59,7 +62,7 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 		if headerPattern.MatchString(line) {
 			name := headerPattern.FindStringSubmatch(line)[1]
 
-			currentSection = &WGSection{
+			currentSection = &Section{
 				LocationRange: common.LocationRange{
 					Start: common.Location{
 						Line:      lineNumber,
@@ -70,7 +73,7 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 						Character: uint32(len(line)) + 1,
 					},
 				},
-				Header: WGHeader{
+				Header: Header{
 					LocationRange: common.LocationRange{
 						Start: common.Location{
 							Line:      lineNumber,
@@ -122,8 +125,8 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 			// Incomplete property
 			indexes := utils.GetTrimIndex(line)
 
-			newProperty := &WGProperty{
-				Key: WGPropertyKey{
+			newProperty := &Property{
+				Key: PropertyKey{
 					LocationRange: common.LocationRange{
 						Start: common.Location{
 							Line:      lineNumber,
@@ -166,7 +169,7 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 			// Construct key
 			keyStart := uint32(indexes[2])
 			keyEnd := uint32(indexes[3])
-			key := WGPropertyKey{
+			key := PropertyKey{
 				LocationRange: common.LocationRange{
 					Start: common.Location{
 						Line:      lineNumber,
@@ -183,7 +186,7 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 			// Construct separator
 			separatorStart := uint32(indexes[4])
 			separatorEnd := uint32(indexes[5])
-			separator := WGPropertySeparator{
+			separator := PropertySeparator{
 				LocationRange: common.LocationRange{
 					Start: common.Location{
 						Line:      lineNumber,
@@ -197,7 +200,7 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 			}
 
 			// Construct value
-			var value *WGPropertyValue
+			var value *PropertyValue
 			propertyEnd := uint32(len(line))
 
 			if indexes[6] != -1 && indexes[7] != -1 {
@@ -206,7 +209,7 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 				valueEnd := uint32(indexes[7])
 				propertyEnd = valueEnd
 
-				value = &WGPropertyValue{
+				value = &PropertyValue{
 					LocationRange: common.LocationRange{
 						Start: common.Location{
 							Line:      lineNumber,
@@ -222,7 +225,7 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 			}
 
 			// And lastly, add the property
-			newProperty := &WGProperty{
+			newProperty := &Property{
 				LocationRange: common.LocationRange{
 					Start: common.Location{
 						Line:      lineNumber,

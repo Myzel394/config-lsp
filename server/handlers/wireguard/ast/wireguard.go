@@ -2,45 +2,26 @@ package ast
 
 import (
 	"config-lsp/common"
-	"github.com/emirpasic/gods/maps/treemap"
+	"config-lsp/parsers/ini"
 )
 
-type WGPropertyKey struct {
-	common.LocationRange
-	Name string
-}
-
-type WGPropertyValue struct {
-	common.LocationRange
-	Value string
-}
-
-type WGPropertySeparator struct {
-	common.LocationRange
-}
-
-type WGProperty struct {
-	common.LocationRange
-	RawValue  string
-	Key       WGPropertyKey
-	Separator *WGPropertySeparator
-	Value     *WGPropertyValue
-}
-
-type WGHeader struct {
-	common.LocationRange
-	Name string
-}
-
-type WGSection struct {
-	common.LocationRange
-	Header WGHeader
-	// [uint32]*WGProperty: line number -> *WGProperty
-	Properties *treemap.Map
-}
-
 type WGConfig struct {
-	Sections []*WGSection
-	// Used to identify where not to show diagnostics
-	CommentLines map[uint32]struct{}
+	*ini.Config
+}
+
+// NewWGConfig creates a new WireGuard configuration
+func NewWGConfig() *WGConfig {
+	return &WGConfig{
+		Config: ini.NewConfig(),
+	}
+}
+
+// Reset the configuration
+func (c *WGConfig) Clear() {
+	c.Config.Clear()
+}
+
+// Parse a WireGuard configuration string
+func (c *WGConfig) Parse(input string) []common.LSPError {
+	return c.Config.Parse(input)
 }
