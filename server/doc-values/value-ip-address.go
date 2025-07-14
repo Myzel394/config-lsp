@@ -50,6 +50,7 @@ type IPAddressValue struct {
 	AllowIPv4     bool
 	AllowIPv6     bool
 	AllowRange    bool
+	AllowPort     bool
 	AllowedIPs    *[]net.Prefix
 	DisallowedIPs *[]net.Prefix
 }
@@ -67,7 +68,49 @@ func (v IPAddressValue) GetTypeDescription() []string {
 	return []string{"An IP Address"}
 }
 
+func extractIPAndPort(value string) (string, uint16, error) {
+	parts := strings.Split(value, ":")
+
+	if len(parts) == 2 {
+		ip := parts[0]
+		port, err := strconv.ParseUint(parts[1], 10, 16)
+
+		if err != nil {
+			return "", 0, fmt.Errorf("invalid port: %w", err)
+		}
+
+		if port < 1 || port > 65535 {
+			return "", 0, fmt.Errorf("port out of range: %d", port)
+		}
+
+		return ip, uint16(port), nil
+	}
+
+	return value, 0, nil
+}
+
 func (v IPAddressValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
+	// var port *uint16
+
+	if v.AllowPort {
+		extractedIP, extractedPort, err := extractIPAndPort(value)
+		_ = extractedPort
+
+		if err != nil {
+			return []*InvalidValue{{
+				Err:   InvalidIPAddress{},
+				Start: 0,
+				End:   uint32(len(value)),
+			}}
+		}
+
+		// if extractedPort > 0 {
+		// 	port = &extractedPort
+		// }
+
+		value = extractedIP
+	}
+
 	var ip net.Prefix
 
 	if v.AllowRange {
@@ -148,8 +191,7 @@ func (v IPAddressValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 		Err:   InvalidIPAddress{},
 		Start: 0,
 		End:   uint32(len(value)),
-	},
-	}
+	}}
 }
 
 func (v IPAddressValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
