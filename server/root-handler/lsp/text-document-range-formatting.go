@@ -38,6 +38,8 @@ func TextDocumentRangeFormattingFunc(
 		return nil, nil
 	case shared.LanguageAliases:
 		return nil, nil
+	case shared.LanguageBitcoinConf:
+		return nil, nil
 	}
 
 	panic("root-handler/TextDocumentRangeFormattingFunc: unexpected language" + *language)

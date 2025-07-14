@@ -40,6 +40,8 @@ func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionPa
 		return wireguard.TextDocumentCodeAction(context, params)
 	case shared.LanguageAliases:
 		return aliases.TextDocumentCodeAction(context, params)
+	case shared.LanguageBitcoinConf:
+		return nil, nil
 	}
 
 	panic("root-handler/TextDocumentCompletion: unexpected language" + *language)

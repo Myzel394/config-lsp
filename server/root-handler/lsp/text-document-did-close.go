@@ -2,6 +2,7 @@ package lsp
 
 import (
 	aliases "config-lsp/handlers/aliases/lsp"
+	bitcoinconf "config-lsp/handlers/bitcoin_conf/lsp"
 	fstab "config-lsp/handlers/fstab/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
@@ -36,6 +37,8 @@ func TextDocumentDidClose(context *glsp.Context, params *protocol.DidCloseTextDo
 		return hosts.TextDocumentDidClose(context, params)
 	case shared.LanguageAliases:
 		return aliases.TextDocumentDidClose(context, params)
+	case shared.LanguageBitcoinConf:
+		return bitcoinconf.TextDocumentDidClose(context, params)
 	default:
 	}
 

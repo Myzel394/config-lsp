@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	aliases "config-lsp/handlers/aliases/lsp"
+	bitcoinconf "config-lsp/handlers/bitcoin_conf/lsp"
 	fstab "config-lsp/handlers/fstab/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
@@ -50,6 +51,8 @@ func TextDocumentDidOpen(context *glsp.Context, params *protocol.DidOpenTextDocu
 		return hosts.TextDocumentDidOpen(context, params)
 	case shared.LanguageAliases:
 		return aliases.TextDocumentDidOpen(context, params)
+	case shared.LanguageBitcoinConf:
+		return bitcoinconf.TextDocumentDidOpen(context, params)
 	}
 
 	panic(fmt.Sprintf("unexpected roothandler.SupportedLanguage: %#v", language))
