@@ -76,3 +76,27 @@ chain=test
 		t.Fatalf("Expected diagnostics for property, got none")
 	}
 }
+
+func AnalyzerChainProperty(t *testing.T) {
+	input := utils.Dedent(`
+chain=main
+signet=1
+`)
+
+	c := ast.NewBTCConfig()
+	errors := c.Parse(input)
+
+	if len(errors) > 0 {
+		t.Fatalf("Parse error: %v", errors)
+	}
+
+	document := &bitcoinconf.BTCDocument{
+		Config: c,
+	}
+
+	errs := Analyze(document)
+
+	if !(len(errs) > 0) {
+		t.Fatalf("Expected diagnostics for property, got none")
+	}
+}

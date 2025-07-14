@@ -42,5 +42,8 @@ func Analyze(
 		return ctx.diagnostics
 	}
 
+	// Analyze single properties
+	analyzeChainProperties(ctx)
+
 	return ctx.diagnostics
 }
