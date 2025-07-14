@@ -8,6 +8,15 @@ var ChainOptions = map[string]struct{}{
 	"signet":   {},
 }
 
+// Available sections to configure chain-specific options
+var AvailableSections map[string]string = map[string]string{
+	"main":     "Options for mainnet",
+	"test":     "Options for testnet3",
+	"testnet4": "Options for testnet4",
+	"signet":   "Options for signet",
+	"regtest":  "Options for regtest",
+}
+
 var AllowedDuplicateOptions = map[string]struct{}{
 	"addnode":        {},
 	"whitebind":      {},

@@ -6,14 +6,6 @@ import (
 	"regexp"
 )
 
-var AvailableSections map[string]string = map[string]string{
-	"main":     "Options for mainnet",
-	"test":     "Options for testnet3",
-	"testnet4": "Options for testnet4",
-	"signet":   "Options for signet",
-	"regtest":  "Options for regtest",
-}
-
 var booleanValue = docvalues.EnumValue{
 	Values: []docvalues.EnumString{
 		docvalues.CreateEnumStringWithDoc("0", "false / off / disabled"),
