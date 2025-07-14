@@ -11,6 +11,11 @@ type BTCConfig struct {
 
 // NewBTCConfig creates a new Bitcoin configuration
 func NewBTCConfig() *BTCConfig {
+	config := ini.NewConfig()
+	config.XParseConfig = ini.INIParseConfig{
+		AllowRootProperties: true,
+	}
+
 	return &BTCConfig{
 		Config: ini.NewConfig(),
 	}
