@@ -62,6 +62,18 @@ func TestIPv6DisabledExample(t *testing.T) {
 	}
 }
 
+func TestIPv6BracketNotationPortValidExample(t *testing.T) {
+	value := IPAddressValue{
+		AllowIPv6: true,
+		AllowPort: AllowedStatusAllowed,
+	}
+	errs := value.DeprecatedCheckIsValid("[fe80::890a]:80")
+
+	if len(errs) != 0 {
+		t.Errorf("Expected no errors, got: %v", errs)
+	}
+}
+
 func TestIPWithIPRangeValidExample(t *testing.T) {
 	value := IPAddressValue{
 		AllowIPv4: true,
@@ -124,7 +136,7 @@ func TestIPWithDisallowedIPRangeInvalidExample(t *testing.T) {
 func TestIPWithPort(t *testing.T) {
 	value := IPAddressValue{
 		AllowIPv4: true,
-		AllowPort: true,
+		AllowPort: AllowedStatusAllowed,
 	}
 
 	errs := value.DeprecatedCheckIsValid("1.1.1.1:80")
@@ -134,10 +146,36 @@ func TestIPWithPort(t *testing.T) {
 	}
 }
 
+func TestIPWithRequiredPort(t *testing.T) {
+	value := IPAddressValue{
+		AllowIPv4: true,
+		AllowPort: AllowedStatusRequired,
+	}
+
+	errs := value.DeprecatedCheckIsValid("1.1.1.1:80")
+
+	if len(errs) != 0 {
+		t.Errorf("Expected no errors, got: %v", errs)
+	}
+}
+
+func TestIPWithRequiredButNoPort(t *testing.T) {
+	value := IPAddressValue{
+		AllowIPv4: true,
+		AllowPort: AllowedStatusRequired,
+	}
+
+	errs := value.DeprecatedCheckIsValid("1.1.1.1")
+
+	if len(errs) == 0 {
+		t.Errorf("Expected errors, got none")
+	}
+}
+
 func TestIPWithPortInvalid(t *testing.T) {
 	value := IPAddressValue{
 		AllowIPv4: true,
-		AllowPort: true,
+		AllowPort: AllowedStatusRequired,
 	}
 
 	errs := value.DeprecatedCheckIsValid("1.1.1.1:999999")
@@ -150,7 +188,7 @@ func TestIPWithPortInvalid(t *testing.T) {
 func TestIPWithPortButNoPort(t *testing.T) {
 	value := IPAddressValue{
 		AllowIPv4: true,
-		AllowPort: true,
+		AllowPort: AllowedStatusAllowed,
 	}
 
 	errs := value.DeprecatedCheckIsValid("1.1.1.1")
@@ -163,7 +201,7 @@ func TestIPWithPortButNoPort(t *testing.T) {
 func TestIPRangeValidExample(t *testing.T) {
 	value := IPAddressValue{
 		AllowIPv4:  true,
-		AllowRange: true,
+		AllowRange: AllowedStatusAllowed,
 	}
 
 	errs := value.DeprecatedCheckIsValid("10.0.0.1/24")
@@ -176,7 +214,7 @@ func TestIPRangeValidExample(t *testing.T) {
 func TestIPRangeInvalidExample(t *testing.T) {
 	value := IPAddressValue{
 		AllowIPv4:  true,
-		AllowRange: true,
+		AllowRange: AllowedStatusRequired,
 	}
 
 	errs := value.DeprecatedCheckIsValid("10.0.0.1/33")
@@ -189,12 +227,37 @@ func TestIPRangeInvalidExample(t *testing.T) {
 func TestIPNoRangeValidExample(t *testing.T) {
 	value := IPAddressValue{
 		AllowIPv4:  true,
-		AllowRange: false,
+		AllowRange: AllowedStatusDisallowed,
 	}
 
 	errs := value.DeprecatedCheckIsValid("10.0.0.1/24")
 
 	if len(errs) == 0 {
 		t.Errorf("Expected errors, got none")
+	}
+}
+
+func TestIPv6RangeValidExample(t *testing.T) {
+	value := IPAddressValue{
+		AllowIPv6:  true,
+		AllowRange: AllowedStatusAllowed,
+	}
+
+	errs := value.DeprecatedCheckIsValid("fe80::890a/64")
+
+	if len(errs) != 0 {
+		t.Errorf("Expected no errors, got: %v", errs)
+	}
+}
+
+func TestIPNoPortAllowedButSpecifiedInvalidExample(t *testing.T) {
+	value := IPAddressValue{
+		AllowIPv4: true,
+	}
+
+	errs := value.DeprecatedCheckIsValid("10.0.0.1:80")
+
+	if len(errs) == 0 {
+		t.Error("Expected errors, got none")
 	}
 }
