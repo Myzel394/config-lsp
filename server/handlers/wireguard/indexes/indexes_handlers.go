@@ -13,7 +13,6 @@ var upPropertyNames = map[fields.NormalizedName]struct{}{
 }
 
 func CreateIndexes(config *ast.WGConfig) (*WGIndexes, []common.LSPError) {
-	errs := make([]common.LSPError, 0)
 	indexes := &WGIndexes{
 		SectionsByName:    make(map[string][]*ini.Section),
 		UnknownProperties: make(map[uint32]WGIndexPropertyInfo),
@@ -44,5 +43,5 @@ func CreateIndexes(config *ast.WGConfig) (*WGIndexes, []common.LSPError) {
 		}
 	}
 
-	return indexes, errs
+	return indexes, nil
 }

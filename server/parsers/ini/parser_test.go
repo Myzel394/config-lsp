@@ -71,3 +71,89 @@ PublicKey = 1234567890
 		t.Errorf("Parse: Expected PostUp property to be correct; %v; %v", postUpProperty, postUpProperty.Value.Value)
 	}
 }
+
+func TestRootPropertiesWorks(t *testing.T) {
+	sample := utils.Dedent(`
+ImAtRoot = 123
+
+[Interface]
+PrivateKey = aaa
+`)
+
+	config := NewConfig()
+	config.XParseConfig = INIParseConfig{
+		AllowRootProperties: true,
+	}
+	errors := config.Parse(sample)
+
+	if len(errors) > 0 {
+		t.Fatalf("Parse: Expected no errors, but got %v", errors)
+	}
+
+	if len(config.Sections) != 2 {
+		t.Fatalf("Parse: Expected 2 sections, but got %d", len(config.Sections))
+	}
+
+	if config.Sections[0].Header != nil {
+		t.Errorf("Parse: Expected first section to be a root section, but it has a header: %v", config.Sections[0].Header)
+	}
+
+	if config.Sections[0].Properties.Size() != 1 {
+		t.Errorf("Parse: Expected first section to have 1 property, but it has %d", config.Sections[0].Properties.Size())
+	}
+
+	firstProperty, _ := config.Sections[0].Properties.Get(uint32(0))
+	if firstProperty.(*Property).Key.Name != "ImAtRoot" || firstProperty.(*Property).Value.Value != "123" {
+		t.Errorf("Parse: Expected root property to be 'ImAtRoot = 123', but got '%s = %s'", firstProperty.(*Property).Key.Name, firstProperty.(*Property).Value.Value)
+	}
+}
+
+func TestRootPropertiesNotALlowed(t *testing.T) {
+	sample := utils.Dedent(`
+ImAtRoot = 123
+
+[Interface]
+PrivateKey = aaa
+`)
+
+	config := NewConfig()
+	config.XParseConfig = INIParseConfig{
+		AllowRootProperties: false,
+	}
+	errors := config.Parse(sample)
+
+	if len(errors) == 0 {
+		t.Fatalf("Parse: Expected errors, but got none")
+	}
+
+	if len(config.Sections) != 1 {
+		t.Fatalf("Parse: Expected 1 section, but got %d", len(config.Sections))
+	}
+	if config.Sections[0].Header == nil {
+		t.Fatalf("Parse: Expected first section to have a header, but it is nil")
+	}
+}
+
+func TestOnlyRootPropertiesWorks(t *testing.T) {
+	sample := utils.Dedent(`
+ImAtRoot = 123
+`)
+
+	config := NewConfig()
+	config.XParseConfig = INIParseConfig{
+		AllowRootProperties: true,
+	}
+	errors := config.Parse(sample)
+
+	if len(errors) > 0 {
+		t.Fatalf("Parse: Expected no errors, but got %v", errors)
+	}
+
+	if len(config.Sections) != 1 {
+		t.Fatalf("Parse: Expected 1 section, but got %d", len(config.Sections))
+	}
+
+	if config.Sections[0].Header != nil {
+		t.Errorf("Parse: Expected first section to be a root section, but it has a header: %v", config.Sections[0].Header)
+	}
+}

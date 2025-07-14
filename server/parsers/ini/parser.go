@@ -73,7 +73,7 @@ func (c *Config) Parse(input string) []common.LSPError {
 						Character: uint32(len(line)) + 1,
 					},
 				},
-				Header: Header{
+				Header: &Header{
 					LocationRange: common.LocationRange{
 						Start: common.Location{
 							Line:      lineNumber,
@@ -94,35 +94,53 @@ func (c *Config) Parse(input string) []common.LSPError {
 			continue
 		}
 
-		// Else property
-
-		// Set end of last section
-		if currentSection != nil {
-			currentSection.End.Line = lineNumber
-			currentSection.End.Character = uint32(len(line))
-		}
+		///// Else property
 
 		if currentSection == nil {
-			// Root properties are not allowed
-			errors = append(errors, common.LSPError{
-				Range: common.LocationRange{
-					Start: common.Location{
-						Line:      lineNumber,
-						Character: 0,
+			if c.XParseConfig.AllowRootProperties {
+				currentSection = &Section{
+					LocationRange: common.LocationRange{
+						Start: common.Location{
+							Line:      lineNumber,
+							Character: 0,
+						},
+						End: common.Location{
+							Line:      lineNumber,
+							Character: uint32(len(line)),
+						},
 					},
-					End: common.Location{
-						Line:      lineNumber,
-						Character: uint32(len(line)),
-					},
-				},
-				Err: fmt.Errorf("A header is missing before a property. This property has no header above it."),
-			})
+					Header:     nil, // No header for empty Sections
+					Properties: treemap.NewWith(gods.UInt32Comparator),
+				}
 
-			continue
+				c.Sections = append(c.Sections, currentSection)
+			} else {
+				// Root properties are not allowed
+				errors = append(errors, common.LSPError{
+					Range: common.LocationRange{
+						Start: common.Location{
+							Line:      lineNumber,
+							Character: 0,
+						},
+						End: common.Location{
+							Line:      lineNumber,
+							Character: uint32(len(line)),
+						},
+					},
+					Err: fmt.Errorf("A header is missing before a property. This property has no header above it."),
+				})
+
+				continue
+			}
 		}
+
+		// Set end of last section
+		currentSection.End.Line = lineNumber
+		currentSection.End.Character = uint32(len(line))
 
 		if !strings.Contains(line, "=") {
 			// Incomplete property
+
 			indexes := utils.GetTrimIndex(line)
 
 			newProperty := &Property{
