@@ -17,7 +17,7 @@ func NewBTCConfig() *BTCConfig {
 	}
 
 	return &BTCConfig{
-		Config: ini.NewConfig(),
+		Config: config,
 	}
 }
 

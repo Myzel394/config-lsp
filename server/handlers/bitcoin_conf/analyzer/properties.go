@@ -5,7 +5,6 @@ import (
 	docvalues "config-lsp/doc-values"
 	"config-lsp/handlers/bitcoin_conf/fields"
 	"config-lsp/handlers/bitcoin_conf/indexes"
-	"config-lsp/handlers/wireguard/diagnostics"
 	"config-lsp/parsers/ini"
 	"config-lsp/utils"
 	"fmt"
@@ -29,50 +28,51 @@ func analyzeProperties(ctx *analyzerContext) {
 				})
 			}
 
-			if property.Value == nil || property.Value.Value == "" {
+			name := property.Key.Name
+
+			if existingProperty, found := existingProperties[name]; found && !utils.KeyExists(fields.AllowedDuplicateOptions, name) {
+				ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+					Message:  fmt.Sprintf("Property '%s' has already been defined on line %d", property.Key.Name, existingProperty.Start.Line+1),
+					Severity: &common.SeverityError,
+					Range:    property.ToLSPRange(),
+				})
+
+				// Value missing
+			} else if property.Value == nil || property.Value.Value == "" {
 				ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 					Message:  "This property is missing a value",
 					Range:    property.ToLSPRange(),
 					Severity: &common.SeverityError,
 				})
-			} else {
-				name := property.Key.Name
 
-				if existingProperty, found := existingProperties[name]; found && !utils.KeyExists(fields.AllowedDuplicateOptions, name) {
+				// Check if value is valid
+			} else if option, found := fields.Options[name]; found {
+				existingProperties[name] = property
+
+				invalidValues := option.DeprecatedCheckIsValid(property.Value.Value)
+
+				for _, invalidValue := range invalidValues {
+					err := docvalues.LSPErrorFromInvalidValue(property.Start.Line, *invalidValue).ShiftCharacter(property.Value.Start.Character)
+
 					ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-						Message:  fmt.Sprintf("Property '%s' has already been defined on line %d", property.Key.Name, existingProperty.Start.Line+1),
+						Range:    err.Range.ToLSPRange(),
+						Message:  err.Err.Error(),
 						Severity: &common.SeverityError,
-						Range:    existingProperty.ToLSPRange(),
 					})
-					// Check if value is valid
-				} else if option, found := fields.Options[name]; found {
-					invalidValues := option.DeprecatedCheckIsValid(property.Value.Value)
-
-					for _, invalidValue := range invalidValues {
-						err := docvalues.LSPErrorFromInvalidValue(property.Start.Line, *invalidValue).ShiftCharacter(property.Value.Start.Character)
-
-						ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-							Range:    err.Range.ToLSPRange(),
-							Message:  err.Err.Error(),
-							Severity: &common.SeverityError,
-						})
-					}
-					// Unknown property
-				} else {
-					ctx.diagnostics = append(ctx.diagnostics,
-						diagnostics.GenerateUnknownOption(
-							property.ToLSPRange(),
-							property.Key.Name,
-						),
-					)
-
-					ctx.document.Indexes.UnknownProperties[property.Key.Start.Line] = indexes.BTCIndexPropertyInfo{
-						Section:  section,
-						Property: property,
-					}
 				}
 
-				existingProperties[name] = property
+				// Unknown property
+			} else {
+				ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+					Message:  fmt.Sprintf("Unknown property '%s'", property.Key.Name),
+					Severity: &common.SeverityWarning,
+					Range:    property.ToLSPRange(),
+				})
+
+				ctx.document.Indexes.UnknownProperties[property.Key.Start.Line] = indexes.BTCIndexPropertyInfo{
+					Section:  section,
+					Property: property,
+				}
 			}
 		}
 	}

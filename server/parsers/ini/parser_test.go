@@ -149,11 +149,72 @@ ImAtRoot = 123
 		t.Fatalf("Parse: Expected no errors, but got %v", errors)
 	}
 
-	if len(config.Sections) != 1 {
+	if !(len(config.Sections) == 1) {
 		t.Fatalf("Parse: Expected 1 section, but got %d", len(config.Sections))
 	}
 
 	if config.Sections[0].Header != nil {
 		t.Errorf("Parse: Expected first section to be a root section, but it has a header: %v", config.Sections[0].Header)
+	}
+
+	rawFirstProperty, _ := config.Sections[0].Properties.Get(uint32(0))
+	firstProperty := rawFirstProperty.(*Property)
+	if !(firstProperty.Key.Name == "ImAtRoot" && firstProperty.Value.Value == "123" && firstProperty.Separator.Start.Character == 9) {
+		t.Errorf("Parse: Expected root property to be 'ImAtRoot = 123', but got '%s = %s'", firstProperty.Key.Name, firstProperty.Value.Value)
+	}
+}
+
+func TestHalfTypedProperty(t *testing.T) {
+	sample := utils.Dedent(`
+PrivateKey = 
+`)
+
+	config := NewConfig()
+	config.XParseConfig = INIParseConfig{
+		AllowRootProperties: true,
+	}
+	errors := config.Parse(sample)
+
+	if len(errors) > 0 {
+		t.Fatalf("Parse: Expected no errors, but got %v", errors)
+	}
+	if len(config.Sections) != 1 {
+		t.Fatalf("Parse: Expected 1 section, but got %d", len(config.Sections))
+	}
+	if config.Sections[0].Header != nil {
+		t.Fatalf("Parse: Expected first section to have a header, but it is nil")
+	}
+
+	rawProperty, found := config.Sections[0].Properties.Get(uint32(0))
+	if !found {
+		t.Fatalf("Parse: Expected property to be present, but it is not")
+	}
+
+	property := rawProperty.(*Property)
+	if !(property.Key.Name == "PrivateKey" && property.Value == nil && property.Separator != nil) {
+		t.Errorf("Parse: Expected property to be 'PrivateKey ='")
+	}
+}
+
+func TestEmptyConfig(t *testing.T) {
+	sample := utils.Dedent(`
+`)
+
+	config := NewConfig()
+	config.XParseConfig = INIParseConfig{
+		AllowRootProperties: true,
+	}
+	errors := config.Parse(sample)
+
+	if len(errors) > 0 {
+		t.Fatalf("Parse: Expected no errors, but got %v", errors)
+	}
+
+	if !(len(config.Sections) == 1) {
+		t.Fatalf("Parse: Expected no sections, but got %d", len(config.Sections))
+	}
+
+	if len(config.CommentLines) != 0 {
+		t.Fatalf("Parse: Expected no comment lines, but got %d", len(config.CommentLines))
 	}
 }

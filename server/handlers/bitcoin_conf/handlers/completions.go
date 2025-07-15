@@ -17,13 +17,17 @@ func SuggestCompletions(
 	}
 
 	section := d.Config.FindSectionByLine(lineNumber)
-	// property := d.Config.FindPropertyByLine(lineNumber)
+	property := d.Config.FindPropertyByLine(lineNumber)
 
-	if section != nil && section.Header.Start.Line == lineNumber {
+	if section.Header != nil && section.Header.Start.Line == lineNumber {
 		// If the user is on a section header line, suggest section headers
 		return GetSectionHeaderCompletions(d)
 	} else {
-		// return GetPropertyCompletions(d, property, params)
-		return nil, nil
+		return GetPropertyCompletions(
+			d,
+			section,
+			property,
+			params,
+		)
 	}
 }

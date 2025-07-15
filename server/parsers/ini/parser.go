@@ -263,5 +263,24 @@ func (c *Config) Parse(input string) []common.LSPError {
 		}
 	}
 
+	// Edge case, empty file
+	if len(c.Sections) == 0 && c.XParseConfig.AllowRootProperties {
+		// If the file is empty, we create a root section
+		c.Sections = append(c.Sections, &Section{
+			LocationRange: common.LocationRange{
+				Start: common.Location{
+					Line:      0,
+					Character: 0,
+				},
+				End: common.Location{
+					Line:      uint32(len(lines)),
+					Character: 0,
+				},
+			},
+			Header:     nil, // No header for empty Sections
+			Properties: treemap.NewWith(gods.UInt32Comparator),
+		})
+	}
+
 	return errors
 }
