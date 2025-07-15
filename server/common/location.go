@@ -98,6 +98,17 @@ var GlobalLocationRange = LocationRange{
 	},
 }
 
+// This will include the next line, so the end will be at the start of the next line
+func (l LocationRange) IncludeNextLine() LocationRange {
+	return LocationRange{
+		Start: l.Start,
+		End: Location{
+			Line:      l.End.Line + 1,
+			Character: 0,
+		},
+	}
+}
+
 func (l LocationRange) ToLSPRange() protocol.Range {
 	return protocol.Range{
 		Start: protocol.Position{
