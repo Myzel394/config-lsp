@@ -144,6 +144,7 @@
               antlr
               just
               ourGopls
+              python3
             ]) ++ (if pkgs.stdenv.isLinux then with pkgs; [
               postfix
             ] else []);
