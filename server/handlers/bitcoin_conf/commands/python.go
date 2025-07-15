@@ -2,7 +2,7 @@ package commands
 
 import "os/exec"
 
-func isPythonAvailable() bool {
+func IsPythonAvailable() bool {
 	_, err := exec.LookPath("python3")
 
 	if err == nil {

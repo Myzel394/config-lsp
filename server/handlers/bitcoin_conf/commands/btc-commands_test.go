@@ -3,7 +3,7 @@ package commands
 import "testing"
 
 func TestGenerateRPCAuth(t *testing.T) {
-	if !isPythonAvailable() {
+	if !IsPythonAvailable() {
 		t.Skip("Python is not available")
 	}
 

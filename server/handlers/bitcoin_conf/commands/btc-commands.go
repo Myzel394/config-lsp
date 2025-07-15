@@ -11,13 +11,13 @@ import (
 
 const BITCOIN_RPC_AUTH_SCRIPT_URL = "https://raw.githubusercontent.com/bitcoin/bitcoin/184159e4f30c6846cd0324ee07b59e7f8121a5ea/share/rpcauth/rpcauth.py"
 
-
 // Not sure yet how to properly delete the file while caching it.
 // At the moment, we simply delegate this responsibility to the operating system.
-// defer func() {
-// 	_ = file.Close()
-// 	_ = os.Remove(file.Name())
-// }()
+//
+//	defer func() {
+//		_ = file.Close()
+//		_ = os.Remove(file.Name())
+//	}()
 var scriptFile *os.File
 
 // Download the Bitcoin RPC auth script
@@ -84,7 +84,7 @@ func GenerateRPCAuth(
 	username string,
 	password string,
 ) (string, error) {
-	if !isPythonAvailable() {
+	if !IsPythonAvailable() {
 		return "", errors.New("Python 3 must be installed to generate the RPC auth")
 	}
 
@@ -113,4 +113,3 @@ func GenerateRPCAuth(
 
 	return response.RPCauth, nil
 }
-

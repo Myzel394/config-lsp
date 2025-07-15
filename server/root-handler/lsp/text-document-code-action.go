@@ -3,6 +3,7 @@ package lsp
 import (
 	"config-lsp/common"
 	aliases "config-lsp/handlers/aliases/lsp"
+	bitcoinconf "config-lsp/handlers/bitcoin_conf/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
@@ -41,7 +42,7 @@ func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionPa
 	case shared.LanguageAliases:
 		return aliases.TextDocumentCodeAction(context, params)
 	case shared.LanguageBitcoinConf:
-		return nil, nil
+		return bitcoinconf.TextDocumentCodeAction(context, params)
 	}
 
 	panic("root-handler/TextDocumentCompletion: unexpected language" + *language)
