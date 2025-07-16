@@ -19,6 +19,10 @@ func GetPropertyKeywordTypoFixes(
 		return nil
 	}
 
+	if utils.BlockUntilIndexesNotNil(d) == false {
+		return nil
+	}
+
 	line := params.Range.Start.Line
 
 	if typoInfo, found := d.Indexes.UnknownProperties[line]; found {
