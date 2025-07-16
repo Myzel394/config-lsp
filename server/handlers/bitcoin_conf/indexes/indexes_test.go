@@ -31,7 +31,7 @@ addnode = 10.0.0.2
 		t.Fatalf("Expected 1 section in indexes, got %d", len(indexes.SectionsByName))
 	}
 
-	if indexes.SectionsByName["main"].Start.Line != 1 {
+	if !(indexes.SectionsByName["main"].Start.Line == 1) {
 		t.Fatalf("Expected section 'main' to start at line 0, got %d", indexes.SectionsByName["main"].Start.Line)
 	}
 }

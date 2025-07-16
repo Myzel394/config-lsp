@@ -23,7 +23,6 @@ func GetSectionHeaderCompletions(
 
 		name := section.Header.Name
 
-		println("GetSectionHeaderCompletions: section header", name)
 		if _, found := chains[name]; found {
 			// Delete
 			delete(chains, name)

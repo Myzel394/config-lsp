@@ -2,7 +2,7 @@ package ast
 
 import "testing"
 
-func SimpleBTCConfigExampleTest(t *testing.T) {
+func TestSimpleBTCConfigExample(t *testing.T) {
 	content := `
 addnode=10.0.0.1
 chain=main
@@ -17,7 +17,7 @@ chain=main
 }
 
 // https://github.com/Ride-The-Lightning/RTL/blob/847923533e23685d2f4e2fd2f9e07f5a44ea5198/docker/bitcoind/bitcoin.conf
-func BTCConfigExample1Test(t *testing.T) {
+func TestBTCConfigExample1(t *testing.T) {
 	content := `
 daemon=0
 printtoconsole=1
@@ -32,7 +32,7 @@ printtoconsole=1
 }
 
 // From https://github.com/OmniLayer/OmniJ/blob/22cab42ae3acc910b07755c1b0ac790b9a83ef80/bitcoin.conf
-func BTCConfigExample2Test(t *testing.T) {
+func TestBTCConfigExample2(t *testing.T) {
 	content := `
 server=1
 rpcauth=bitcoinrpc:b0d928012ce362e4d47345a346595dc6$8f0b2dde3617aa4aeb7aaf15eaaa8f3f085b7963e30ea973743f32e585552b7a
@@ -75,7 +75,7 @@ rpcport=18443
 }
 
 // From https://github.com/AdamISZ/pathcoin-poc/blob/78142488d60298f8541973891acd7f1d0013fdca/bitcoin.conf.sample
-func BTCConfigComplexExampleTest(t *testing.T) {
+func TestBTCConfigComplexExample(t *testing.T) {
 	content := `
 [regtest]
 rpcuser=bitcoinrpc

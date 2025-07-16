@@ -1,6 +1,8 @@
 // This file stores the available RPC calls for Bitcoin
 package fields
 
+// AvailableBTCRPCMethods lists all Bitcoin Core RPC commands supported
+// by this application for Bitcoin Core v29.0.0.
 var AvailableBTCRPCMethods = []string{
 	// == Blockchain ==
 	"dumptxoutset",

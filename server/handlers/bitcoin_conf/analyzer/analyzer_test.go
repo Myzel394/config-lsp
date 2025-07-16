@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func AnalyzerValidExample(t *testing.T) {
+func TestAnalyzerValidExample(t *testing.T) {
 	input := utils.Dedent(`
 chain=main
 addnode=10.0.0.1
@@ -30,7 +30,7 @@ addnode=10.0.0.1
 	}
 }
 
-func AnalyzerNonExistentPropertyExample(t *testing.T) {
+func TestAnalyzerNonExistentPropertyExample(t *testing.T) {
 	input := utils.Dedent(`
 chain=main
 nonexistent_property=value
@@ -53,7 +53,7 @@ nonexistent_property=value
 	}
 }
 
-func AnalyzerDuplicatePropertyExample(t *testing.T) {
+func TestAnalyzerDuplicatePropertyExample(t *testing.T) {
 	input := utils.Dedent(`
 chain=main
 chain=test
@@ -77,7 +77,7 @@ chain=test
 	}
 }
 
-func AnalyzerChainProperty(t *testing.T) {
+func TestAnalyzerChainProperty(t *testing.T) {
 	input := utils.Dedent(`
 chain=main
 signet=1
