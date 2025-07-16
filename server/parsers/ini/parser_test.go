@@ -218,3 +218,30 @@ func TestEmptyConfig(t *testing.T) {
 		t.Fatalf("Parse: Expected no comment lines, but got %d", len(config.CommentLines))
 	}
 }
+
+func TestIncompleteSection(t *testing.T) {
+	sample := utils.Dedent(`
+watch
+`)
+
+	config := NewConfig()
+	config.XParseConfig = INIParseConfig{
+		AllowRootProperties: true,
+	}
+	errors := config.Parse(sample)
+
+	if !(len(errors) == 0) {
+		t.Fatalf("Parse: Expected errors, but got none")
+	}
+
+	if !(len(config.Sections) == 1) {
+		t.Fatalf("Parse: Expected no sections, but got %d", len(config.Sections))
+	}
+
+	rawProperty, _ := config.Sections[0].Properties.Get(uint32(0))
+	property := rawProperty.(*Property)
+
+	if !(property.Key.Name == "watch" && property.Value == nil && property.Separator == nil && property.Start.Line == 0 && property.Start.Character == 0 && property.End.Line == 0 && property.End.Character == 5) {
+		t.Errorf("Parse: Expected property to be 'watch', but got '%s'", property.Key.Name)
+	}
+}

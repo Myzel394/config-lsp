@@ -157,6 +157,16 @@ func (c *Config) Parse(input string) []common.LSPError {
 					},
 					Name: line[indexes[0]:indexes[1]],
 				},
+				LocationRange: common.LocationRange{
+					Start: common.Location{
+						Line:      lineNumber,
+						Character: uint32(indexes[0]),
+					},
+					End: common.Location{
+						Line:      lineNumber,
+						Character: uint32(len(line)),
+					},
+				},
 			}
 
 			currentSection.Properties.Put(lineNumber, newProperty)
