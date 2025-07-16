@@ -14,6 +14,7 @@ func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionPa
 	actions := make([]protocol.CodeAction, 0, 2)
 
 	actions = append(actions, handlers.GetGenerateRPCAuthCodeActions(d, params)...)
+	actions = append(actions, handlers.GetPropertyKeywordTypoFixes(d, params)...)
 
 	if len(actions) > 0 {
 		return actions, nil

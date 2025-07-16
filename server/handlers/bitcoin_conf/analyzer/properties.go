@@ -3,6 +3,7 @@ package analyzer
 import (
 	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
+	"config-lsp/handlers/bitcoin_conf/diagnostics"
 	"config-lsp/handlers/bitcoin_conf/fields"
 	"config-lsp/handlers/bitcoin_conf/indexes"
 	"config-lsp/parsers/ini"
@@ -30,7 +31,20 @@ func analyzeProperties(ctx *analyzerContext) {
 
 			name := property.Key.Name
 
-			if existingProperty, found := existingProperties[name]; found && !utils.KeyExists(fields.AllowedDuplicateOptions, name) {
+			// Unknown property
+			if !utils.KeyExists(fields.Options, name) {
+				ctx.diagnostics = append(ctx.diagnostics, diagnostics.GenerateUnknownOption(
+					property.ToLSPRange(),
+					property.Key.Name,
+				))
+
+				ctx.document.Indexes.UnknownProperties[property.Key.Start.Line] = indexes.BTCIndexPropertyInfo{
+					Section:  section,
+					Property: property,
+				}
+
+				// Duplicate check
+			} else if existingProperty, found := existingProperties[name]; found && !utils.KeyExists(fields.AllowedDuplicateOptions, name) {
 				ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 					Message:  fmt.Sprintf("Property '%s' has already been defined on line %d", property.Key.Name, existingProperty.Start.Line+1),
 					Severity: &common.SeverityError,
@@ -59,19 +73,6 @@ func analyzeProperties(ctx *analyzerContext) {
 						Message:  err.Err.Error(),
 						Severity: &common.SeverityError,
 					})
-				}
-
-				// Unknown property
-			} else {
-				ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-					Message:  fmt.Sprintf("Unknown property '%s'", property.Key.Name),
-					Severity: &common.SeverityWarning,
-					Range:    property.ToLSPRange(),
-				})
-
-				ctx.document.Indexes.UnknownProperties[property.Key.Start.Line] = indexes.BTCIndexPropertyInfo{
-					Section:  section,
-					Property: property,
 				}
 			}
 		}

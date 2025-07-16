@@ -27,5 +27,5 @@ var AllowedDuplicateOptions = map[string]struct{}{
 	"signetseednode": {},
 	"rpcallowip":     {},
 	"rpcauth":        {},
-	"rpcbind":       {},
+	"rpcbind":        {},
 }
