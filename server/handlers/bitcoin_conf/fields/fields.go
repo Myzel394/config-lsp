@@ -178,9 +178,14 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"addnode": {
 		Documentation: "Add a node to connect to and attempt to keep the connection open (see the addnode RPC help for more info). This option can be specified multiple times to add multiple nodes; connections are limited to 8 at a time and are counted separately from the -maxconnections limit.",
-		Value: docvalues.IPAddressValue{
-			AllowIPv4: true,
-			AllowIPv6: true,
+		Value: docvalues.OrValue{
+			Values: []docvalues.DeprecatedValue{
+				docvalues.DomainValue(),
+				docvalues.IPAddressValue{
+					AllowIPv4: true,
+					AllowIPv6: true,
+				},
+			},
 		},
 	},
 	"asmap": {
