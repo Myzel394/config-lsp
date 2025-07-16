@@ -22,8 +22,8 @@ Create a new SuffixValue that allows the given prefixes.
 
 	SuffixValue{
 		Suffixes: []Suffix{
-			{Prefix: "debug_", Meaning: "Enable debug mode"},
-			{Prefix: "test_", Meaning: "Enable test mode"},
+			{Suffix: "_debug", Meaning: "Enable debug mode"},
+			{Suffix: "_test", Meaning: "Enable test mode"},
 		},
 		SubValue: StringValue{},
 	}

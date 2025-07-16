@@ -53,7 +53,7 @@ func TestSuffixNotRequiredExample(t *testing.T) {
 	}
 }
 
-func TestSuffixNotRequiredButContainsPrefixExample(t *testing.T) {
+func TestSuffixNotRequiredButContainsSuffixExample(t *testing.T) {
 	value := SuffixValue{
 		Suffixes: []Suffix{
 			{Suffix: "_debug", Meaning: "Enable debug mode"},
