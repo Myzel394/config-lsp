@@ -23,10 +23,7 @@ func GetSectionHeaderCompletions(
 
 		name := section.Header.Name
 
-		if _, found := chains[name]; found {
-			// Delete
-			delete(chains, name)
-		}
+		delete(chains, name)
 	}
 
 	return utils.MapMapToSlice(chains, func(name string, documentation string) protocol.CompletionItem {

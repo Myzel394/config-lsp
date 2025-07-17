@@ -832,9 +832,7 @@ var Options = map[string]docvalues.DocumentationValue{
 				DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
 				RespectQuotes:       true,
 				SubValue: docvalues.EnumValue{
-					Values: utils.Map(AvailableBTCRPCMethods, func(method string) docvalues.EnumString {
-						return docvalues.CreateEnumString(method)
-					}),
+					Values: utils.Map(AvailableBTCRPCMethods, docvalues.CreateEnumString),
 					EnforceValues: false,
 				},
 			},

@@ -60,7 +60,10 @@ func (v FloatNumberValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	if (v.Min != nil && number < *v.Min) || (v.Max != nil && number > *v.Max) {
 		return []*InvalidValue{
 			{
-				Err:   FloatNumberNotInRangeError{v.Min, v.Max},
+				Err:   FloatNumberNotInRangeError{
+					Min: v.Min, 
+					Max: v.Max,
+				},
 				Start: 0,
 				End:   uint32(len(value)),
 			},

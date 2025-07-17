@@ -4,7 +4,6 @@ import (
 	"config-lsp/common"
 	"config-lsp/handlers/bitcoin_conf/ast"
 	"config-lsp/parsers/ini"
-	"errors"
 	"fmt"
 )
 
@@ -26,7 +25,7 @@ func CreateIndexes(config *ast.BTCConfig) (*BTCIndexes, []common.LSPError) {
 		if existingSection, found := indexes.SectionsByName[sectionName]; found {
 			errs = append(errs, common.LSPError{
 				Range: section.Header.LocationRange,
-				Err:   errors.New(fmt.Sprintf("Section '%s' already defined at line %d", sectionName, existingSection.Header.Start.Line+1)),
+				Err:   fmt.Errorf("Section '%s' already defined at line %d", sectionName, existingSection.Header.Start.Line+1),
 			})
 
 			continue
