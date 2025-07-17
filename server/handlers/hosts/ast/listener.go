@@ -26,8 +26,7 @@ func (s *hostsParserListener) EnterComment(ctx *parser2.CommentContext) {
 }
 
 func (s *hostsParserListener) EnterEntry(ctx *parser2.EntryContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.hostsContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.hostsContext.line)
 
 	s.Parser.Tree.Entries.Put(location.Start.Line, &HostsEntry{
 		Location: location,
@@ -40,8 +39,7 @@ var hostValue = docvalues.IPAddressValue{
 }
 
 func (s *hostsParserListener) EnterIpAddress(ctx *parser2.IpAddressContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.hostsContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.hostsContext.line)
 
 	errs := hostValue.DeprecatedCheckIsValid(ctx.GetText())
 
@@ -71,8 +69,7 @@ func (s *hostsParserListener) EnterIpAddress(ctx *parser2.IpAddressContext) {
 }
 
 func (s *hostsParserListener) EnterHostname(ctx *parser2.HostnameContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.hostsContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.hostsContext.line)
 
 	rawEntry, _ := s.Parser.Tree.Entries.Get(location.Start.Line)
 	entry := rawEntry.(*HostsEntry)
@@ -84,8 +81,7 @@ func (s *hostsParserListener) EnterHostname(ctx *parser2.HostnameContext) {
 }
 
 func (s *hostsParserListener) EnterAliases(ctx *parser2.AliasesContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.hostsContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.hostsContext.line)
 
 	rawEntry, _ := s.Parser.Tree.Entries.Get(location.Start.Line)
 	entry := rawEntry.(*HostsEntry)
@@ -96,8 +92,7 @@ func (s *hostsParserListener) EnterAliases(ctx *parser2.AliasesContext) {
 }
 
 func (s *hostsParserListener) EnterAlias(ctx *parser2.AliasContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.hostsContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.hostsContext.line)
 
 	rawEntry, _ := s.Parser.Tree.Entries.Get(location.Start.Line)
 	entry := rawEntry.(*HostsEntry)
