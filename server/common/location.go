@@ -122,9 +122,17 @@ func (l LocationRange) ToLSPRange() protocol.Range {
 	}
 }
 
-func (l *LocationRange) ChangeBothLines(newLine uint32) {
-	l.Start.Line = newLine
-	l.End.Line = newLine
+func (l LocationRange) ChangeBothLines(newLine uint32) LocationRange {
+	return LocationRange{
+		Start: Location{
+			Line:      newLine,
+			Character: l.Start.Character,
+		},
+		End: Location{
+			Line:      newLine,
+			Character: l.End.Character,
+		},
+	}
 }
 
 func (l LocationRange) ContainsCursorByCharacter(character uint32) bool {
