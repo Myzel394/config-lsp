@@ -34,7 +34,7 @@ func analyzeProperties(ctx *analyzerContext) {
 			// Unknown property
 			if !utils.KeyExists(fields.Options, name) {
 				ctx.diagnostics = append(ctx.diagnostics, diagnostics.GenerateUnknownOption(
-					property.ToLSPRange(),
+					property.Key.ToLSPRange(),
 					property.Key.Name,
 				))
 

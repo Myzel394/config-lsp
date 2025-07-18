@@ -42,7 +42,7 @@ func GetPropertyKeywordTypoFixes(
 				Kind:        &kind,
 				Diagnostics: []protocol.Diagnostic{
 					diagnostics.GenerateUnknownOption(
-						typoInfo.Property.ToLSPRange(),
+						typoInfo.Property.Key.ToLSPRange(),
 						typoInfo.Property.Key.Name,
 					),
 				},

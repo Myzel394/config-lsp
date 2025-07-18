@@ -40,7 +40,7 @@ func analyzeProperties(
 			if !utils.KeyExists(availableOptions, normalizedPropertyName) {
 				ctx.diagnostics = append(ctx.diagnostics,
 					diagnostics.GenerateUnknownOption(
-						property.ToLSPRange(),
+						property.Key.ToLSPRange(),
 						property.Key.Name,
 					),
 				)
