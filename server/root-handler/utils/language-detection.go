@@ -49,6 +49,17 @@ var valueToLanguageMap = map[string]shared.SupportedLanguage{
 	"aliases":     shared.LanguageAliases,
 	"mailaliases": shared.LanguageAliases,
 	"etc/aliases": shared.LanguageAliases,
+
+	"bitcoin_conf":  shared.LanguageBitcoinConf,
+	"bitcoinconf":   shared.LanguageBitcoinConf,
+	"bitcoin":       shared.LanguageBitcoinConf,
+	"bitcoin.conf":  shared.LanguageBitcoinConf,
+	"btc":           shared.LanguageBitcoinConf,
+	"btcd":          shared.LanguageBitcoinConf,
+	"bitcoind":      shared.LanguageBitcoinConf,
+	"bitcoind.conf": shared.LanguageBitcoinConf,
+	"bitcoind_conf": shared.LanguageBitcoinConf,
+	"bitcoindconf":  shared.LanguageBitcoinConf,
 }
 
 var filenameToLanguageMap = map[string]shared.SupportedLanguage{
@@ -70,6 +81,16 @@ var filenameToLanguageMap = map[string]shared.SupportedLanguage{
 
 	"aliases":     shared.LanguageAliases,
 	"mailaliases": shared.LanguageAliases,
+
+	"bitcoin_conf":  shared.LanguageBitcoinConf,
+	"bitcoin.conf":  shared.LanguageBitcoinConf,
+	"bitcoind.conf": shared.LanguageBitcoinConf,
+	"bitcoin":       shared.LanguageBitcoinConf,
+	"bitcoind":      shared.LanguageBitcoinConf,
+	"btc":           shared.LanguageBitcoinConf,
+	"btc.conf":      shared.LanguageBitcoinConf,
+	"btcd":          shared.LanguageBitcoinConf,
+	"btcd.conf":     shared.LanguageBitcoinConf,
 }
 
 var typeOverwriteRegex = regexp.MustCompile(`#\?\s*lsp\.language\s*=\s*(\w+)\s*`)

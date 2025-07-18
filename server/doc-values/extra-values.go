@@ -80,6 +80,13 @@ func PositiveNumberValue() DeprecatedValue {
 	}
 }
 
+func FloatNumberRangeValue(min float64, max float64) DeprecatedValue {
+	return FloatNumberValue{
+		Min: &min,
+		Max: &max,
+	}
+}
+
 func MaskValue() DeprecatedValue {
 	min := 0
 	max := 777

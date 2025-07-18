@@ -2,203 +2,211 @@
   offline_cache = linkFarm "offline" packages;
   packages = [
     {
-      name = "_esbuild_aix_ppc64___aix_ppc64_0.25.0.tgz";
+      name = "_esbuild_aix_ppc64___aix_ppc64_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_aix_ppc64___aix_ppc64_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/aix-ppc64/-/aix-ppc64-0.25.0.tgz";
-        sha512 = "O7vun9Sf8DFjH2UtqK8Ku3LkquL9SZL8OLY1T5NZkA34+wG3OQF7cl4Ql8vdNzM6fzBbYfLaiRLIOZ+2FOCgBQ==";
+        name = "_esbuild_aix_ppc64___aix_ppc64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/aix-ppc64/-/aix-ppc64-0.25.6.tgz";
+        sha512 = "ShbM/3XxwuxjFiuVBHA+d3j5dyac0aEVVq1oluIDf71hUw0aRF59dV/efUsIwFnR6m8JNM2FjZOzmaZ8yG61kw==";
       };
     }
     {
-      name = "_esbuild_android_arm64___android_arm64_0.25.0.tgz";
+      name = "_esbuild_android_arm64___android_arm64_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_android_arm64___android_arm64_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/android-arm64/-/android-arm64-0.25.0.tgz";
-        sha512 = "grvv8WncGjDSyUBjN9yHXNt+cq0snxXbDxy5pJtzMKGmmpPxeAmAhWxXI+01lU5rwZomDgD3kJwulEnhTRUd6g==";
+        name = "_esbuild_android_arm64___android_arm64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/android-arm64/-/android-arm64-0.25.6.tgz";
+        sha512 = "hd5zdUarsK6strW+3Wxi5qWws+rJhCCbMiC9QZyzoxfk5uHRIE8T287giQxzVpEvCwuJ9Qjg6bEjcRJcgfLqoA==";
       };
     }
     {
-      name = "_esbuild_android_arm___android_arm_0.25.0.tgz";
+      name = "_esbuild_android_arm___android_arm_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_android_arm___android_arm_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/android-arm/-/android-arm-0.25.0.tgz";
-        sha512 = "PTyWCYYiU0+1eJKmw21lWtC+d08JDZPQ5g+kFyxP0V+es6VPPSUhM6zk8iImp2jbV6GwjX4pap0JFbUQN65X1g==";
+        name = "_esbuild_android_arm___android_arm_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/android-arm/-/android-arm-0.25.6.tgz";
+        sha512 = "S8ToEOVfg++AU/bHwdksHNnyLyVM+eMVAOf6yRKFitnwnbwwPNqKr3srzFRe7nzV69RQKb5DgchIX5pt3L53xg==";
       };
     }
     {
-      name = "_esbuild_android_x64___android_x64_0.25.0.tgz";
+      name = "_esbuild_android_x64___android_x64_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_android_x64___android_x64_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/android-x64/-/android-x64-0.25.0.tgz";
-        sha512 = "m/ix7SfKG5buCnxasr52+LI78SQ+wgdENi9CqyCXwjVR2X4Jkz+BpC3le3AoBPYTC9NHklwngVXvbJ9/Akhrfg==";
+        name = "_esbuild_android_x64___android_x64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/android-x64/-/android-x64-0.25.6.tgz";
+        sha512 = "0Z7KpHSr3VBIO9A/1wcT3NTy7EB4oNC4upJ5ye3R7taCc2GUdeynSLArnon5G8scPwaU866d3H4BCrE5xLW25A==";
       };
     }
     {
-      name = "_esbuild_darwin_arm64___darwin_arm64_0.25.0.tgz";
+      name = "_esbuild_darwin_arm64___darwin_arm64_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_darwin_arm64___darwin_arm64_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/darwin-arm64/-/darwin-arm64-0.25.0.tgz";
-        sha512 = "mVwdUb5SRkPayVadIOI78K7aAnPamoeFR2bT5nszFUZ9P8UpK4ratOdYbZZXYSqPKMHfS1wdHCJk1P1EZpRdvw==";
+        name = "_esbuild_darwin_arm64___darwin_arm64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/darwin-arm64/-/darwin-arm64-0.25.6.tgz";
+        sha512 = "FFCssz3XBavjxcFxKsGy2DYK5VSvJqa6y5HXljKzhRZ87LvEi13brPrf/wdyl/BbpbMKJNOr1Sd0jtW4Ge1pAA==";
       };
     }
     {
-      name = "_esbuild_darwin_x64___darwin_x64_0.25.0.tgz";
+      name = "_esbuild_darwin_x64___darwin_x64_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_darwin_x64___darwin_x64_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/darwin-x64/-/darwin-x64-0.25.0.tgz";
-        sha512 = "DgDaYsPWFTS4S3nWpFcMn/33ZZwAAeAFKNHNa1QN0rI4pUjgqf0f7ONmXf6d22tqTY+H9FNdgeaAa+YIFUn2Rg==";
+        name = "_esbuild_darwin_x64___darwin_x64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/darwin-x64/-/darwin-x64-0.25.6.tgz";
+        sha512 = "GfXs5kry/TkGM2vKqK2oyiLFygJRqKVhawu3+DOCk7OxLy/6jYkWXhlHwOoTb0WqGnWGAS7sooxbZowy+pK9Yg==";
       };
     }
     {
-      name = "_esbuild_freebsd_arm64___freebsd_arm64_0.25.0.tgz";
+      name = "_esbuild_freebsd_arm64___freebsd_arm64_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_freebsd_arm64___freebsd_arm64_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/freebsd-arm64/-/freebsd-arm64-0.25.0.tgz";
-        sha512 = "VN4ocxy6dxefN1MepBx/iD1dH5K8qNtNe227I0mnTRjry8tj5MRk4zprLEdG8WPyAPb93/e4pSgi1SoHdgOa4w==";
+        name = "_esbuild_freebsd_arm64___freebsd_arm64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/freebsd-arm64/-/freebsd-arm64-0.25.6.tgz";
+        sha512 = "aoLF2c3OvDn2XDTRvn8hN6DRzVVpDlj2B/F66clWd/FHLiHaG3aVZjxQX2DYphA5y/evbdGvC6Us13tvyt4pWg==";
       };
     }
     {
-      name = "_esbuild_freebsd_x64___freebsd_x64_0.25.0.tgz";
+      name = "_esbuild_freebsd_x64___freebsd_x64_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_freebsd_x64___freebsd_x64_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/freebsd-x64/-/freebsd-x64-0.25.0.tgz";
-        sha512 = "mrSgt7lCh07FY+hDD1TxiTyIHyttn6vnjesnPoVDNmDfOmggTLXRv8Id5fNZey1gl/V2dyVK1VXXqVsQIiAk+A==";
+        name = "_esbuild_freebsd_x64___freebsd_x64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/freebsd-x64/-/freebsd-x64-0.25.6.tgz";
+        sha512 = "2SkqTjTSo2dYi/jzFbU9Plt1vk0+nNg8YC8rOXXea+iA3hfNJWebKYPs3xnOUf9+ZWhKAaxnQNUf2X9LOpeiMQ==";
       };
     }
     {
-      name = "_esbuild_linux_arm64___linux_arm64_0.25.0.tgz";
+      name = "_esbuild_linux_arm64___linux_arm64_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_linux_arm64___linux_arm64_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/linux-arm64/-/linux-arm64-0.25.0.tgz";
-        sha512 = "9QAQjTWNDM/Vk2bgBl17yWuZxZNQIF0OUUuPZRKoDtqF2k4EtYbpyiG5/Dk7nqeK6kIJWPYldkOcBqjXjrUlmg==";
+        name = "_esbuild_linux_arm64___linux_arm64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/linux-arm64/-/linux-arm64-0.25.6.tgz";
+        sha512 = "b967hU0gqKd9Drsh/UuAm21Khpoh6mPBSgz8mKRq4P5mVK8bpA+hQzmm/ZwGVULSNBzKdZPQBRT3+WuVavcWsQ==";
       };
     }
     {
-      name = "_esbuild_linux_arm___linux_arm_0.25.0.tgz";
+      name = "_esbuild_linux_arm___linux_arm_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_linux_arm___linux_arm_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/linux-arm/-/linux-arm-0.25.0.tgz";
-        sha512 = "vkB3IYj2IDo3g9xX7HqhPYxVkNQe8qTK55fraQyTzTX/fxaDtXiEnavv9geOsonh2Fd2RMB+i5cbhu2zMNWJwg==";
+        name = "_esbuild_linux_arm___linux_arm_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/linux-arm/-/linux-arm-0.25.6.tgz";
+        sha512 = "SZHQlzvqv4Du5PrKE2faN0qlbsaW/3QQfUUc6yO2EjFcA83xnwm91UbEEVx4ApZ9Z5oG8Bxz4qPE+HFwtVcfyw==";
       };
     }
     {
-      name = "_esbuild_linux_ia32___linux_ia32_0.25.0.tgz";
+      name = "_esbuild_linux_ia32___linux_ia32_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_linux_ia32___linux_ia32_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/linux-ia32/-/linux-ia32-0.25.0.tgz";
-        sha512 = "43ET5bHbphBegyeqLb7I1eYn2P/JYGNmzzdidq/w0T8E2SsYL1U6un2NFROFRg1JZLTzdCoRomg8Rvf9M6W6Gg==";
+        name = "_esbuild_linux_ia32___linux_ia32_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/linux-ia32/-/linux-ia32-0.25.6.tgz";
+        sha512 = "aHWdQ2AAltRkLPOsKdi3xv0mZ8fUGPdlKEjIEhxCPm5yKEThcUjHpWB1idN74lfXGnZ5SULQSgtr5Qos5B0bPw==";
       };
     }
     {
-      name = "_esbuild_linux_loong64___linux_loong64_0.25.0.tgz";
+      name = "_esbuild_linux_loong64___linux_loong64_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_linux_loong64___linux_loong64_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/linux-loong64/-/linux-loong64-0.25.0.tgz";
-        sha512 = "fC95c/xyNFueMhClxJmeRIj2yrSMdDfmqJnyOY4ZqsALkDrrKJfIg5NTMSzVBr5YW1jf+l7/cndBfP3MSDpoHw==";
+        name = "_esbuild_linux_loong64___linux_loong64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/linux-loong64/-/linux-loong64-0.25.6.tgz";
+        sha512 = "VgKCsHdXRSQ7E1+QXGdRPlQ/e08bN6WMQb27/TMfV+vPjjTImuT9PmLXupRlC90S1JeNNW5lzkAEO/McKeJ2yg==";
       };
     }
     {
-      name = "_esbuild_linux_mips64el___linux_mips64el_0.25.0.tgz";
+      name = "_esbuild_linux_mips64el___linux_mips64el_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_linux_mips64el___linux_mips64el_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/linux-mips64el/-/linux-mips64el-0.25.0.tgz";
-        sha512 = "nkAMFju7KDW73T1DdH7glcyIptm95a7Le8irTQNO/qtkoyypZAnjchQgooFUDQhNAy4iu08N79W4T4pMBwhPwQ==";
+        name = "_esbuild_linux_mips64el___linux_mips64el_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/linux-mips64el/-/linux-mips64el-0.25.6.tgz";
+        sha512 = "WViNlpivRKT9/py3kCmkHnn44GkGXVdXfdc4drNmRl15zVQ2+D2uFwdlGh6IuK5AAnGTo2qPB1Djppj+t78rzw==";
       };
     }
     {
-      name = "_esbuild_linux_ppc64___linux_ppc64_0.25.0.tgz";
+      name = "_esbuild_linux_ppc64___linux_ppc64_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_linux_ppc64___linux_ppc64_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/linux-ppc64/-/linux-ppc64-0.25.0.tgz";
-        sha512 = "NhyOejdhRGS8Iwv+KKR2zTq2PpysF9XqY+Zk77vQHqNbo/PwZCzB5/h7VGuREZm1fixhs4Q/qWRSi5zmAiO4Fw==";
+        name = "_esbuild_linux_ppc64___linux_ppc64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/linux-ppc64/-/linux-ppc64-0.25.6.tgz";
+        sha512 = "wyYKZ9NTdmAMb5730I38lBqVu6cKl4ZfYXIs31Baf8aoOtB4xSGi3THmDYt4BTFHk7/EcVixkOV2uZfwU3Q2Jw==";
       };
     }
     {
-      name = "_esbuild_linux_riscv64___linux_riscv64_0.25.0.tgz";
+      name = "_esbuild_linux_riscv64___linux_riscv64_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_linux_riscv64___linux_riscv64_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/linux-riscv64/-/linux-riscv64-0.25.0.tgz";
-        sha512 = "5S/rbP5OY+GHLC5qXp1y/Mx//e92L1YDqkiBbO9TQOvuFXM+iDqUNG5XopAnXoRH3FjIUDkeGcY1cgNvnXp/kA==";
+        name = "_esbuild_linux_riscv64___linux_riscv64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/linux-riscv64/-/linux-riscv64-0.25.6.tgz";
+        sha512 = "KZh7bAGGcrinEj4qzilJ4hqTY3Dg2U82c8bv+e1xqNqZCrCyc+TL9AUEn5WGKDzm3CfC5RODE/qc96OcbIe33w==";
       };
     }
     {
-      name = "_esbuild_linux_s390x___linux_s390x_0.25.0.tgz";
+      name = "_esbuild_linux_s390x___linux_s390x_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_linux_s390x___linux_s390x_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/linux-s390x/-/linux-s390x-0.25.0.tgz";
-        sha512 = "XM2BFsEBz0Fw37V0zU4CXfcfuACMrppsMFKdYY2WuTS3yi8O1nFOhil/xhKTmE1nPmVyvQJjJivgDT+xh8pXJA==";
+        name = "_esbuild_linux_s390x___linux_s390x_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/linux-s390x/-/linux-s390x-0.25.6.tgz";
+        sha512 = "9N1LsTwAuE9oj6lHMyyAM+ucxGiVnEqUdp4v7IaMmrwb06ZTEVCIs3oPPplVsnjPfyjmxwHxHMF8b6vzUVAUGw==";
       };
     }
     {
-      name = "_esbuild_linux_x64___linux_x64_0.25.0.tgz";
+      name = "_esbuild_linux_x64___linux_x64_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_linux_x64___linux_x64_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/linux-x64/-/linux-x64-0.25.0.tgz";
-        sha512 = "9yl91rHw/cpwMCNytUDxwj2XjFpxML0y9HAOH9pNVQDpQrBxHy01Dx+vaMu0N1CKa/RzBD2hB4u//nfc+Sd3Cw==";
+        name = "_esbuild_linux_x64___linux_x64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/linux-x64/-/linux-x64-0.25.6.tgz";
+        sha512 = "A6bJB41b4lKFWRKNrWoP2LHsjVzNiaurf7wyj/XtFNTsnPuxwEBWHLty+ZE0dWBKuSK1fvKgrKaNjBS7qbFKig==";
       };
     }
     {
-      name = "_esbuild_netbsd_arm64___netbsd_arm64_0.25.0.tgz";
+      name = "_esbuild_netbsd_arm64___netbsd_arm64_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_netbsd_arm64___netbsd_arm64_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/netbsd-arm64/-/netbsd-arm64-0.25.0.tgz";
-        sha512 = "RuG4PSMPFfrkH6UwCAqBzauBWTygTvb1nxWasEJooGSJ/NwRw7b2HOwyRTQIU97Hq37l3npXoZGYMy3b3xYvPw==";
+        name = "_esbuild_netbsd_arm64___netbsd_arm64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/netbsd-arm64/-/netbsd-arm64-0.25.6.tgz";
+        sha512 = "IjA+DcwoVpjEvyxZddDqBY+uJ2Snc6duLpjmkXm/v4xuS3H+3FkLZlDm9ZsAbF9rsfP3zeA0/ArNDORZgrxR/Q==";
       };
     }
     {
-      name = "_esbuild_netbsd_x64___netbsd_x64_0.25.0.tgz";
+      name = "_esbuild_netbsd_x64___netbsd_x64_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_netbsd_x64___netbsd_x64_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/netbsd-x64/-/netbsd-x64-0.25.0.tgz";
-        sha512 = "jl+qisSB5jk01N5f7sPCsBENCOlPiS/xptD5yxOx2oqQfyourJwIKLRA2yqWdifj3owQZCL2sn6o08dBzZGQzA==";
+        name = "_esbuild_netbsd_x64___netbsd_x64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/netbsd-x64/-/netbsd-x64-0.25.6.tgz";
+        sha512 = "dUXuZr5WenIDlMHdMkvDc1FAu4xdWixTCRgP7RQLBOkkGgwuuzaGSYcOpW4jFxzpzL1ejb8yF620UxAqnBrR9g==";
       };
     }
     {
-      name = "_esbuild_openbsd_arm64___openbsd_arm64_0.25.0.tgz";
+      name = "_esbuild_openbsd_arm64___openbsd_arm64_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_openbsd_arm64___openbsd_arm64_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/openbsd-arm64/-/openbsd-arm64-0.25.0.tgz";
-        sha512 = "21sUNbq2r84YE+SJDfaQRvdgznTD8Xc0oc3p3iW/a1EVWeNj/SdUCbm5U0itZPQYRuRTW20fPMWMpcrciH2EJw==";
+        name = "_esbuild_openbsd_arm64___openbsd_arm64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/openbsd-arm64/-/openbsd-arm64-0.25.6.tgz";
+        sha512 = "l8ZCvXP0tbTJ3iaqdNf3pjaOSd5ex/e6/omLIQCVBLmHTlfXW3zAxQ4fnDmPLOB1x9xrcSi/xtCWFwCZRIaEwg==";
       };
     }
     {
-      name = "_esbuild_openbsd_x64___openbsd_x64_0.25.0.tgz";
+      name = "_esbuild_openbsd_x64___openbsd_x64_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_openbsd_x64___openbsd_x64_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/openbsd-x64/-/openbsd-x64-0.25.0.tgz";
-        sha512 = "2gwwriSMPcCFRlPlKx3zLQhfN/2WjJ2NSlg5TKLQOJdV0mSxIcYNTMhk3H3ulL/cak+Xj0lY1Ym9ysDV1igceg==";
+        name = "_esbuild_openbsd_x64___openbsd_x64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/openbsd-x64/-/openbsd-x64-0.25.6.tgz";
+        sha512 = "hKrmDa0aOFOr71KQ/19JC7az1P0GWtCN1t2ahYAf4O007DHZt/dW8ym5+CUdJhQ/qkZmI1HAF8KkJbEFtCL7gw==";
       };
     }
     {
-      name = "_esbuild_sunos_x64___sunos_x64_0.25.0.tgz";
+      name = "_esbuild_openharmony_arm64___openharmony_arm64_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_sunos_x64___sunos_x64_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/sunos-x64/-/sunos-x64-0.25.0.tgz";
-        sha512 = "bxI7ThgLzPrPz484/S9jLlvUAHYMzy6I0XiU1ZMeAEOBcS0VePBFxh1JjTQt3Xiat5b6Oh4x7UC7IwKQKIJRIg==";
+        name = "_esbuild_openharmony_arm64___openharmony_arm64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/openharmony-arm64/-/openharmony-arm64-0.25.6.tgz";
+        sha512 = "+SqBcAWoB1fYKmpWoQP4pGtx+pUUC//RNYhFdbcSA16617cchuryuhOCRpPsjCblKukAckWsV+aQ3UKT/RMPcA==";
       };
     }
     {
-      name = "_esbuild_win32_arm64___win32_arm64_0.25.0.tgz";
+      name = "_esbuild_sunos_x64___sunos_x64_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_win32_arm64___win32_arm64_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/win32-arm64/-/win32-arm64-0.25.0.tgz";
-        sha512 = "ZUAc2YK6JW89xTbXvftxdnYy3m4iHIkDtK3CLce8wg8M2L+YZhIvO1DKpxrd0Yr59AeNNkTiic9YLf6FTtXWMw==";
+        name = "_esbuild_sunos_x64___sunos_x64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/sunos-x64/-/sunos-x64-0.25.6.tgz";
+        sha512 = "dyCGxv1/Br7MiSC42qinGL8KkG4kX0pEsdb0+TKhmJZgCUDBGmyo1/ArCjNGiOLiIAgdbWgmWgib4HoCi5t7kA==";
       };
     }
     {
-      name = "_esbuild_win32_ia32___win32_ia32_0.25.0.tgz";
+      name = "_esbuild_win32_arm64___win32_arm64_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_win32_ia32___win32_ia32_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/win32-ia32/-/win32-ia32-0.25.0.tgz";
-        sha512 = "eSNxISBu8XweVEWG31/JzjkIGbGIJN/TrRoiSVZwZ6pkC6VX4Im/WV2cz559/TXLcYbcrDN8JtKgd9DJVIo8GA==";
+        name = "_esbuild_win32_arm64___win32_arm64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/win32-arm64/-/win32-arm64-0.25.6.tgz";
+        sha512 = "42QOgcZeZOvXfsCBJF5Afw73t4veOId//XD3i+/9gSkhSV6Gk3VPlWncctI+JcOyERv85FUo7RxuxGy+z8A43Q==";
       };
     }
     {
-      name = "_esbuild_win32_x64___win32_x64_0.25.0.tgz";
+      name = "_esbuild_win32_ia32___win32_ia32_0.25.6.tgz";
       path = fetchurl {
-        name = "_esbuild_win32_x64___win32_x64_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/@esbuild/win32-x64/-/win32-x64-0.25.0.tgz";
-        sha512 = "ZENoHJBxA20C2zFzh6AI4fT6RraMzjYw4xKWemRTRmRVtN9c5DcH9r/f2ihEkMjOW5eGgrwCslG/+Y/3bL+DHQ==";
+        name = "_esbuild_win32_ia32___win32_ia32_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/win32-ia32/-/win32-ia32-0.25.6.tgz";
+        sha512 = "4AWhgXmDuYN7rJI6ORB+uU9DHLq/erBbuMoAuB4VWJTu5KtCgcKYPynF0YI1VkBNuEfjNlLrFr9KZPJzrtLkrQ==";
+      };
+    }
+    {
+      name = "_esbuild_win32_x64___win32_x64_0.25.6.tgz";
+      path = fetchurl {
+        name = "_esbuild_win32_x64___win32_x64_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/@esbuild/win32-x64/-/win32-x64-0.25.6.tgz";
+        sha512 = "NgJPHHbEpLQgDH2MjQu90pzW/5vvXIZ7KOnPyNBm92A6WgZ/7b6fJyUBjoumLqeOQQGqY2QjQxRo97ah4Sj0cA==";
       };
     }
     {
@@ -610,11 +618,11 @@
       };
     }
     {
-      name = "esbuild___esbuild_0.25.0.tgz";
+      name = "esbuild___esbuild_0.25.6.tgz";
       path = fetchurl {
-        name = "esbuild___esbuild_0.25.0.tgz";
-        url  = "https://registry.yarnpkg.com/esbuild/-/esbuild-0.25.0.tgz";
-        sha512 = "BXq5mqc8ltbaN34cDqWuYKyNhX8D/Z0J1xdtdQ8UcIIIyJyz+ZMKUt58tF3SrZ85jcfN/PZYhjR5uDQAYNVbuw==";
+        name = "esbuild___esbuild_0.25.6.tgz";
+        url  = "https://registry.yarnpkg.com/esbuild/-/esbuild-0.25.6.tgz";
+        sha512 = "GVuzuUwtdsghE3ocJ9Bs8PNoF13HNQ5TXbEi2AhvVb8xU1Iwt9Fos9FEamfoee+u/TOsn7GUWc04lz46n2bbTg==";
       };
     }
     {

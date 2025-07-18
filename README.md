@@ -12,12 +12,37 @@ A language server for configuration files. The goal is to make editing config fi
 | ssh_config  | ✅           | ✅            | ✅       | ✅             | ✅            | ✅        | ✅               |
 | sshd_config | ✅           | ✅            | ✅       | ❓             | ✅            | ❓        | ✅               |
 | wireguard   | ✅           | ✅            | ✅       | ✅             | ❓            | ❓        | 🟡               |
+| bitcoin_conf| ✅           | ✅            | ✅       | ✅             | ❓            | ❓        | 🟡               |
 
 ✅ = Supported
 
 🟡 = Will be supported, but not yet implemented
 
 ❓ = No idea what to implement here, please let me know if you have any ideas
+
+### Supported Code Actions
+
+#### Bitcoin
+- `Generate rpcauth` - config-lsp reads the `rpcuser` and `rpcpassword` from the config file and generates a new `rpcauth` line for you, which includes a properly salted and hashed password (this requires Python to be installed)
+- `Fix typo` - fix a typo
+
+#### Aliases
+- `Send test mail` - send a test mail to the current email address in the `alias` file (this requires `sendmail` / `postfix` to be installed)
+
+#### Hosts
+- `Inline aliases` - inline duplicated aliases into one line
+
+#### SSH Config
+- `Generate SSH Key` - generate a new SSH key and add it to the config file (this requires `ssh-keygen` to be installed)
+- `Add option to unknown` - add an option to `IgnoreUnknown`. This is mostly used for `UseKeychain`
+- `Fix typo` - fix a typo
+
+#### Wireguard
+- `Generate new peer based on this one` - generate a new peer config section that's similar the the current one. Useful for quickly adding new peers to a Wireguard config file
+- `Generate PostDown` - generate an adjacent `PostDown` command based on the current `PreUp` command. Only supports iptables currently
+- `Add PersistentKeepalive` - add a `PersistentKeepalive` option to the current peer config section
+- `Generate PrivateKey` / `Generate PresharedKey` - generate a new private key or preshared key and insert it automatically
+- `Fix typo` - fix a typo
 
 ## What further configs will be supported?
 

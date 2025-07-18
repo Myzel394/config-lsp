@@ -60,17 +60,15 @@ var Options = map[NormalizedOptionName]docvalues.DocumentationValue{
 	"bindaddress": {
 		Documentation: `Use the specified address on the local machine as the source address of the connection. Only useful on systems with more than one address.`,
 		Value: docvalues.IPAddressValue{
-			AllowIPv4:  true,
-			AllowIPv6:  true,
-			AllowRange: false,
+			AllowIPv4: true,
+			AllowIPv6: true,
 		},
 	},
 	"bindinterface": {
 		Documentation: `Use the address of the specified interface on the local machine as the source address of the connection.`,
 		Value: docvalues.IPAddressValue{
-			AllowIPv4:  false,
-			AllowIPv6:  false,
-			AllowRange: false,
+			AllowIPv4: false,
+			AllowIPv6: false,
 		},
 	},
 	"canonicaldomains": {
@@ -114,7 +112,7 @@ rsa-sha2-512,rsa-sha2-256
     If the specified list begins with a ‘+’ character, then the specified algorithms will be appended to the default set instead of replacing them. If the specified list begins with a
         ‘-’ character, then the specified algorithms (including wildcards) will be removed from the default set instead of replacing them.
     ssh(1) will not accept host certificates signed using algorithms other than those specified.`,
-		Value: docvalues.PrefixWithMeaningValue{
+		Value: docvalues.PrefixValue{
 			Prefixes: []docvalues.Prefix{
 				{
 					Prefix:  "+",
@@ -289,9 +287,8 @@ aes128-gcm@openssh.com,aes256-gcm@openssh.com
 				docvalues.NumberValue{Min: &ZERO, Max: &MAX_PORT},
 				docvalues.KeyValueAssignmentValue{
 					Key: docvalues.IPAddressValue{
-						AllowIPv4:  true,
-						AllowIPv6:  true,
-						AllowRange: false,
+						AllowIPv4: true,
+						AllowIPv6: true,
 					},
 					Value: docvalues.NumberValue{Min: &ZERO, Max: &MAX_PORT},
 				},
@@ -610,9 +607,8 @@ diffie-hellman-group14-sha256
 				docvalues.NumberValue{Min: &ZERO, Max: &MAX_PORT},
 				docvalues.KeyValueAssignmentValue{
 					Key: docvalues.IPAddressValue{
-						AllowIPv4:  true,
-						AllowIPv6:  true,
-						AllowRange: false,
+						AllowIPv4: true,
+						AllowIPv6: true,
 					},
 				},
 			},

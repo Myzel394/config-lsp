@@ -7,6 +7,14 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
+type AllowedStatus uint8
+
+const (
+	AllowedStatusDisallowed AllowedStatus = iota
+	AllowedStatusAllowed
+	AllowedStatusRequired
+)
+
 type DeprecatedValue interface {
 	GetTypeDescription() []string
 	DeprecatedCheckIsValid(value string) []*InvalidValue

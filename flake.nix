@@ -144,6 +144,7 @@
               antlr
               just
               ourGopls
+              python3
             ]) ++ (if pkgs.stdenv.isLinux then with pkgs; [
               postfix
             ] else []);
@@ -151,8 +152,10 @@
 
         devShells."vs-code-extension" = pkgs.mkShell {
           buildInputs = with pkgs; [
+            just
             nodejs
             vsce
+            yarn
             yarn2nix
           ];
         };

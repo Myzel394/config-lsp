@@ -21,8 +21,7 @@ type aliasesParserListener struct {
 }
 
 func (s *aliasesParserListener) EnterEntry(ctx *parser.EntryContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.aliasContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.aliasContext.line)
 
 	s.Parser.Aliases.Put(
 		location.Start.Line,
@@ -33,8 +32,7 @@ func (s *aliasesParserListener) EnterEntry(ctx *parser.EntryContext) {
 }
 
 func (s *aliasesParserListener) EnterSeparator(ctx *parser.SeparatorContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.aliasContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.aliasContext.line)
 
 	rawEntry, _ := s.Parser.Aliases.Get(location.Start.Line)
 	entry := rawEntry.(*AliasEntry)
@@ -43,8 +41,7 @@ func (s *aliasesParserListener) EnterSeparator(ctx *parser.SeparatorContext) {
 }
 
 func (s *aliasesParserListener) EnterKey(ctx *parser.KeyContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.aliasContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.aliasContext.line)
 
 	rawEntry, _ := s.Parser.Aliases.Get(location.Start.Line)
 	entry := rawEntry.(*AliasEntry)
@@ -56,8 +53,7 @@ func (s *aliasesParserListener) EnterKey(ctx *parser.KeyContext) {
 }
 
 func (s *aliasesParserListener) EnterValues(ctx *parser.ValuesContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.aliasContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.aliasContext.line)
 
 	rawEntry, _ := s.Parser.Aliases.Get(location.Start.Line)
 	entry := rawEntry.(*AliasEntry)
@@ -71,8 +67,7 @@ func (s *aliasesParserListener) EnterValues(ctx *parser.ValuesContext) {
 // === Name === //
 
 func (s *aliasesParserListener) EnterUser(ctx *parser.UserContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.aliasContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.aliasContext.line)
 
 	user := AliasValueUser{
 		AliasValue: AliasValue{
@@ -88,8 +83,7 @@ func (s *aliasesParserListener) EnterUser(ctx *parser.UserContext) {
 }
 
 func (s *aliasesParserListener) EnterFile(ctx *parser.FileContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.aliasContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.aliasContext.line)
 
 	rawEntry, _ := s.Parser.Aliases.Get(location.Start.Line)
 	entry := rawEntry.(*AliasEntry)
@@ -126,8 +120,7 @@ func (s *aliasesParserListener) EnterFile(ctx *parser.FileContext) {
 }
 
 func (s *aliasesParserListener) EnterCommand(ctx *parser.CommandContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.aliasContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.aliasContext.line)
 
 	command := AliasValueCommand{
 		AliasValue: AliasValue{
@@ -144,8 +137,7 @@ func (s *aliasesParserListener) EnterCommand(ctx *parser.CommandContext) {
 }
 
 func (s *aliasesParserListener) EnterInclude(ctx *parser.IncludeContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.aliasContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.aliasContext.line)
 
 	include := AliasValueInclude{
 		AliasValue: AliasValue{
@@ -164,8 +156,7 @@ func (s *aliasesParserListener) EnterInclude(ctx *parser.IncludeContext) {
 }
 
 func (s *aliasesParserListener) EnterEmail(ctx *parser.EmailContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.aliasContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.aliasContext.line)
 
 	email := AliasValueEmail{
 		AliasValue: AliasValue{
@@ -181,8 +172,7 @@ func (s *aliasesParserListener) EnterEmail(ctx *parser.EmailContext) {
 }
 
 func (s *aliasesParserListener) EnterError(ctx *parser.ErrorContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.aliasContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.aliasContext.line)
 
 	errorValue := AliasValueError{
 		AliasValue: AliasValue{
@@ -206,8 +196,7 @@ func (s *aliasesParserListener) ExitError(ctx *parser.ErrorContext) {
 
 // EnterErrorCode is called when production errorCode is entered.
 func (s *aliasesParserListener) EnterErrorCode(ctx *parser.ErrorCodeContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.aliasContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.aliasContext.line)
 
 	rawEntry, _ := s.Parser.Aliases.Get(location.Start.Line)
 	entry := rawEntry.(*AliasEntry)
@@ -229,8 +218,7 @@ func (s *aliasesParserListener) EnterErrorCode(ctx *parser.ErrorCodeContext) {
 
 // EnterErrorMessage is called when production errorMessage is entered.
 func (s *aliasesParserListener) EnterErrorMessage(ctx *parser.ErrorMessageContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.aliasContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.aliasContext.line)
 
 	rawEntry, _ := s.Parser.Aliases.Get(location.Start.Line)
 	entry := rawEntry.(*AliasEntry)

@@ -36,6 +36,8 @@ func TextDocumentPrepareRename(context *glsp.Context, params *protocol.PrepareRe
 		return nil, nil
 	case shared.LanguageAliases:
 		return aliases.TextDocumentPrepareRename(context, params)
+	case shared.LanguageBitcoinConf:
+		return nil, nil
 	}
 
 	panic("root-handler/TextDocumentPrepareRename: unexpected language" + *language)

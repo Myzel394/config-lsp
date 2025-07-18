@@ -84,9 +84,8 @@ This is preferred over having passwords in plaintext in a shared file, such as /
 		"ip",
 		`sets the destination IP address. This option is set automatically if the server name portion of the requested UNC name can be resolved so rarely needs to be specified by the user.`,
 	): docvalues.IPAddressValue{
-		AllowIPv4:  true,
-		AllowIPv6:  true,
-		AllowRange: false,
+		AllowIPv4: true,
+		AllowIPv6: true,
 	},
 	docvalues.CreateEnumStringWithDoc(
 		"domain",

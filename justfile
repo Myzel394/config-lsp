@@ -43,6 +43,9 @@ update-antlr-parsers:
     # hosts
     cd handlers/hosts && antlr4 -Dlanguage=Go -o ast/parser Hosts.g4
 
+[working-directory: "./vs-code-extension"]
+update-yarn:
+    yarn install --no-frozen-lockfile && yarn2nix > yarn.nix
 
 # Ready for a PR? Run this recipe before opening the PR!
 ready:

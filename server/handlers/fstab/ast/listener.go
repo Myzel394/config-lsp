@@ -37,8 +37,7 @@ func createListener(
 }
 
 func (s *fstabParserListener) EnterEntry(ctx *parser.EntryContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.fstabContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.fstabContext.line)
 
 	s.fstabContext.currentEntry = &FstabEntry{
 		Fields: &FstabFields{
@@ -57,8 +56,7 @@ func (s *fstabParserListener) ExitEntry(ctx *parser.EntryContext) {
 }
 
 func (s *fstabParserListener) EnterSpec(ctx *parser.SpecContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.fstabContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.fstabContext.line)
 
 	text := ctx.GetText()
 	value := commonparser.ParseRawString(text, commonparser.FullFeatures)
@@ -70,8 +68,7 @@ func (s *fstabParserListener) EnterSpec(ctx *parser.SpecContext) {
 }
 
 func (s *fstabParserListener) EnterMountPoint(ctx *parser.MountPointContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.fstabContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.fstabContext.line)
 
 	text := ctx.GetText()
 	value := commonparser.ParseRawString(text, commonparser.FullFeatures)
@@ -83,8 +80,7 @@ func (s *fstabParserListener) EnterMountPoint(ctx *parser.MountPointContext) {
 }
 
 func (s *fstabParserListener) EnterFileSystem(ctx *parser.FileSystemContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.fstabContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.fstabContext.line)
 
 	text := ctx.GetText()
 	value := commonparser.ParseRawString(text, commonparser.FullFeatures)
@@ -96,8 +92,7 @@ func (s *fstabParserListener) EnterFileSystem(ctx *parser.FileSystemContext) {
 }
 
 func (s *fstabParserListener) EnterMountOptions(ctx *parser.MountOptionsContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.fstabContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.fstabContext.line)
 
 	text := ctx.GetText()
 	value := commonparser.ParseRawString(text, commonparser.FullFeatures)
@@ -109,8 +104,7 @@ func (s *fstabParserListener) EnterMountOptions(ctx *parser.MountOptionsContext)
 }
 
 func (s *fstabParserListener) EnterFreq(ctx *parser.FreqContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.fstabContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.fstabContext.line)
 
 	text := ctx.GetText()
 	value := commonparser.ParseRawString(text, commonparser.FullFeatures)
@@ -122,8 +116,7 @@ func (s *fstabParserListener) EnterFreq(ctx *parser.FreqContext) {
 }
 
 func (s *fstabParserListener) EnterPass(ctx *parser.PassContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.fstabContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.fstabContext.line)
 
 	text := ctx.GetText()
 	value := commonparser.ParseRawString(text, commonparser.FullFeatures)

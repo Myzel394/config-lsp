@@ -76,7 +76,7 @@ var MatchRDomainField = docvalues.StringValue{}
 var MatchAddressField = docvalues.IPAddressValue{
 	AllowIPv4:  true,
 	AllowIPv6:  true,
-	AllowRange: true,
+	AllowRange: docvalues.AllowedStatusRequired,
 }
 
 var MatchValueFieldMap = map[matchparser.MatchCriteriaType]docvalues.DeprecatedValue{

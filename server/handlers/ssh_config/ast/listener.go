@@ -45,8 +45,7 @@ func createListener(
 }
 
 func (s *sshParserListener) EnterEntry(ctx *parser.EntryContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.sshContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.sshContext.line)
 
 	value := commonparser.ParseRawString(ctx.GetText(), commonparser.FullFeatures)
 	option := &SSHOption{
@@ -58,8 +57,7 @@ func (s *sshParserListener) EnterEntry(ctx *parser.EntryContext) {
 }
 
 func (s *sshParserListener) EnterKey(ctx *parser.KeyContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.sshContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.sshContext.line)
 
 	text := ctx.GetText()
 	value := commonparser.ParseRawString(text, commonparser.FullFeatures)
@@ -85,8 +83,7 @@ func (s *sshParserListener) EnterKey(ctx *parser.KeyContext) {
 }
 
 func (s *sshParserListener) EnterSeparator(ctx *parser.SeparatorContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.sshContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.sshContext.line)
 
 	text := ctx.GetText()
 	value := commonparser.ParseRawString(text, commonparser.FullFeatures)
@@ -98,8 +95,7 @@ func (s *sshParserListener) EnterSeparator(ctx *parser.SeparatorContext) {
 }
 
 func (s *sshParserListener) EnterValue(ctx *parser.ValueContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.sshContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.sshContext.line)
 
 	value := commonparser.ParseRawString(ctx.GetText(), commonparser.FullFeatures)
 	s.sshContext.currentOption.OptionValue = &SSHValue{
@@ -109,8 +105,7 @@ func (s *sshParserListener) EnterValue(ctx *parser.ValueContext) {
 }
 
 func (s *sshParserListener) ExitEntry(ctx *parser.EntryContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.sshContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.sshContext.line)
 
 	defer (func() {
 		s.sshContext.currentOption = nil

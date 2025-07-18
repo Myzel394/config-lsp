@@ -31,6 +31,8 @@ func TextDocumentSignatureHelp(context *glsp.Context, params *protocol.Signature
 		return nil, nil
 	case shared.LanguageAliases:
 		return aliases.TextDocumentSignatureHelp(context, params)
+	case shared.LanguageBitcoinConf:
+		return nil, nil
 	}
 
 	panic("root-handler/TextDocumentSignatureHelp: unexpected language" + *language)

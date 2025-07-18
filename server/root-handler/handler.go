@@ -6,6 +6,12 @@ import (
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 
+	aliases_handlers "config-lsp/handlers/aliases/handlers"
+	bitcoin_conf_handlers "config-lsp/handlers/bitcoin_conf/handlers"
+	hosts_handlers "config-lsp/handlers/hosts/handlers"
+	ssh_handlers "config-lsp/handlers/ssh_config/handlers"
+	wireguard_handlers "config-lsp/handlers/wireguard/handlers"
+
 	"github.com/tliron/glsp/server"
 )
 
@@ -47,15 +53,18 @@ func initialize(context *glsp.Context, params *protocol.InitializeParams) (any, 
 	capabilities.SignatureHelpProvider = &protocol.SignatureHelpOptions{}
 	capabilities.ExecuteCommandProvider = &protocol.ExecuteCommandOptions{
 		Commands: []string{
-			"aliases.sendTestMail",
+			"aliases." + string(aliases_handlers.CodeActionSendTestMail),
 
-			"hosts.inlineAliases",
+			"hosts." + string(hosts_handlers.CodeActionInlineAliases),
 
-			"sshconfig.addToUnknown",
+			"sshconfig." + string(ssh_handlers.CodeActionAddToUnknown),
 
-			"wireguard.generatePrivateKey",
-			"wireguard.generatePresharedKey",
-			"wireguard.addKeepalive",
+			"wireguard." + string(wireguard_handlers.CodeActionGeneratePrivateKey),
+			"wireguard." + string(wireguard_handlers.CodeActionGeneratePresharedKey),
+			"wireguard." + string(wireguard_handlers.CodeActionGeneratePostDown),
+			"wireguard." + string(wireguard_handlers.CodeActionCreatePeer),
+
+			"bitcoinconf." + string(bitcoin_conf_handlers.CodeActionGenerateRPCAuth),
 		},
 	}
 

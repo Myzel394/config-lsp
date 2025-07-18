@@ -26,6 +26,7 @@ export async function activate({subscriptions}: ExtensionContext) {
 			{language: "fstab"},
 			{language: "hosts"},
 			{language: "wireguard"},
+			{language: "bitcoin_conf"}
 		],
 		initializationOptions: initOptions,
 	};

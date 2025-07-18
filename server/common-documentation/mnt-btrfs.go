@@ -96,7 +96,7 @@ var BtrfsDocumentationAssignable = map[docvalues.EnumString]docvalues.Deprecated
 					),
 				},
 			},
-			docvalues.SuffixWithMeaningValue{
+			docvalues.SuffixValue{
 				Suffixes: []docvalues.Suffix{
 					{
 						Suffix:  "K",

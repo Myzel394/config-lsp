@@ -116,7 +116,7 @@ func getPropertyCompletions(
 
 func getKeyCompletions(
 	section ini.Section,
-	onlySeparator bool,
+	onlySuggestSeparator bool,
 	currentLine uint32,
 ) []protocol.CompletionItem {
 	options := make(map[fields.NormalizedName]docvalues.DocumentationValue)
@@ -157,7 +157,7 @@ func getKeyCompletions(
 			var label string
 			var insertText string
 
-			if onlySeparator {
+			if onlySuggestSeparator {
 				label = optionName + " = "
 				insertText = "= "
 			} else {

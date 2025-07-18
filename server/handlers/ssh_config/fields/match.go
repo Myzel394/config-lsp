@@ -7,9 +7,8 @@ import (
 
 var MatchExecField = docvalues.StringValue{}
 var MatchLocalNetworkField = docvalues.IPAddressValue{
-	AllowIPv4:  true,
-	AllowIPv6:  true,
-	AllowRange: false,
+	AllowIPv4: true,
+	AllowIPv6: true,
 }
 var MatchHostField = docvalues.StringValue{}
 var MatchOriginalHostField = docvalues.StringValue{}

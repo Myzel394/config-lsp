@@ -2,6 +2,7 @@ package lsp
 
 import (
 	"config-lsp/common"
+	bitcoinconf "config-lsp/handlers/bitcoin_conf/lsp"
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 	"config-lsp/root-handler/shared"
@@ -38,6 +39,8 @@ func TextDocumentRangeFormattingFunc(
 		return nil, nil
 	case shared.LanguageAliases:
 		return nil, nil
+	case shared.LanguageBitcoinConf:
+		return bitcoinconf.TextDocumentRangeFormatting(context, params)
 	}
 
 	panic("root-handler/TextDocumentRangeFormattingFunc: unexpected language" + *language)

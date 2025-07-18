@@ -41,7 +41,8 @@ type Header struct {
 // Section represents a section in an INI document
 type Section struct {
 	common.LocationRange
-	Header Header
+	// if `nil` = this is not a real section, but a placeholder for an empty section
+	Header *Header
 	// [uint32]*Property: line number -> *Property
 	Properties *treemap.Map
 }
@@ -51,4 +52,11 @@ type Config struct {
 	Sections []*Section
 	// Used to identify where not to show diagnostics
 	CommentLines map[uint32]struct{}
+
+	XParseConfig INIParseConfig // Configuration for parsing INI files
+}
+
+type INIParseConfig struct {
+	// Allow setting properties outside of sections
+	AllowRootProperties bool
 }
