@@ -16,6 +16,13 @@ func (l Location) GetRelativeIndexPosition(i IndexPosition) IndexPosition {
 	return i - IndexPosition(l.Character)
 }
 
+func (l Location) ToLSPPosition() protocol.Position {
+	return protocol.Position{
+		Line:      l.Line,
+		Character: l.Character,
+	}
+}
+
 // LocationRange: Represents a range of characters in a document
 // Locations are zero-based, start-inclusive and end-exclusive
 // This approach is preferred over using an index-based range, because

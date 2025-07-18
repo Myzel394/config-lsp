@@ -13,6 +13,10 @@ var DefaultFormattingOptions = protocol.FormattingOptions{
 	"trimTrailingWhitespace": true,
 }
 
+// Following options available
+// %s - a replacement for a string
+// /!' - add a quote around the string if it contains spaces.
+// /t - insert a tab / or spaces depending on the options
 type FormatTemplate string
 
 func (f FormatTemplate) Format(
