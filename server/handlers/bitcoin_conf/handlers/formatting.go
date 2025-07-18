@@ -13,17 +13,13 @@ func FormatDocument(
 ) ([]protocol.TextEdit, error) {
 	edits := make([]protocol.TextEdit, 0)
 
-	entries := d.Config.GetOptionsInRange(textRange.Start.Line, textRange.End.Line)
+	entries := d.Config.GetPropertesInRange(textRange.Start.Line, textRange.End.Line)
 
 	for _, info := range entries {
-		option := info.Option
-
-		if option.Key == nil {
-			continue
-		}
-
-		edits = append(edits, formatOption(option, info.Block, options)...)
+		edits = append(edits, formatProperty(info.Property, options)...)
 	}
+
+	edits = append(edits, formatNewlinesBetweenSections(d, textRange)...)
 
 	return edits, nil
 }
