@@ -75,7 +75,7 @@
 		"onLanguage:fstab",
 		"onLanguage:hosts",
 		"onLanguage:wireguard",
-		"onLanguage:bitcoin_conf",
+		"onLanguage:bitcoin_conf"
 	],
 	"sponsor": {
 		"url": "https://github.com/Myzel394/contact-me"
@@ -120,7 +120,7 @@
 		"hosts",
 		"aliases",
 		"bitcoin",
-		"bitcoin_conf
+		"bitcoin_conf"
 	],
 	"engines": {
 		"vscode": "^1.74.0"

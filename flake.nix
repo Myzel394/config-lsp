@@ -152,8 +152,10 @@
 
         devShells."vs-code-extension" = pkgs.mkShell {
           buildInputs = with pkgs; [
+            just
             nodejs
             vsce
+            yarn
             yarn2nix
           ];
         };
