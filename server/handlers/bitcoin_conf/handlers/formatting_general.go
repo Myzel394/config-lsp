@@ -4,7 +4,6 @@ package handlers
 import (
 	bitcoinconf "config-lsp/handlers/bitcoin_conf"
 	"config-lsp/parsers/ini"
-	"fmt"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -14,11 +13,6 @@ func formatNewlinesBetweenSections(
 	d *bitcoinconf.BTCDocument,
 	textRange protocol.Range,
 ) []protocol.TextEdit {
-	println(fmt.Sprintf("Formatting newlines between sections in range: %v; Da lange is %d", textRange, len(d.Config.Sections)))
-	if len(d.Config.Sections) < 2 {
-		return nil
-	}
-
 	edits := make([]protocol.TextEdit, 0, len(d.Config.Sections)-1)
 
 	for _, section := range d.Config.Sections {

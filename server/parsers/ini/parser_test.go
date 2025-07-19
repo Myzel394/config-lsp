@@ -245,3 +245,72 @@ watch
 		t.Errorf("Parse: Expected property to be 'watch', but got '%s'", property.Key.Name)
 	}
 }
+
+func TestExactLines(t *testing.T) {
+	sample := `hello = world`
+	config := NewConfig()
+	config.XParseConfig = INIParseConfig{
+		AllowRootProperties: true,
+	}
+	errors := config.Parse(sample)
+
+	if len(errors) > 0 {
+		t.Fatalf("Parse: Expected no errors, but got %v", errors)
+	}
+	if len(config.Sections) != 1 {
+		t.Fatalf("Parse: Expected 1 section, but got %d", len(config.Sections))
+	}
+	if config.Sections[0].Header != nil {
+		t.Fatalf("Parse: Expected first section to have a header, but it is nil")
+	}
+
+	rawProperty, _ := config.Sections[0].Properties.Get(uint32(0))
+	property := rawProperty.(*Property)
+	if !(property.Start.Line == 0 && property.Start.Character == 0 && property.End.Line == 0 && property.End.Character == 13) {
+		t.Errorf("Parse: Expected property to be 'hello = world', but got '%s = %s'", property.Key.Name, property.Value.Value)
+	}
+}
+
+func TestExactLines2(t *testing.T) {
+	sample := `hello = world
+check = true`
+	config := NewConfig()
+	config.XParseConfig = INIParseConfig{
+		AllowRootProperties: true,
+	}
+	errors := config.Parse(sample)
+
+	if len(errors) > 0 {
+		t.Fatalf("Parse: Expected no errors, but got %v", errors)
+	}
+	if len(config.Sections) != 1 {
+		t.Fatalf("Parse: Expected 1 section, but got %d", len(config.Sections))
+	}
+	if config.Sections[0].Header != nil {
+		t.Fatalf("Parse: Expected first section to have a header, but it is nil")
+	}
+
+	rawProperty, _ := config.Sections[0].Properties.Get(uint32(1))
+	property := rawProperty.(*Property)
+	if !(property.Start.Line == 1 && property.Start.Character == 0 && property.End.Line == 1 && property.End.Character == 12) {
+		t.Errorf("Parse: Expected property to be at line 1, but got '%v = %v'", property.Start, property.End)
+	}
+}
+
+func TestExactLines3(t *testing.T) {
+	sample := `[main]
+server=1
+
+
+`
+	config := NewConfig()
+	errors := config.Parse(sample)
+
+	if len(errors) > 0 {
+		t.Fatalf("Parse: Expected no errors, but got %v", errors)
+	}
+
+	if !(config.Sections[0].End.Line == 4 && config.Sections[0].End.Character == 0) {
+		t.Errorf("Parse: Expected section to end at line 16, but got %v", config.Sections[1].End)
+	}
+}
