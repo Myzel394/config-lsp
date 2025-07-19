@@ -17,7 +17,7 @@ func formatNewlinesBetweenSections(
 
 	for _, section := range d.Config.Sections {
 		// Skip sections outside the specified range
-		if !(section.Start.Line >= textRange.Start.Line && section.End.Line <= textRange.End.Line) {
+		if !(section.Start.Line >= textRange.Start.Line || section.End.Line <= textRange.End.Line) {
 			continue
 		}
 
@@ -34,6 +34,39 @@ func formatNewlinesBetweenSections(
 					End:   section.End.ToLSPPosition(),
 				},
 				NewText: "\n\n",
+			})
+		}
+	}
+
+	return edits
+}
+
+func formatRemoveNewlinesAfterHeader(
+	d *bitcoinconf.BTCDocument,
+	textRange protocol.Range,
+) []protocol.TextEdit {
+	edits := make([]protocol.TextEdit, 0, len(d.Config.Sections)-1)
+
+	for _, section := range d.Config.Sections {
+		// Skip sections outside the specified range
+		if !(section.Start.Line >= textRange.Start.Line || section.End.Line <= textRange.End.Line) {
+			continue
+		}
+
+		_, rawFirstProperty := section.Properties.Min()
+		// Empty section
+		if rawFirstProperty == nil {
+			continue
+		}
+
+		firstProperty := rawFirstProperty.(*ini.Property)
+		if firstProperty.Start.Line > section.Start.Line+1 {
+			edits = append(edits, protocol.TextEdit{
+				Range: protocol.Range{
+					Start: section.Header.End.ToLSPPosition(),
+					End:   firstProperty.Start.ToLSPPosition(),
+				},
+				NewText: "\n",
 			})
 		}
 	}

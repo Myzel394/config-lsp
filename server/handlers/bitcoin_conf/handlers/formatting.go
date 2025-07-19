@@ -20,6 +20,7 @@ func FormatDocument(
 	}
 
 	edits = append(edits, formatNewlinesBetweenSections(d, textRange)...)
+	edits = append(edits, formatRemoveNewlinesAfterHeader(d, textRange)...)
 
 	return edits, nil
 }

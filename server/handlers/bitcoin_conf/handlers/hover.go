@@ -22,10 +22,13 @@ func GetPropertyHoverInfo(
 	}
 
 	if property.Key.ContainsPosition(index) {
+		topic, _ := fields.TopicForOption[property.Key.Name]
+		text := "## " + topic + "\n\n" + option.Documentation
+
 		return &protocol.Hover{
 			Contents: protocol.MarkupContent{
 				Kind:  protocol.MarkupKindMarkdown,
-				Value: option.Documentation,
+				Value: text,
 			},
 		}, nil
 	}
