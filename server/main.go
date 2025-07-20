@@ -45,7 +45,7 @@ func main() {
 			SampleRate:       1.0,
 
 			SendDefaultPII: false,
-			Release: common.Version,
+			Release:        common.Version,
 		})
 
 		if err != nil {
