@@ -22,15 +22,32 @@ jobs:
       - name: Check Nix flake
         run: nix flake check
 
-      - name: Build app
-        run: nix develop --command bash -c "cd server && go build"
+      # - name: Build app
+      #   run: nix develop --command bash -c "cd server && go build"
+      #
+      # - name: Build VS Code extension
+      #   run: nix build .#vs-code-extension
+      #
+      # - name: Upload VS Code extension
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: vs-code-extension
+      #     path: result/config-lsp-*.vsix
+      #
 
-      - name: Build VS Code extension
-        run: nix build .#vs-code-extension
-
-      - name: Upload VS Code extension
-        uses: actions/upload-artifact@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
         with:
-          name: vs-code-extension
-          path: result/config-lsp-*.vsix
+          go-version: stable
+
+      - name: Build extension 
+        run: |
+          cd server && GOOS=linux GOARCH=amd64 go build -a -gcflags=all="-l -B" -ldflags="-s -w -X main.SENTRY_DSN=$SENTRY_DSN" -o config-lsp
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+
+      # Upload config-lsp binary
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: 'server/config-lsp'
 
