@@ -37,7 +37,7 @@
         inputs = [
           pkgs.go_1_24
         ];
-        serverUncompressed = pkgs.buildGoModule {
+        serverUncompressed = (pkgs: pkgs.buildGoModule {
           nativeBuildInputs = inputs;
           pname = "github.com/Myzel394/config-lsp";
           version = version;
@@ -48,10 +48,10 @@
           checkPhase = ''
             go test -v $(pwd)/...
           '';
-        };
+        });
         server = (pkgs: pkgs.stdenv.mkDerivation {
           name = "config-lsp-${version}";
-          src = serverUncompressed;
+          src = serverUncompressed pkgs;
           buildInputs = [
             pkgs.upx
           ];
