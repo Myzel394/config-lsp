@@ -68,6 +68,9 @@
         };
       in {
         packages = {
+          # The server needs SENTRY_DSN to be injected using Go for a full prod build.
+          # This is done in the CI:CD for build releases using 
+          # `-ldflags="-X main.SENTRY_DSN=$SENTRY_DSN"`
           default = server;
           "server-uncompressed" = serverUncompressed;
           "vs-code-extension-bare" = let
