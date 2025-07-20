@@ -46,6 +46,10 @@ jobs:
         env:
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
 
+      - name: Shrink binary
+        if: ${{ matrix.goos == 'linux' }}
+        run: nix develop .#"vs-code-extension" --command bash -c "upx server/config-lsp"
+
       - name: Upload VS Code extension
         uses: actions/upload-artifact@v4
         with:
