@@ -2,7 +2,7 @@
 	"name": "config-lsp",
 	"description": "Language Features (completions, diagnostics, etc.) for your config files: gitconfig, fstab, aliases, hosts, wireguard, ssh_config, sshd_config, bitcoin_conf, and more to come!",
 	"author": "Myzel394",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Myzel394/config-lsp"
@@ -108,6 +108,11 @@
 		"diagnostics",
 		"hints",
 		"format",
+		"intellisense",
+		"hover",
+		"linting",
+		"lint",
+		"syntax",
 
 		"help",
 		"helper",

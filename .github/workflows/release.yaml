@@ -117,19 +117,13 @@ jobs:
       - name: Build extension 
         if: ${{ matrix.goos != 'windows' }}
         run: |
-          cd server && 
-          GOOS=${{ matrix.goos }} 
-          GOARCH=${{ matrix.goarch }} 
-          go build -a -gcflags=all="-l -B" -ldflags="-s -w -X main.SENTRY_DSN=$SENTRY_DSN" -o config-lsp
+          cd server && GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -a -gcflags=all="-l -B" -ldflags="-s -w -X main.SENTRY_DSN=$SENTRY_DSN" -o config-lsp
         env:
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       - name: Build extension 
         if: ${{ matrix.goos == 'windows' }}
         run: |
-          cd server && 
-          GOOS=${{ matrix.goos }} 
-          GOARCH=${{ matrix.goarch }} 
-          go build -a -gcflags=all="-l -B" -ldflags="-s -w -X main.SENTRY_DSN=$SENTRY_DSN" -o config-lsp.exe
+          cd server && GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -a -gcflags=all="-l -B" -ldflags="-s -w -X main.SENTRY_DSN=$SENTRY_DSN" -o config-lsp.exe
         env:
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
 
