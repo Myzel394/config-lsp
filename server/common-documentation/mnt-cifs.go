@@ -10,6 +10,12 @@ Note
 The cifs vfs accepts the parameter user=, or for users familiar with smbfs it accepts the longer form of the parameter username=. Similarly the longer smbfs style parameter names may be accepted as synonyms for the shorter cifs parameters pass=,dom= and cred=.`,
 	): docvalues.UserValue("", false),
 	docvalues.CreateEnumStringWithDoc(
+		"username",
+		`specifies the username to connect as. If this is not given, then the environment variable USER is used. This option can also take the form "user%password" or "workgroup/user" or "workgroup/user%password" to allow the password and workgroup to be specified as part of the username.
+Note
+The cifs vfs accepts the parameter user=, or for users familiar with smbfs it accepts the longer form of the parameter username=. Similarly the longer smbfs style parameter names may be accepted as synonyms for the shorter cifs parameters pass=,dom= and cred=.`,
+	): docvalues.UserValue("", false),
+	docvalues.CreateEnumStringWithDoc(
 		"password",
 		`specifies the CIFS password. If this option is not given then the environment variable PASSWD is used. If the password is not specified directly or indirectly via an argument to mount, mount.cifs will prompt for a password, unless the guest option is specified.`,
 	): docvalues.StringValue{},
