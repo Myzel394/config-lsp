@@ -84,7 +84,7 @@ func initialize(context *glsp.Context, params *protocol.InitializeParams) (any, 
 		Capabilities: capabilities,
 		ServerInfo: &protocol.InitializeResultServerInfo{
 			Name:    lsName,
-			Version: &Version,
+			Version: &common.Version,
 		},
 	}, nil
 }

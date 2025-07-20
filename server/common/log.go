@@ -30,5 +30,5 @@ func SetupLogging() {
 		Log = slog.Default()
 	}
 
-	Log = Log.With("release", "0.3.0") // CI:CD-VERSION
+	Log = Log.With("release", Version)
 }

@@ -13,7 +13,7 @@ import (
 
 func main() {
 	if len(os.Args) > 1 && (os.Args[1] == "--version" || os.Args[1] == "version") {
-		fmt.Println(roothandler.Version)
+		fmt.Println(common.Version)
 
 		os.Exit(0)
 		return
@@ -31,8 +31,6 @@ func main() {
 		}
 
 		err := sentry.Init(sentry.ClientOptions{
-			// Either set your DSN here or set the SENTRY_DSN environment variable.
-			Dsn: "https://76a930e8b68a92fb2993844e79e08b07@sentry.myzel394.app/2",
 			// Enable printing of SDK debug messages.
 			// Useful when getting started or trying to figure something out.
 			Debug:       common.ServerOptions.IsDebug,
