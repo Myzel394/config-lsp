@@ -23,7 +23,7 @@
       "aarch64-windows"
     ] (system: 
       let
-        version = "0.2.2"; # CI:CD-VERSION
+        version = "0.3.0"; # CI:CD-VERSION
         pkgs = import nixpkgs {
           inherit system;
           overlays = [
@@ -42,7 +42,7 @@
           pname = "github.com/Myzel394/config-lsp";
           version = version;
           src = ./server;
-          vendorHash = "sha256-TClNTOuYag6MZe1yUO00AfJ8ZbgCSr6Ei/nodUm9ti0=";
+          vendorHash = "sha256-3hUSxiH9XUKcOWDFV4zyIVEVtltRJHfdzBGpGARTs9I";
           proxyVendor = true;
           ldflags = [ "-s" "-w" ];
           checkPhase = ''
