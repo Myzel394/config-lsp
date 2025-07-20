@@ -62,7 +62,8 @@
 
             # upx is currently not supported for darwin
             if [ "${system}" != "x86_64-darwin" ] && [ "${system}" != "aarch64-darwin" ]; then
-              upx --ultra-brute $out/bin/config-lsp
+              # UPX is currently not in use to avoid issues with NixOS
+              # upx --ultra-brute $out/bin/config-lsp
             fi
           '';
         });

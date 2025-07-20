@@ -137,9 +137,10 @@ jobs:
         if: ${{ matrix.goos == 'windows' }}
         run: mv server/config-lsp.exe dist/out/
 
-      - name: Shrink binary
-        if: ${{ matrix.goos == 'linux' }}
-        run: nix develop .#"vs-code-extension" --command bash -c "upx dist/out/config-lsp"
+      # Disabled for now to better support NixOS
+      # - name: Shrink binary
+      #   if: ${{ matrix.goos == 'linux' }}
+      #   run: nix develop .#"vs-code-extension" --command bash -c "upx dist/out/config-lsp"
 
       - name: Package extension
         run: nix develop .#"vs-code-extension" --command bash -c "cd dist && vsce package --target ${{ matrix.vscode_target }}"
