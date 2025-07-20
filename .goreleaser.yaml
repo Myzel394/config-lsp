@@ -17,6 +17,8 @@ builds:
       - windows
       - darwin
     dir: ./server
+    ldflags:
+      - -s -w -X "main.SENTRY_DSN={{.Env.SENTRY_DSN}}"
 
 archives:
   - formats: [ 'tar.gz' ]

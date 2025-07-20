@@ -57,6 +57,7 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GH_CONFIGLSP_TOKEN }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
 
   build-extension:
     name: Build extension for ${{ matrix.action_name }}

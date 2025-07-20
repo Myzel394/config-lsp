@@ -23,7 +23,7 @@ func main() {
 
 	common.InitServerOptions()
 
-	if common.ServerOptions.AllowedUsageReports != common.UsageReportNone {
+	if common.ServerOptions.AllowedUsageReports != common.UsageReportNone && SENTRY_DSN != "" {
 		var environment string
 
 		if common.ServerOptions.IsDebug {
