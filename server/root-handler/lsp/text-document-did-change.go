@@ -3,6 +3,7 @@ package lsp
 import (
 	"config-lsp/common"
 	aliases "config-lsp/handlers/aliases/lsp"
+	bitcoinconf "config-lsp/handlers/bitcoin_conf/lsp"
 	fstab "config-lsp/handlers/fstab/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
@@ -67,6 +68,8 @@ func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeText
 		return hosts.TextDocumentDidChange(context, params)
 	case shared.LanguageAliases:
 		return aliases.TextDocumentDidChange(context, params)
+	case shared.LanguageBitcoinConf:
+		return bitcoinconf.TextDocumentDidChange(context, params)
 	}
 
 	panic("root-handler/TextDocumentDidChange: unexpected language" + *language)

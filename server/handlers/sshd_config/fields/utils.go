@@ -15,8 +15,8 @@ var booleanEnumValue = docvalues.EnumValue{
 var channelTimeoutExtractor = docvalues.ExtractKeyDuplicatesExtractor("=")
 var setEnvExtractor = docvalues.ExtractKeyDuplicatesExtractor("=")
 
-func prefixPlusMinusCaret(values []docvalues.EnumString) docvalues.PrefixWithMeaningValue {
-	return docvalues.PrefixWithMeaningValue{
+func prefixPlusMinusCaret(values []docvalues.EnumString) docvalues.PrefixValue {
+	return docvalues.PrefixValue{
 		Prefixes: []docvalues.Prefix{
 			{
 				Prefix:  "+",

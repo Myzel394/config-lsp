@@ -29,7 +29,7 @@ jobs:
       - name: Check version in code matches flake version
         shell: bash
         run: |
-          if ! [ $(grep '// CI:CD-VERSION$' server/root-handler/common.go | cut -d'"' -f 2) = $(grep '# CI:CD-VERSION$' flake.nix | cut -d'"' -f 2) ];
+          if ! [ $(grep '// CI:CD-VERSION$' server/common/common.go | cut -d'"' -f 2) = $(grep '# CI:CD-VERSION$' flake.nix | cut -d'"' -f 2) ];
           then
             echo "Version mismatch between code and flake"
             exit 1
@@ -115,10 +115,22 @@ jobs:
 
       - name: Build extension 
         if: ${{ matrix.goos != 'windows' }}
-        run: cd server && GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -a -gcflags=all="-l -B" -ldflags="-s -w" -o config-lsp
+        run: |
+          cd server && 
+          GOOS=${{ matrix.goos }} 
+          GOARCH=${{ matrix.goarch }} 
+          go build -a -gcflags=all="-l -B" -ldflags="-s -w -X main.SENTRY_DSN=$SENTRY_DSN" -o config-lsp
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       - name: Build extension 
         if: ${{ matrix.goos == 'windows' }}
-        run: cd server && GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -a -gcflags=all="-l -B" -ldflags="-s -w" -o config-lsp.exe
+        run: |
+          cd server && 
+          GOOS=${{ matrix.goos }} 
+          GOARCH=${{ matrix.goarch }} 
+          go build -a -gcflags=all="-l -B" -ldflags="-s -w -X main.SENTRY_DSN=$SENTRY_DSN" -o config-lsp.exe
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
 
       - name: Prepare folder
         run: cp -rL result dist && chmod -R 777 dist

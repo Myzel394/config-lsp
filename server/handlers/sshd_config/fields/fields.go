@@ -178,7 +178,7 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
  ssh-ed25519,ecdsa-sha2-nistp256, ecdsa-sha2-nistp384,ecdsa-sha2-nistp521, sk-ssh-ed25519@openssh.com, sk-ecdsa-sha2-nistp256@openssh.com, rsa-sha2-512,rsa-sha2-256
  If the specified list begins with a ‘+’ character, then the specified algorithms will be appended to the default set instead of replacing them. If the specified list begins with a ‘-’ character, then the specified algorithms (including wildcards) will be removed from the default set instead of replacing them.
  Certificates signed using other algorithms will not be accepted for public key or host-based authentication.`,
-		Value: docvalues.PrefixWithMeaningValue{
+		Value: docvalues.PrefixValue{
 			Prefixes: []docvalues.Prefix{
 				{
 					Prefix:  "+",
@@ -527,7 +527,6 @@ See PATTERNS in ssh_config(5) for more information on patterns. This keyword may
 			Key: docvalues.IPAddressValue{
 				AllowIPv4:     true,
 				AllowIPv6:     true,
-				AllowRange:    false,
 				DisallowedIPs: &docvalues.NonRoutableNetworks,
 			},
 			Separator: ":",
@@ -642,7 +641,6 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 				Key: docvalues.IPAddressValue{
 					AllowIPv4:     true,
 					AllowIPv6:     true,
-					AllowRange:    false,
 					DisallowedIPs: &docvalues.NonRoutableNetworks,
 				},
 				Separator: ":",
@@ -688,7 +686,6 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 						docvalues.IPAddressValue{
 							AllowIPv4:     true,
 							AllowIPv6:     true,
-							AllowRange:    false,
 							DisallowedIPs: &docvalues.NonRoutableNetworks,
 						},
 					},
@@ -851,8 +848,18 @@ Only a subset of keywords may be used on the lines following a Match keyword. Av
 		Value: docvalues.KeyValueAssignmentValue{
 			Separator:       " ",
 			ValueIsOptional: true,
-			Key:             docvalues.DataAmountValue{},
-			Value:           docvalues.TimeFormatValue{},
+			Key: docvalues.DataAmountValue{
+				AllowedUnits: map[rune]struct{}{
+					'K': {},
+					'M': {},
+					'G': {},
+				},
+				AllowDecimal:    false,
+				AllowByteSuffix: false,
+				Base:            docvalues.DataAmountValueBase1024,
+				Validator:       docvalues.CreateDARangeValidator("1G", "4G", docvalues.DataAmountValueBase1024),
+			},
+			Value: docvalues.TimeFormatValue{},
 		},
 	},
 	"requiredrsasize": {

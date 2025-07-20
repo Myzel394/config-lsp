@@ -1,6 +1,7 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
 	"strconv"
 
@@ -60,7 +61,7 @@ func (v PowerOfTwoValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 
 var powers = []int{1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536}
 
-func (v PowerOfTwoValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v PowerOfTwoValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	textFormat := protocol.InsertTextFormatPlainText
 	kind := protocol.CompletionItemKindValue
 

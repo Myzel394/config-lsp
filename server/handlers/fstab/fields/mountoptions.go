@@ -486,4 +486,12 @@ var MountOptionsMapField = map[string]optionField{
 		Enums:      commondocumentation.BcacheFSDocumentationEnums,
 		Assignable: commondocumentation.BcacheFSDocumentationAssignable,
 	},
+	"cifs": {
+		Enums:      commondocumentation.CifsDocumentationEnums,
+		Assignable: commondocumentation.CifsDocumentationAssignable,
+	},
+	"zfs": {
+		Enums:      commondocumentation.ZfsDocumentationEnums,
+		Assignable: commondocumentation.ZfsDocumentationAssignable,
+	},
 }

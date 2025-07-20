@@ -1,4 +1,4 @@
-package ast
+package ini
 
 import (
 	"config-lsp/common"
@@ -11,28 +11,31 @@ import (
 	gods "github.com/emirpasic/gods/utils"
 )
 
-func NewWGConfig() *WGConfig {
-	config := &WGConfig{}
+// NewConfig creates a new empty INI configuration
+func NewConfig() *Config {
+	config := &Config{}
 	config.Clear()
 
 	return config
 }
 
-func (c *WGConfig) Clear() {
-	c.Sections = make([]*WGSection, 0, 2)
+// Clear resets the configuration
+func (c *Config) Clear() {
+	c.Sections = make([]*Section, 0, 2)
 	c.CommentLines = make(map[uint32]struct{})
 }
 
 var commentPattern = regexp.MustCompile(`^\s*([;#])`)
 var emptyPattern = regexp.MustCompile(`^\s*$`)
 var headerPattern = regexp.MustCompile(`^\s*\[(\w+)?]?`)
-var linePattern = regexp.MustCompile(`^\s*(?P<key>.+?)\s*(?P<separator>=)\s*(?P<value>\S.*?)?\s*(?:[;#].*)?\s*$`)
+var linePattern = regexp.MustCompile(`^\s*(?P<key>.+?)\s*(?P<separator>=)\s*(?P<value>\S.*?)?\s*(?: [;#].*)?\s*$`)
 
-func (c *WGConfig) Parse(input string) []common.LSPError {
+// Parse parses an INI string and returns any errors encountered
+func (c *Config) Parse(input string) []common.LSPError {
 	errors := make([]common.LSPError, 0)
 	lines := utils.SplitIntoLines(input)
 
-	var currentSection *WGSection
+	var currentSection *Section
 
 	for rawLineNumber, line := range lines {
 		lineNumber := uint32(rawLineNumber)
@@ -59,7 +62,7 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 		if headerPattern.MatchString(line) {
 			name := headerPattern.FindStringSubmatch(line)[1]
 
-			currentSection = &WGSection{
+			currentSection = &Section{
 				LocationRange: common.LocationRange{
 					Start: common.Location{
 						Line:      lineNumber,
@@ -70,7 +73,7 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 						Character: uint32(len(line)) + 1,
 					},
 				},
-				Header: WGHeader{
+				Header: &Header{
 					LocationRange: common.LocationRange{
 						Start: common.Location{
 							Line:      lineNumber,
@@ -91,39 +94,57 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 			continue
 		}
 
-		// Else property
-
-		// Set end of last section
-		if currentSection != nil {
-			currentSection.End.Line = lineNumber
-			currentSection.End.Character = uint32(len(line))
-		}
+		///// Else property
 
 		if currentSection == nil {
-			// Root properties are not allowed
-			errors = append(errors, common.LSPError{
-				Range: common.LocationRange{
-					Start: common.Location{
-						Line:      lineNumber,
-						Character: 0,
+			if c.XParseConfig.AllowRootProperties {
+				currentSection = &Section{
+					LocationRange: common.LocationRange{
+						Start: common.Location{
+							Line:      lineNumber,
+							Character: 0,
+						},
+						End: common.Location{
+							Line:      lineNumber,
+							Character: uint32(len(line)),
+						},
 					},
-					End: common.Location{
-						Line:      lineNumber,
-						Character: uint32(len(line)),
-					},
-				},
-				Err: fmt.Errorf("A header is missing before a property. This property has no header above it."),
-			})
+					Header:     nil, // No header for empty Sections
+					Properties: treemap.NewWith(gods.UInt32Comparator),
+				}
 
-			continue
+				c.Sections = append(c.Sections, currentSection)
+			} else {
+				// Root properties are not allowed
+				errors = append(errors, common.LSPError{
+					Range: common.LocationRange{
+						Start: common.Location{
+							Line:      lineNumber,
+							Character: 0,
+						},
+						End: common.Location{
+							Line:      lineNumber,
+							Character: uint32(len(line)),
+						},
+					},
+					Err: fmt.Errorf("A header is missing before a property. This property has no header above it."),
+				})
+
+				continue
+			}
 		}
+
+		// Set end of last section
+		currentSection.End.Line = lineNumber
+		currentSection.End.Character = uint32(len(line))
 
 		if !strings.Contains(line, "=") {
 			// Incomplete property
+
 			indexes := utils.GetTrimIndex(line)
 
-			newProperty := &WGProperty{
-				Key: WGPropertyKey{
+			newProperty := &Property{
+				Key: PropertyKey{
 					LocationRange: common.LocationRange{
 						Start: common.Location{
 							Line:      lineNumber,
@@ -135,6 +156,16 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 						},
 					},
 					Name: line[indexes[0]:indexes[1]],
+				},
+				LocationRange: common.LocationRange{
+					Start: common.Location{
+						Line:      lineNumber,
+						Character: uint32(indexes[0]),
+					},
+					End: common.Location{
+						Line:      lineNumber,
+						Character: uint32(len(line)),
+					},
 				},
 			}
 
@@ -166,7 +197,7 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 			// Construct key
 			keyStart := uint32(indexes[2])
 			keyEnd := uint32(indexes[3])
-			key := WGPropertyKey{
+			key := PropertyKey{
 				LocationRange: common.LocationRange{
 					Start: common.Location{
 						Line:      lineNumber,
@@ -183,7 +214,7 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 			// Construct separator
 			separatorStart := uint32(indexes[4])
 			separatorEnd := uint32(indexes[5])
-			separator := WGPropertySeparator{
+			separator := PropertySeparator{
 				LocationRange: common.LocationRange{
 					Start: common.Location{
 						Line:      lineNumber,
@@ -197,7 +228,7 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 			}
 
 			// Construct value
-			var value *WGPropertyValue
+			var value *PropertyValue
 			propertyEnd := uint32(len(line))
 
 			if indexes[6] != -1 && indexes[7] != -1 {
@@ -206,7 +237,7 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 				valueEnd := uint32(indexes[7])
 				propertyEnd = valueEnd
 
-				value = &WGPropertyValue{
+				value = &PropertyValue{
 					LocationRange: common.LocationRange{
 						Start: common.Location{
 							Line:      lineNumber,
@@ -222,7 +253,7 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 			}
 
 			// And lastly, add the property
-			newProperty := &WGProperty{
+			newProperty := &Property{
 				LocationRange: common.LocationRange{
 					Start: common.Location{
 						Line:      lineNumber,
@@ -240,6 +271,25 @@ func (c *WGConfig) Parse(input string) []common.LSPError {
 			}
 			currentSection.Properties.Put(lineNumber, newProperty)
 		}
+	}
+
+	// Edge case, empty file
+	if len(c.Sections) == 0 && c.XParseConfig.AllowRootProperties {
+		// If the file is empty, we create a root section
+		c.Sections = append(c.Sections, &Section{
+			LocationRange: common.LocationRange{
+				Start: common.Location{
+					Line:      0,
+					Character: 0,
+				},
+				End: common.Location{
+					Line:      uint32(len(lines)),
+					Character: 0,
+				},
+			},
+			Header:     nil, // No header for empty Sections
+			Properties: treemap.NewWith(gods.UInt32Comparator),
+		})
 	}
 
 	return errors

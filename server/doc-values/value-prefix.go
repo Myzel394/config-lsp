@@ -1,7 +1,9 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -12,12 +14,30 @@ type Prefix struct {
 	Prefix  string
 	Meaning string
 }
-type PrefixWithMeaningValue struct {
+
+/*
+Create a new PrefixValue that allows the given prefixes.
+@example:
+```
+
+	PrefixValue{
+		Prefixes: []Prefix{
+			{Prefix: "debug_", Meaning: "Enable debug mode"},
+			{Prefix: "test_", Meaning: "Enable test mode"},
+		},
+		SubValue: StringValue{},
+	}
+
+```
+*/
+type PrefixValue struct {
 	Prefixes []Prefix
+	// A prefix is required
+	Required bool
 	SubValue DeprecatedValue
 }
 
-func (v PrefixWithMeaningValue) GetTypeDescription() []string {
+func (v PrefixValue) GetTypeDescription() []string {
 	subDescription := v.SubValue.GetTypeDescription()
 
 	prefixDescription := utils.Map(v.Prefixes, func(prefix Prefix) string {
@@ -32,24 +52,32 @@ func (v PrefixWithMeaningValue) GetTypeDescription() []string {
 	)
 }
 
-func (v PrefixWithMeaningValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
+func (v PrefixValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	for _, prefix := range v.Prefixes {
 		if strings.HasPrefix(value, prefix.Prefix) {
 			return v.SubValue.DeprecatedCheckIsValid(value[len(prefix.Prefix):])
 		}
 	}
 
+	if v.Required {
+		return []*InvalidValue{{
+			Err:   errors.New("A prefix is required"),
+			Start: 0,
+			End:   uint32(len(value)),
+		}}
+	}
+
 	return v.SubValue.DeprecatedCheckIsValid(value)
 }
 
-func (v PrefixWithMeaningValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v PrefixValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	textFormat := protocol.InsertTextFormatPlainText
 	kind := protocol.CompletionItemKindText
 
 	// Check if the line starts with a prefix
 	startsWithPrefix := false
 	for _, prefix := range v.Prefixes {
-		if strings.HasPrefix(line, prefix.Prefix) {
+		if strings.HasPrefix(value, prefix.Prefix) {
 			startsWithPrefix = true
 			break
 		}
@@ -67,10 +95,10 @@ func (v PrefixWithMeaningValue) DeprecatedFetchCompletions(line string, cursor u
 		})
 	}
 
-	return append(prefixCompletions, v.SubValue.DeprecatedFetchCompletions(line, cursor)...)
+	return append(prefixCompletions, v.SubValue.FetchCompletions(value, cursor)...)
 }
 
-func (v PrefixWithMeaningValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
+func (v PrefixValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	for _, prefix := range v.Prefixes {
 		if strings.HasPrefix(line, prefix.Prefix) {
 			return append([]string{

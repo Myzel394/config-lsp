@@ -2,6 +2,7 @@ package lsp
 
 import (
 	aliases "config-lsp/handlers/aliases/lsp"
+	bitcoinconf "config-lsp/handlers/bitcoin_conf/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
@@ -27,6 +28,8 @@ func WorkspaceExecuteCommand(context *glsp.Context, params *protocol.ExecuteComm
 		edit, err = aliases.WorkspaceExecuteCommand(context, params)
 	case "sshconfig":
 		edit, err = sshconfig.WorkspaceExecuteCommand(context, params)
+	case "bitcoinconf":
+		edit, err = bitcoinconf.WorkspaceExecuteCommand(context, params)
 	}
 
 	if err != nil {

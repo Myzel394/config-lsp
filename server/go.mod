@@ -5,9 +5,10 @@ go 1.24
 require (
 	github.com/antlr4-go/antlr/v4 v4.13.1
 	github.com/emirpasic/gods v1.18.1
+	github.com/getsentry/sentry-go v0.34.1
+	github.com/getsentry/sentry-go/slog v0.34.1
 	github.com/google/go-cmp v0.7.0
 	github.com/hbollon/go-edlib v1.6.0
-	github.com/tliron/commonlog v0.2.19
 	github.com/tliron/glsp v0.2.2
 	golang.org/x/exp v0.0.0-20250606033433-dcc06ee1d476
 )
@@ -25,8 +26,10 @@ require (
 	github.com/sasha-s/go-deadlock v0.3.5 // indirect
 	github.com/segmentio/ksuid v1.0.4 // indirect
 	github.com/sourcegraph/jsonrpc2 v0.2.1 // indirect
+	github.com/tliron/commonlog v0.2.19 // indirect
 	github.com/tliron/kutil v0.3.26 // indirect
 	golang.org/x/crypto v0.39.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/term v0.32.0 // indirect
+	golang.org/x/text v0.26.0 // indirect
 )

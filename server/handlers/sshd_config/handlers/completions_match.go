@@ -81,15 +81,11 @@ func getMatchValueCompletions(
 	value := entry.GetValueAtPosition(cursor)
 
 	var line string
-	var relativeCursor uint32
+	var relativeCursor common.CursorPosition
 
 	if value != nil {
 		line = value.Value.Raw
-		relativeCursor = common.DeprecatedImprovedCursorToIndex(
-			cursor,
-			line,
-			value.Start.Character,
-		)
+		relativeCursor = cursor.ShiftHorizontal(-int(value.Start.Character))
 	} else {
 		line = ""
 		relativeCursor = 0
@@ -97,19 +93,19 @@ func getMatchValueCompletions(
 
 	switch entry.Criteria.Type {
 	case matchparser.MatchCriteriaTypeUser:
-		return fields.MatchUserField.DeprecatedFetchCompletions(line, relativeCursor)
+		return fields.MatchUserField.FetchCompletions(line, relativeCursor)
 	case matchparser.MatchCriteriaTypeGroup:
-		return fields.MatchGroupField.DeprecatedFetchCompletions(line, relativeCursor)
+		return fields.MatchGroupField.FetchCompletions(line, relativeCursor)
 	case matchparser.MatchCriteriaTypeHost:
-		return fields.MatchHostField.DeprecatedFetchCompletions(line, relativeCursor)
+		return fields.MatchHostField.FetchCompletions(line, relativeCursor)
 	case matchparser.MatchCriteriaTypeAddress:
-		return fields.MatchAddressField.DeprecatedFetchCompletions(line, relativeCursor)
+		return fields.MatchAddressField.FetchCompletions(line, relativeCursor)
 	case matchparser.MatchCriteriaTypeLocalAddress:
-		return fields.MatchLocalAddressField.DeprecatedFetchCompletions(line, relativeCursor)
+		return fields.MatchLocalAddressField.FetchCompletions(line, relativeCursor)
 	case matchparser.MatchCriteriaTypeLocalPort:
-		return fields.MatchLocalPortField.DeprecatedFetchCompletions(line, relativeCursor)
+		return fields.MatchLocalPortField.FetchCompletions(line, relativeCursor)
 	case matchparser.MatchCriteriaTypeRDomain:
-		return fields.MatchRDomainField.DeprecatedFetchCompletions(line, relativeCursor)
+		return fields.MatchRDomainField.FetchCompletions(line, relativeCursor)
 	}
 
 	return nil

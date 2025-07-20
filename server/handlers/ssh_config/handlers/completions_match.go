@@ -104,15 +104,11 @@ func getMatchValueCompletions(
 	value := entry.GetValueAtPosition(cursor)
 
 	var line string
-	var relativeCursor uint32
+	var relativeCursor common.CursorPosition
 
 	if value != nil {
 		line = value.Value.Raw
-		relativeCursor = common.DeprecatedImprovedCursorToIndex(
-			cursor,
-			line,
-			value.Start.Character,
-		)
+		relativeCursor = cursor.ShiftHorizontal(-int(value.Start.Character))
 	} else {
 		line = ""
 		relativeCursor = 0
@@ -120,19 +116,19 @@ func getMatchValueCompletions(
 
 	switch entry.Criteria.Type {
 	case matchparser.MatchCriteriaTypeExec:
-		return fields.MatchExecField.DeprecatedFetchCompletions(line, relativeCursor)
+		return fields.MatchExecField.FetchCompletions(line, relativeCursor)
 	case matchparser.MatchCriteriaTypeLocalNetwork:
-		return fields.MatchLocalNetworkField.DeprecatedFetchCompletions(line, relativeCursor)
+		return fields.MatchLocalNetworkField.FetchCompletions(line, relativeCursor)
 	case matchparser.MatchCriteriaTypeHost:
-		return fields.MatchHostField.DeprecatedFetchCompletions(line, relativeCursor)
+		return fields.MatchHostField.FetchCompletions(line, relativeCursor)
 	case matchparser.MatchCriteriaTypeOriginalHost:
-		return fields.MatchOriginalHostField.DeprecatedFetchCompletions(line, relativeCursor)
+		return fields.MatchOriginalHostField.FetchCompletions(line, relativeCursor)
 	case matchparser.MatchCriteriaTypeTagged:
-		return fields.MatchTypeTaggedField.DeprecatedFetchCompletions(line, relativeCursor)
+		return fields.MatchTypeTaggedField.FetchCompletions(line, relativeCursor)
 	case matchparser.MatchCriteriaTypeUser:
-		return fields.MatchUserField.DeprecatedFetchCompletions(line, relativeCursor)
+		return fields.MatchUserField.FetchCompletions(line, relativeCursor)
 	case matchparser.MatchCriteriaTypeLocalUser:
-		return fields.MatchTypeLocalUserField.DeprecatedFetchCompletions(line, relativeCursor)
+		return fields.MatchTypeLocalUserField.FetchCompletions(line, relativeCursor)
 	}
 
 	return nil

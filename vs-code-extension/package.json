@@ -1,8 +1,8 @@
 {
 	"name": "config-lsp",
-	"description": "Language Features (completions, diagnostics, etc.) for your config files: gitconfig, fstab, aliases, hosts, wireguard, ssh_config, sshd_config, and more to come!",
+	"description": "Language Features (completions, diagnostics, etc.) for your config files: gitconfig, fstab, aliases, hosts, wireguard, ssh_config, sshd_config, bitcoin_conf, and more to come!",
 	"author": "Myzel394",
-	"version": "0.2.2",
+	"version": "0.3.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Myzel394/config-lsp"
@@ -56,6 +56,13 @@
 				"aliases": ["WireGuard", "wireguard", "wg"],
 				"filenames": ["wireguard", "wg0.conf", "wg1.conf", "wg0", "wg1"],
 				"filenamePatterns": ["/etc/wireguard/*.conf", "**/wireguard", "**/wireguard.conf"]
+			},
+			{
+				"id": "bitcoin_conf",
+				"extensions": ["conf", "bitcoin_conf"],
+				"aliases": ["Bitcoin Config", "bitcoin_conf", "bitcoin.conf"],
+				"filenames": ["bitcoin.conf", "bitcoin", "bitcoin_conf", "bitcoin_conf.conf", "btc.conf", "btc"],
+				"filenamePatterns": ["~/.bitcoin/bitcoin.conf", "/etc/bitcoin/bitcoin.conf", "**/bitcoin/*.conf"]
 			}
 		]
 	},
@@ -67,7 +74,8 @@
 		"onLanguage:aliases",
 		"onLanguage:fstab",
 		"onLanguage:hosts",
-		"onLanguage:wireguard"
+		"onLanguage:wireguard",
+		"onLanguage:bitcoin_conf"
 	],
 	"sponsor": {
 		"url": "https://github.com/Myzel394/contact-me"
@@ -85,9 +93,15 @@
 	],
 	"keywords": [
 		"config",
+		"configuration",
+		"conf",
+		"setup",
+		"settings",
+
 		"lsp",
 		"language",
-		"configuration",
+		"features",
+		"language server",
 		"help",
 		"autocomplete",
 		"completions",
@@ -95,13 +109,18 @@
 		"hints",
 		"format",
 
+		"help",
+		"helper",
+
 		"ssh",
 		"ssh_config",
 		"sshd_config",
 		"wireguard",
 		"fstab",
 		"hosts",
-		"aliases"
+		"aliases",
+		"bitcoin",
+		"bitcoin_conf"
 	],
 	"engines": {
 		"vscode": "^1.74.0"
@@ -115,15 +134,14 @@
 	},
 	"dependencies": {
 		"vscode-languageclient": "^9.0.1",
-		"esbuild": "^0.25.0"
+		"esbuild": "^0.25.8"
 	},
 	"devDependencies": {
-		"@types/mocha": "^5.2.7",
 		"@types/node": "^22.13.2",
 		"@types/vscode": "^1.74.0",
 		"@typescript-eslint/eslint-plugin": "^7.14.0",
 		"@typescript-eslint/parser": "^7.14.0",
-		"eslint": "^9.20.1",
-		"typescript": "^5.7.3"
+		"eslint": "^9.31.0",
+		"typescript": "^5.8.3"
 	}
 }

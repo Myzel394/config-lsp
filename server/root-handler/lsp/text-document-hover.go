@@ -2,6 +2,7 @@ package lsp
 
 import (
 	aliases "config-lsp/handlers/aliases/lsp"
+	bitcoinconf "config-lsp/handlers/bitcoin_conf/lsp"
 	fstab "config-lsp/handlers/fstab/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
@@ -32,6 +33,8 @@ func TextDocumentHover(context *glsp.Context, params *protocol.HoverParams) (*pr
 		return wireguard.TextDocumentHover(context, params)
 	case shared.LanguageAliases:
 		return aliases.TextDocumentHover(context, params)
+	case shared.LanguageBitcoinConf:
+		return bitcoinconf.TextDocumentHover(context, params)
 	}
 
 	panic("root-handler/TextDocumentHover: unexpected language" + *language)

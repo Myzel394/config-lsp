@@ -16,6 +16,13 @@ func (l Location) GetRelativeIndexPosition(i IndexPosition) IndexPosition {
 	return i - IndexPosition(l.Character)
 }
 
+func (l Location) ToLSPPosition() protocol.Position {
+	return protocol.Position{
+		Line:      l.Line,
+		Character: l.Character,
+	}
+}
+
 // LocationRange: Represents a range of characters in a document
 // Locations are zero-based, start-inclusive and end-exclusive
 // This approach is preferred over using an index-based range, because
@@ -98,6 +105,17 @@ var GlobalLocationRange = LocationRange{
 	},
 }
 
+// This will include the next line, so the end will be at the start of the next line
+func (l LocationRange) IncludeNextLine() LocationRange {
+	return LocationRange{
+		Start: l.Start,
+		End: Location{
+			Line:      l.End.Line + 1,
+			Character: 0,
+		},
+	}
+}
+
 func (l LocationRange) ToLSPRange() protocol.Range {
 	return protocol.Range{
 		Start: protocol.Position{
@@ -111,9 +129,17 @@ func (l LocationRange) ToLSPRange() protocol.Range {
 	}
 }
 
-func (l *LocationRange) ChangeBothLines(newLine uint32) {
-	l.Start.Line = newLine
-	l.End.Line = newLine
+func (l LocationRange) ChangeBothLines(newLine uint32) LocationRange {
+	return LocationRange{
+		Start: Location{
+			Line:      newLine,
+			Character: l.Start.Character,
+		},
+		End: Location{
+			Line:      newLine,
+			Character: l.End.Character,
+		},
+	}
 }
 
 func (l LocationRange) ContainsCursorByCharacter(character uint32) bool {
@@ -186,8 +212,8 @@ func (c CursorPosition) getValue() uint32 {
 	return uint32(c)
 }
 
-func (c CursorPosition) shiftHorizontal(offset uint32) CursorPosition {
-	return CursorPosition(uint32(c) + offset)
+func (c CursorPosition) ShiftHorizontal(offset int) CursorPosition {
+	return CursorPosition(uint32(int(c) + offset))
 }
 
 func LSPCharacterAsCursorPosition(character uint32) CursorPosition {
@@ -202,6 +228,31 @@ func (c CursorPosition) IsBeforeIndexPosition(i IndexPosition) bool {
 func (c CursorPosition) IsAfterIndexPosition(i IndexPosition) bool {
 	// H[e]|llo
 	return uint32(c) > uint32(i)+1
+}
+
+// Get the byte that is before the cursor position
+// This expects that the cursor is not out of bounds
+func (c CursorPosition) GetCharacterBefore(value string) byte {
+	if c.getValue() == 0 {
+		return value[0]
+	} else {
+		return value[max(0, c.getValue()-1)]
+	}
+}
+
+// Get the byte that is after the cursor position
+// This expects that the cursor is not out of bounds
+func (c CursorPosition) GetCharacterAfter(value string) byte {
+	if c.getValue() >= uint32(len(value)) {
+		return value[len(value)-1]
+	} else {
+		return value[c.getValue()]
+	}
+}
+
+func (c CursorPosition) IsAtEdge(value string) bool {
+	// If the cursor is at the start or end of the value
+	return c.getValue() == 0 || c.getValue() >= uint32(len(value))
 }
 
 // Use this type if you want to use an index based position

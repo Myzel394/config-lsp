@@ -1,7 +1,9 @@
 package docvalues
 
 import (
+	"config-lsp/common"
 	"config-lsp/utils"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -13,12 +15,29 @@ type Suffix struct {
 	Meaning string
 }
 
-type SuffixWithMeaningValue struct {
+/*
+Create a new SuffixValue that allows the given prefixes.
+@example:
+```
+
+	SuffixValue{
+		Suffixes: []Suffix{
+			{Suffix: "_debug", Meaning: "Enable debug mode"},
+			{Suffix: "_test", Meaning: "Enable test mode"},
+		},
+		SubValue: StringValue{},
+	}
+
+```
+*/
+type SuffixValue struct {
 	Suffixes []Suffix
+	// A suffix is required
+	Required bool
 	SubValue DeprecatedValue
 }
 
-func (v SuffixWithMeaningValue) GetTypeDescription() []string {
+func (v SuffixValue) GetTypeDescription() []string {
 	subDescription := v.SubValue.GetTypeDescription()
 
 	suffixDescription := utils.Map(v.Suffixes, func(suffix Suffix) string {
@@ -33,17 +52,25 @@ func (v SuffixWithMeaningValue) GetTypeDescription() []string {
 	)
 }
 
-func (v SuffixWithMeaningValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
+func (v SuffixValue) DeprecatedCheckIsValid(value string) []*InvalidValue {
 	for _, suffix := range v.Suffixes {
 		if strings.HasSuffix(value, suffix.Suffix) {
 			return v.SubValue.DeprecatedCheckIsValid(value[:len(value)-len(suffix.Suffix)])
 		}
 	}
 
+	if v.Required {
+		return []*InvalidValue{{
+			Err:   errors.New("A suffix is required"),
+			Start: 0,
+			End:   uint32(len(value)),
+		}}
+	}
+
 	return v.SubValue.DeprecatedCheckIsValid(value)
 }
 
-func (v SuffixWithMeaningValue) DeprecatedFetchCompletions(line string, cursor uint32) []protocol.CompletionItem {
+func (v SuffixValue) FetchCompletions(value string, cursor common.CursorPosition) []protocol.CompletionItem {
 	textFormat := protocol.InsertTextFormatPlainText
 	kind := protocol.CompletionItemKindText
 
@@ -56,10 +83,10 @@ func (v SuffixWithMeaningValue) DeprecatedFetchCompletions(line string, cursor u
 		}
 	})
 
-	return append(suffixCompletions, v.SubValue.DeprecatedFetchCompletions(line, cursor)...)
+	return append(suffixCompletions, v.SubValue.FetchCompletions(value, cursor)...)
 }
 
-func (v SuffixWithMeaningValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
+func (v SuffixValue) DeprecatedFetchHoverInfo(line string, cursor uint32) []string {
 	for _, suffix := range v.Suffixes {
 		if strings.HasSuffix(line, suffix.Suffix) {
 			return append([]string{

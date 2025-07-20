@@ -21,21 +21,21 @@ func GetCompletion(
 	case ast.FstabFieldSpec:
 		value, cursor := getFieldSafely(entry.Fields.Spec, cursor)
 
-		return fields.SpecField.DeprecatedFetchCompletions(
+		return fields.SpecField.FetchCompletions(
 			value,
 			cursor,
 		), nil
 	case ast.FstabFieldMountPoint:
 		value, cursor := getFieldSafely(entry.Fields.MountPoint, cursor)
 
-		return fields.MountPointField.DeprecatedFetchCompletions(
+		return fields.MountPointField.FetchCompletions(
 			value,
 			cursor,
 		), nil
 	case ast.FstabFieldFileSystemType:
 		value, cursor := getFieldSafely(entry.Fields.FilesystemType, cursor)
 
-		return fields.FileSystemTypeField.DeprecatedFetchCompletions(
+		return fields.FileSystemTypeField.FetchCompletions(
 			value,
 			cursor,
 		), nil
@@ -47,7 +47,7 @@ func GetCompletion(
 		optionsValue := entry.FetchMountOptionsField(false)
 
 		if optionsValue != nil {
-			for _, completion := range optionsValue.DeprecatedFetchCompletions(line, cursor) {
+			for _, completion := range optionsValue.FetchCompletions(line, cursor) {
 				var documentation string
 
 				switch completion.Documentation.(type) {
@@ -66,13 +66,13 @@ func GetCompletion(
 		}
 
 		// Add defaults
-		completions = append(completions, fields.DefaultMountOptionsField.DeprecatedFetchCompletions(line, cursor)...)
+		completions = append(completions, fields.DefaultMountOptionsField.FetchCompletions(line, cursor)...)
 
 		return completions, nil
 	case ast.FstabFieldFreq:
 		value, cursor := getFieldSafely(entry.Fields.Freq, cursor)
 
-		return fields.FreqField.DeprecatedFetchCompletions(
+		return fields.FreqField.FetchCompletions(
 			value,
 			cursor,
 		), nil
@@ -81,12 +81,12 @@ func GetCompletion(
 
 		if entry.Fields.FilesystemType != nil &&
 			utils.KeyExists(fields.FsckOneDisabledFilesystems, strings.ToLower(entry.Fields.FilesystemType.Value.Value)) {
-			return fields.FsckFieldWhenDisabledFilesystems.DeprecatedFetchCompletions(
+			return fields.FsckFieldWhenDisabledFilesystems.FetchCompletions(
 				value,
 				cursor,
 			), nil
 		} else {
-			return fields.FsckField.DeprecatedFetchCompletions(
+			return fields.FsckField.FetchCompletions(
 				value,
 				cursor,
 			), nil
@@ -98,7 +98,7 @@ func GetCompletion(
 
 // Safely get value and new cursor position
 // If field is nil, return empty string and 0
-func getFieldSafely(field *ast.FstabField, cursor common.CursorPosition) (string, uint32) {
+func getFieldSafely(field *ast.FstabField, cursor common.CursorPosition) (string, common.CursorPosition) {
 	if field == nil {
 		return "", 0
 	}
@@ -111,5 +111,5 @@ func getFieldSafely(field *ast.FstabField, cursor common.CursorPosition) (string
 		return "", 0
 	}
 
-	return field.Value.Raw, common.CursorToCharacterIndex(uint32(cursor) - field.Start.Character)
+	return field.Value.Raw, cursor.ShiftHorizontal(-int(field.Start.Character))
 }
