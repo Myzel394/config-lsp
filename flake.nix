@@ -23,7 +23,7 @@
       "aarch64-windows"
     ] (system: 
       let
-        version = "0.3.1"; # CI:CD-VERSION
+        version = "0.3.2"; # CI:CD-VERSION
         pkgs = import nixpkgs {
           inherit system;
           overlays = [
@@ -38,6 +38,7 @@
           pkgs.go_1_24
         ];
         serverUncompressed = (pkgs: pkgs.buildGoModule {
+          CGO_ENABLED = 0;
           nativeBuildInputs = inputs;
           pname = "github.com/Myzel394/config-lsp";
           version = version;
@@ -62,8 +63,7 @@
 
             # upx is currently not supported for darwin
             if [ "${system}" != "x86_64-darwin" ] && [ "${system}" != "aarch64-darwin" ]; then
-              # UPX is currently not in use to avoid issues with NixOS
-              # upx --ultra-brute $out/bin/config-lsp
+              upx --ultra-brute $out/bin/config-lsp
             fi
           '';
         });

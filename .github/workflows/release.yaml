@@ -117,13 +117,13 @@ jobs:
       - name: Build extension 
         if: ${{ matrix.goos != 'windows' }}
         run: |
-          cd server && GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -a -gcflags=all="-l -B" -ldflags="-s -w -X main.SENTRY_DSN=$SENTRY_DSN" -o config-lsp
+          cd server && CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -a -gcflags=all="-l -B" -ldflags="-s -w -X main.SENTRY_DSN=$SENTRY_DSN" -o config-lsp
         env:
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       - name: Build extension 
         if: ${{ matrix.goos == 'windows' }}
         run: |
-          cd server && GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -a -gcflags=all="-l -B" -ldflags="-s -w -X main.SENTRY_DSN=$SENTRY_DSN" -o config-lsp.exe
+          cd server && CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -a -gcflags=all="-l -B" -ldflags="-s -w -X main.SENTRY_DSN=$SENTRY_DSN" -o config-lsp.exe
         env:
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
 
@@ -137,10 +137,9 @@ jobs:
         if: ${{ matrix.goos == 'windows' }}
         run: mv server/config-lsp.exe dist/out/
 
-      # Disabled for now to better support NixOS
-      # - name: Shrink binary
-      #   if: ${{ matrix.goos == 'linux' }}
-      #   run: nix develop .#"vs-code-extension" --command bash -c "upx dist/out/config-lsp"
+      - name: Shrink binary
+        if: ${{ matrix.goos == 'linux' }}
+        run: nix develop .#"vs-code-extension" --command bash -c "upx dist/out/config-lsp"
 
       - name: Package extension
         run: nix develop .#"vs-code-extension" --command bash -c "cd dist && vsce package --target ${{ matrix.vscode_target }}"
