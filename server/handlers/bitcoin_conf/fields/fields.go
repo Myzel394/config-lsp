@@ -468,7 +468,7 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"consolidatefeerate": {
 		Documentation: "The maximum feerate (in BTC/kvB) at which transaction building may use more inputs than strictly necessary so that the wallet's UTXO pool can be reduced (default: 0.0001).",
-		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999_999_999),
+		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999),
 	},
 	"disablewallet": {
 		Documentation: "Do not load the wallet and disable wallet RPC calls",
@@ -476,11 +476,11 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"discardfee": {
 		Documentation: "The fee rate (in BTC/kvB) that indicates your tolerance for discarding change by adding it to the fee (default: 0.0001). Note: An output is discarded if it is dust at this rate, but we will always discard up to the dust relay fee and a discard fee above that is limited by the fee estimate for the longest target",
-		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999_999_999),
+		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999),
 	},
 	"fallbackfee": {
 		Documentation: "A fee rate (in BTC/kvB) that will be used when fee estimation has insufficient data. 0 to entirely disable the fallbackfee feature. (default: 0.00)",
-		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999_999_999),
+		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999),
 	},
 	"keypool": {
 		Documentation: "Set key pool size to <n> (default: 1000). Warning: Smaller sizes may increase the risk of losing funds when restoring from an old backup, if none of the addresses in the original keypool have been used.",
@@ -488,15 +488,15 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"maxapsfee": {
 		Documentation: "Spend up to this amount in additional (absolute) fees (in BTC) if it allows the use of partial spend avoidance (default: 0.00)",
-		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999_999_999),
+		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999),
 	},
 	"mintxfee": {
 		Documentation: "Fee rates (in BTC/kvB) smaller than this are considered zero fee for transaction creation (default: 0.00001)",
-		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999_999_999),
+		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999),
 	},
 	"paytxfee": {
 		Documentation: "Fee rate (in BTC/kvB) to add to transactions you send (default: 0.00)",
-		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999_999_999),
+		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999),
 	},
 	"signer": {
 		Documentation: "External signing tool, see doc/external-signer.md",
@@ -673,7 +673,7 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"maxtxfee": {
 		Documentation: "Maximum total fees (in BTC) to use in a single wallet transaction; setting this too low may abort large transactions (default: 0.10)",
-		Value:         docvalues.NumberRangeValue(0, 999_999_999_999_999_999),
+		Value:         docvalues.NumberRangeValue(0, 999_999_999_999),
 	},
 	"printtoconsole": {
 		Documentation: "Send trace/debug info to console (default: 1 when no -daemon. To disable logging to file, set -nodebuglogfile)",
@@ -739,7 +739,7 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"minrelaytxfee": {
 		Documentation: "Fees (in BTC/kvB) smaller than this are considered zero fee for relaying, mining and transaction creation (default: 0.00001)",
-		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999_999_999),
+		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999),
 	},
 	"permitbaremultisig": {
 		Documentation: "Relay transactions creating non-P2SH multisig outputs (default: 1)",
@@ -759,7 +759,7 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"blockmintxfee": {
 		Documentation: "Set lowest fee rate (in BTC/kvB) for transactions to be included in block creation. (default: 0.00001)",
-		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999_999_999),
+		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999),
 	},
 	"blockreservedweight": {
 		Documentation: "Reserve space for the fixed-size block header plus the largest coinbase transaction the mining software may add to the block. (default: 8000).",
