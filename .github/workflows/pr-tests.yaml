@@ -22,36 +22,15 @@ jobs:
       - name: Check Nix flake
         run: nix flake check
 
-      # - name: Build app
-      #   run: nix develop --command bash -c "cd server && go build"
-      #
-      # - name: Build VS Code extension
-      #   run: nix build .#vs-code-extension
-      #
-      # - name: Upload VS Code extension
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: vs-code-extension
-      #     path: result/config-lsp-*.vsix
-      #
+      - name: Build app
+        run: nix develop --command bash -c "cd server && go build"
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: stable
-
-      - name: Build extension 
-        run: |
-          cd server && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -gcflags=all="-l -B" -ldflags="-s -w -X main.SENTRY_DSN=$SENTRY_DSN" -o config-lsp
-        env:
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-
-      - name: Shrink binary
-        if: ${{ matrix.goos == 'linux' }}
-        run: nix develop .#"vs-code-extension" --command bash -c "upx server/config-lsp"
+      - name: Build VS Code extension
+        run: nix build .#vs-code-extension
 
       - name: Upload VS Code extension
         uses: actions/upload-artifact@v4
         with:
           name: vs-code-extension
-          path: server/config-lsp
+          path: result/config-lsp-*.vsix
+
