@@ -1,8 +1,10 @@
 package roothandler
 
 import (
+	"config-lsp/common"
 	"config-lsp/root-handler/lsp"
 	"config-lsp/root-handler/shared"
+
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 
@@ -43,6 +45,8 @@ func SetUpRootHandler() {
 	}
 
 	server := server.NewServer(&lspHandler, lsName, false)
+
+	common.Log.Info("config-lsp server started")
 
 	server.RunStdio()
 }
