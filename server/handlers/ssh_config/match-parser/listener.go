@@ -46,8 +46,7 @@ type matchParserListener struct {
 }
 
 func (s *matchParserListener) EnterMatchEntry(ctx *parser.MatchEntryContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter)
-	location.ChangeBothLines(s.matchContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter).ChangeBothLines(s.matchContext.line)
 
 	entry := &MatchEntry{
 		LocationRange: location,
@@ -63,8 +62,7 @@ func (s *matchParserListener) ExitMatchEntry(ctx *parser.MatchEntryContext) {
 }
 
 func (s *matchParserListener) EnterCriteriaSingle(ctx *parser.CriteriaSingleContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter)
-	location.ChangeBothLines(s.matchContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter).ChangeBothLines(s.matchContext.line)
 
 	value := commonparser.ParseRawString(ctx.GetText(), commonparser.FullFeatures)
 
@@ -86,8 +84,7 @@ func (s *matchParserListener) EnterCriteriaSingle(ctx *parser.CriteriaSingleCont
 }
 
 func (s *matchParserListener) EnterCriteriaWithValue(ctx *parser.CriteriaWithValueContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter)
-	location.ChangeBothLines(s.matchContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter).ChangeBothLines(s.matchContext.line)
 
 	value := commonparser.ParseRawString(ctx.GetText(), commonparser.FullFeatures)
 
@@ -122,8 +119,7 @@ var availableCriteria = map[string]MatchCriteriaType{
 }
 
 func (s *matchParserListener) EnterSeparator(ctx *parser.SeparatorContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter)
-	location.ChangeBothLines(s.matchContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter).ChangeBothLines(s.matchContext.line)
 
 	value := commonparser.ParseRawString(ctx.GetText(), commonparser.FullFeatures)
 
@@ -134,8 +130,7 @@ func (s *matchParserListener) EnterSeparator(ctx *parser.SeparatorContext) {
 }
 
 func (s *matchParserListener) EnterValues(ctx *parser.ValuesContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter)
-	location.ChangeBothLines(s.matchContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter).ChangeBothLines(s.matchContext.line)
 
 	s.matchContext.currentEntry.Values = &MatchValues{
 		LocationRange: location,
@@ -144,8 +139,7 @@ func (s *matchParserListener) EnterValues(ctx *parser.ValuesContext) {
 }
 
 func (s *matchParserListener) EnterValue(ctx *parser.ValueContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter)
-	location.ChangeBothLines(s.matchContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ShiftHorizontal(s.matchContext.startCharacter).ChangeBothLines(s.matchContext.line)
 
 	value := &MatchValue{
 		LocationRange: location,

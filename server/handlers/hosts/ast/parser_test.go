@@ -14,8 +14,8 @@ func TestParserInvalidWithPort(
 	parser := NewHostsParser()
 	errors := parser.Parse(input)
 
-	if len(errors) != 1 {
-		t.Fatalf("Expected 1 error, but got %v", errors)
+	if len(errors) == 0 {
+		t.Fatalf("Expected errors, but got %v", errors)
 	}
 }
 

@@ -33,6 +33,22 @@ func (args CodeActionGeneratePrivateKeyArgs) RunCommand(d *wireguard.WGDocument)
 		return nil, nil
 	}
 
+	var newRange protocol.Range
+	if property.Value == nil {
+		newRange = protocol.Range{
+			Start: protocol.Position{
+				Line:      property.End.Line,
+				Character: property.End.Character,
+			},
+			End: protocol.Position{
+				Line:      property.End.Line,
+				Character: property.End.Character,
+			},
+		}
+	} else {
+		newRange = property.Value.ToLSPRange()
+	}
+
 	label := "Generate Private Key"
 	return &protocol.ApplyWorkspaceEditParams{
 		Label: &label,
@@ -40,17 +56,8 @@ func (args CodeActionGeneratePrivateKeyArgs) RunCommand(d *wireguard.WGDocument)
 			Changes: map[protocol.DocumentUri][]protocol.TextEdit{
 				args.URI: {
 					{
-						NewText: " " + privateKey,
-						Range: protocol.Range{
-							Start: protocol.Position{
-								Line:      property.End.Line,
-								Character: property.End.Character,
-							},
-							End: protocol.Position{
-								Line:      property.End.Line,
-								Character: property.End.Character,
-							},
-						},
+						NewText: privateKey,
+						Range:   newRange,
 					},
 				},
 			},

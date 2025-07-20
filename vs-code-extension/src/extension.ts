@@ -1,5 +1,5 @@
 import * as path from "path";
-import { ExtensionContext, workspace } from "vscode";
+import { ExtensionContext, workspace, env } from "vscode";
 
 import {
 	Executable,
@@ -17,6 +17,27 @@ let client: LanguageClient;
 
 export async function activate({subscriptions}: ExtensionContext) {
 	console.info("config-lsp activated");
+
+	await startClient();
+
+	subscriptions.push(client.onNotification("$/config-lsp/languageUndetectable", onLanguageUndetectable))
+	subscriptions.push(client.onNotification("$/config-lsp/detectedLanguage", onLanguageDetectable))
+	subscriptions.push(env.onDidChangeTelemetryEnabled(async (enabled) => {
+		console.info(`Telemetry enabled: ${enabled}, restarting client...`);
+
+		try {
+			client.stop()
+		} catch (error) {
+			console.error("Error stopping client:", error);
+		}
+
+		await startClient();
+
+		console.info("Client restarted after telemetry change");
+	}))
+}
+
+async function startClient() {
 	const initOptions = workspace.getConfiguration("config-lsp");
 	const clientOptions: LanguageClientOptions = {
 		documentSelector: [
@@ -26,15 +47,37 @@ export async function activate({subscriptions}: ExtensionContext) {
 			{language: "fstab"},
 			{language: "hosts"},
 			{language: "wireguard"},
+			{language: "bitcoin_conf"}
 		],
 		initializationOptions: initOptions,
 	};
 
 	const path = getBundledPath();
 	console.info(`Found config-lsp path at ${path}`);
+
+	const args = [
+		"--no-undetectable-errors",
+	];
+	if (env.isTelemetryEnabled) {
+		const telemetryLevel = workspace.getConfiguration("telemetry").get<string>("telemetryLevel", "off");
+
+		switch (telemetryLevel) {
+			case "off":
+				console.info("Telemetry is disabled, passing --usage-reports-disable to config-lsp");
+				args.push("--usage-reports-disable");
+				break;
+			case "error":
+				args.push("--usage-reports-errors-only");
+				break;
+		}
+	} else {
+		console.info("Telemetry is disabled, passing --usage-reports-disable to config-lsp");
+		args.push("--usage-reports-disable")
+	}
+
 	const run: Executable = {
 		command: path,
-		args: ["--no-undetectable-errors"],
+		args,
 	};
 	const serverOptions: ServerOptions = {
 		run,
@@ -51,9 +94,6 @@ export async function activate({subscriptions}: ExtensionContext) {
 	console.info("Starting config-lsp...");
 	await client.start();
 	console.info("Started config-lsp");
-
-	subscriptions.push(client.onNotification("$/config-lsp/languageUndetectable", onLanguageUndetectable))
-	subscriptions.push(client.onNotification("$/config-lsp/detectedLanguage", onLanguageDetectable))
 }
 
 function getBundledPath(): string {

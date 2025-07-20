@@ -29,7 +29,7 @@ jobs:
       - name: Check version in code matches flake version
         shell: bash
         run: |
-          if ! [ $(grep '// CI:CD-VERSION$' server/root-handler/common.go | cut -d'"' -f 2) = $(grep '# CI:CD-VERSION$' flake.nix | cut -d'"' -f 2) ];
+          if ! [ $(grep '// CI:CD-VERSION$' server/common/common.go | cut -d'"' -f 2) = $(grep '# CI:CD-VERSION$' flake.nix | cut -d'"' -f 2) ];
           then
             echo "Version mismatch between code and flake"
             exit 1
@@ -57,6 +57,7 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GH_CONFIGLSP_TOKEN }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
 
   build-extension:
     name: Build extension for ${{ matrix.action_name }}

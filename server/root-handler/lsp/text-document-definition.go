@@ -36,6 +36,8 @@ func TextDocumentDefinition(context *glsp.Context, params *protocol.DefinitionPa
 		return nil, nil
 	case shared.LanguageAliases:
 		return aliases.TextDocumentDefinition(context, params)
+	case shared.LanguageBitcoinConf:
+		return nil, nil
 	}
 
 	panic("root-handler/TextDocumentDefinition: unexpected language" + *language)

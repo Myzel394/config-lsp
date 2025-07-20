@@ -4,9 +4,7 @@ import (
 	"config-lsp/common"
 	docvalues "config-lsp/doc-values"
 	parser2 "config-lsp/handlers/hosts/ast/parser"
-	"errors"
 	"net"
-	"regexp"
 
 	"github.com/antlr4-go/antlr/v4"
 )
@@ -28,59 +26,50 @@ func (s *hostsParserListener) EnterComment(ctx *parser2.CommentContext) {
 }
 
 func (s *hostsParserListener) EnterEntry(ctx *parser2.EntryContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.hostsContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.hostsContext.line)
 
 	s.Parser.Tree.Entries.Put(location.Start.Line, &HostsEntry{
 		Location: location,
 	})
 }
 
-var containsPortPattern = regexp.MustCompile(`:[0-9]+$`)
+var hostValue = docvalues.IPAddressValue{
+	AllowIPv4: true,
+	AllowIPv6: true,
+}
 
 func (s *hostsParserListener) EnterIpAddress(ctx *parser2.IpAddressContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.hostsContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.hostsContext.line)
 
-	ip := net.ParseIP(ctx.GetText())
+	errs := hostValue.DeprecatedCheckIsValid(ctx.GetText())
 
-	if ip == nil {
-		if containsPortPattern.MatchString(ctx.GetText()) {
+	if len(errs) > 0 {
+		for _, err := range errs {
+			err.Shift(location.Start.Character)
+
 			s.Errors = append(s.Errors, common.LSPError{
 				Range: location,
-				Err:   errors.New("Port numbers are not allowed in IP addresses"),
-			})
-		} else {
-			s.Errors = append(s.Errors, common.LSPError{
-				Range: location,
-				Err:   docvalues.InvalidIPAddress{},
+				Err:   err.Err,
 			})
 		}
-
 		return
 	}
 
-	ipAddr, err := net.ResolveIPAddr("ip", ip.String())
-
-	if err != nil {
-		s.Errors = append(s.Errors, common.LSPError{
-			Range: location,
-			Err:   docvalues.InvalidIPAddress{},
-		})
-	}
+	ip := net.ParseIP(ctx.GetText())
 
 	rawEntry, _ := s.Parser.Tree.Entries.Get(location.Start.Line)
 	entry := rawEntry.(*HostsEntry)
 
 	entry.IPAddress = &HostsIPAddress{
 		Location: location,
-		Value:    *ipAddr,
+		Value: net.IPAddr{
+			IP: ip,
+		},
 	}
 }
 
 func (s *hostsParserListener) EnterHostname(ctx *parser2.HostnameContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.hostsContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.hostsContext.line)
 
 	rawEntry, _ := s.Parser.Tree.Entries.Get(location.Start.Line)
 	entry := rawEntry.(*HostsEntry)
@@ -92,8 +81,7 @@ func (s *hostsParserListener) EnterHostname(ctx *parser2.HostnameContext) {
 }
 
 func (s *hostsParserListener) EnterAliases(ctx *parser2.AliasesContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.hostsContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.hostsContext.line)
 
 	rawEntry, _ := s.Parser.Tree.Entries.Get(location.Start.Line)
 	entry := rawEntry.(*HostsEntry)
@@ -104,8 +92,7 @@ func (s *hostsParserListener) EnterAliases(ctx *parser2.AliasesContext) {
 }
 
 func (s *hostsParserListener) EnterAlias(ctx *parser2.AliasContext) {
-	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext)
-	location.ChangeBothLines(s.hostsContext.line)
+	location := common.CharacterRangeFromCtx(ctx.BaseParserRuleContext).ChangeBothLines(s.hostsContext.line)
 
 	rawEntry, _ := s.Parser.Tree.Entries.Get(location.Start.Line)
 	entry := rawEntry.(*HostsEntry)

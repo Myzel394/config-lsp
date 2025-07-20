@@ -44,6 +44,31 @@ func (c *Config) FindPropertyByLine(line uint32) *Property {
 	return nil
 }
 
+// Get all properties from `startLine` to `endLine` (inclusive)
+func (c *Config) GetPropertesInRange(startLine uint32, endLine uint32) []IniPropertyLocationIndex {
+	options := make([]IniPropertyLocationIndex, 0, 50)
+
+	for _, section := range c.Sections {
+		it := section.Properties.Iterator()
+		for it.Next() {
+			line := it.Key().(uint32)
+
+			if line < startLine || line > endLine {
+				continue
+			}
+
+			property := it.Value().(*Property)
+
+			options = append(options, IniPropertyLocationIndex{
+				Section:  section,
+				Property: *property,
+			})
+		}
+	}
+
+	return options
+}
+
 // Find the first property with the given name in a section
 func (s *Section) FindFirstPropertyByName(name string) (uint32, *Property) {
 	it := s.Properties.Iterator()

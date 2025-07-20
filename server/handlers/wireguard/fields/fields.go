@@ -46,7 +46,7 @@ You can also specify multiple subnets or IPv6 subnets like so:
 		Value: docvalues.IPAddressValue{
 			AllowIPv4:  true,
 			AllowIPv6:  true,
-			AllowRange: true,
+			AllowRange: docvalues.AllowedStatusRequired,
 		},
 	},
 	"listenport": {
@@ -91,9 +91,8 @@ or multiple DNS servers can be provided
 			Separator:           ",",
 			DuplicatesExtractor: &docvalues.SimpleDuplicatesExtractor,
 			SubValue: docvalues.IPAddressValue{
-				AllowIPv4:  true,
-				AllowIPv6:  true,
-				AllowRange: false,
+				AllowIPv4: true,
+				AllowIPv6: true,
 			},
 		},
 	},
@@ -276,7 +275,7 @@ Peer is a relay server that routes to itself and all nodes on its local LAN
 			SubValue: docvalues.IPAddressValue{
 				AllowIPv4:  true,
 				AllowIPv6:  true,
-				AllowRange: true,
+				AllowRange: docvalues.AllowedStatusRequired,
 			},
 		},
 	},
