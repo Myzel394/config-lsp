@@ -3,6 +3,7 @@ package fields
 import (
 	docvalues "config-lsp/doc-values"
 	"config-lsp/utils"
+	"math"
 	"regexp"
 )
 
@@ -44,7 +45,7 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"blockreconstructionextratxn": {
 		Documentation: "Extra transactions to keep in memory for compact block reconstructions (default: 100)",
-		Value:         docvalues.NumberRangeValue(0, 999_999_999),
+		Value:         docvalues.NumberRangeValue(0, math.MaxInt),
 	},
 	"blocksdir": {
 		Documentation: "Specify directory to hold blocks subdirectory for *.dat files (default: <datadir>)",
@@ -85,7 +86,7 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"dbcache": {
 		Documentation: "Maximum database cache size <n> MiB (minimum 4, default: 450). Make sure you have enough RAM. In addition, unused memory allocated to the mempool is shared with this cache (see -maxmempool)",
-		Value:         docvalues.NumberRangeValue(4, 999_999_999),
+		Value:         docvalues.NumberRangeValue(4, math.MaxInt),
 	},
 	"debuglogfile": {
 		Documentation: "Specify location of debug log file (default: debug.log). Relative paths will be prefixed by a net-specific datadir location. Pass -nodebuglogfile to disable writing the log to a file.",
@@ -106,15 +107,15 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"maxmempool": {
 		Documentation: "Keep the transaction memory pool below <n> megabytes (default: 300)",
-		Value:         docvalues.NumberRangeValue(0, 999_999_999),
+		Value:         docvalues.NumberRangeValue(0, math.MaxInt),
 	},
 	"maxorphantx": {
 		Documentation: "Keep at most <n> unconnectable transactions in memory (default: 100)",
-		Value:         docvalues.NumberRangeValue(0, 999_999_999),
+		Value:         docvalues.NumberRangeValue(0, math.MaxInt),
 	},
 	"mempoolexpiry": {
 		Documentation: "Do not keep transactions in the mempool longer than <n> hours (default: 336)",
-		Value:         docvalues.NumberRangeValue(0, 999_999_999),
+		Value:         docvalues.NumberRangeValue(0, math.MaxInt),
 	},
 	"par": {
 		Documentation: "Set the number of script verification threads (0 = auto, up to 15, <0 = leave that many cores free, default: 0)",
@@ -141,7 +142,7 @@ var Options = map[string]docvalues.DocumentationValue{
 						docvalues.CreateEnumStringWithDoc("0", "disable pruning blocks"),
 					},
 				},
-				docvalues.NumberRangeValue(1, 999_999_999),
+				docvalues.NumberRangeValue(1, math.MaxInt),
 			},
 		},
 	},
@@ -194,7 +195,7 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"bantime": {
 		Documentation: "Default duration (in seconds) of manually configured bans (default: 86400)",
-		Value:         docvalues.NumberRangeValue(0, 999_999_999),
+		Value:         docvalues.NumberRangeValue(0, math.MaxInt),
 	},
 	"bind": {
 		Documentation: `Bind to given address and always listen on it (default: 0.0.0.0). Use [host]:port notation for IPv6. Append =onion to tag any incoming connections to that address and port as incoming Tor connections (default: 127.0.0.1:8334=onion, testnet3: 127.0.0.1:18334=onion, testnet4: 127.0.0.1:48334=onion, signet: 127.0.0.1:38334=onion, regtest: 127.0.0.1=18445=onion)`,
@@ -272,15 +273,15 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"maxconnections": {
 		Documentation: "Maintain at most <n> automatic connections to peers (default: 125). This limit does not apply to connections manually added via -addnode or the addnode RPC, which have a separate limit of 8.",
-		Value:         docvalues.NumberRangeValue(0, 999_999_999),
+		Value:         docvalues.NumberRangeValue(0, math.MaxInt),
 	},
 	"maxreceivebuffer": {
 		Documentation: "Maximum per-connection receive buffer, <n>*1000 bytes (default: 5000)",
-		Value:         docvalues.NumberRangeValue(0, 999_999_999),
+		Value:         docvalues.NumberRangeValue(0, math.MaxInt),
 	},
 	"maxsendbuffer": {
 		Documentation: "Maximum per-connection memory usage for the send buffer, <n>*1000 bytes (default: 1000)",
-		Value:         docvalues.NumberRangeValue(0, 999_999_999),
+		Value:         docvalues.NumberRangeValue(0, math.MaxInt),
 	},
 	// TODO: Add later
 	"maxuploadtarget": {
@@ -375,7 +376,7 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"timeout": {
 		Documentation: "Specify socket connection timeout in milliseconds. If an initial attempt to connect is unsuccessful after this amount of time, drop it (minimum: 1, default: 5000)",
-		Value:         docvalues.NumberRangeValue(1, 999_999_999),
+		Value:         docvalues.NumberRangeValue(1, math.MaxInt),
 	},
 	"torcontrol": {
 		Documentation: "Tor control host and port to use if onion listening enabled (default: 127.0.0.1:9051). If no port is specified, the default port of 9051 will be used.",
@@ -468,7 +469,7 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"consolidatefeerate": {
 		Documentation: "The maximum feerate (in BTC/kvB) at which transaction building may use more inputs than strictly necessary so that the wallet's UTXO pool can be reduced (default: 0.0001).",
-		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999),
+		Value:         docvalues.FloatNumberRangeValue(0, math.MaxFloat64),
 	},
 	"disablewallet": {
 		Documentation: "Do not load the wallet and disable wallet RPC calls",
@@ -476,27 +477,27 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"discardfee": {
 		Documentation: "The fee rate (in BTC/kvB) that indicates your tolerance for discarding change by adding it to the fee (default: 0.0001). Note: An output is discarded if it is dust at this rate, but we will always discard up to the dust relay fee and a discard fee above that is limited by the fee estimate for the longest target",
-		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999),
+		Value:         docvalues.FloatNumberRangeValue(0, math.MaxFloat64),
 	},
 	"fallbackfee": {
 		Documentation: "A fee rate (in BTC/kvB) that will be used when fee estimation has insufficient data. 0 to entirely disable the fallbackfee feature. (default: 0.00)",
-		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999),
+		Value:         docvalues.FloatNumberRangeValue(0, math.MaxFloat64),
 	},
 	"keypool": {
 		Documentation: "Set key pool size to <n> (default: 1000). Warning: Smaller sizes may increase the risk of losing funds when restoring from an old backup, if none of the addresses in the original keypool have been used.",
-		Value:         docvalues.NumberRangeValue(1, 999_999_999),
+		Value:         docvalues.NumberRangeValue(1, math.MaxInt),
 	},
 	"maxapsfee": {
 		Documentation: "Spend up to this amount in additional (absolute) fees (in BTC) if it allows the use of partial spend avoidance (default: 0.00)",
-		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999),
+		Value:         docvalues.FloatNumberRangeValue(0, math.MaxFloat64),
 	},
 	"mintxfee": {
 		Documentation: "Fee rates (in BTC/kvB) smaller than this are considered zero fee for transaction creation (default: 0.00001)",
-		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999),
+		Value:         docvalues.FloatNumberRangeValue(0, math.MaxFloat64),
 	},
 	"paytxfee": {
 		Documentation: "Fee rate (in BTC/kvB) to add to transactions you send (default: 0.00)",
-		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999),
+		Value:         docvalues.FloatNumberRangeValue(0, math.MaxFloat64),
 	},
 	"signer": {
 		Documentation: "External signing tool, see doc/external-signer.md",
@@ -508,7 +509,7 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"txconfirmtarget": {
 		Documentation: "If paytxfee is not set, include enough fee so transactions begin confirmation on average within n blocks (default: 6)",
-		Value:         docvalues.FloatNumberRangeValue(1, 999_999_999),
+		Value:         docvalues.FloatNumberRangeValue(1, math.MaxFloat64),
 	},
 	"wallet": {
 		Documentation: "Specify wallet path to load at startup. Can be used multiple times to load multiple wallets. Path is to a directory containing wallet data and log files. If the path is not absolute, it is interpreted relative to <walletdir>. This only loads existing wallets and does not create new ones. For backwards compatibility this also loads the default wallet.",
@@ -540,7 +541,7 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"zmqpubhashblockhwm": {
 		Documentation: "Set publish hash block outbound message high water mark (default: 1000)",
-		Value:         docvalues.NumberRangeValue(1, 999_999_999),
+		Value:         docvalues.NumberRangeValue(1, math.MaxInt),
 	},
 	"zmqpubhashtx": {
 		Documentation: "Enable publish hash transaction in <address>",
@@ -548,7 +549,7 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"zmqpubhashtxhwm": {
 		Documentation: "Set publish hash transaction outbound message high water mark (default: 1000)",
-		Value:         docvalues.NumberRangeValue(1, 999_999_999),
+		Value:         docvalues.NumberRangeValue(1, math.MaxInt),
 	},
 	"zmqpubrawblock": {
 		Documentation: "Enable publish raw block in <address>",
@@ -556,7 +557,7 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"zmqpubrawblockhwm": {
 		Documentation: "Set publish raw block outbound message high water mark (default: 1000)",
-		Value:         docvalues.NumberRangeValue(1, 999_999_999),
+		Value:         docvalues.NumberRangeValue(1, math.MaxInt),
 	},
 	"zmqpubrawtx": {
 		Documentation: "Enable publish raw transaction in <address>",
@@ -564,7 +565,7 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"zmqpubrawtxhwm": {
 		Documentation: "Set publish raw transaction outbound message high water mark (default: 1000)",
-		Value:         docvalues.NumberRangeValue(1, 999_999_999),
+		Value:         docvalues.NumberRangeValue(1, math.MaxInt),
 	},
 	"zmqpubsequence": {
 		Documentation: "Enable publish hash block and tx sequence in <address>",
@@ -572,7 +573,7 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"zmqpubsequencehwm": {
 		Documentation: "Set publish hash sequence message high water mark (default: 1000)",
-		Value:         docvalues.NumberRangeValue(1, 999_999_999),
+		Value:         docvalues.NumberRangeValue(1, math.MaxInt),
 	},
 	"debug": {
 		Documentation: "Output debug and trace logging (default: -nodebug, supplying <category> is optional). If <category> is not supplied or if <category> is 1 or 'all', output all debug logging. If <category> is 0 or 'none', any other categories are ignored. Other valid values for <category> are: addrman, bench, blockstorage, cmpctblock, coindb, estimatefee, http, i2p, ipc, leveldb, libevent, mempool, mempoolrej, net, proxy, prune, qt, rand, reindex, rpc, scan, selectcoins, tor, txpackages, txreconciliation, validation, walletdb, zmq. This option can be specified multiple times to output multiple categories.",
@@ -673,7 +674,7 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"maxtxfee": {
 		Documentation: "Maximum total fees (in BTC) to use in a single wallet transaction; setting this too low may abort large transactions (default: 0.10)",
-		Value:         docvalues.NumberRangeValue(0, 999_999_999_999),
+		Value:         docvalues.NumberRangeValue(0, math.MaxInt),
 	},
 	"printtoconsole": {
 		Documentation: "Send trace/debug info to console (default: 1 when no -daemon. To disable logging to file, set -nodebuglogfile)",
@@ -727,7 +728,7 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"bytespersigop": {
 		Documentation: "Equivalent bytes per sigop in transactions for relay and mining (default: 20)",
-		Value:         docvalues.NumberRangeValue(1, 999_999_999),
+		Value:         docvalues.NumberRangeValue(1, math.MaxInt),
 	},
 	"datacarrier": {
 		Documentation: "Relay and mine data carrier transactions (default: 1)",
@@ -735,11 +736,11 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"datacarriersize": {
 		Documentation: "Relay and mine transactions whose data-carrying raw scriptPubKey is of this size or less (default: 83)",
-		Value:         docvalues.NumberRangeValue(1, 999_999_999),
+		Value:         docvalues.NumberRangeValue(1, math.MaxInt),
 	},
 	"minrelaytxfee": {
 		Documentation: "Fees (in BTC/kvB) smaller than this are considered zero fee for relaying, mining and transaction creation (default: 0.00001)",
-		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999),
+		Value:         docvalues.FloatNumberRangeValue(0, math.MaxFloat64),
 	},
 	"permitbaremultisig": {
 		Documentation: "Relay transactions creating non-P2SH multisig outputs (default: 1)",
@@ -755,15 +756,15 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"blockmaxweight": {
 		Documentation: "Set maximum BIP141 block weight (default: 4000000)",
-		Value:         docvalues.NumberRangeValue(1, 999_999_999),
+		Value:         docvalues.NumberRangeValue(1, math.MaxInt),
 	},
 	"blockmintxfee": {
 		Documentation: "Set lowest fee rate (in BTC/kvB) for transactions to be included in block creation. (default: 0.00001)",
-		Value:         docvalues.FloatNumberRangeValue(0, 999_999_999_999),
+		Value:         docvalues.FloatNumberRangeValue(0, math.MaxFloat64),
 	},
 	"blockreservedweight": {
 		Documentation: "Reserve space for the fixed-size block header plus the largest coinbase transaction the mining software may add to the block. (default: 8000).",
-		Value:         docvalues.NumberRangeValue(1, 999_999_999),
+		Value:         docvalues.NumberRangeValue(1, math.MaxInt),
 	},
 	"rest": {
 		Documentation: "Accept public REST requests (default: 0)",
@@ -816,7 +817,7 @@ var Options = map[string]docvalues.DocumentationValue{
 	},
 	"rpcthreads": {
 		Documentation: "Set the number of threads to service RPC calls (default: 16)",
-		Value:         docvalues.NumberRangeValue(1, 999_999_999),
+		Value:         docvalues.NumberRangeValue(1, math.MaxInt),
 	},
 	"rpcuser": {
 		Documentation: "Username for JSON-RPC connections",
