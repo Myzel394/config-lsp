@@ -38,6 +38,7 @@
           pkgs.go_1_24
         ];
         serverUncompressed = (pkgs: pkgs.buildGoModule {
+          CGO_ENABLED = 0;
           nativeBuildInputs = inputs;
           pname = "github.com/Myzel394/config-lsp";
           version = version;
