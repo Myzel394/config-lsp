@@ -42,7 +42,7 @@ jobs:
 
       - name: Build extension 
         run: |
-          cd server && GOOS=linux GOARCH=amd64 go build -a -gcflags=all="-l -B" -ldflags="-s -w -X main.SENTRY_DSN=$SENTRY_DSN" -o config-lsp
+          cd server && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -gcflags=all="-l -B" -ldflags="-s -w -X main.SENTRY_DSN=$SENTRY_DSN" -o config-lsp
         env:
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
 
