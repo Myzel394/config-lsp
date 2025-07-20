@@ -11,6 +11,8 @@ import (
 	"github.com/getsentry/sentry-go"
 )
 
+var SENTRY_DSN string
+
 func main() {
 	if len(os.Args) > 1 && (os.Args[1] == "--version" || os.Args[1] == "version") {
 		fmt.Println(common.Version)
@@ -32,6 +34,7 @@ func main() {
 
 		err := sentry.Init(sentry.ClientOptions{
 			// Enable printing of SDK debug messages.
+			Dsn: SENTRY_DSN,
 			// Useful when getting started or trying to figure something out.
 			Debug:       common.ServerOptions.IsDebug,
 			Environment: environment,
@@ -42,6 +45,7 @@ func main() {
 			SampleRate:       1.0,
 
 			SendDefaultPII: false,
+			Release: common.Version,
 		})
 
 		if err != nil {

@@ -57,7 +57,6 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GH_CONFIGLSP_TOKEN }}
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
 
   build-extension:
     name: Build extension for ${{ matrix.action_name }}
@@ -116,10 +115,22 @@ jobs:
 
       - name: Build extension 
         if: ${{ matrix.goos != 'windows' }}
-        run: cd server && GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -a -gcflags=all="-l -B" -ldflags="-s -w" -o config-lsp
+        run: |
+          cd server && 
+          GOOS=${{ matrix.goos }} 
+          GOARCH=${{ matrix.goarch }} 
+          go build -a -gcflags=all="-l -B" -ldflags="-s -w -X main.SENTRY_DSN=$SENTRY_DSN" -o config-lsp
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       - name: Build extension 
         if: ${{ matrix.goos == 'windows' }}
-        run: cd server && GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -a -gcflags=all="-l -B" -ldflags="-s -w" -o config-lsp.exe
+        run: |
+          cd server && 
+          GOOS=${{ matrix.goos }} 
+          GOARCH=${{ matrix.goarch }} 
+          go build -a -gcflags=all="-l -B" -ldflags="-s -w -X main.SENTRY_DSN=$SENTRY_DSN" -o config-lsp.exe
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
 
       - name: Prepare folder
         run: cp -rL result dist && chmod -R 777 dist
