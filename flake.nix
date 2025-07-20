@@ -49,7 +49,7 @@
             go test -v $(pwd)/...
           '';
         };
-        server = pkgs.stdenv.mkDerivation {
+        server = (pkgs: pkgs.stdenv.mkDerivation {
           name = "config-lsp-${version}";
           src = serverUncompressed;
           buildInputs = [
@@ -65,76 +65,76 @@
               upx --ultra-brute $out/bin/config-lsp
             fi
           '';
-        };
+        });
+        vsCodeExtensionBare = (pkgs: let
+          name = "config-lsp";
+          node-modules = pkgs.mkYarnPackage {
+            src = ./vs-code-extension;
+            name = name;
+            packageJSON = ./vs-code-extension/package.json;
+            yarnLock = ./vs-code-extension/yarn.lock;
+            yarnNix = ./vs-code-extension/yarn.nix;
+
+            buildPhase = ''
+              yarn --offline run compile:prod
+            '';
+            installPhase = ''
+              mkdir -p extension
+
+              # No idea why this is being created
+              rm deps/${name}/config-lsp
+
+              cp -rL deps/${name}/. extension
+
+              mkdir -p $out
+              cp -r extension/. $out
+            '';
+            distPhase = "true";
+
+            buildInputs = [
+              pkgs.vsce
+            ];
+          }; in node-modules);
+        vsCodeExtension = (pkgs: let
+          name = "config-lsp";
+          node-modules = pkgs.mkYarnPackage {
+            src = ./vs-code-extension;
+            name = name;
+            packageJSON = ./vs-code-extension/package.json;
+            yarnLock = ./vs-code-extension/yarn.lock;
+            yarnNix = ./vs-code-extension/yarn.nix;
+
+            buildPhase = ''
+              yarn --offline run compile:prod
+            '';
+            installPhase = ''
+              mkdir -p extension
+
+              # No idea why this is being created
+              rm deps/${name}/config-lsp
+
+              cp -rL deps/${name}/. extension
+              cp ${server pkgs}/bin/config-lsp extension/out/config-lsp
+
+              cd extension && ${pkgs.vsce}/bin/vsce package
+              mkdir -p $out
+              cp *.vsix $out
+            '';
+            distPhase = "true";
+
+            buildInputs = [
+              pkgs.vsce
+            ];
+          }; in node-modules);
       in {
         packages = {
           # The server needs SENTRY_DSN to be injected using Go for a full prod build.
           # This is done in the CI:CD for build releases using 
           # `-ldflags="-X main.SENTRY_DSN=$SENTRY_DSN"`
-          default = server;
-          "server-uncompressed" = serverUncompressed;
-          "vs-code-extension-bare" = let
-            name = "config-lsp";
-            node-modules = pkgs.mkYarnPackage {
-              src = ./vs-code-extension;
-              name = name;
-              packageJSON = ./vs-code-extension/package.json;
-              yarnLock = ./vs-code-extension/yarn.lock;
-              yarnNix = ./vs-code-extension/yarn.nix;
-
-              buildPhase = ''
-                yarn --offline run compile:prod
-              '';
-              installPhase = ''
-                mkdir -p extension
-
-                # No idea why this is being created
-                rm deps/${name}/config-lsp
-
-                cp -rL deps/${name}/. extension
-
-                mkdir -p $out
-                cp -r extension/. $out
-              '';
-              distPhase = "true";
-
-              buildInputs = [
-                pkgs.vsce
-              ];
-            };
-          in node-modules;
-          "vs-code-extension" = let
-            name = "config-lsp";
-            node-modules = pkgs.mkYarnPackage {
-              src = ./vs-code-extension;
-              name = name;
-              packageJSON = ./vs-code-extension/package.json;
-              yarnLock = ./vs-code-extension/yarn.lock;
-              yarnNix = ./vs-code-extension/yarn.nix;
-
-              buildPhase = ''
-                yarn --offline run compile:prod
-              '';
-              installPhase = ''
-                mkdir -p extension
-
-                # No idea why this is being created
-                rm deps/${name}/config-lsp
-
-                cp -rL deps/${name}/. extension
-                cp ${server}/bin/config-lsp extension/out/config-lsp
-
-                cd extension && ${pkgs.vsce}/bin/vsce package
-                mkdir -p $out
-                cp *.vsix $out
-              '';
-              distPhase = "true";
-
-              buildInputs = [
-                pkgs.vsce
-              ];
-            };
-          in node-modules;
+          default = server pkgs;
+          "server-uncompressed" = serverUncompressed pkgs;
+          "vs-code-extension-bare" = vsCodeExtensionBare pkgs;
+          "vs-code-extension" = vsCodeExtension pkgs;
         };
 
         devShells.default = let 

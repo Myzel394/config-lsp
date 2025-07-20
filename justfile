@@ -2,6 +2,8 @@
 
 set dotenv-load := true
 
+alias build-vsc-windows := build-vs-code-extension-for-windows
+
 default:
   @just --list
 
@@ -46,6 +48,19 @@ update-antlr-parsers:
 [working-directory: "./vs-code-extension"]
 update-yarn:
     yarn install --no-frozen-lockfile && yarn2nix > yarn.nix
+
+build-vs-code-extension-for-windows:
+    nix build .#vs-code-extension-bare
+    cd server && GOOS="windows" GOARCH="amd64" go build -a -gcflags=all="-l -B" -ldflags="-s -w" -o config-lsp.exe
+    rm -rf dist
+    mkdir dist
+    cp -r result/* dist/
+    chmod -R 755 dist
+    mv server/config-lsp.exe ./dist/out/
+    cd dist && vsce package --target "win32-x64"
+    cp dist/config-lsp-*.vsix .
+    rm -rf result
+    rm -rf dist
 
 # Ready for a PR? Run this recipe before opening the PR!
 ready:
