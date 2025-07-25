@@ -1,0 +1,44 @@
+{
+  "icons": [
+    {
+      "src": "/favicon-48x48.png?v=3bae414c8ecf6d0605b4923f23c92ce2",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-72x72.png?v=3bae414c8ecf6d0605b4923f23c92ce2",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-96x96.png?v=3bae414c8ecf6d0605b4923f23c92ce2",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-144x144.png?v=3bae414c8ecf6d0605b4923f23c92ce2",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-192x192.png?v=3bae414c8ecf6d0605b4923f23c92ce2",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-256x256.png?v=3bae414c8ecf6d0605b4923f23c92ce2",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-384x384.png?v=3bae414c8ecf6d0605b4923f23c92ce2",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-512x512.png?v=3bae414c8ecf6d0605b4923f23c92ce2",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
