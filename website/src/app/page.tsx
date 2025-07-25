@@ -38,14 +38,17 @@ export default function Home() {
           </div>
           <div className="flex flex-col items-center justify-center gap-y-8">
             <div className="flex items-center justify-center gap-x-2">
-              <button className="px-6 py-3 font-bold text-white rounded-lg bg-primary hover:bg-gray-900 transition-colors cursor-pointer">
+              <Link
+                href="https://marketplace.visualstudio.com/items?itemName=myzel394.config-lsp"
+                className="px-6 py-3 font-bold text-white rounded-lg bg-primary hover:bg-gray-900 transition-colors cursor-pointer"
+                rel="noopener noreferrer"
+              >
                 Download for VS Code
-              </button>
+              </Link>
               <Link
                 href="https://github.com/Myzel394/config-lsp"
                 className="px-6 py-3 font-bold text-white rounded-lg cursor-pointer border-gray-800 border"
                 rel="noopener noreferrer"
-                target="_blank"
               >
                 Check on GitHub
               </Link>
