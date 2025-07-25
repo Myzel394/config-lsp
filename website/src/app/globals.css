@@ -14,12 +14,24 @@
 body {
   background: rgb(var(--color-back));
   font-family: Arial, Helvetica, sans-serif;
+}
+
+#bg {
+  z-index: -1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vmin;
 
   background-image: linear-gradient(var(--color-border-start), var(--border-size), transparent var(--border-size)), linear-gradient(90deg, var(--color-border-start) var(--border-size), transparent var(--border-size));
   background-size: 3em 3em;
+
+  pointer-events: none;
 }
 
-body:before {
+#bg:before {
+  content: "";
 
   position: fixed;
   top: 0;
