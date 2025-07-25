@@ -10,7 +10,7 @@ const SupportedConfig: FC<SupportedConfigProps> = ({Icon, name}) => {
     return (
         <div className="flex items-center gap-x-2 text-gray-500">
             <Icon />
-            <span className="text-lg font-semibold">
+            <span className="font-semibold">
                 {name}
             </span>
         </div>

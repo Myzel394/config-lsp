@@ -48,3 +48,10 @@ body {
     rgba(var(--color-back),0.95) 90%
   );
 }
+
+#preview-video {
+  box-shadow: 
+    0 .02em 30em rgba(68, 123, 223, 0.1), 
+    0 .02em 1em rgba(68, 123, 223, 0.08)
+  ;
+}
