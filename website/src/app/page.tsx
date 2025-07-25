@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import SupportedConfig from "@/components/SupportedConfig";
 import Image from "next/image";
+import Link from "next/link";
 import { DiTerminal } from "react-icons/di";
 import { FaBitcoin, FaThList } from "react-icons/fa";
 import { FaHardDrive } from "react-icons/fa6";
@@ -35,18 +36,33 @@ export default function Home() {
               The Language Server for your configuration files
             </p>
           </div>
-          <div className="flex flex-col items-center justify-center gap-y-6">
-            <button className="px-6 py-3 font-bold text-white rounded-lg bg-primary hover:bg-gray-900 transition-colors cursor-pointer">
-              Download for VS Code
-            </button>
-            <div className="grid grid-cols-3 gap-4">
-              <SupportedConfig Icon={SiWireguard} name="WireGuard" />
-              <SupportedConfig Icon={FaBitcoin} name="Bitcoin" />
-              <SupportedConfig Icon={FaHardDrive} name="fstab" />
-              <SupportedConfig Icon={DiTerminal} name="SSH" />
-              <SupportedConfig Icon={LuTerminal} name="SSH Daemon" />
-              <SupportedConfig Icon={MdMail} name="aliases" />
-              <SupportedConfig Icon={FaThList} name="hosts" />
+          <div className="flex flex-col items-center justify-center gap-y-8">
+            <div className="flex items-center justify-center gap-x-2">
+              <button className="px-6 py-3 font-bold text-white rounded-lg bg-primary hover:bg-gray-900 transition-colors cursor-pointer">
+                Download for VS Code
+              </button>
+              <Link
+                href="https://github.com/Myzel394/config-lsp"
+                className="px-6 py-3 font-bold text-white rounded-lg cursor-pointer border-gray-800 border"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                Check on GitHub
+              </Link>
+            </div>
+            <div className="flex flex-col items-start justify-center gap-y-4">
+              <p className="text-gray-500 text-lg">
+                Supported languages:
+              </p>
+              <div className="grid grid-cols-3 gap-4">
+                <SupportedConfig Icon={SiWireguard} name="WireGuard" />
+                <SupportedConfig Icon={FaBitcoin} name="Bitcoin" />
+                <SupportedConfig Icon={FaHardDrive} name="fstab" />
+                <SupportedConfig Icon={DiTerminal} name="SSH" />
+                <SupportedConfig Icon={LuTerminal} name="SSH Daemon" />
+                <SupportedConfig Icon={MdMail} name="aliases" />
+                <SupportedConfig Icon={FaThList} name="hosts" />
+              </div>
             </div>
           </div>
         </main>
