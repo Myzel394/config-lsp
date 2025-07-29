@@ -40,7 +40,7 @@ func GetSectionBodyCompletions(
 
 	// First scenario, user is typing the section name
 	if params.Position.Line == section.Start.Line {
-		return GetSectionHeaderCompletions(d, section.Header.RawValue)
+		return GetSectionHeaderCompletions(d, section.Header)
 	}
 
 	// Third and fourth scenarios, the user wants to add a new property
@@ -64,7 +64,7 @@ func GetSectionBodyCompletions(
 	previousLineProperty := d.Config.FindPropertyByLine(params.Position.Line - 1)
 
 	if previousLineProperty == nil && params.Position.Line-1 != section.Start.Line {
-		sectionCompletions, err := GetSectionHeaderCompletions(d, section.Header.RawValue)
+		sectionCompletions, err := GetSectionHeaderCompletions(d, section.Header)
 
 		if err != nil {
 			return sectionCompletions, err

@@ -22,7 +22,7 @@ func SuggestCompletions(
 	if section == nil {
 		// First, the user needs to define a section header
 		if property == nil {
-			return GetSectionHeaderCompletions(d, "")
+			return GetSectionHeaderCompletions(d, nil)
 		} else {
 			// However, if they start typing a property - we should not
 			// show anything to signal them that they can't write a property yet.
