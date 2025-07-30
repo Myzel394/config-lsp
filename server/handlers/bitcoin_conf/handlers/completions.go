@@ -21,7 +21,7 @@ func SuggestCompletions(
 
 	if section.Header != nil && section.Header.Start.Line == lineNumber {
 		// If the user is on a section header line, suggest section headers
-		return GetSectionHeaderCompletions(d)
+		return GetSectionHeaderCompletions(d, section.Header)
 	} else {
 		return GetPropertyCompletions(
 			d,
