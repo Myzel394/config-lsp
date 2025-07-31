@@ -6,7 +6,7 @@ const (
 	LanguageSSHConfig   SupportedLanguage = "ssh_config"
 	LanguageSSHDConfig  SupportedLanguage = "sshd_config"
 	LanguageFstab       SupportedLanguage = "fstab"
-	LanguageWireguard   SupportedLanguage = "languagewireguard"
+	LanguageWireguard   SupportedLanguage = "wireguard"
 	LanguageHosts       SupportedLanguage = "hosts"
 	LanguageAliases     SupportedLanguage = "aliases"
 	LanguageBitcoinConf SupportedLanguage = "bitcoin_conf"

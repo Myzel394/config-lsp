@@ -1,7 +1,6 @@
 package lsp
 
 import (
-	"config-lsp/common"
 	aliases "config-lsp/handlers/aliases/lsp"
 	bitcoinconf "config-lsp/handlers/bitcoin_conf/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
@@ -21,11 +20,7 @@ func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionPa
 	if document == nil {
 		actions := utils.FetchAddLanguageActions(params.TextDocument.URI)
 
-		if common.ServerOptions.NoUndetectableErrors {
-			return actions, nil
-		} else {
-			return actions, utils.LanguageUndetectableError{}
-		}
+		return actions, nil
 	}
 
 	switch *document.Language {
