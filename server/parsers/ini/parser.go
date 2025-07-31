@@ -84,7 +84,8 @@ func (c *Config) Parse(input string) []common.LSPError {
 							Character: uint32(len(line)) + 1,
 						},
 					},
-					Name: name,
+					Name:     name,
+					RawValue: line,
 				},
 				Properties: treemap.NewWith(gods.UInt32Comparator),
 			}

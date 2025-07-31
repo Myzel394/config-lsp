@@ -35,7 +35,8 @@ type Property struct {
 // Header represents a section header in an INI document
 type Header struct {
 	common.LocationRange
-	Name string
+	Name     string
+	RawValue string
 }
 
 // Section represents a section in an INI document

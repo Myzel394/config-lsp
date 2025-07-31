@@ -1,37 +1,36 @@
 package shared
 
 import (
+	"config-lsp/common"
+
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-var Handler RootHandler
+type OpenedFile struct {
+	Language *SupportedLanguage
 
-var OpenedFiles = make(map[protocol.DocumentUri]struct{})
-
-type RootHandler struct {
-	languageMap map[protocol.DocumentUri]SupportedLanguage
+	// Stores information when the language could not be determined
+	UnavailableInfo *UnavailableInfo
 }
 
-func NewRootHandler() RootHandler {
-	return RootHandler{
-		languageMap: make(map[protocol.DocumentUri]SupportedLanguage),
+type UnavailableInfo struct {
+	// Position of `#?lsp.language`
+	OverwritePosition *common.LocationRange
+}
+
+var OpenedFiles = make(map[protocol.DocumentUri]OpenedFile)
+
+func AddDocument(uri protocol.DocumentUri, file OpenedFile) {
+	OpenedFiles[uri] = file
+}
+
+func RemoveDocument(uri protocol.DocumentUri) {
+	delete(OpenedFiles, uri)
+}
+
+func GetDocument(uri protocol.DocumentUri) *OpenedFile {
+	if file, exists := OpenedFiles[uri]; exists {
+		return &file
 	}
-}
-
-func (h *RootHandler) AddDocument(uri protocol.DocumentUri, language SupportedLanguage) {
-	h.languageMap[uri] = language
-}
-
-func (h *RootHandler) GetLanguageForDocument(uri protocol.DocumentUri) *SupportedLanguage {
-	language, found := h.languageMap[uri]
-
-	if !found {
-		return nil
-	}
-
-	return &language
-}
-
-func (h *RootHandler) RemoveDocument(uri protocol.DocumentUri) {
-	delete(h.languageMap, uri)
+	return nil
 }

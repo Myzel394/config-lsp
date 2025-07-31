@@ -3,7 +3,6 @@ package roothandler
 import (
 	"config-lsp/common"
 	"config-lsp/root-handler/lsp"
-	"config-lsp/root-handler/shared"
 
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -23,8 +22,6 @@ var lspHandler protocol.Handler
 
 // The root handler which handles all the LSP requests and then forwards them to the appropriate handler
 func SetUpRootHandler() {
-	shared.Handler = shared.NewRootHandler()
-
 	lspHandler = protocol.Handler{
 		Initialize:                  initialize,
 		Initialized:                 initialized,

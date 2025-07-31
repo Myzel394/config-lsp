@@ -12,13 +12,13 @@ import (
 )
 
 func TextDocumentSignatureHelp(context *glsp.Context, params *protocol.SignatureHelpParams) (*protocol.SignatureHelp, error) {
-	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
+	document := shared.GetDocument(params.TextDocument.URI)
 
-	if language == nil {
+	if document == nil {
 		return nil, nil
 	}
 
-	switch *language {
+	switch *document.Language {
 	case shared.LanguageHosts:
 		return hosts.TextDocumentSignatureHelp(context, params)
 	case shared.LanguageSSHDConfig:
@@ -35,5 +35,5 @@ func TextDocumentSignatureHelp(context *glsp.Context, params *protocol.Signature
 		return nil, nil
 	}
 
-	panic("root-handler/TextDocumentSignatureHelp: unexpected language" + *language)
+	panic("root-handler/TextDocumentSignatureHelp: unexpected language" + *document.Language)
 }

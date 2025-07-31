@@ -67,3 +67,7 @@ ready:
     just lint
     just test
 
+[working-directory: "./website"]
+dev-website:
+    yarn run dev
+

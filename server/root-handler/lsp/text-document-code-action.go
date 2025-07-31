@@ -1,7 +1,6 @@
 package lsp
 
 import (
-	"config-lsp/common"
 	aliases "config-lsp/handlers/aliases/lsp"
 	bitcoinconf "config-lsp/handlers/bitcoin_conf/lsp"
 	hosts "config-lsp/handlers/hosts/lsp"
@@ -16,19 +15,15 @@ import (
 )
 
 func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionParams) (any, error) {
-	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
+	document := shared.GetDocument(params.TextDocument.URI)
 
-	if language == nil {
+	if document == nil {
 		actions := utils.FetchAddLanguageActions(params.TextDocument.URI)
 
-		if common.ServerOptions.NoUndetectableErrors {
-			return actions, nil
-		} else {
-			return actions, utils.LanguageUndetectableError{}
-		}
+		return actions, nil
 	}
 
-	switch *language {
+	switch *document.Language {
 	case shared.LanguageFstab:
 		return nil, nil
 	case shared.LanguageHosts:
@@ -45,5 +40,5 @@ func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionPa
 		return bitcoinconf.TextDocumentCodeAction(context, params)
 	}
 
-	panic("root-handler/TextDocumentCompletion: unexpected language" + *language)
+	panic("root-handler/TextDocumentCompletion: unexpected language" + *document.Language)
 }

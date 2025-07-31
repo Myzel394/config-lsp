@@ -23,7 +23,7 @@
       "aarch64-windows"
     ] (system: 
       let
-        version = "0.3.2"; # CI:CD-VERSION
+        version = "0.3.3"; # CI:CD-VERSION
         pkgs = import nixpkgs {
           inherit system;
           overlays = [
@@ -161,6 +161,16 @@
             vsce
             yarn
             yarn2nix
+          ];
+        };
+
+        devShells.website = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            just
+            nodejs_22
+            yarn
+            oxlint
+            biome
           ];
         };
       }

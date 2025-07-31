@@ -14,11 +14,21 @@ import (
 var SENTRY_DSN string
 
 func main() {
-	if len(os.Args) > 1 && (os.Args[1] == "--version" || os.Args[1] == "version") {
-		fmt.Println(common.Version)
+	if len(os.Args) > 1 {
+		if os.Args[1] == "--version" || os.Args[1] == "version" {
+			fmt.Println(common.Version)
 
-		os.Exit(0)
-		return
+			os.Exit(0)
+			return
+		} else if os.Args[1] == "--help" || os.Args[1] == "help" {
+			fmt.Println("Usage: config-lsp [--version | --help]")
+			fmt.Println("  --version: Print the version of config-lsp")
+			fmt.Println("  --help: Print this help message")
+			fmt.Println("Version:", common.Version)
+
+			os.Exit(0)
+			return
+		}
 	}
 
 	common.InitServerOptions()

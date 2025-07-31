@@ -314,3 +314,33 @@ server=1
 		t.Errorf("Parse: Expected section to end at line 16, but got %v", config.Sections[1].End)
 	}
 }
+
+func TestSectionHeaderJustOpened(t *testing.T) {
+	sample := `[`
+
+	config := NewConfig()
+	errors := config.Parse(sample)
+
+	if !(len(errors) == 0) {
+		t.Fatalf("Parse: Expected errors, but got none")
+	}
+
+	if !(len(config.Sections) == 1 && config.Sections[0].Header.Name == "" && config.Sections[0].Header.RawValue == "[" && config.Sections[0].Properties.Size() == 0) {
+		t.Fatalf("Parse: Expected one section with no header and no properties, but got %d sections", len(config.Sections))
+	}
+}
+
+func TestSectionHeaderEmpty(t *testing.T) {
+	sample := `[]`
+
+	config := NewConfig()
+	errors := config.Parse(sample)
+
+	if !(len(errors) == 0) {
+		t.Fatalf("Parse: Expected errors, but got none")
+	}
+
+	if !(len(config.Sections) == 1 && config.Sections[0].Header.Name == "" && config.Sections[0].Header.RawValue == "[]" && config.Sections[0].Properties.Size() == 0) {
+		t.Fatalf("Parse: Expected one section with no header and no properties, but got %d sections", len(config.Sections))
+	}
+}
