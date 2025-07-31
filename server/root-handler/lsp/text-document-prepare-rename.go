@@ -13,9 +13,9 @@ import (
 )
 
 func TextDocumentPrepareRename(context *glsp.Context, params *protocol.PrepareRenameParams) (any, error) {
-	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
+	document := shared.GetDocument(params.TextDocument.URI)
 
-	if language == nil {
+	if document == nil {
 		if common.ServerOptions.NoUndetectableErrors {
 			return nil, nil
 		} else {
@@ -23,7 +23,7 @@ func TextDocumentPrepareRename(context *glsp.Context, params *protocol.PrepareRe
 		}
 	}
 
-	switch *language {
+	switch *document.Language {
 	case shared.LanguageHosts:
 		return nil, nil
 	case shared.LanguageSSHDConfig:
@@ -40,5 +40,5 @@ func TextDocumentPrepareRename(context *glsp.Context, params *protocol.PrepareRe
 		return nil, nil
 	}
 
-	panic("root-handler/TextDocumentPrepareRename: unexpected language" + *language)
+	panic("root-handler/TextDocumentPrepareRename: unexpected language" + *document.Language)
 }

@@ -16,9 +16,9 @@ import (
 )
 
 func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionParams) (any, error) {
-	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
+	document := shared.GetDocument(params.TextDocument.URI)
 
-	if language == nil {
+	if document == nil {
 		actions := utils.FetchAddLanguageActions(params.TextDocument.URI)
 
 		if common.ServerOptions.NoUndetectableErrors {
@@ -28,7 +28,7 @@ func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionPa
 		}
 	}
 
-	switch *language {
+	switch *document.Language {
 	case shared.LanguageFstab:
 		return nil, nil
 	case shared.LanguageHosts:
@@ -45,5 +45,5 @@ func TextDocumentCodeAction(context *glsp.Context, params *protocol.CodeActionPa
 		return bitcoinconf.TextDocumentCodeAction(context, params)
 	}
 
-	panic("root-handler/TextDocumentCompletion: unexpected language" + *language)
+	panic("root-handler/TextDocumentCompletion: unexpected language" + *document.Language)
 }

@@ -14,17 +14,15 @@ import (
 )
 
 func TextDocumentDidClose(context *glsp.Context, params *protocol.DidCloseTextDocumentParams) error {
-	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
+	document := shared.GetDocument(params.TextDocument.URI)
 
-	if language == nil {
+	if document == nil {
 		return nil
 	}
 
-	delete(shared.OpenedFiles, params.TextDocument.URI)
-	delete(shared.LanguagesOverwrites, params.TextDocument.URI)
-	shared.Handler.RemoveDocument(params.TextDocument.URI)
+	shared.RemoveDocument(params.TextDocument.URI)
 
-	switch *language {
+	switch *document.Language {
 	case shared.LanguageSSHDConfig:
 		return sshdconfig.TextDocumentDidClose(context, params)
 	case shared.LanguageSSHConfig:

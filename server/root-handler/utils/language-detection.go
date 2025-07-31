@@ -27,9 +27,11 @@ func (e LanguageUndetectableError) Error() string {
 }
 
 var valueToLanguageMap = map[string]shared.SupportedLanguage{
+	"sshd":        shared.LanguageSSHDConfig,
 	"sshd_config": shared.LanguageSSHDConfig,
 	"sshdconfig":  shared.LanguageSSHDConfig,
 
+	"ssh":        shared.LanguageSSHConfig,
 	"ssh_config": shared.LanguageSSHConfig,
 	"sshconfig":  shared.LanguageSSHConfig,
 
@@ -93,7 +95,7 @@ var filenameToLanguageMap = map[string]shared.SupportedLanguage{
 	"btcd.conf":     shared.LanguageBitcoinConf,
 }
 
-var typeOverwriteRegex = regexp.MustCompile(`#\?\s*lsp\.language\s*=\s*(\w+)\s*`)
+var typeOverwriteRegex = regexp.MustCompile(`#\s*\?\s*lsp\.language\s*=\s*(\w+)\s*`)
 var wireguardPattern = regexp.MustCompile(`wg(\d+)?(\.conf)?$`)
 
 func DetectLanguage(
@@ -102,7 +104,6 @@ func DetectLanguage(
 	uri protocol.DocumentUri,
 ) (shared.SupportedLanguage, error) {
 	if match := typeOverwriteRegex.FindStringSubmatchIndex(content); match != nil {
-		text := content[match[0]:match[1]]
 		language := content[match[2]:match[3]]
 		suggestedLanguage := strings.ToLower(language)
 
@@ -111,14 +112,6 @@ func DetectLanguage(
 		contentUntilMatch := content[:match[0]]
 
 		if ok {
-			line := uint32(utils.CountCharacterOccurrences(contentUntilMatch, '\n'))
-			shared.LanguagesOverwrites[uri] = shared.LanguageOverwrite{
-				Language:  foundLanguage,
-				Raw:       text,
-				Line:      line,
-				Character: uint32(match[0]),
-			}
-
 			return foundLanguage, nil
 		}
 

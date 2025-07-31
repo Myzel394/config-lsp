@@ -14,13 +14,13 @@ import (
 )
 
 func TextDocumentHover(context *glsp.Context, params *protocol.HoverParams) (*protocol.Hover, error) {
-	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
+	document := shared.GetDocument(params.TextDocument.URI)
 
-	if language == nil {
+	if document == nil {
 		return nil, nil
 	}
 
-	switch *language {
+	switch *document.Language {
 	case shared.LanguageHosts:
 		return hosts.TextDocumentHover(context, params)
 	case shared.LanguageSSHDConfig:
@@ -37,5 +37,5 @@ func TextDocumentHover(context *glsp.Context, params *protocol.HoverParams) (*pr
 		return bitcoinconf.TextDocumentHover(context, params)
 	}
 
-	panic("root-handler/TextDocumentHover: unexpected language" + *language)
+	panic("root-handler/TextDocumentHover: unexpected language" + *document.Language)
 }

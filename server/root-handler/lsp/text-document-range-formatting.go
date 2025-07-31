@@ -16,9 +16,9 @@ func TextDocumentRangeFormattingFunc(
 	context *glsp.Context,
 	params *protocol.DocumentRangeFormattingParams,
 ) ([]protocol.TextEdit, error) {
-	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
+	document := shared.GetDocument(params.TextDocument.URI)
 
-	if language == nil {
+	if document == nil {
 		if common.ServerOptions.NoUndetectableErrors {
 			return nil, nil
 		} else {
@@ -26,7 +26,7 @@ func TextDocumentRangeFormattingFunc(
 		}
 	}
 
-	switch *language {
+	switch *document.Language {
 	case shared.LanguageHosts:
 		return nil, nil
 	case shared.LanguageSSHDConfig:
@@ -43,5 +43,5 @@ func TextDocumentRangeFormattingFunc(
 		return bitcoinconf.TextDocumentRangeFormatting(context, params)
 	}
 
-	panic("root-handler/TextDocumentRangeFormattingFunc: unexpected language" + *language)
+	panic("root-handler/TextDocumentRangeFormattingFunc: unexpected language" + *document.Language)
 }

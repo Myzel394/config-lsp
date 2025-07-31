@@ -75,10 +75,10 @@ func initFile(
 
 	utils.NotifyDetectedLanguage(context, uri, language)
 
-	shared.OpenedFiles[uri] = struct{}{}
-
 	// Everything okay, now we can handle the file
-	shared.Handler.AddDocument(uri, language)
+	shared.AddDocument(uri, shared.OpenedFile{
+		Language: &language,
+	})
 
 	return &language, nil
 }

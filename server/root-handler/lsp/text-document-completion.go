@@ -15,13 +15,13 @@ import (
 )
 
 func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionParams) (any, error) {
-	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
+	document := shared.GetDocument(params.TextDocument.URI)
 
-	if language == nil {
+	if document == nil {
 		return nil, nil
 	}
 
-	switch *language {
+	switch *document.Language {
 	case shared.LanguageFstab:
 		return fstab.TextDocumentCompletion(context, params)
 	case shared.LanguageSSHDConfig:
@@ -38,5 +38,5 @@ func TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionPa
 		return bitcoinconf.TextDocumentCompletion(context, params)
 	}
 
-	panic("root-handler/TextDocumentCompletion: unexpected language" + *language)
+	panic("root-handler/TextDocumentCompletion: unexpected language" + *document.Language)
 }

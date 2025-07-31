@@ -10,20 +10,32 @@ import (
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
 	wireguard "config-lsp/handlers/wireguard/lsp"
 	"config-lsp/root-handler/shared"
+	"config-lsp/root-handler/utils"
 
 	"github.com/tliron/glsp"
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
 func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeTextDocumentParams) error {
-	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
-
+	document := shared.GetDocument(params.TextDocument.URI)
 	content := params.ContentChanges[0].(protocol.TextDocumentContentChangeEventWhole).Text
 
-	if _, found := shared.OpenedFiles[params.TextDocument.URI]; !found {
-		// The file couldn't be initialized when opening it,
-		// so we will try it again here
+	// Document not initialized yet
+	if document == nil {
+		params := &protocol.DidOpenTextDocumentParams{
+			TextDocument: protocol.TextDocumentItem{
+				URI:     params.TextDocument.URI,
+				Text:    content,
+				Version: params.TextDocument.Version,
+			},
+		}
+		return TextDocumentDidOpen(context, params)
+	}
 
+	newLanguage, err := utils.DetectLanguage(content, "", params.TextDocument.URI)
+
+	// User changed the language OR
+	if err == nil && newLanguage != *document.Language {
 		newLanguage, err := initFile(
 			context,
 			content,
@@ -39,23 +51,19 @@ func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeText
 			}
 		}
 
-		if *newLanguage != *language {
-			language = newLanguage
-
-			params := &protocol.DidOpenTextDocumentParams{
-				TextDocument: protocol.TextDocumentItem{
-					URI:        params.TextDocument.URI,
-					Text:       content,
-					Version:    params.TextDocument.Version,
-					LanguageID: string(*language),
-				},
-			}
-
-			return TextDocumentDidOpen(context, params)
+		params := &protocol.DidOpenTextDocumentParams{
+			TextDocument: protocol.TextDocumentItem{
+				URI:        params.TextDocument.URI,
+				Text:       content,
+				Version:    params.TextDocument.Version,
+				LanguageID: string(*newLanguage),
+			},
 		}
+
+		return TextDocumentDidOpen(context, params)
 	}
 
-	switch *language {
+	switch *document.Language {
 	case shared.LanguageFstab:
 		return fstab.TextDocumentDidChange(context, params)
 	case shared.LanguageSSHDConfig:
@@ -72,5 +80,5 @@ func TextDocumentDidChange(context *glsp.Context, params *protocol.DidChangeText
 		return bitcoinconf.TextDocumentDidChange(context, params)
 	}
 
-	panic("root-handler/TextDocumentDidChange: unexpected language" + *language)
+	panic("root-handler/TextDocumentDidChange: unexpected language" + *document.Language)
 }

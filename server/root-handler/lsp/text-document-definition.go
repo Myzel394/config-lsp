@@ -13,9 +13,9 @@ import (
 )
 
 func TextDocumentDefinition(context *glsp.Context, params *protocol.DefinitionParams) (any, error) {
-	language := shared.Handler.GetLanguageForDocument(params.TextDocument.URI)
+	document := shared.GetDocument(params.TextDocument.URI)
 
-	if language == nil {
+	if document == nil {
 		if common.ServerOptions.NoUndetectableErrors {
 			return nil, nil
 		} else {
@@ -23,7 +23,7 @@ func TextDocumentDefinition(context *glsp.Context, params *protocol.DefinitionPa
 		}
 	}
 
-	switch *language {
+	switch *document.Language {
 	case shared.LanguageHosts:
 		return nil, nil
 	case shared.LanguageSSHDConfig:
@@ -40,5 +40,5 @@ func TextDocumentDefinition(context *glsp.Context, params *protocol.DefinitionPa
 		return nil, nil
 	}
 
-	panic("root-handler/TextDocumentDefinition: unexpected language" + *language)
+	panic("root-handler/TextDocumentDefinition: unexpected language" + *document.Language)
 }
