@@ -34,8 +34,10 @@
             gomod2nix.overlays.default
           ];
         };
-        inputs = [
-          pkgs.go_1_24
+        inputs = with pkgs; [
+          go_1_24
+          ls-lint
+          just
         ];
         serverUncompressed = (pkgs: pkgs.buildGoModule {
           CGO_ENABLED = 0;
@@ -138,25 +140,21 @@
           "vs-code-extension" = vsCodeExtension pkgs;
         };
 
-        devShells.default = let 
-          ourGopls = pkgs.gopls;
-        in
-          pkgs.mkShell {
-            buildInputs = inputs ++ (with pkgs; [
-              mailutils
-              wireguard-tools
-              antlr
-              just
-              ourGopls
-              python3
-            ]) ++ (if pkgs.stdenv.isLinux then with pkgs; [
-              postfix
-            ] else []);
-          };
+        devShells.default = pkgs.mkShell {
+          buildInputs = inputs ++ (with pkgs; [
+            mailutils
+            wireguard-tools
+            antlr
+            gopls
+            python3
+            ls-lint
+          ]) ++ (if pkgs.stdenv.isLinux then with pkgs; [
+            postfix
+          ] else []);
+        };
 
         devShells."vs-code-extension" = pkgs.mkShell {
           buildInputs = with pkgs; [
-            just
             nodejs
             vsce
             yarn
@@ -166,7 +164,6 @@
 
         devShells.website = pkgs.mkShell {
           buildInputs = with pkgs; [
-            just
             nodejs_22
             yarn
             oxlint

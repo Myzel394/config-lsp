@@ -8,10 +8,9 @@ default:
   @just --list
 
 # Lint whole project
-[working-directory: "./server"]
 lint:
-    gofmt -s -w .
-    # cd vs-code-extension && yarn run lint
+    ls_lint && \
+    cd server && gofmt -s -w .
 
 # Build config-lsp and test it in nvim (config-lsp will be loaded automatically)
 [working-directory: "./server"]
