@@ -236,20 +236,32 @@ func (c *Config) Parse(input string) []common.LSPError {
 				// value exists
 				valueStart := uint32(indexes[6])
 				valueEnd := uint32(indexes[7])
+
+				rawStart := valueStart
+				rawEnd := valueEnd
+
+				if (line[valueStart] == '"' && line[valueEnd-1] == '"') ||
+					(line[valueStart] == '\'' && line[valueEnd-1] == '\'') {
+					// Value is quoted
+					valueStart++
+					valueEnd--
+				}
+
 				propertyEnd = valueEnd
 
 				value = &PropertyValue{
 					LocationRange: common.LocationRange{
 						Start: common.Location{
 							Line:      lineNumber,
-							Character: valueStart,
+							Character: rawStart,
 						},
 						End: common.Location{
 							Line:      lineNumber,
-							Character: valueEnd,
+							Character: rawEnd,
 						},
 					},
-					Value: line[valueStart:valueEnd],
+					Value: utils.NormalizeEscapedQuotes(line[valueStart:valueEnd]),
+					Raw:   line[rawStart:rawEnd],
 				}
 			}
 

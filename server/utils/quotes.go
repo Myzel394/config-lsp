@@ -97,3 +97,15 @@ func GetQuoteRanges(s string) quoteRanges {
 
 	return quoteRanges
 }
+
+func NormalizeEscapedQuotes(value string) string {
+	// Search for \" and remove the backslash
+	for i := 0; i < len(value)-1; i++ {
+		if value[i] == '\\' && ((value[i+1] == '"') || (value[i+1] == '\'')) {
+			value = value[:i] + value[i+1:]
+			i-- // Adjust index after removal
+		}
+	}
+
+	return value
+}

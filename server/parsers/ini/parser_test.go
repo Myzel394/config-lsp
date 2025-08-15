@@ -344,3 +344,51 @@ func TestSectionHeaderEmpty(t *testing.T) {
 		t.Fatalf("Parse: Expected one section with no header and no properties, but got %d sections", len(config.Sections))
 	}
 }
+
+func TestPropertyValueInQuotes(t *testing.T) {
+	sample := `hello = "world"`
+
+	config := NewConfig()
+	config.XParseConfig = INIParseConfig{
+		AllowRootProperties: true,
+	}
+	errors := config.Parse(sample)
+
+	if len(errors) > 0 {
+		t.Fatalf("Parse: Expected no errors, but got %v", errors)
+	}
+
+	if len(config.Sections) != 1 {
+		t.Fatalf("Parse: Expected 1 section, but got %d", len(config.Sections))
+	}
+
+	rawProperty, _ := config.Sections[0].Properties.Get(uint32(0))
+	property := rawProperty.(*Property)
+	if !(property.Key.Name == "hello" && property.Value.Value == "world" && property.Value.Raw == `"world"`) {
+		t.Errorf("Parse: Expected property to be 'hello = \"world\"', but got '%s = %s'; RAW: %s", property.Key.Name, property.Value.Value, property.Value.Raw)
+	}
+}
+
+func TestPropertyValueInQuotesWithEscapedQuotes(t *testing.T) {
+	sample := `hello = "world \"escaped\""`
+
+	config := NewConfig()
+	config.XParseConfig = INIParseConfig{
+		AllowRootProperties: true,
+	}
+	errors := config.Parse(sample)
+
+	if len(errors) > 0 {
+		t.Fatalf("Parse: Expected no errors, but got %v", errors)
+	}
+
+	if len(config.Sections) != 1 {
+		t.Fatalf("Parse: Expected 1 section, but got %d", len(config.Sections))
+	}
+
+	rawProperty, _ := config.Sections[0].Properties.Get(uint32(0))
+	property := rawProperty.(*Property)
+	if !(property.Key.Name == "hello" && property.Value.Value == `world "escaped"` && property.Value.Raw == `"world \"escaped\""` && property.Separator != nil) {
+		t.Errorf("Parse: Expected property to be correct, got %s = %s", property.Key.Name, property.Value.Raw)
+	}
+}
