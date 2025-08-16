@@ -31,8 +31,8 @@ func WorkspaceExecuteCommand(context *glsp.Context, params *protocol.ExecuteComm
 		d := wireguard.DocumentParserMap[args.URI]
 
 		return args.RunCommand(d)
-	case string(handlers.CodeActionGeneratePostDown):
-		args := handlers.CodeActionGeneratePostdownArgsFromArguments(params.Arguments[0].(map[string]any))
+	case string(handlers.CodeActionGenerateDownRule):
+		args := handlers.CodeActionGenerateDownRuleArgsFromArguments(params.Arguments[0].(map[string]any))
 
 		d := wireguard.DocumentParserMap[args.URI]
 		return args.RunCommand(d)

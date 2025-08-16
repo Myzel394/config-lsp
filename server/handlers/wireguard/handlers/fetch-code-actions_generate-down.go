@@ -9,16 +9,18 @@ import (
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
+var preUp = fields.CreateNormalizedName("PreUp")
+var postUp = fields.CreateNormalizedName("PostUp")
+
 func GetGeneratePostDownCodeActions(
 	d *wireguard.WGDocument,
 	params *protocol.CodeActionParams,
 ) []protocol.CodeAction {
-	postPrePropertyNames := map[fields.NormalizedName]struct{}{
-		fields.CreateNormalizedName("PreUp"):  {},
-		fields.CreateNormalizedName("PostUp"): {},
-	}
-
 	line := params.Range.Start.Line
+
+	if utils.BlockUntilIndexesNotNil(d) == false {
+		return nil
+	}
 
 	section := d.Config.FindSectionByLine(line)
 
@@ -35,26 +37,33 @@ func GetGeneratePostDownCodeActions(
 	property := rawProperty.(*ini.Property)
 
 	propertyName := fields.CreateNormalizedName(property.Key.Name)
-	if (utils.KeyExists(postPrePropertyNames, propertyName)) && (property.Value != nil) {
-		// Only propose this action if no PostDown is already present
-		_, postDownProperty := section.FindFirstPropertyByName("PostDown")
+	if property.Value != nil {
+		var newProperty string = ""
 
-		if postDownProperty == nil {
-			commandID := "wireguard." + CodeActionGeneratePostDown
+		if propertyName == preUp && d.Indexes.AsymmetricRules[section].PreMissing {
+			newProperty = "PreDown"
+		} else if propertyName == postUp && d.Indexes.AsymmetricRules[section].PostMissing {
+			newProperty = "PostDown"
+		}
+
+		if newProperty != "" {
+			title := "Generate " + newProperty + " with inverted rules"
+			commandID := "wireguard." + CodeActionGenerateDownRule
 
 			command := protocol.Command{
-				Title:   "Generate PostDown with inverted rules",
+				Title:   title,
 				Command: string(commandID),
 				Arguments: []any{
-					CodeActionGeneratePostdownKeyArgs{
-						URI: params.TextDocument.URI,
+					CodeActionGenerateDownRuleArgs{
+						URI:  params.TextDocument.URI,
+						Line: line,
 					},
 				},
 			}
 
 			return []protocol.CodeAction{
 				{
-					Title:   "Generate PostDown with inverted rules",
+					Title:   title,
 					Command: &command,
 				},
 			}

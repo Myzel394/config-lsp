@@ -52,6 +52,20 @@ func analyzeProperties(
 
 				// Duplicate check
 			} else if existingProperty, found := existingProperties[normalizedPropertyName]; found {
+				var allowedDuplicated map[fields.NormalizedName]struct{}
+
+				switch section.Header.Name {
+				case "Interface":
+					allowedDuplicated = fields.InterfaceAllowedDuplicateFields
+				case "Peer":
+					allowedDuplicated = fields.PeerAllowedDuplicateFields
+				}
+
+				if _, ok := allowedDuplicated[normalizedPropertyName]; ok {
+					// If the property is allowed to be duplicated, we skip the error
+					continue
+				}
+
 				ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 					Message:  fmt.Sprintf("Property '%s' has already been defined on line %d", property.Key.Name, existingProperty.Start.Line+1),
 					Severity: &common.SeverityError,

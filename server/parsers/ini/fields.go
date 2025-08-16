@@ -83,6 +83,20 @@ func (s *Section) FindFirstPropertyByName(name string) (uint32, *Property) {
 	return 0, nil
 }
 
+func (s *Section) FindPropertiesByName(name string) []*Property {
+	properties := make([]*Property, 0)
+
+	it := s.Properties.Iterator()
+	for it.Next() {
+		property := it.Value().(*Property)
+		if property.Key.Name == name {
+			properties = append(properties, property)
+		}
+	}
+
+	return properties
+}
+
 // Find the last property in a section
 func (s *Section) GetLastProperty() *Property {
 	if s.Properties.Size() == 0 {

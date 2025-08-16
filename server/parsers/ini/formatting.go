@@ -10,6 +10,7 @@ import (
 var propertyTemplate = formatting.FormatTemplate(
 	"/!'%s/!'",
 )
+
 func FormatProperty(
 	property *Property,
 	options protocol.FormattingOptions,
@@ -22,7 +23,7 @@ func FormatProperty(
 
 	keyText := property.Key.Name
 	valueText := strings.ReplaceAll(
-			strings.ReplaceAll(
+		strings.ReplaceAll(
 			property.Value.Value,
 			"\"",
 			"\\\"",

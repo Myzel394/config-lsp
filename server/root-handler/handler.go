@@ -62,7 +62,7 @@ func initialize(context *glsp.Context, params *protocol.InitializeParams) (any, 
 
 			"wireguard." + string(wireguard_handlers.CodeActionGeneratePrivateKey),
 			"wireguard." + string(wireguard_handlers.CodeActionGeneratePresharedKey),
-			"wireguard." + string(wireguard_handlers.CodeActionGeneratePostDown),
+			"wireguard." + string(wireguard_handlers.CodeActionGenerateDownRule),
 			"wireguard." + string(wireguard_handlers.CodeActionCreatePeer),
 
 			"bitcoinconf." + string(bitcoin_conf_handlers.CodeActionGenerateRPCAuth),

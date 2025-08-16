@@ -4,42 +4,56 @@ import (
 	"config-lsp/handlers/wireguard"
 	"config-lsp/utils"
 	"errors"
+	"fmt"
 	"strings"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
 
-type CodeActionGeneratePostdownKeyArgs struct {
-	URI protocol.DocumentUri
+type CodeActionGenerateDownRuleArgs struct {
+	URI  protocol.DocumentUri
+	Line uint32
 }
 
-func CodeActionGeneratePostdownArgsFromArguments(arguments map[string]any) CodeActionGeneratePostdownKeyArgs {
-	return CodeActionGeneratePostdownKeyArgs{
-		URI: arguments["URI"].(protocol.DocumentUri),
+func CodeActionGenerateDownRuleArgsFromArguments(arguments map[string]any) CodeActionGenerateDownRuleArgs {
+	return CodeActionGenerateDownRuleArgs{
+		URI:  arguments["URI"].(protocol.DocumentUri),
+		Line: uint32(arguments["Line"].(float64)),
 	}
 }
 
-func (args CodeActionGeneratePostdownKeyArgs) RunCommand(d *wireguard.WGDocument) (*protocol.ApplyWorkspaceEditParams, error) {
+func (args CodeActionGenerateDownRuleArgs) RunCommand(d *wireguard.WGDocument) (*protocol.ApplyWorkspaceEditParams, error) {
 	if utils.BlockUntilIndexesNotNil(d.Indexes) == false {
 		return nil, errors.New("Indexes are not ready yet")
 	}
 
-	lastUpPropertyKey := utils.FindBiggestKey(d.Indexes.UpProperties)
-	lastUpProperty := d.Indexes.UpProperties[lastUpPropertyKey]
+	section := d.Config.FindSectionByLine(args.Line)
+	property := d.Config.FindPropertyByLine(args.Line)
 
-	// TODO: Find out if the user specified multiple PreDown or only one (or maybe don't do this at all)
+	if section == nil || property == nil {
+		return nil, errors.New("No section or property found at the specified line")
+	}
 
-	rules := findAllIPTableRules(d)
+	rules := strings.Split(property.Value.Value, ";")
 	invertedRules := generateInvertedRules(rules)
 
 	if len(invertedRules) == 0 {
 		return nil, errors.New("No valid iptables rules found to invert")
 	}
 
-	newRulesString := strings.Join(invertedRules, "; ")
-	newPropertyString := "\nPostDown = " + newRulesString + "\n"
+	var newKeyName string
 
-	label := "Generate PostDown with inverted rules"
+	switch property.Key.Name {
+	case "PreUp":
+		newKeyName = "PreDown"
+	case "PostUp":
+		newKeyName = "PostDown"
+	}
+
+	newRulesString := strings.Join(invertedRules, "; ")
+	newPropertyString := fmt.Sprintf("\n%s = %s", newKeyName, newRulesString)
+
+	label := fmt.Sprintf("Generate %s with inverted rules", newKeyName)
 	return &protocol.ApplyWorkspaceEditParams{
 		Label: &label,
 		Edit: protocol.WorkspaceEdit{
@@ -47,8 +61,8 @@ func (args CodeActionGeneratePostdownKeyArgs) RunCommand(d *wireguard.WGDocument
 				args.URI: {
 					{
 						Range: protocol.Range{
-							Start: lastUpProperty.Property.Value.ToLSPRange().End,
-							End:   lastUpProperty.Property.Value.ToLSPRange().End,
+							Start: property.Value.ToLSPRange().End,
+							End:   property.Value.ToLSPRange().End,
 						},
 						NewText: newPropertyString,
 					},
@@ -56,23 +70,6 @@ func (args CodeActionGeneratePostdownKeyArgs) RunCommand(d *wireguard.WGDocument
 			},
 		},
 	}, nil
-}
-
-func findAllIPTableRules(
-	d *wireguard.WGDocument,
-) []string {
-	upRules := make([]string, 0)
-
-	for _, info := range d.Indexes.UpProperties {
-		if info.Property != nil && info.Property.Value != nil {
-			rulesRaw := info.Property.Value.Value
-			rules := strings.Split(rulesRaw, ";")
-
-			upRules = append(upRules, rules...)
-		}
-	}
-
-	return upRules
 }
 
 func generateInvertedRules(rules []string) []string {

@@ -3,9 +3,9 @@ package lsp
 import (
 	"config-lsp/common"
 	bitcoinconf "config-lsp/handlers/bitcoin_conf/lsp"
-	wireguard "config-lsp/handlers/wireguard/lsp"
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
+	wireguard "config-lsp/handlers/wireguard/lsp"
 	"config-lsp/root-handler/shared"
 	"config-lsp/root-handler/utils"
 
