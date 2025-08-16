@@ -12,11 +12,11 @@ import (
 var preUp = fields.CreateNormalizedName("PreUp")
 var postUp = fields.CreateNormalizedName("PostUp")
 
-func GetGeneratePostDownCodeActions(
+func GetGenerateDownRuleCodeActions(
 	d *wireguard.WGDocument,
 	params *protocol.CodeActionParams,
 ) []protocol.CodeAction {
-	line := params.Range.Start.Line
+	line := uint32(params.Range.Start.Line)
 
 	if utils.BlockUntilIndexesNotNil(d) == false {
 		return nil

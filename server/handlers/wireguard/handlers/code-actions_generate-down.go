@@ -48,6 +48,9 @@ func (args CodeActionGenerateDownRuleArgs) RunCommand(d *wireguard.WGDocument) (
 		newKeyName = "PreDown"
 	case "PostUp":
 		newKeyName = "PostDown"
+	default:
+		return nil, fmt.Errorf("unsupported key %q at line %d; only PreUp/PostUp are supported", property.Key.Name, args.Line)
+
 	}
 
 	newRulesString := strings.Join(invertedRules, "; ")
@@ -61,8 +64,8 @@ func (args CodeActionGenerateDownRuleArgs) RunCommand(d *wireguard.WGDocument) (
 				args.URI: {
 					{
 						Range: protocol.Range{
-							Start: property.Value.ToLSPRange().End,
-							End:   property.Value.ToLSPRange().End,
+							Start: property.ToLSPRange().End,
+							End:   property.ToLSPRange().End,
 						},
 						NewText: newPropertyString,
 					},
