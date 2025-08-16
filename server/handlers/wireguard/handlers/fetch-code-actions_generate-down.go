@@ -18,7 +18,7 @@ func GetGenerateDownRuleCodeActions(
 ) []protocol.CodeAction {
 	line := uint32(params.Range.Start.Line)
 
-	if utils.BlockUntilIndexesNotNil(d) == false {
+	if utils.BlockUntilIndexesNotNil(d.Indexes) == false {
 		return nil
 	}
 

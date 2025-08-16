@@ -34,6 +34,10 @@ func (args CodeActionGenerateDownRuleArgs) RunCommand(d *wireguard.WGDocument) (
 		return nil, errors.New("No section or property found at the specified line")
 	}
 
+	if property.Value == nil || property.Value.Value == "" {
+		return nil, fmt.Errorf("property %q at line %d has no value to invert", property.Key.Name, args.Line)
+	}
+
 	rules := strings.Split(property.Value.Value, ";")
 	invertedRules := generateInvertedRules(rules)
 
@@ -50,7 +54,6 @@ func (args CodeActionGenerateDownRuleArgs) RunCommand(d *wireguard.WGDocument) (
 		newKeyName = "PostDown"
 	default:
 		return nil, fmt.Errorf("unsupported key %q at line %d; only PreUp/PostUp are supported", property.Key.Name, args.Line)
-
 	}
 
 	newRulesString := strings.Join(invertedRules, "; ")
