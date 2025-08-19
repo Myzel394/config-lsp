@@ -115,8 +115,6 @@ func getKeyCompletions(
 	options := make(map[fields.NormalizedName]docvalues.DocumentationValue)
 	allowedDuplicatedFields := make(map[fields.NormalizedName]struct{})
 
-	sectionStartLine := section.Start.Line
-
 	switch section.Header.Name {
 	case "Interface":
 		maps.Copy(options, fields.InterfaceOptions)
@@ -140,7 +138,7 @@ func getKeyCompletions(
 			continue
 		}
 
-		if iniProperty.Key.Start.Line == sectionStartLine {
+		if property != nil && iniProperty.Key.Start.Line == property.Key.Start.Line {
 			// The user is currently typing the key, thus we should suggest it
 			continue
 		}
