@@ -36,9 +36,9 @@ func GetGenerateDownRuleCodeActions(
 
 	property := rawProperty.(*ini.Property)
 
-	propertyName := fields.CreateNormalizedName(property.Key.Name)
-	if property.Value != nil {
+	if property.Value != nil && property.Key != nil {
 		var newProperty string = ""
+		propertyName := fields.CreateNormalizedName(property.Key.Name)
 
 		if propertyName == preUp && d.Indexes.AsymmetricRules[section].PreMissing {
 			newProperty = "PreDown"

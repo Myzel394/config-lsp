@@ -20,7 +20,7 @@ func GetPropertyCompletions(
 ) ([]protocol.CompletionItem, error) {
 	position := common.LSPCharacterAsCursorPosition(params.Position.Character)
 
-	if property == nil || property.Key.ContainsPosition(position) {
+	if property == nil || property.Key.ContainsPosition(position) || property.Separator.IsPositionBeforeStart(position) {
 		// First scenario
 		return getKeyCompletions(section, property, params)
 	}
@@ -49,7 +49,7 @@ func getKeyCompletions(
 	for it.Next() {
 		property := it.Value().(*ini.Property)
 
-		if property.Key.Name == "" {
+		if property.Key == nil {
 			continue
 		}
 

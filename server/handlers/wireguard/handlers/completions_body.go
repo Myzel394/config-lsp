@@ -92,7 +92,7 @@ func getPropertyCompletions(
 	*/
 	position := common.LSPCharacterAsCursorPosition(params.Position.Character)
 
-	if property == nil || property.Key.ContainsPosition(position) {
+	if property == nil || property.Key.ContainsPosition(position) || property.Separator.IsPositionBeforeStart(position) {
 		// First scenario
 		return getKeyCompletions(section, property, params), nil
 	}
@@ -130,6 +130,11 @@ func getKeyCompletions(
 	it := section.Properties.Iterator()
 	for it.Next() {
 		iniProperty := it.Value().(*ini.Property)
+
+		if iniProperty.Key == nil {
+			continue
+		}
+
 		normalizedName := fields.CreateNormalizedName(iniProperty.Key.Name)
 		if _, found := allowedDuplicatedFields[normalizedName]; found {
 			continue

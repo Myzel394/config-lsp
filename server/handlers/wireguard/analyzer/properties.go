@@ -25,10 +25,10 @@ func analyzeProperties(
 		for it.Next() {
 			property := it.Value().(*ini.Property)
 
-			if property.Key.Name == "" {
+			if property.Key == nil {
 				ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
 					Message:  "This property is missing a name",
-					Range:    property.Key.ToLSPRange(),
+					Range:    property.ToLSPRange(),
 					Severity: &common.SeverityError,
 				})
 			}

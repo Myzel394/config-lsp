@@ -75,6 +75,11 @@ func (s *Section) FindFirstPropertyByName(name string) (uint32, *Property) {
 	for it.Next() {
 		line := it.Key().(uint32)
 		property := it.Value().(*Property)
+
+		if property.Key == nil {
+			continue
+		}
+
 		if property.Key.Name == name {
 			return line, property
 		}
@@ -89,6 +94,11 @@ func (s *Section) FindPropertiesByName(name string) []*Property {
 	it := s.Properties.Iterator()
 	for it.Next() {
 		property := it.Value().(*Property)
+
+		if property.Key == nil {
+			continue
+		}
+
 		if property.Key.Name == name {
 			properties = append(properties, property)
 		}

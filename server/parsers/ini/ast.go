@@ -28,7 +28,7 @@ type Property struct {
 	common.LocationRange
 	RawValue string
 
-	Key       PropertyKey
+	Key       *PropertyKey
 	Separator *PropertySeparator
 	Value     *PropertyValue
 }

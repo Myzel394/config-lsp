@@ -15,6 +15,10 @@ func GetPropertyHoverInfo(
 	property *ini.Property,
 	index common.IndexPosition,
 ) (*protocol.Hover, error) {
+	if property.Key == nil {
+		return nil, nil
+	}
+
 	option, found := fields.Options[property.Key.Name]
 
 	if !found {

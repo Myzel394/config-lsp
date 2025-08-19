@@ -16,6 +16,9 @@ func FormatDocument(
 	entries := d.Config.GetPropertesInRange(textRange.Start.Line, textRange.End.Line)
 
 	for _, info := range entries {
+		if info.Property.Key == nil || info.Property.Value == nil {
+			continue
+		}
 		edits = append(edits, formatProperty(info.Property, options)...)
 	}
 

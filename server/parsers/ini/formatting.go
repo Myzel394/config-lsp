@@ -17,7 +17,7 @@ func FormatProperty(
 ) ([]protocol.TextEdit, error) {
 	edits := make([]protocol.TextEdit, 0)
 
-	if property.Key.Name == "" || property.Value == nil {
+	if property.Key == nil || property.Value == nil {
 		return edits, nil
 	}
 
