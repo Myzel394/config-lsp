@@ -20,14 +20,9 @@ func GetPropertyCompletions(
 ) ([]protocol.CompletionItem, error) {
 	position := common.LSPCharacterAsCursorPosition(params.Position.Character)
 
-	// Special case, key defined but separator missing
-	if property != nil && property.Separator == nil && !property.Key.ContainsPosition(position) {
-		return getKeyCompletions(section, true)
-	}
-
-	// First scenario, user adds a new property
-	if property == nil || property.Key.Name == "" || property.Key.ContainsPosition(position) {
-		return getKeyCompletions(section, false)
+	if property == nil || property.Key.ContainsPosition(position) {
+		// First scenario
+		return getKeyCompletions(section, property, params)
 	}
 
 	// Check if the cursor it outside the value
@@ -37,12 +32,13 @@ func GetPropertyCompletions(
 	}
 
 	// Otherwise, suggest value completions
-	return getValueCompletions(section, property, position)
+	return getValueCompletions(property, position)
 }
 
 func getKeyCompletions(
 	currentSection *ini.Section,
-	onlySuggestSeparator bool,
+	property *ini.Property,
+	params *protocol.CompletionParams,
 ) ([]protocol.CompletionItem, error) {
 	options := make(map[string]docvalues.DocumentationValue)
 
@@ -66,34 +62,56 @@ func getKeyCompletions(
 		delete(options, property.Key.Name)
 	}
 
+	var start uint32
+	var end uint32
+
+	if property == nil {
+		start = 0
+		end = 0
+	} else {
+		start = property.Key.Start.Character
+
+		if property.Value != nil {
+			end = property.Value.Start.Character
+		} else if property.Separator != nil {
+			end = property.Separator.End.Character
+		} else {
+			end = property.Key.End.Character
+		}
+	}
+
 	kind := protocol.CompletionItemKindField
 
 	return utils.MapMapToSlice(
 		options,
 		func(optionName string, value docvalues.DocumentationValue) protocol.CompletionItem {
-			var label string
-			var insertText string
-
-			if onlySuggestSeparator {
-				label = optionName + " = "
-				insertText = "= "
-			} else {
-				label = optionName
-				insertText = optionName + " = "
-			}
+			insertText := optionName + " = "
+			insertFormat := protocol.InsertTextFormatSnippet
 
 			return protocol.CompletionItem{
-				Kind:          &kind,
-				Documentation: value.Documentation,
-				Label:         label,
-				InsertText:    &insertText,
+				Label:            optionName,
+				Kind:             &kind,
+				Documentation:    value.Documentation,
+				InsertTextFormat: &insertFormat,
+				TextEdit: protocol.TextEdit{
+					Range: protocol.Range{
+						Start: protocol.Position{
+							Line:      params.Position.Line,
+							Character: start,
+						},
+						End: protocol.Position{
+							Line:      params.Position.Line,
+							Character: end,
+						},
+					},
+					NewText: insertText,
+				},
 			}
 		},
 	), nil
 }
 
 func getValueCompletions(
-	currentSection *ini.Section,
 	property *ini.Property,
 	cursor common.CursorPosition,
 ) ([]protocol.CompletionItem, error) {

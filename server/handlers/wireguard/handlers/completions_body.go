@@ -7,7 +7,6 @@ import (
 	"config-lsp/handlers/wireguard/fields"
 	"config-lsp/parsers/ini"
 	"config-lsp/utils"
-	"fmt"
 	"maps"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
@@ -164,7 +163,6 @@ func getKeyCompletions(
 
 	kind := protocol.CompletionItemKindField
 
-	print(fmt.Sprintf("Found %d options for section", len(options)))
 	return utils.MapMapToSlice(
 		options,
 		func(rawOptionName fields.NormalizedName, value docvalues.DocumentationValue) protocol.CompletionItem {
