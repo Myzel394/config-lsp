@@ -69,13 +69,13 @@ func analyzeSymmetricPropertiesSet(
 				continue
 			}
 
-			lastProperty := properties[len(properties)-1]
-
-			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-				Message:  "PreUp is set, but PreDown is not. It is recommended to set both properties symmetrically",
-				Range:    lastProperty.Key.ToLSPRange(),
-				Severity: &common.SeverityHint,
-			})
+			for _, property := range properties {
+				ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+					Message:  "PreUp is set, but PreDown is not. It is recommended to set both properties symmetrically",
+					Range:    property.Key.ToLSPRange(),
+					Severity: &common.SeverityHint,
+				})
+			}
 		}
 
 		if info.PostMissing {
@@ -86,13 +86,13 @@ func analyzeSymmetricPropertiesSet(
 				continue
 			}
 
-			lastProperty := properties[len(properties)-1]
-
-			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-				Message:  "PostUp is set, but PostDown is not. It is recommended to set both properties symmetrically",
-				Range:    lastProperty.Key.ToLSPRange(),
-				Severity: &common.SeverityHint,
-			})
+			for _, property := range properties {
+				ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+					Message:  "PostUp is set, but PostDown is not. It is recommended to set both properties symmetrically",
+					Range:    property.Key.ToLSPRange(),
+					Severity: &common.SeverityHint,
+				})
+			}
 		}
 	}
 }
