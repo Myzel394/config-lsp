@@ -3,6 +3,7 @@ package analyzer
 import (
 	"config-lsp/common"
 	"config-lsp/handlers/wireguard/fields"
+	"config-lsp/parsers/ini"
 	"config-lsp/utils"
 	"fmt"
 
@@ -36,6 +37,20 @@ func analyzeStructureIsValid(ctx *analyzerContext) {
 					protocol.DiagnosticTagUnnecessary,
 				},
 			})
+		} else {
+			it := section.Properties.Iterator()
+
+			for it.Next() {
+				property := it.Value().(*ini.Property)
+
+				if property.Key == nil {
+					ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+						Message:  "This property is missing a key",
+						Range:    property.ToLSPRange(),
+						Severity: &common.SeverityError,
+					})
+				}
+			}
 		}
 	}
 }

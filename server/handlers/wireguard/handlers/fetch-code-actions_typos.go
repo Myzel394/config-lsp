@@ -19,7 +19,7 @@ func GetPropertyKeywordTypoFixes(
 		return nil
 	}
 
-	if utils.BlockUntilIndexesNotNil(d) == false {
+	if utils.BlockUntilIndexesNotNil(d.Indexes) == false {
 		return nil
 	}
 

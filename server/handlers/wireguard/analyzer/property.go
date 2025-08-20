@@ -60,39 +60,35 @@ func analyzeKeepAlivePropertyIsSet(
 func analyzeSymmetricPropertiesSet(
 	ctx *analyzerContext,
 ) {
-	for _, section := range ctx.document.Indexes.SectionsByName["Interface"] {
-		_, preUpProperty := section.FindFirstPropertyByName("PreUp")
-		_, preDownProperty := section.FindFirstPropertyByName("PreDown")
+	for section, info := range ctx.document.Indexes.AsymmetricRules {
+		if info.PreMissing {
+			properties := section.FindPropertiesByName("PreUp")
 
-		_, postUpProperty := section.FindFirstPropertyByName("PostUp")
-		_, postDownProperty := section.FindFirstPropertyByName("PostDown")
-
-		if preUpProperty != nil && preDownProperty == nil {
-			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-				Message:  "PreUp is set, but PreDown is not. It is recommended to set both properties symmetrically",
-				Range:    preUpProperty.ToLSPRange(),
-				Severity: &common.SeverityHint,
-			})
-		} else if preUpProperty == nil && preDownProperty != nil {
-			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-				Message:  "PreDown is set, but PreUp is not. It is recommended to set both properties symmetrically",
-				Range:    preDownProperty.ToLSPRange(),
-				Severity: &common.SeverityHint,
-			})
+			// TODO: Fix later
+			if len(properties) != 0 {
+				for _, property := range properties {
+					ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+						Message:  "PreUp is set, but PreDown is not. It is recommended to set both properties symmetrically",
+						Range:    property.Key.ToLSPRange(),
+						Severity: &common.SeverityHint,
+					})
+				}
+			}
 		}
 
-		if postUpProperty != nil && postDownProperty == nil {
-			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-				Message:  "PostUp is set, but PostDown is not. It is recommended to set both properties symmetrically",
-				Range:    postUpProperty.ToLSPRange(),
-				Severity: &common.SeverityHint,
-			})
-		} else if postUpProperty == nil && postDownProperty != nil {
-			ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
-				Message:  "PostDown is set, but PostUp is not. It is recommended to set both properties symmetrically",
-				Range:    postDownProperty.ToLSPRange(),
-				Severity: &common.SeverityHint,
-			})
+		if info.PostMissing {
+			properties := section.FindPropertiesByName("PostUp")
+
+			// TODO: Fix later
+			if len(properties) == 0 {
+				for _, property := range properties {
+					ctx.diagnostics = append(ctx.diagnostics, protocol.Diagnostic{
+						Message:  "PostUp is set, but PostDown is not. It is recommended to set both properties symmetrically",
+						Range:    property.Key.ToLSPRange(),
+						Severity: &common.SeverityHint,
+					})
+				}
+			}
 		}
 	}
 }

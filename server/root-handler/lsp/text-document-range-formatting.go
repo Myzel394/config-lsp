@@ -5,6 +5,7 @@ import (
 	bitcoinconf "config-lsp/handlers/bitcoin_conf/lsp"
 	sshconfig "config-lsp/handlers/ssh_config/lsp"
 	sshdconfig "config-lsp/handlers/sshd_config/lsp"
+	wireguard "config-lsp/handlers/wireguard/lsp"
 	"config-lsp/root-handler/shared"
 	"config-lsp/root-handler/utils"
 
@@ -36,7 +37,7 @@ func TextDocumentRangeFormattingFunc(
 	case shared.LanguageFstab:
 		return nil, nil
 	case shared.LanguageWireguard:
-		return nil, nil
+		return wireguard.TextDocumentRangeFormatting(context, params)
 	case shared.LanguageAliases:
 		return nil, nil
 	case shared.LanguageBitcoinConf:

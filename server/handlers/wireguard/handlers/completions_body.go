@@ -90,18 +90,11 @@ func getPropertyCompletions(
 	/* Value missing or started:
 	Address = 10.|
 	*/
-
-	currentLine := params.Position.Line
 	position := common.LSPCharacterAsCursorPosition(params.Position.Character)
 
-	// Special case, key defined but separator missing
-	if property != nil && property.Separator == nil && !property.Key.ContainsPosition(position) {
-		return getKeyCompletions(section, true, currentLine), nil
-	}
-
-	if property == nil || property.Separator == nil || property.Key.ContainsPosition(position) {
+	if property == nil || (property.Separator != nil && property.Separator.IsPositionBeforeEnd(position)) || (property.Key != nil && property.Key.ContainsPosition(position)) {
 		// First scenario
-		return getKeyCompletions(section, false, currentLine), nil
+		return getKeyCompletions(section, property, params), nil
 	}
 
 	// Check if the cursor it outside the value
@@ -116,8 +109,8 @@ func getPropertyCompletions(
 
 func getKeyCompletions(
 	section ini.Section,
-	onlySuggestSeparator bool,
-	currentLine uint32,
+	property *ini.Property,
+	params *protocol.CompletionParams,
 ) []protocol.CompletionItem {
 	options := make(map[fields.NormalizedName]docvalues.DocumentationValue)
 	allowedDuplicatedFields := make(map[fields.NormalizedName]struct{})
@@ -135,17 +128,44 @@ func getKeyCompletions(
 	it := section.Properties.Iterator()
 	for it.Next() {
 		iniProperty := it.Value().(*ini.Property)
+
+		if iniProperty.Key == nil {
+			continue
+		}
+
 		normalizedName := fields.CreateNormalizedName(iniProperty.Key.Name)
 		if _, found := allowedDuplicatedFields[normalizedName]; found {
 			continue
 		}
 
-		if iniProperty.Key.Start.Line == currentLine {
+		if property != nil && iniProperty.Key.Start.Line == property.Key.Start.Line {
 			// The user is currently typing the key, thus we should suggest it
 			continue
 		}
 
 		delete(options, normalizedName)
+	}
+
+	var start uint32
+	var end uint32
+
+	if property == nil {
+		start = 0
+		end = 0
+	} else {
+		if property.Key == nil {
+			start = 0
+		} else {
+			start = property.Key.Start.Character
+		}
+
+		if property.Value != nil {
+			end = property.Value.Start.Character
+		} else if property.Separator != nil {
+			end = property.Separator.End.Character
+		} else {
+			end = property.Key.End.Character
+		}
 	}
 
 	kind := protocol.CompletionItemKindField
@@ -154,22 +174,28 @@ func getKeyCompletions(
 		options,
 		func(rawOptionName fields.NormalizedName, value docvalues.DocumentationValue) protocol.CompletionItem {
 			optionName := fields.AllOptionsFormatted[rawOptionName]
-			var label string
-			var insertText string
 
-			if onlySuggestSeparator {
-				label = optionName + " = "
-				insertText = "= "
-			} else {
-				label = optionName
-				insertText = optionName + " = "
-			}
+			insertText := optionName + " = "
+			insertFormat := protocol.InsertTextFormatSnippet
 
 			return protocol.CompletionItem{
-				Kind:          &kind,
-				Documentation: value.Documentation,
-				Label:         label,
-				InsertText:    &insertText,
+				Label:            optionName,
+				Kind:             &kind,
+				Documentation:    value.Documentation,
+				InsertTextFormat: &insertFormat,
+				TextEdit: protocol.TextEdit{
+					Range: protocol.Range{
+						Start: protocol.Position{
+							Line:      params.Position.Line,
+							Character: start,
+						},
+						End: protocol.Position{
+							Line:      params.Position.Line,
+							Character: end,
+						},
+					},
+					NewText: insertText,
+				},
 			}
 		},
 	)

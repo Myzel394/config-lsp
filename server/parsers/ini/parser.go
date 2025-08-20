@@ -28,7 +28,7 @@ func (c *Config) Clear() {
 var commentPattern = regexp.MustCompile(`^\s*([;#])`)
 var emptyPattern = regexp.MustCompile(`^\s*$`)
 var headerPattern = regexp.MustCompile(`^\s*\[(\w+)?]?`)
-var linePattern = regexp.MustCompile(`^\s*(?P<key>.+?)\s*(?P<separator>=)\s*(?P<value>\S.*?)?\s*(?: [;#].*)?\s*$`)
+var linePattern = regexp.MustCompile(`^\s*(?P<key>.+?)?\s*(?P<separator>=)\s*(?P<value>\S.*?)?\s*(?: [;#].*)?\s*$`)
 
 // Parse parses an INI string and returns any errors encountered
 func (c *Config) Parse(input string) []common.LSPError {
@@ -145,7 +145,7 @@ func (c *Config) Parse(input string) []common.LSPError {
 			indexes := utils.GetTrimIndex(line)
 
 			newProperty := &Property{
-				Key: PropertyKey{
+				Key: &PropertyKey{
 					LocationRange: common.LocationRange{
 						Start: common.Location{
 							Line:      lineNumber,
@@ -195,21 +195,27 @@ func (c *Config) Parse(input string) []common.LSPError {
 				continue
 			}
 
-			// Construct key
-			keyStart := uint32(indexes[2])
-			keyEnd := uint32(indexes[3])
-			key := PropertyKey{
-				LocationRange: common.LocationRange{
-					Start: common.Location{
-						Line:      lineNumber,
-						Character: keyStart,
+			var key *PropertyKey
+			propertyStart := uint32(0)
+
+			if indexes[2] != -1 && indexes[3] != -1 {
+				// Construct key
+				keyStart := uint32(indexes[2])
+				keyEnd := uint32(indexes[3])
+				propertyStart = keyStart
+				key = &PropertyKey{
+					LocationRange: common.LocationRange{
+						Start: common.Location{
+							Line:      lineNumber,
+							Character: keyStart,
+						},
+						End: common.Location{
+							Line:      lineNumber,
+							Character: keyEnd,
+						},
 					},
-					End: common.Location{
-						Line:      lineNumber,
-						Character: keyEnd,
-					},
-				},
-				Name: line[keyStart:keyEnd],
+					Name: line[keyStart:keyEnd],
+				}
 			}
 
 			// Construct separator
@@ -236,20 +242,32 @@ func (c *Config) Parse(input string) []common.LSPError {
 				// value exists
 				valueStart := uint32(indexes[6])
 				valueEnd := uint32(indexes[7])
+
+				rawStart := valueStart
+				rawEnd := valueEnd
+
+				if (line[valueStart] == '"' && line[valueEnd-1] == '"') ||
+					(line[valueStart] == '\'' && line[valueEnd-1] == '\'') {
+					// Value is quoted
+					valueStart++
+					valueEnd--
+				}
+
 				propertyEnd = valueEnd
 
 				value = &PropertyValue{
 					LocationRange: common.LocationRange{
 						Start: common.Location{
 							Line:      lineNumber,
-							Character: valueStart,
+							Character: rawStart,
 						},
 						End: common.Location{
 							Line:      lineNumber,
-							Character: valueEnd,
+							Character: rawEnd,
 						},
 					},
-					Value: line[valueStart:valueEnd],
+					Value: utils.NormalizeEscapedQuotes(line[valueStart:valueEnd]),
+					Raw:   line[rawStart:rawEnd],
 				}
 			}
 
@@ -258,7 +276,7 @@ func (c *Config) Parse(input string) []common.LSPError {
 				LocationRange: common.LocationRange{
 					Start: common.Location{
 						Line:      lineNumber,
-						Character: keyStart,
+						Character: propertyStart,
 					},
 					End: common.Location{
 						Line:      lineNumber,
