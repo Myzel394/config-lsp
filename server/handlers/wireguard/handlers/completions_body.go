@@ -92,7 +92,7 @@ func getPropertyCompletions(
 	*/
 	position := common.LSPCharacterAsCursorPosition(params.Position.Character)
 
-	if property == nil || property.Key.ContainsPosition(position) || property.Separator.IsPositionBeforeStart(position) {
+	if property == nil || (property.Separator != nil && property.Separator.IsPositionBeforeEnd(position)) || (property.Key != nil && property.Key.ContainsPosition(position)) {
 		// First scenario
 		return getKeyCompletions(section, property, params), nil
 	}
@@ -153,7 +153,11 @@ func getKeyCompletions(
 		start = 0
 		end = 0
 	} else {
-		start = property.Key.Start.Character
+		if property.Key == nil {
+			start = 0
+		} else {
+			start = property.Key.Start.Character
+		}
 
 		if property.Value != nil {
 			end = property.Value.Start.Character

@@ -4,6 +4,7 @@ import (
 	"config-lsp/handlers/wireguard"
 	"config-lsp/handlers/wireguard/fields"
 	"config-lsp/parsers/ini"
+	"fmt"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -46,20 +47,15 @@ func GetSectionHeaderCompletions(
 ) ([]protocol.CompletionItem, error) {
 	completions := make([]protocol.CompletionItem, 0)
 
-	containsInterfaceSection := false
-
-	for _, section := range d.Config.Sections {
-		if section.Header.Name == "Interface" {
-			containsInterfaceSection = true
-			break
-		}
-	}
+	containsInterfaceSection := d.Config.IncludesHeader("Interface")
 
 	if !containsInterfaceSection {
 		completions = append(completions, getHeaderCompletion("Interface", fields.HeaderInterfaceEnum.Documentation, existingHeader))
 	}
 
 	completions = append(completions, getHeaderCompletion("Peer", fields.HeaderPeerEnum.Documentation, existingHeader))
+
+	print(fmt.Sprintf("laaaaaaaaaaaaaaaaa appended completions: %v", completions))
 
 	return completions, nil
 }

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"config-lsp/handlers/wireguard"
+	"fmt"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -19,9 +20,12 @@ func SuggestCompletions(
 	section := d.Config.FindSectionByLine(lineNumber)
 	property := d.Config.FindPropertyByLine(lineNumber)
 
+	println(fmt.Sprintf("SuggestCompletions: section: %v, property: %v", section, property))
+
 	if section == nil {
 		// First, the user needs to define a section header
 		if property == nil {
+			print("asdasd")
 			return GetSectionHeaderCompletions(d, nil)
 		} else {
 			// However, if they start typing a property - we should not
