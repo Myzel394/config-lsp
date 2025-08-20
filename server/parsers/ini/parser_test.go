@@ -392,3 +392,23 @@ func TestPropertyValueInQuotesWithEscapedQuotes(t *testing.T) {
 		t.Errorf("Parse: Expected property to be correct, got %s = %s", property.Key.Name, property.Value.Raw)
 	}
 }
+
+func TestIncompleteProperty(t *testing.T) {
+	sample := `=world`
+
+	config := NewConfig()
+	config.XParseConfig = INIParseConfig{
+		AllowRootProperties: true,
+	}
+	errors := config.Parse(sample)
+
+	if !(len(errors) == 0) {
+		t.Fatalf("Parse: Expected no errors, but got %v", errors)
+	}
+
+	rawProperty, _ := config.Sections[0].Properties.Get(uint32(0))
+	property := rawProperty.(*Property)
+	if !(property.Key == nil && property.Value != nil && property.Value.Value == "world" && property.Separator != nil) {
+		t.Errorf("Parse: Expected property to be 'hello =', but got '%s = %v'", property.Key.Name, property.Value)
+	}
+}
