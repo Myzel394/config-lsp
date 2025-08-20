@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"config-lsp/handlers/wireguard"
-	"fmt"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
