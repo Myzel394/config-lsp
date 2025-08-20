@@ -18,6 +18,10 @@ func GetPropertyHoverInfo(
 	property ini.Property,
 	index common.IndexPosition,
 ) (*protocol.Hover, error) {
+	if property.Key == nil {
+		return nil, nil
+	}
+
 	availableOptions, found := fields.OptionsHeaderMap[fields.CreateNormalizedName(section.Header.Name)]
 
 	if !found {

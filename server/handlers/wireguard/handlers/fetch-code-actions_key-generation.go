@@ -20,7 +20,7 @@ func GetKeyGenerationCodeActions(
 	section := d.Config.FindSectionByLine(line)
 	property := d.Config.FindPropertyByLine(line)
 
-	if section == nil || property == nil || property.Separator == nil {
+	if section == nil || property == nil || property.Key == nil || property.Separator == nil {
 		return nil
 	}
 

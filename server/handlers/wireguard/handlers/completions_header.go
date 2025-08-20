@@ -46,14 +46,7 @@ func GetSectionHeaderCompletions(
 ) ([]protocol.CompletionItem, error) {
 	completions := make([]protocol.CompletionItem, 0)
 
-	containsInterfaceSection := false
-
-	for _, section := range d.Config.Sections {
-		if section.Header.Name == "Interface" {
-			containsInterfaceSection = true
-			break
-		}
-	}
+	containsInterfaceSection := d.Config.IncludesHeader("Interface")
 
 	if !containsInterfaceSection {
 		completions = append(completions, getHeaderCompletion("Interface", fields.HeaderInterfaceEnum.Documentation, existingHeader))

@@ -93,3 +93,16 @@ func TestInvertedQuotesFirstThenRemaining(
 		t.Fatalf("Unexpected inverted quote ranges: %v", inverted)
 	}
 }
+
+func TestNormalizeValidQuotes(
+	t *testing.T,
+) {
+	// Test with valid quotes
+	input := `hello \"world"`
+	expected := `hello "world"`
+	result := NormalizeEscapedQuotes(input)
+
+	if result != expected {
+		t.Errorf("Expected %q, got %q", expected, result)
+	}
+}

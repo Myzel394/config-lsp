@@ -18,7 +18,7 @@ func GetGenerateRPCAuthCodeActions(
 	section := d.Config.FindSectionByLine(line)
 	property := d.Config.FindPropertyByLine(line)
 
-	if property != nil && (property.Key.Name == "rpcuser" || property.Key.Name == "rpcpassword") && commands.IsPythonAvailable() {
+	if property != nil && property.Key != nil && (property.Key.Name == "rpcuser" || property.Key.Name == "rpcpassword") && commands.IsPythonAvailable() {
 		_, userProperty := section.FindFirstPropertyByName("rpcuser")
 		_, passwordProperty := section.FindFirstPropertyByName("rpcpassword")
 

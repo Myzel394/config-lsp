@@ -25,19 +25,7 @@ PreUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT
 		t.Fatalf("Unexpected errors while creating indexes: %v", errs)
 	}
 
-	if len(indexes.UpProperties) != 1 {
-		t.Errorf("Expected 1 UpProperty, got %d", len(indexes.UpProperties))
-	}
-
-	if indexes.UpProperties[3].Section.Header.Name != "Interface" {
-		t.Errorf("Expected UpProperty section name 'Interface', got '%s'", indexes.UpProperties[3].Section.Header.Name)
-	}
-
-	if indexes.UpProperties[3].Property.Key.Name != "PreUp" {
-		t.Errorf("Expected UpProperty key name 'PreUp', got '%s'", indexes.UpProperties[3].Property.Key.Name)
-	}
-
-	if indexes.UpProperties[3].Property.Value.Value != "iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT" {
-		t.Errorf("Expected UpProperty value; %v", indexes.UpProperties[3].Property.Value.Value)
+	if !(indexes.AsymmetricRules[config.Sections[0]].PreMissing == true && indexes.AsymmetricRules[config.Sections[0]].PostMissing == false) {
+		t.Errorf("Expected asymmetric rules for section '%s' to be PreMissing: true, PostMissing: false, got PreMissing: %v, PostMissing: %v", config.Sections[0].Header.Name, indexes.AsymmetricRules[config.Sections[0]].PreMissing, indexes.AsymmetricRules[config.Sections[0]].PostMissing)
 	}
 }

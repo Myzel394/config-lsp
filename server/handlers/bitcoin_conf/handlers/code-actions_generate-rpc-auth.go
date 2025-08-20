@@ -31,7 +31,7 @@ func (args CodeActionGenerateRPCAuthArgs) RunCommand(d *bitcoinconf.BTCDocument)
 	userProperty := d.Config.FindPropertyByLine(args.UsernameLine)
 	passwordProperty := d.Config.FindPropertyByLine(args.PasswordLine)
 
-	if userProperty == nil || passwordProperty == nil || userProperty.Key.Name != "rpcuser" || passwordProperty.Key.Name != "rpcpassword" {
+	if userProperty == nil || passwordProperty == nil || userProperty.Key == nil || passwordProperty.Key == nil || userProperty.Key.Name != "rpcuser" || passwordProperty.Key.Name != "rpcpassword" {
 		return nil, fmt.Errorf("rpcuser or rpcpassword not found at specified lines")
 	}
 

@@ -23,7 +23,7 @@
       "aarch64-windows"
     ] (system: 
       let
-        version = "0.3.3"; # CI:CD-VERSION
+        version = "0.3.4"; # CI:CD-VERSION
         pkgs = import nixpkgs {
           inherit system;
           overlays = [
@@ -40,7 +40,7 @@
           just
         ];
         serverUncompressed = (pkgs: pkgs.buildGoModule {
-          CGO_ENABLED = 0;
+          "env.CGO_ENABLED" = 1;
           nativeBuildInputs = inputs;
           pname = "github.com/Myzel394/config-lsp";
           version = version;
