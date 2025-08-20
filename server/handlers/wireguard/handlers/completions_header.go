@@ -4,7 +4,6 @@ import (
 	"config-lsp/handlers/wireguard"
 	"config-lsp/handlers/wireguard/fields"
 	"config-lsp/parsers/ini"
-	"fmt"
 
 	protocol "github.com/tliron/glsp/protocol_3_16"
 )
@@ -54,8 +53,6 @@ func GetSectionHeaderCompletions(
 	}
 
 	completions = append(completions, getHeaderCompletion("Peer", fields.HeaderPeerEnum.Documentation, existingHeader))
-
-	print(fmt.Sprintf("laaaaaaaaaaaaaaaaa appended completions: %v", completions))
 
 	return completions, nil
 }
