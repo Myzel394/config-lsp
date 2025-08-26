@@ -60,6 +60,10 @@ Alternatively, you can also manually install the extension:
 6. You may need to restart VS Code
 7. Enjoy!
 
+### Neovim
+
+You can use the official [config-lsp.nvim](https://github.com/Myzel394/config-lsp.nvim) plugin to easily install and manage config-lsp in Neovim.
+
 ### Manual installation
 
 To use `config-lsp` in any other editor, you'll need to install it manually.
@@ -67,15 +71,22 @@ Don't worry, it's easy!
 
 #### Installing the latest Binary
 
+##### Prebuilt Binary
+
+Download the latest binary from the [releases page](https://github.com/Myzel394/config-lsp/releases) and put it in your PATH.
+
 ##### Brew
 
 ```sh
 brew install myzel394/formulae/config-lsp
 ```
 
-##### Manual Binary
+##### Nix
 
-Download the latest binary from the [releases page](https://github.com/Myzel394/config-lsp/releases) and put it in your PATH.
+```sh
+nix build # Build the binary; Available in ./result/bin/config-lsp
+nix build .#vs-code-extension # Build the VS Code extension; Available in ./result/config-lps-<version>.vsix
+```
 
 ##### Compiling
 
@@ -91,7 +102,7 @@ or build it using Nix:
 nix flake build
 ```
 
-#### Neovim installation
+#### Manual Neovim installation
 
 Using [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) you can add `config-lsp` by adding the following to your `lsp.lua` (filename might differ):
 
@@ -133,7 +144,7 @@ config-lsp supports the following CLI options:
 | `--no-undetectable-errors`    | If config-lsp is unable to detect the language, do not return any errors. | Disabled by default; Enabled in the VS Code extension |
 | `--no-typo-suggestions`       | Do not suggest typo fixes                                                 | Disabled by default                                   |
 | `--usage-reports-errors-only` | Only report errors.                                                       | By default all usage telemetry is enabled             |
-| `--usage-reports-disable` | Disable all telemetry                                                       | By default all usage telemetry is enabled             |
+| `--usage-reports-disable`     | Disable all telemetry                                                     | By default all usage telemetry is enabled             |
 
 ### Telemetry
 
@@ -161,5 +172,4 @@ We would be really happy if you would _not_ disable telemetry, as this helps me 
 You can either contribute to the project, [see CONTRIBUTING.md](CONTRIBUTING.md), or you can sponsor me via [GitHub Sponsors](https://github.com/sponsors/Myzel394) or via [crypto currencies](https://github.com/Myzel394/contact-me?tab=readme-ov-file#donations).
 
 Oh and spreading the word about config-lsp is also a great way to support the project :)
-
 
