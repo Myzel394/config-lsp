@@ -13,21 +13,20 @@ export default function Home() {
   return (
     <div className="h-screen flex flex-col">
       <Navbar />
-      <div className="flex items-center justify-center gap-x-20 flex-grow">
+      <div className="flex flex-col gap-y-20 py-10 items-center justify-center flex-grow md:flex-row md:gap-x-20 ">
 
-        <main className="flex items-center justify-start flex-col gap-y-20">
+        <main className="flex items-center justify-start flex-col gap-y-10 px-10 md:px-0 md:gap-y-20">
           <div className="flex flex-col items-start justify-center gap-y-8">
 
-            <div className="flex items-center justify-center gap-x-2">
+            <div className="flex items-center justify-center gap-x-2 md:gap-x-5">
               <Image
                 src="/assets/icon.png"
                 alt="logo"
                 width={70}
                 height={70}
-                // Optical center
-                className="inline-block mt-[15px]"
+                className="inline-block"
               />
-              <h1 className="text-8xl font-bold text-white">
+              <h1 className="text-4xl font-bold text-white md:text-7xl md:mb-2.5">
                 config-lsp
               </h1>
             </div>
@@ -70,13 +69,14 @@ export default function Home() {
           </div>
         </main>
 
-        <div className="w-[40em] aspect-[1.1] rounded-[45px] overflow-hidden relative bg-[#1C1C1C]" id="preview-video">
-          <Image src="/assets/preview-video_first-frame.jpg"
-                 alt=""
-      sizes="100%"
-      objectFit="cover"
-      fill
-                 className="z-1"
+        <div className="w-full px-10 aspect-[1.1] rounded-[45px] overflow-hidden relative bg-[#1C1C1C] md:w-[40em]" id="preview-video">
+          <Image
+            src="/assets/preview-video_first-frame.jpg"
+            alt=""
+            sizes="100%"
+            objectFit="cover"
+            fill
+            className="z-1"
           />
           <video width="100%" height="100%" autoPlay loop muted preload="auto" className="z-2 absolute top-0 left-0 object-cover">
             <source

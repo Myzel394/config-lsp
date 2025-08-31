@@ -21,8 +21,8 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vmin;
+  width: 100%;
+  height: 100%;
 
   background-image: linear-gradient(var(--color-border-start), var(--border-size), transparent var(--border-size)), linear-gradient(90deg, var(--color-border-start) var(--border-size), transparent var(--border-size));
   background-size: 3em 3em;
