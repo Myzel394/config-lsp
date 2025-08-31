@@ -11,9 +11,9 @@ import { SiWireguard } from "react-icons/si";
 
 export default function Home() {
   return (
-    <>
+    <div className="h-screen flex flex-col">
       <Navbar />
-      <div className="h-screen flex items-center justify-center gap-x-20">
+      <div className="flex items-center justify-center gap-x-20 flex-grow">
 
         <main className="flex items-center justify-start flex-col gap-y-20">
           <div className="flex flex-col items-start justify-center gap-y-8">
@@ -70,8 +70,15 @@ export default function Home() {
           </div>
         </main>
 
-        <div>
-          <video width="640" height="100%" autoPlay loop muted preload="auto" className="rounded-[45px] shadow-lg" id="preview-video">
+        <div className="w-[40em] aspect-[1.1] rounded-[45px] overflow-hidden relative bg-[#1C1C1C]" id="preview-video">
+          <Image src="/assets/preview-video_first-frame.jpg"
+                 alt=""
+      sizes="100%"
+      objectFit="cover"
+      fill
+                 className="z-1"
+          />
+          <video width="100%" height="100%" autoPlay loop muted preload="auto" className="z-2 absolute top-0 left-0 object-cover">
             <source
               src="/assets/preview-video.mp4"
               type="video/mp4"
@@ -81,7 +88,7 @@ export default function Home() {
         </div>
 
       </div>
-    </>
+    </div>
   );
 }
 
